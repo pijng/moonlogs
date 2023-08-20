@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"moonlogs/web"
 	"net/http"
 	"strings"
@@ -23,5 +24,8 @@ func Web(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", contentType)
-	w.Write(data)
+	_, err = w.Write(data)
+	if err != nil {
+		log.Printf("Write failed: %v", err)
+	}
 }
