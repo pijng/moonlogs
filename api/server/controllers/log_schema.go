@@ -8,6 +8,7 @@ import (
 	"moonlogs/internal/repository"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -27,7 +28,8 @@ func LogSchemaCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdLogSchema, err := repository.NewLogSchemaRepository(r.Context()).Create(newLogSchema)
+	formattedSchemaName := strings.ReplaceAll(strings.ToLower(newLogSchema.Name), " ", "_")
+	createdLogSchema, err := repository.NewLogSchemaRepository(r.Context()).Create(newLogSchema, formattedSchemaName)
 	if err != nil {
 		util.Return(w, false, http.StatusInternalServerError, err, nil)
 		return

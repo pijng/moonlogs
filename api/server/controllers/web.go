@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"log"
+	"mime"
 	"moonlogs/web"
 	"net/http"
-	"strings"
+	"path"
 )
 
 func Web(w http.ResponseWriter, r *http.Request) {
@@ -18,12 +19,16 @@ func Web(w http.ResponseWriter, r *http.Request) {
 		data, _ = web.Assets.ReadFile("build/index.html")
 	}
 
-	contentType := http.DetectContentType(data)
-	if strings.Contains(filePath, ".js") {
-		contentType = "text/javascript; charset=UTF-8"
-	}
+	var contentType string
+	extType := path.Ext(filePath)
 
+	if extType != "" {
+		contentType = mime.TypeByExtension(extType)
+	} else {
+		contentType = http.DetectContentType(data)
+	}
 	w.Header().Set("Content-Type", contentType)
+
 	_, err = w.Write(data)
 	if err != nil {
 		log.Printf("Write failed: %v", err)

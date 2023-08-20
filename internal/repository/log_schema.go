@@ -20,10 +20,10 @@ func NewLogSchemaRepository(ctx context.Context) *LogSchemaRepository {
 	}
 }
 
-func (r *LogSchemaRepository) Create(logSchema ent.LogSchema) (*ent.LogSchema, error) {
+func (r *LogSchemaRepository) Create(logSchema ent.LogSchema, formattedSchemaName string) (*ent.LogSchema, error) {
 	ls, err := r.client.LogSchema.
 		Create().
-		SetName(logSchema.Name).
+		SetName(formattedSchemaName).
 		SetDescription(logSchema.Description).
 		SetTitle(logSchema.Title).
 		SetFields(logSchema.Fields).
