@@ -1,11 +1,11 @@
-import { sample, createEvent } from 'effector';
-import { using } from 'forest';
-import { createBrowserHistory } from 'history';
-import { createHistoryRouter } from 'atomic-router';
-import { linkRouter, onAppMount } from 'atomic-router-forest';
+import { sample, createEvent } from "effector";
+import { using } from "forest";
+import { createBrowserHistory } from "history";
+import { createHistoryRouter } from "atomic-router";
+import { linkRouter, onAppMount } from "atomic-router-forest";
 
-import { ROUTES, Pages } from '@/pages';
-import { Link } from '@/shared/lib/router';
+import { ROUTES, Pages } from "@/pages";
+import { Link } from "@/shared/lib/router";
 
 // Create history instance and router instance to control routing in the app
 const history = createBrowserHistory();
@@ -33,4 +33,4 @@ function Application() {
   onAppMount(appMounted);
 }
 
-using(document.querySelector('body')!, Application);
+using(document.querySelector("body")!, Application);

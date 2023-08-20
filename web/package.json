@@ -10,9 +10,13 @@
     "tsc": "tsc --noEmit"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
     "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "parcel": "^2.9.3",
     "postcss": "^8.4.28",
+    "prettier": "^3.0.2",
     "process": "^0.11.10",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.1.6"
@@ -23,6 +27,7 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "type": "commonjs",
   "dependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "atomic-router": "^0.4.3",
     "atomic-router-forest": "^0.1.0",
     "effector": "^22.8.6",

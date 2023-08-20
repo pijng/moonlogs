@@ -1,3 +1,3 @@
-import { createLink } from 'atomic-router-forest';
+import { createLink } from "atomic-router-forest";
 
 export const Link = createLink();
