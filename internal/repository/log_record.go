@@ -25,13 +25,14 @@ func NewLogRecordRepository(ctx context.Context) *LogRecordRepository {
 	}
 }
 
-func (r *LogRecordRepository) Create(logRecord ent.LogRecord, logSchemaId int) (*ent.LogRecord, error) {
+func (r *LogRecordRepository) Create(logRecord ent.LogRecord, logSchemaId int, groupHash string) (*ent.LogRecord, error) {
 	lr, err := r.client.LogRecord.
 		Create().
 		SetText(logRecord.Text).
 		SetSchemaName(logRecord.SchemaName).
 		SetSchemaID(logSchemaId).
-		SetMeta(logRecord.Meta).
+		SetQuery(logRecord.Query).
+		SetGroupHash(groupHash).
 		Save(r.ctx)
 
 	if err != nil {
@@ -53,15 +54,16 @@ func (r *LogRecordRepository) GetById(id int) (*ent.LogRecord, error) {
 	return lr, nil
 }
 
-func (r *LogRecordRepository) GetBySchemaAndMeta(schemaId int, schemaName string, meta schema.Meta, limit int, offset int) ([]*ent.LogRecord, error) {
+func (r *LogRecordRepository) GetBySchemaAndQuery(schemaId int, schemaName string, text string, query schema.Query, limit int, offset int) ([]*ent.LogRecord, error) {
 	lr, err := r.client.Debug().LogRecord.
 		Query().
-		Where(logrecord.Or(logrecord.SchemaID(schemaId), logrecord.SchemaName(schemaName))).
+		Where(logrecord.Or(logrecord.SchemaID(schemaId), logrecord.SchemaName(schemaName)), logrecord.TextContains(text)).
 		Where(predicate.LogRecord(func(s *sql.Selector) {
-			for name, value := range meta {
-				s.Where(sqljson.ValueContains(logrecord.FieldMeta, value, sqljson.Path(name)))
+			for name, value := range query {
+				s.Where(sqljson.ValueContains(logrecord.FieldQuery, value, sqljson.Path(name)))
 			}
 		})).
+		Order(ent.Desc(logrecord.FieldCreatedAt)).
 		Limit(limit).
 		Offset(offset).
 		All(r.ctx)
@@ -75,7 +77,22 @@ func (r *LogRecordRepository) GetBySchemaAndMeta(schemaId int, schemaName string
 
 func (r *LogRecordRepository) GetAll(limit int, offset int) ([]*ent.LogRecord, error) {
 	lr, err := r.client.LogRecord.
-		Query().Limit(limit).Offset(offset).All(r.ctx)
+		Query().Order(ent.Desc(logrecord.FieldCreatedAt)).Limit(limit).Offset(offset).All(r.ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed querying log_record: %w", err)
+	}
+
+	return lr, nil
+}
+
+func (r *LogRecordRepository) GetByGroupHash(schemaName string, groupHash string) ([]*ent.LogRecord, error) {
+	lr, err := r.client.Debug().LogRecord.
+		Query().
+		Where(logrecord.SchemaName(schemaName)).
+		Where(logrecord.GroupHash(groupHash)).
+		Order(ent.Desc(logrecord.FieldCreatedAt)).
+		All(r.ctx)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed querying log_record: %w", err)

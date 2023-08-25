@@ -1,4 +1,4 @@
-import * as router from "@/shared/lib/router";
+import * as router from "@/routing";
 import { RouteInstance } from "atomic-router";
 
 export const Link = (route: RouteInstance<Record<string, any>>, text: string) => {

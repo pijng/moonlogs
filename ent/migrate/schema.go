@@ -15,7 +15,8 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "schema_name", Type: field.TypeString},
 		{Name: "schema_id", Type: field.TypeInt},
-		{Name: "meta", Type: field.TypeJSON},
+		{Name: "query", Type: field.TypeJSON},
+		{Name: "group_hash", Type: field.TypeString, Nullable: true},
 	}
 	// LogRecordsTable holds the schema information for the "log_records" table.
 	LogRecordsTable = &schema.Table{

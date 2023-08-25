@@ -1,28 +1,33 @@
-import { h, text } from "forest";
+import { h, list, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
-import * as routes from "@/shared/routes";
-import { CardLink, Link } from "@/shared/ui";
+import { SchemaCard, schemaModel } from "@/entities/schema";
+import { homeRoute, logsRoute } from "@/routing";
+import { Search } from "@/shared/ui";
 
 export const HomePage = () => {
   h("div", {
-    classList: ["flex", "flex-col"],
     fn() {
       // This allows to show/hide route if page is matched
       // It is required to call `withRoute` inside `h` call
-      withRoute(routes.home);
+      withRoute(homeRoute);
 
-      text`Hello from the home page`;
+      Search(schemaModel.events.queryChanged, schemaModel.$searchQuery);
 
-      CardLink({
-        title: "Procart",
-        description:
-          "Интеграция с RKeeper через модуль Procart от компании Carbis и я вообще норм сижу такой и туда сюда делаю без всяких преколов ну и все собсна пиздец карточка большая",
-        route: routes.logsList,
-        link: "logs",
+      h("div", () => {
+        spec({
+          classList: ["grid", "grid-cols-2", "gap-4", "md:grid-cols-3", "lg:grid-cols-4", "xl:grid-cols-5"],
+        });
+
+        list({
+          source: schemaModel.$filteredSchemas,
+          key: "name",
+          fields: ["title", "description", "name"],
+          fn({ fields: [title, description, name] }) {
+            SchemaCard({ title, description, route: logsRoute, link: name.map((l) => `logs/${l}`) });
+          },
+        });
       });
-
-      Link(routes.logsList, "Show logs list");
     },
   });
 };

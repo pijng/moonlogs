@@ -66,3 +66,24 @@ func LogSchemaGetById(w http.ResponseWriter, r *http.Request) {
 
 	util.Return(w, true, http.StatusOK, nil, logSchema)
 }
+
+func LogSchemaGetByQuery(w http.ResponseWriter, r *http.Request) {
+	var newLogSchema ent.LogSchema
+
+	err := json.NewDecoder(r.Body).Decode(&newLogSchema)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil)
+		return
+	}
+
+	logSchemas, err := repository.
+		NewLogSchemaRepository(r.Context()).
+		GetByTitleOrDescriptionAll(newLogSchema.Title, newLogSchema.Description)
+
+	if err != nil {
+		util.Return(w, false, http.StatusNotFound, err, nil)
+		return
+	}
+
+	util.Return(w, true, http.StatusOK, nil, logSchemas)
+}

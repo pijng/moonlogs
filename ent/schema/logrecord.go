@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-type Meta map[string]interface{}
+type Query map[string]interface{}
 
 // LogRecord holds the schema definition for the LogRecord entity.
 type LogRecord struct {
@@ -37,7 +37,8 @@ func (LogRecord) Fields() []ent.Field {
 			}
 			return nil
 		}).Immutable(),
-		field.JSON("meta", Meta{}),
+		field.JSON("query", Query{}),
+		field.String("group_hash").Immutable().Optional(),
 	}
 }
 

@@ -74,6 +74,11 @@ func SchemaID(v int) predicate.LogRecord {
 	return predicate.LogRecord(sql.FieldEQ(FieldSchemaID, v))
 }
 
+// GroupHash applies equality check predicate on the "group_hash" field. It's identical to GroupHashEQ.
+func GroupHash(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldEQ(FieldGroupHash, v))
+}
+
 // TextEQ applies the EQ predicate on the "text" field.
 func TextEQ(v string) predicate.LogRecord {
 	return predicate.LogRecord(sql.FieldEQ(FieldText, v))
@@ -282,6 +287,81 @@ func SchemaIDLT(v int) predicate.LogRecord {
 // SchemaIDLTE applies the LTE predicate on the "schema_id" field.
 func SchemaIDLTE(v int) predicate.LogRecord {
 	return predicate.LogRecord(sql.FieldLTE(FieldSchemaID, v))
+}
+
+// GroupHashEQ applies the EQ predicate on the "group_hash" field.
+func GroupHashEQ(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldEQ(FieldGroupHash, v))
+}
+
+// GroupHashNEQ applies the NEQ predicate on the "group_hash" field.
+func GroupHashNEQ(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldNEQ(FieldGroupHash, v))
+}
+
+// GroupHashIn applies the In predicate on the "group_hash" field.
+func GroupHashIn(vs ...string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldIn(FieldGroupHash, vs...))
+}
+
+// GroupHashNotIn applies the NotIn predicate on the "group_hash" field.
+func GroupHashNotIn(vs ...string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldNotIn(FieldGroupHash, vs...))
+}
+
+// GroupHashGT applies the GT predicate on the "group_hash" field.
+func GroupHashGT(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldGT(FieldGroupHash, v))
+}
+
+// GroupHashGTE applies the GTE predicate on the "group_hash" field.
+func GroupHashGTE(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldGTE(FieldGroupHash, v))
+}
+
+// GroupHashLT applies the LT predicate on the "group_hash" field.
+func GroupHashLT(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldLT(FieldGroupHash, v))
+}
+
+// GroupHashLTE applies the LTE predicate on the "group_hash" field.
+func GroupHashLTE(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldLTE(FieldGroupHash, v))
+}
+
+// GroupHashContains applies the Contains predicate on the "group_hash" field.
+func GroupHashContains(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldContains(FieldGroupHash, v))
+}
+
+// GroupHashHasPrefix applies the HasPrefix predicate on the "group_hash" field.
+func GroupHashHasPrefix(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldHasPrefix(FieldGroupHash, v))
+}
+
+// GroupHashHasSuffix applies the HasSuffix predicate on the "group_hash" field.
+func GroupHashHasSuffix(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldHasSuffix(FieldGroupHash, v))
+}
+
+// GroupHashIsNil applies the IsNil predicate on the "group_hash" field.
+func GroupHashIsNil() predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldIsNull(FieldGroupHash))
+}
+
+// GroupHashNotNil applies the NotNil predicate on the "group_hash" field.
+func GroupHashNotNil() predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldNotNull(FieldGroupHash))
+}
+
+// GroupHashEqualFold applies the EqualFold predicate on the "group_hash" field.
+func GroupHashEqualFold(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldEqualFold(FieldGroupHash, v))
+}
+
+// GroupHashContainsFold applies the ContainsFold predicate on the "group_hash" field.
+func GroupHashContainsFold(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldContainsFold(FieldGroupHash, v))
 }
 
 // And groups predicates with the AND operator between them.

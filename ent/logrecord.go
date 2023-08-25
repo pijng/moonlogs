@@ -27,8 +27,10 @@ type LogRecord struct {
 	SchemaName string `json:"schema_name,omitempty"`
 	// SchemaID holds the value of the "schema_id" field.
 	SchemaID int `json:"schema_id,omitempty"`
-	// Meta holds the value of the "meta" field.
-	Meta         schema.Meta `json:"meta,omitempty"`
+	// Query holds the value of the "query" field.
+	Query schema.Query `json:"query,omitempty"`
+	// GroupHash holds the value of the "group_hash" field.
+	GroupHash    string `json:"group_hash,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -37,11 +39,11 @@ func (*LogRecord) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case logrecord.FieldMeta:
+		case logrecord.FieldQuery:
 			values[i] = new([]byte)
 		case logrecord.FieldID, logrecord.FieldSchemaID:
 			values[i] = new(sql.NullInt64)
-		case logrecord.FieldText, logrecord.FieldSchemaName:
+		case logrecord.FieldText, logrecord.FieldSchemaName, logrecord.FieldGroupHash:
 			values[i] = new(sql.NullString)
 		case logrecord.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -90,13 +92,19 @@ func (lr *LogRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				lr.SchemaID = int(value.Int64)
 			}
-		case logrecord.FieldMeta:
+		case logrecord.FieldQuery:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field meta", values[i])
+				return fmt.Errorf("unexpected type %T for field query", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &lr.Meta); err != nil {
-					return fmt.Errorf("unmarshal field meta: %w", err)
+				if err := json.Unmarshal(*value, &lr.Query); err != nil {
+					return fmt.Errorf("unmarshal field query: %w", err)
 				}
+			}
+		case logrecord.FieldGroupHash:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field group_hash", values[i])
+			} else if value.Valid {
+				lr.GroupHash = value.String
 			}
 		default:
 			lr.selectValues.Set(columns[i], values[i])
@@ -146,8 +154,11 @@ func (lr *LogRecord) String() string {
 	builder.WriteString("schema_id=")
 	builder.WriteString(fmt.Sprintf("%v", lr.SchemaID))
 	builder.WriteString(", ")
-	builder.WriteString("meta=")
-	builder.WriteString(fmt.Sprintf("%v", lr.Meta))
+	builder.WriteString("query=")
+	builder.WriteString(fmt.Sprintf("%v", lr.Query))
+	builder.WriteString(", ")
+	builder.WriteString("group_hash=")
+	builder.WriteString(lr.GroupHash)
 	builder.WriteByte(')')
 	return builder.String()
 }

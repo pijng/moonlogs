@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"hash/fnv"
 	"moonlogs/api/server/util"
 	"moonlogs/ent"
 	"moonlogs/internal/repository"
@@ -21,20 +22,31 @@ func LogRecordCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(newLogRecord.Meta) == 0 {
-		error := fmt.Errorf("`meta` field is required")
+	if len(newLogRecord.Query) == 0 {
+		error := fmt.Errorf("`query` field is required")
 		util.Return(w, false, http.StatusBadRequest, error, nil)
 		return
 	}
 
-	fmt.Println(newLogRecord.SchemaName)
 	logSchema, err := repository.NewLogSchemaRepository(r.Context()).GetByName(newLogRecord.SchemaName)
 	if err != nil {
 		util.Return(w, false, http.StatusInternalServerError, err, nil)
 		return
 	}
 
-	createdLogRecord, err := repository.NewLogRecordRepository(r.Context()).Create(newLogRecord, logSchema.ID)
+	bytes, err := json.Marshal(newLogRecord.Query)
+	if err != nil {
+		util.Return(w, false, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	hasher := fnv.New64a()
+	hasher.Write(bytes)
+	hashSum := hasher.Sum64()
+
+	groupHash := fmt.Sprint(hashSum)
+
+	createdLogRecord, err := repository.NewLogRecordRepository(r.Context()).Create(newLogRecord, logSchema.ID, groupHash)
 	if err != nil {
 		util.Return(w, false, http.StatusInternalServerError, err, nil)
 		return
@@ -74,7 +86,7 @@ func LogRecordGetById(w http.ResponseWriter, r *http.Request) {
 	util.Return(w, true, http.StatusOK, nil, logRecord)
 }
 
-func LogRecordGetByMeta(w http.ResponseWriter, r *http.Request) {
+func LogRecordGetByQuery(w http.ResponseWriter, r *http.Request) {
 	limit, offset := util.Pagination(r)
 
 	var newLogRecord ent.LogRecord
@@ -87,11 +99,26 @@ func LogRecordGetByMeta(w http.ResponseWriter, r *http.Request) {
 
 	logRecord, err := repository.
 		NewLogRecordRepository(r.Context()).
-		GetBySchemaAndMeta(newLogRecord.SchemaID, newLogRecord.SchemaName, newLogRecord.Meta, limit, offset)
+		GetBySchemaAndQuery(newLogRecord.SchemaID, newLogRecord.SchemaName, newLogRecord.Text, newLogRecord.Query, limit, offset)
+
 	if err != nil {
 		util.Return(w, false, http.StatusNotFound, err, nil)
 		return
 	}
 
 	util.Return(w, true, http.StatusOK, nil, logRecord)
+}
+
+func LogRecordsByGroupHash(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupHash := vars["hash"]
+	schemaName := vars["schemaName"]
+
+	logRecords, err := repository.NewLogRecordRepository(r.Context()).GetByGroupHash(schemaName, groupHash)
+	if err != nil {
+		util.Return(w, false, http.StatusNotFound, err, nil)
+		return
+	}
+
+	util.Return(w, true, http.StatusOK, nil, logRecords)
 }

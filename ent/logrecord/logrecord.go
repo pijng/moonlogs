@@ -21,8 +21,10 @@ const (
 	FieldSchemaName = "schema_name"
 	// FieldSchemaID holds the string denoting the schema_id field in the database.
 	FieldSchemaID = "schema_id"
-	// FieldMeta holds the string denoting the meta field in the database.
-	FieldMeta = "meta"
+	// FieldQuery holds the string denoting the query field in the database.
+	FieldQuery = "query"
+	// FieldGroupHash holds the string denoting the group_hash field in the database.
+	FieldGroupHash = "group_hash"
 	// Table holds the table name of the logrecord in the database.
 	Table = "log_records"
 )
@@ -34,7 +36,8 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldSchemaName,
 	FieldSchemaID,
-	FieldMeta,
+	FieldQuery,
+	FieldGroupHash,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -84,4 +87,9 @@ func BySchemaName(opts ...sql.OrderTermOption) OrderOption {
 // BySchemaID orders the results by the schema_id field.
 func BySchemaID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSchemaID, opts...).ToFunc()
+}
+
+// ByGroupHash orders the results by the group_hash field.
+func ByGroupHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGroupHash, opts...).ToFunc()
 }

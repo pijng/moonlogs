@@ -53,9 +53,23 @@ func (lrc *LogRecordCreate) SetSchemaID(i int) *LogRecordCreate {
 	return lrc
 }
 
-// SetMeta sets the "meta" field.
-func (lrc *LogRecordCreate) SetMeta(s schema.Meta) *LogRecordCreate {
-	lrc.mutation.SetMeta(s)
+// SetQuery sets the "query" field.
+func (lrc *LogRecordCreate) SetQuery(s schema.Query) *LogRecordCreate {
+	lrc.mutation.SetQuery(s)
+	return lrc
+}
+
+// SetGroupHash sets the "group_hash" field.
+func (lrc *LogRecordCreate) SetGroupHash(s string) *LogRecordCreate {
+	lrc.mutation.SetGroupHash(s)
+	return lrc
+}
+
+// SetNillableGroupHash sets the "group_hash" field if the given value is not nil.
+func (lrc *LogRecordCreate) SetNillableGroupHash(s *string) *LogRecordCreate {
+	if s != nil {
+		lrc.SetGroupHash(*s)
+	}
 	return lrc
 }
 
@@ -129,8 +143,8 @@ func (lrc *LogRecordCreate) check() error {
 			return &ValidationError{Name: "schema_id", err: fmt.Errorf(`ent: validator failed for field "LogRecord.schema_id": %w`, err)}
 		}
 	}
-	if _, ok := lrc.mutation.Meta(); !ok {
-		return &ValidationError{Name: "meta", err: errors.New(`ent: missing required field "LogRecord.meta"`)}
+	if _, ok := lrc.mutation.Query(); !ok {
+		return &ValidationError{Name: "query", err: errors.New(`ent: missing required field "LogRecord.query"`)}
 	}
 	return nil
 }
@@ -174,9 +188,13 @@ func (lrc *LogRecordCreate) createSpec() (*LogRecord, *sqlgraph.CreateSpec) {
 		_spec.SetField(logrecord.FieldSchemaID, field.TypeInt, value)
 		_node.SchemaID = value
 	}
-	if value, ok := lrc.mutation.Meta(); ok {
-		_spec.SetField(logrecord.FieldMeta, field.TypeJSON, value)
-		_node.Meta = value
+	if value, ok := lrc.mutation.Query(); ok {
+		_spec.SetField(logrecord.FieldQuery, field.TypeJSON, value)
+		_node.Query = value
+	}
+	if value, ok := lrc.mutation.GroupHash(); ok {
+		_spec.SetField(logrecord.FieldGroupHash, field.TypeString, value)
+		_node.GroupHash = value
 	}
 	return _node, _spec
 }

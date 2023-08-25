@@ -41,7 +41,8 @@ type LogRecordMutation struct {
 	schema_name   *string
 	schema_id     *int
 	addschema_id  *int
-	meta          *schema.Meta
+	query         *schema.Query
+	group_hash    *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*LogRecord, error)
@@ -310,40 +311,89 @@ func (m *LogRecordMutation) ResetSchemaID() {
 	m.addschema_id = nil
 }
 
-// SetMeta sets the "meta" field.
-func (m *LogRecordMutation) SetMeta(s schema.Meta) {
-	m.meta = &s
+// SetQuery sets the "query" field.
+func (m *LogRecordMutation) SetQuery(s schema.Query) {
+	m.query = &s
 }
 
-// Meta returns the value of the "meta" field in the mutation.
-func (m *LogRecordMutation) Meta() (r schema.Meta, exists bool) {
-	v := m.meta
+// Query returns the value of the "query" field in the mutation.
+func (m *LogRecordMutation) Query() (r schema.Query, exists bool) {
+	v := m.query
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMeta returns the old "meta" field's value of the LogRecord entity.
+// OldQuery returns the old "query" field's value of the LogRecord entity.
 // If the LogRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LogRecordMutation) OldMeta(ctx context.Context) (v schema.Meta, err error) {
+func (m *LogRecordMutation) OldQuery(ctx context.Context) (v schema.Query, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
+		return v, errors.New("OldQuery is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMeta requires an ID field in the mutation")
+		return v, errors.New("OldQuery requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMeta: %w", err)
+		return v, fmt.Errorf("querying old value for OldQuery: %w", err)
 	}
-	return oldValue.Meta, nil
+	return oldValue.Query, nil
 }
 
-// ResetMeta resets all changes to the "meta" field.
-func (m *LogRecordMutation) ResetMeta() {
-	m.meta = nil
+// ResetQuery resets all changes to the "query" field.
+func (m *LogRecordMutation) ResetQuery() {
+	m.query = nil
+}
+
+// SetGroupHash sets the "group_hash" field.
+func (m *LogRecordMutation) SetGroupHash(s string) {
+	m.group_hash = &s
+}
+
+// GroupHash returns the value of the "group_hash" field in the mutation.
+func (m *LogRecordMutation) GroupHash() (r string, exists bool) {
+	v := m.group_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupHash returns the old "group_hash" field's value of the LogRecord entity.
+// If the LogRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LogRecordMutation) OldGroupHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupHash: %w", err)
+	}
+	return oldValue.GroupHash, nil
+}
+
+// ClearGroupHash clears the value of the "group_hash" field.
+func (m *LogRecordMutation) ClearGroupHash() {
+	m.group_hash = nil
+	m.clearedFields[logrecord.FieldGroupHash] = struct{}{}
+}
+
+// GroupHashCleared returns if the "group_hash" field was cleared in this mutation.
+func (m *LogRecordMutation) GroupHashCleared() bool {
+	_, ok := m.clearedFields[logrecord.FieldGroupHash]
+	return ok
+}
+
+// ResetGroupHash resets all changes to the "group_hash" field.
+func (m *LogRecordMutation) ResetGroupHash() {
+	m.group_hash = nil
+	delete(m.clearedFields, logrecord.FieldGroupHash)
 }
 
 // Where appends a list predicates to the LogRecordMutation builder.
@@ -380,7 +430,7 @@ func (m *LogRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LogRecordMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.text != nil {
 		fields = append(fields, logrecord.FieldText)
 	}
@@ -393,8 +443,11 @@ func (m *LogRecordMutation) Fields() []string {
 	if m.schema_id != nil {
 		fields = append(fields, logrecord.FieldSchemaID)
 	}
-	if m.meta != nil {
-		fields = append(fields, logrecord.FieldMeta)
+	if m.query != nil {
+		fields = append(fields, logrecord.FieldQuery)
+	}
+	if m.group_hash != nil {
+		fields = append(fields, logrecord.FieldGroupHash)
 	}
 	return fields
 }
@@ -412,8 +465,10 @@ func (m *LogRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.SchemaName()
 	case logrecord.FieldSchemaID:
 		return m.SchemaID()
-	case logrecord.FieldMeta:
-		return m.Meta()
+	case logrecord.FieldQuery:
+		return m.Query()
+	case logrecord.FieldGroupHash:
+		return m.GroupHash()
 	}
 	return nil, false
 }
@@ -431,8 +486,10 @@ func (m *LogRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldSchemaName(ctx)
 	case logrecord.FieldSchemaID:
 		return m.OldSchemaID(ctx)
-	case logrecord.FieldMeta:
-		return m.OldMeta(ctx)
+	case logrecord.FieldQuery:
+		return m.OldQuery(ctx)
+	case logrecord.FieldGroupHash:
+		return m.OldGroupHash(ctx)
 	}
 	return nil, fmt.Errorf("unknown LogRecord field %s", name)
 }
@@ -470,12 +527,19 @@ func (m *LogRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSchemaID(v)
 		return nil
-	case logrecord.FieldMeta:
-		v, ok := value.(schema.Meta)
+	case logrecord.FieldQuery:
+		v, ok := value.(schema.Query)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMeta(v)
+		m.SetQuery(v)
+		return nil
+	case logrecord.FieldGroupHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupHash(v)
 		return nil
 	}
 	return fmt.Errorf("unknown LogRecord field %s", name)
@@ -521,7 +585,11 @@ func (m *LogRecordMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *LogRecordMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(logrecord.FieldGroupHash) {
+		fields = append(fields, logrecord.FieldGroupHash)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -534,6 +602,11 @@ func (m *LogRecordMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *LogRecordMutation) ClearField(name string) error {
+	switch name {
+	case logrecord.FieldGroupHash:
+		m.ClearGroupHash()
+		return nil
+	}
 	return fmt.Errorf("unknown LogRecord nullable field %s", name)
 }
 
@@ -553,8 +626,11 @@ func (m *LogRecordMutation) ResetField(name string) error {
 	case logrecord.FieldSchemaID:
 		m.ResetSchemaID()
 		return nil
-	case logrecord.FieldMeta:
-		m.ResetMeta()
+	case logrecord.FieldQuery:
+		m.ResetQuery()
+		return nil
+	case logrecord.FieldGroupHash:
+		m.ResetGroupHash()
 		return nil
 	}
 	return fmt.Errorf("unknown LogRecord field %s", name)

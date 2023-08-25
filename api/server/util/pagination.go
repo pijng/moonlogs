@@ -12,6 +12,10 @@ func Pagination(r *http.Request) (int, int) {
 	page, _ := strconv.Atoi(pageStr)
 	limit, _ := strconv.Atoi(limitStr)
 
+	if limit == 0 {
+		limit = 250
+	}
+
 	offset := (page - 1) * limit
 
 	return limit, offset

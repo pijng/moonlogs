@@ -28,9 +28,9 @@ func (lru *LogRecordUpdate) Where(ps ...predicate.LogRecord) *LogRecordUpdate {
 	return lru
 }
 
-// SetMeta sets the "meta" field.
-func (lru *LogRecordUpdate) SetMeta(s schema.Meta) *LogRecordUpdate {
-	lru.mutation.SetMeta(s)
+// SetQuery sets the "query" field.
+func (lru *LogRecordUpdate) SetQuery(s schema.Query) *LogRecordUpdate {
+	lru.mutation.SetQuery(s)
 	return lru
 }
 
@@ -75,8 +75,11 @@ func (lru *LogRecordUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := lru.mutation.Meta(); ok {
-		_spec.SetField(logrecord.FieldMeta, field.TypeJSON, value)
+	if value, ok := lru.mutation.Query(); ok {
+		_spec.SetField(logrecord.FieldQuery, field.TypeJSON, value)
+	}
+	if lru.mutation.GroupHashCleared() {
+		_spec.ClearField(logrecord.FieldGroupHash, field.TypeString)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, lru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -98,9 +101,9 @@ type LogRecordUpdateOne struct {
 	mutation *LogRecordMutation
 }
 
-// SetMeta sets the "meta" field.
-func (lruo *LogRecordUpdateOne) SetMeta(s schema.Meta) *LogRecordUpdateOne {
-	lruo.mutation.SetMeta(s)
+// SetQuery sets the "query" field.
+func (lruo *LogRecordUpdateOne) SetQuery(s schema.Query) *LogRecordUpdateOne {
+	lruo.mutation.SetQuery(s)
 	return lruo
 }
 
@@ -175,8 +178,11 @@ func (lruo *LogRecordUpdateOne) sqlSave(ctx context.Context) (_node *LogRecord, 
 			}
 		}
 	}
-	if value, ok := lruo.mutation.Meta(); ok {
-		_spec.SetField(logrecord.FieldMeta, field.TypeJSON, value)
+	if value, ok := lruo.mutation.Query(); ok {
+		_spec.SetField(logrecord.FieldQuery, field.TypeJSON, value)
+	}
+	if lruo.mutation.GroupHashCleared() {
+		_spec.ClearField(logrecord.FieldGroupHash, field.TypeString)
 	}
 	_node = &LogRecord{config: lruo.config}
 	_spec.Assign = _node.assignValues
