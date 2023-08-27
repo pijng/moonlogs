@@ -1,10 +1,10 @@
-import { Event, Store, createStore, sample } from "effector";
+import { Event, Store } from "effector";
 import { h, spec } from "forest";
 
-export const Search = (inputChanged: Event<string>, $searchQuery: Store<string>) => {
+export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) => {
   h("div", () => {
     spec({
-      classList: ["pb-4", "bg-white", "dark:bg-gray-900", "max-w-xl"],
+      classList: ["bg-white", "dark:bg-gray-900", "max-w-xl", "py-3"],
     });
 
     h("label", {
@@ -41,18 +41,12 @@ export const Search = (inputChanged: Event<string>, $searchQuery: Store<string>)
         });
       });
 
-      const $localSearchValue = createStore("");
-      sample({
-        source: $searchQuery,
-        target: $localSearchValue,
-      });
-
       h("input", {
         attr: {
           type: "text",
           id: "table-search",
           placeholder: "Search",
-          value: $localSearchValue,
+          value: searchQuery,
         },
         handler: {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -1,3 +1,4 @@
+import { logModel } from "@/entities/log";
 import { createHistoryRouter, createRoute, createRouterControls } from "atomic-router";
 import { createLink, linkRouter } from "atomic-router-forest";
 import { createEvent, sample } from "effector";
@@ -19,9 +20,10 @@ const history = createBrowserHistory();
 export const controls = createRouterControls();
 export const router = createHistoryRouter({ routes: ROUTES, controls });
 
-router.$history.watch((h) => console.log("HISTORY", h));
-router.$path.watch((p) => console.log("PATH", p));
-router.$activeRoutes.watch((ar) => console.log("ACTIVE ROUTES", ar));
+sample({
+  clock: logsRoute.closed,
+  target: logModel.effects.reset,
+});
 
 // This event need to setup initial configuration. You can move it into src/shared
 export const appMounted = createEvent();

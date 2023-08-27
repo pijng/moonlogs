@@ -1,2 +1,2 @@
-export { searchLogsRoute, logsLoadedRoute } from "./log";
-export { schemasLoadedRoute } from "./schema";
+export * from "./log";
+export * from "./schema";

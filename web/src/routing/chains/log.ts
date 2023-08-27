@@ -2,17 +2,22 @@ import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { controls, logsRoute, showLogRoute } from "@/routing/shared";
 import { chainRoute, querySync } from "atomic-router";
+import { combine } from "effector";
 import { debounce } from "patronum";
 
-export const logsLoadedRoute = chainRoute({
+chainRoute({
   route: logsRoute,
   beforeOpen: {
     effect: logModel.effects.queryLogsFx,
-    mapParams: (route) => ({ schema_name: route.params.schemaName, text: route.query.q }),
+    mapParams: (route) => ({
+      schema_name: route.params.schemaName,
+      text: route.query.q,
+      query: route.query.f,
+    }),
   },
 });
 
-export const schemasLoadedRoute = chainRoute({
+chainRoute({
   route: logsRoute,
   beforeOpen: {
     effect: schemaModel.effects.getSchemasFx,
@@ -20,17 +25,25 @@ export const schemasLoadedRoute = chainRoute({
   },
 });
 
-export const searchLogsRoute = querySync({
-  source: { q: logModel.$searchQuery },
-  clock: debounce({ source: logModel.$searchQuery, timeout: 300 }),
-  route: logsRoute,
-  controls: controls,
+chainRoute({
+  route: showLogRoute,
+  beforeOpen: {
+    effect: schemaModel.effects.getSchemasFx,
+    mapParams: () => ({}),
+  },
 });
 
-export const showLogLoadedRoute = chainRoute({
+chainRoute({
   route: showLogRoute,
   beforeOpen: {
     effect: logModel.effects.getLogGroupFx,
     mapParams: (route) => ({ schema_name: route.params.schemaName, hash: route.params.hash }),
   },
+});
+
+querySync({
+  source: { q: logModel.$searchQuery, f: logModel.$formattedSearchFilter },
+  clock: debounce({ source: combine(logModel.$searchQuery, logModel.$formattedSearchFilter), timeout: 300 }),
+  route: logsRoute,
+  controls: controls,
 });

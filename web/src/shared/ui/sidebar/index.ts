@@ -1,11 +1,36 @@
 import { homeRoute } from "@/routing";
 import { RouteInstance } from "atomic-router";
-import { createEvent, sample } from "effector";
+import { createEvent, createStore, restore, sample } from "effector";
 import { h, spec } from "forest";
+import { layoutClicked } from "..";
+
+const sidebarToggled = createEvent<any>();
+const $isOpened = createStore(false);
+
+sample({
+  source: $isOpened,
+  clock: sidebarToggled,
+  fn: (state) => !state,
+  target: $isOpened,
+});
+
+sample({
+  source: [$isOpened, restore(sidebarToggled, null)],
+  clock: layoutClicked,
+  filter: ([isOpened, clicked], layoutClicked) => {
+    const path = layoutClicked.composedPath();
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return !path.includes(clicked?.currentTarget) && !layoutClicked.target.closest("aside") && isOpened;
+  },
+  target: sidebarToggled,
+});
 
 export const SidebarButton = () => {
   h("button", () => {
     spec({
+      handler: { on: { click: sidebarToggled } },
       attr: {
         "data-drawer-target": "default-sidebar",
         "data-drawer-toggle": "default-sidebar",
@@ -58,17 +83,17 @@ export const Sidebar = () => {
   h("aside", () => {
     spec({
       attr: { id: "default-sidebar", "aria-label": "Sidebar" },
-      classList: [
-        "fixed",
-        "top-0",
-        "left-0",
-        "z-40",
-        "w-64",
-        "h-screen",
-        "transition-transform",
-        "-translate-x-full",
-        "sm:translate-x-0",
-      ],
+      classList: {
+        fixed: true,
+        "top-0": true,
+        "left-0": true,
+        "z-40": true,
+        "w-64": true,
+        "h-screen": true,
+        "transition-transform": true,
+        "-translate-x-full": $isOpened.map((s) => !s),
+        "sm:translate-x-0": $isOpened.map((s) => !s),
+      },
     });
 
     h("div", () => {

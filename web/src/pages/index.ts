@@ -1,7 +1,7 @@
 import { Layout } from "@/shared/ui";
 import { HomePage } from "./home";
-import { LogsListPage } from "./logs-list";
 import { ShowLogPage } from "./log";
+import { LogsListPage } from "./logs-list";
 
 export function Pages() {
   Layout(() => {

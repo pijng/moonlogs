@@ -2,7 +2,7 @@ import { chainRoute } from "atomic-router";
 import { schemaModel } from "@/entities/schema";
 import { homeRoute } from "@/routing/shared";
 
-export const schemasLoadedRoute = chainRoute({
+chainRoute({
   route: homeRoute,
   beforeOpen: {
     effect: schemaModel.effects.getSchemasFx,

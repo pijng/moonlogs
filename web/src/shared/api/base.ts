@@ -15,10 +15,10 @@ export const baseRequest = async ({
 }) => {
   try {
     const response = await fetch(`${BASE_URL}${url}`, {
-      referrerPolicy: "origin",
       method,
+      referrerPolicy: "origin-when-cross-origin",
       body,
-      headers: { "Content-Type": "application/json", ...headers },
+      headers: { ...headers },
     });
 
     const responseText = await response.clone().text();
