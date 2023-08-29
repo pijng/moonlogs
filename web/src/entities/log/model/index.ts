@@ -25,24 +25,35 @@ $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
   return JSON.stringify(newFilter);
 });
 
+const pageChanged = createEvent<string>();
+export const $currentPage = createStore("1")
+  .on(pageChanged, (_, newPage) => newPage)
+  .reset([$searchQuery, $formattedSearchFilter]);
+
 const getLogsFx = createEffect((schema_name: string) => {
   return getLogs({ schema_name: schema_name });
 });
 
-const queryLogsFx = createEffect(({ schema_name, text, query }: { schema_name: string; text?: string; query?: string }) => {
-  const objectQuery = JSON.parse(query || "{}");
-  const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => (v ? { ...acc, [k]: v } : acc), {});
-  return getLogs({ schema_name: schema_name, text: text, query: formattedQuery });
-});
+const queryLogsFx = createEffect(
+  ({ schema_name, text, query, page }: { schema_name: string; text?: string; query?: string; page?: number }) => {
+    const objectQuery = JSON.parse(query || "{}");
+    const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => (v ? { ...acc, [k]: v } : acc), {});
+    return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, page: page });
+  },
+);
 
 const getLogGroupFx = createEffect(({ schema_name, hash }: { schema_name: string; hash: string }) => {
   return getLogGroup({ schema_name: schema_name, hash: hash });
 });
 
 export const $logs = createStore<Log[]>([])
-  .on(getLogsFx.doneData, (_, logs) => logs)
-  .on(queryLogsFx.doneData, (_, logs) => logs)
+  .on(getLogsFx.doneData, (_, logsResponse) => logsResponse.data)
+  .on(queryLogsFx.doneData, (_, logsResponse) => logsResponse.data)
   .reset(reset);
+
+export const $pages = createStore(0)
+  .on(getLogsFx.doneData, (_, logsResponse) => logsResponse.meta.pages)
+  .on(queryLogsFx.doneData, (_, logsResponse) => logsResponse.meta.pages);
 
 export const $groupedLogs = createStore<LogsGroup>({
   tags: [],
@@ -54,17 +65,19 @@ export const $groupedLogs = createStore<LogsGroup>({
 
 sample({
   source: getLogGroupFx.doneData,
-  fn: (newLogs) => {
+  fn: (logsResponse) => {
+    const logs = logsResponse.data;
+
     const intl = Intl.DateTimeFormat(getLocale(), DATEFORMAT_OPTIONS);
     const logsGroup: LogsGroup = {
-      tags: Object.entries(newLogs[0]?.query).map((q) => `${q[0]}: ${q[1]}`),
-      schema_name: newLogs[0]?.schema_name,
-      group_hash: newLogs[0]?.group_hash,
+      tags: Object.entries(logs[0]?.query).map((q) => `${q[0]}: ${q[1]}`),
+      schema_name: logs[0]?.schema_name,
+      group_hash: logs[0]?.group_hash,
       logs: [],
       formattedLogs: [],
     };
 
-    logsGroup.logs = newLogs.map((log) => {
+    logsGroup.logs = logs.map((log) => {
       return { ...log, created_at: intl.format(new Date(log.created_at)) };
     });
 
@@ -117,4 +130,5 @@ export const events = {
   filterChanged,
   resetFilter,
   resetSearch,
+  pageChanged,
 };

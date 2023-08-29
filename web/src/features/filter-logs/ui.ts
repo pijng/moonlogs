@@ -11,22 +11,23 @@ export type FilterItem = {
 };
 
 export const Filter = (items: Store<FilterItem[]>, filterChanged: Event<Record<string, any>>) => {
+  const $filtersApplied = items.map((items) => items.filter((item) => item.value.trim().length > 0).length > 0);
+  $filtersApplied.watch(console.log);
+
+  Button({
+    text: "Filter",
+    variant: $filtersApplied.map((state) => (state ? "default" : "alternative")),
+    size: "small",
+    event: filterClicked,
+    preIcon: FilterIcon,
+    postIcon: DownIcon,
+  });
+
   h("div", () => {
-    Button({
-      text: "Filter",
-      variant: "alternative",
-      size: "small",
-      event: filterClicked,
-      preIcon: FilterIcon,
-      postIcon: DownIcon,
+    spec({
+      visible: $filterIsOpened,
     });
 
-    h("div", () => {
-      spec({
-        visible: $filterIsOpened,
-      });
-
-      Dropdown(items, filterChanged);
-    });
+    Dropdown(items, filterChanged);
   });
 };

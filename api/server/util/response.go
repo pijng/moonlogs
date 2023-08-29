@@ -10,14 +10,22 @@ type Response struct {
 	Success bool        `json:"success"`
 	Error   string      `json:"error"`
 	Data    interface{} `json:"data"`
+	Meta    Meta        `json:"meta"`
 }
 
-func Return(w http.ResponseWriter, success bool, code int, err error, data interface{}) {
+type Meta struct {
+	Page  int `json:"page"`
+	Count int `json:"count"`
+	Pages int `json:"pages"`
+}
+
+func Return(w http.ResponseWriter, success bool, code int, err error, data interface{}, meta Meta) {
 	response := Response{
 		Success: success,
 		Code:    code,
 		Error:   "",
 		Data:    data,
+		Meta:    meta,
 	}
 
 	if err != nil {

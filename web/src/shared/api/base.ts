@@ -31,8 +31,8 @@ export const baseRequest = async ({
 
     const jsonResponse = JSON.parse(responseText);
 
-    console.log(jsonResponse.data);
-    return jsonResponse.data;
+    console.log(jsonResponse);
+    return jsonResponse;
   } catch (error) {
     console.log(error);
   }

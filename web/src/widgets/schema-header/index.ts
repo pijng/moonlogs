@@ -1,10 +1,11 @@
 import { schemaModel } from "@/entities/schema";
-import { logsRoute } from "@/routing";
+import { router } from "@/routing";
 import { combine } from "effector";
 import { h } from "forest";
 
-const $schema = combine([logsRoute.$params, schemaModel.$schemas], ([params, schemas]) => {
-  return schemas.find((s) => s.name === params.schemaName) || null;
+const $schema = combine([router.$activeRoutes, schemaModel.$schemas], ([activeRoutes, schemas]) => {
+  const schemaName = activeRoutes[0]?.$params.getState().schemaName;
+  return schemas.find((s) => s.name === schemaName) || null;
 });
 
 const $schemaTitle = $schema.map((s) => s?.title || "");

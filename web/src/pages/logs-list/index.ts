@@ -3,6 +3,8 @@ import { h, spec } from "forest";
 
 import { logsRoute } from "@/routing/shared";
 import { LogsList, SchemaHeader, SearchBar } from "@/widgets";
+import { Pagination } from "@/shared/ui";
+import { logModel } from "@/entities/log";
 
 export const LogsListPage = () => {
   h("div", () => {
@@ -18,6 +20,7 @@ export const LogsListPage = () => {
       });
 
       SearchBar();
+      Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
       LogsList();
     });
   });

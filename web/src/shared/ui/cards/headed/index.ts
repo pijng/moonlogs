@@ -1,21 +1,8 @@
-import { RouteInstance, createRoute } from "atomic-router";
 import { Store, createStore } from "effector";
 import { h, list, spec } from "forest";
-import { Button } from "@/shared/ui";
-import { Link } from "@/routing";
+import { Button, ButtonVariant } from "@/shared/ui";
 
-export const CardHeaded = ({
-  tags,
-  content,
-  routeConfig,
-}: {
-  tags: Store<string[]>;
-  content: () => void;
-  routeConfig?: {
-    route: RouteInstance<any>;
-    payload: Store<Record<string, any>>;
-  };
-}) => {
+export const CardHeaded = ({ tags, content, href }: { tags: Store<string[]>; content: () => void; href?: Store<string> }) => {
   h("div", () => {
     spec({
       classList: [
@@ -95,19 +82,15 @@ export const CardHeaded = ({
 
       h("div", () => {
         spec({
-          visible: createStore(Boolean(routeConfig)),
+          visible: createStore(Boolean(href)),
           classList: ["basis-1/12", "p-4", "min-w-fit", "border-l", "border-gray-200", "dark:border-gray-700"],
         });
 
-        const route = routeConfig?.route ?? createRoute();
-        const $payload = routeConfig?.payload ?? createStore<Record<string, any>>({});
-
-        Link(route, {
-          params: $payload,
-          attr: { target: "_blank" },
-          fn() {
-            Button({ text: "Open", variant: "default", size: "extra_small" });
-          },
+        h("a", () => {
+          spec({
+            attr: { href: href || "" },
+          });
+          Button({ text: "Open", variant: createStore<ButtonVariant>("default"), size: "extra_small" });
         });
       });
     });

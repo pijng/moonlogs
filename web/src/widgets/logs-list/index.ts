@@ -1,5 +1,4 @@
 import { logModel } from "@/entities/log";
-import { showLogRoute } from "@/routing/shared";
 import { CardHeaded, Table } from "@/shared/ui";
 import { createStore } from "effector";
 import { h, list, spec } from "forest";
@@ -13,10 +12,7 @@ export const LogsList = () => {
     list(logModel.$logsGroups, ({ store: group }) => {
       CardHeaded({
         tags: group.map((g) => g.tags),
-        routeConfig: {
-          route: showLogRoute,
-          payload: group.map((g) => ({ schemaName: g.schema_name, hash: g.group_hash }) as Record<string, any>),
-        },
+        href: group.map((g) => `${g.schema_name}/${g.group_hash}`),
         content: () => {
           Table({
             columns: createStore(["Time", "Text"]),

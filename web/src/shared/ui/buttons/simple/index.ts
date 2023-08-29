@@ -1,16 +1,17 @@
-import { Event, createEvent } from "effector";
-import { h, spec } from "forest";
+import { Event, Store, createEvent, restore, sample } from "effector";
+import { ClassListArray, h, node, spec } from "forest";
 
-type Variant = "default" | "alternative";
+export type ButtonVariant = "default" | "alternative";
 type Size = "base" | "small" | "extra_small";
 
 const BASE_CLASSES = ["inline-flex", "items-center"];
 
-const VARIANTS: Record<Variant, string[]> = {
+const VARIANTS: Record<ButtonVariant, string[]> = {
   default: [
     "block",
     "text-white",
     "bg-blue-700",
+    "border",
     "hover:bg-blue-800",
     "font-medium",
     "rounded-lg",
@@ -42,8 +43,11 @@ const SIZES: Record<Size, string[]> = {
   extra_small: ["px-3", "py-2", "text-xs"],
 };
 
-const buttonClass = (variant: Variant, size: Size): string[] => {
-  return BASE_CLASSES.concat(VARIANTS[variant].concat(SIZES[size]));
+const buttonClass = (variant: Store<ButtonVariant>, size: Size): Store<string> => {
+  const $currentVariant = variant.map((variant) => VARIANTS[variant]);
+  const $sumClasses = $currentVariant.map((variant) => BASE_CLASSES.concat(variant).concat(SIZES[size]));
+
+  return $sumClasses.map((classes) => classes.join(" "));
 };
 
 export const Button = ({
@@ -56,11 +60,12 @@ export const Button = ({
 }: {
   text: string;
   event?: Event<any>;
-  variant: Variant;
+  variant: Store<ButtonVariant>;
   size: Size;
   preIcon?: () => void;
   postIcon?: () => void;
 }) => {
+  variant.watch((v) => console.log("VARITN", v));
   const localPreIcon =
     preIcon ||
     function () {
@@ -76,12 +81,29 @@ export const Button = ({
   h("button", () => {
     localPreIcon();
 
+    const touchClasses = createEvent<string>();
+    const $classes = restore(touchClasses, "");
+
     spec({
       handler: { click: event ?? createEvent() },
-      classList: buttonClass(variant, size),
+      classList: [$classes] as ClassListArray,
       text: text,
     });
 
     localPostIcon();
+
+    const touch = createEvent();
+
+    sample({
+      clock: [touch, variant],
+      source: buttonClass(variant, size),
+      target: touchClasses,
+    });
+
+    // Hack to apply classes from store
+    // https://github.com/effector/effector/issues/964
+    node(() => {
+      touch();
+    });
   });
 };

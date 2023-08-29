@@ -11,10 +11,19 @@ export type Schema = {
   }[];
 };
 
-export const getSchemas = (): Promise<Schema[]> => {
+export type SchemasReponse = {
+  data: Schema[];
+  meta: {
+    page: number;
+    count: number;
+    per_page: number;
+  };
+};
+
+export const getSchemas = (): Promise<SchemasReponse> => {
   return get({ url: "/api/schemas", headers: {} });
 };
 
-export const querySchemas = (query: Record<string, any>): Promise<Schema[]> => {
+export const querySchemas = (query: Record<string, any>): Promise<SchemasReponse> => {
   return post({ url: "/api/schemas/search", headers: {}, body: JSON.stringify(query) });
 };

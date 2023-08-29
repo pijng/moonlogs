@@ -100,3 +100,32 @@ func (r *LogRecordRepository) GetByGroupHash(schemaName string, groupHash string
 
 	return lr, nil
 }
+
+func (r *LogRecordRepository) GetCountBySchemaAndQuery(schemaName string, text string, query schema.Query) (int, error) {
+	count, err := r.client.LogRecord.
+		Query().
+		Where(logrecord.SchemaName(schemaName), logrecord.TextContains(text)).
+		Where(predicate.LogRecord(func(s *sql.Selector) {
+			for name, value := range query {
+				s.Where(sqljson.ValueContains(logrecord.FieldQuery, value, sqljson.Path(name)))
+			}
+		})).
+		Count(r.ctx)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed querying log_record: %w", err)
+	}
+
+	return count, nil
+}
+
+func (r *LogRecordRepository) GetCountAll() (int, error) {
+	count, err := r.client.LogRecord.
+		Query().Count(r.ctx)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed querying log_record: %w", err)
+	}
+
+	return count, nil
+}

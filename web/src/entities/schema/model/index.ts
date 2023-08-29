@@ -10,8 +10,8 @@ const querySchemasFx = createEffect((query: Record<string, any>) => {
 });
 
 export const $schemas = createStore<Schema[]>([])
-  .on(getSchemasFx.doneData, (_, schemas) => schemas)
-  .on(querySchemasFx.doneData, (_, schemas) => schemas);
+  .on(getSchemasFx.doneData, (_, schemasResponse) => schemasResponse.data)
+  .on(querySchemasFx.doneData, (_, schemasResponse) => schemasResponse.data);
 
 export const $searchQuery = createStore("");
 const queryChanged = createEvent<string>();
