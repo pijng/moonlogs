@@ -46,7 +46,7 @@ querySync({
   source: { q: logModel.$searchQuery, f: logModel.$formattedSearchFilter, p: logModel.$currentPage },
   clock: debounce({
     source: combine(logModel.$searchQuery, logModel.$formattedSearchFilter, logModel.$currentPage),
-    timeout: 300,
+    timeout: 100,
   }),
   route: logsRoute,
   controls: controls,

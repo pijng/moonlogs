@@ -12,7 +12,6 @@ export type FilterItem = {
 
 export const Filter = (items: Store<FilterItem[]>, filterChanged: Event<Record<string, any>>) => {
   const $filtersApplied = items.map((items) => items.filter((item) => item.value.trim().length > 0).length > 0);
-  $filtersApplied.watch(console.log);
 
   Button({
     text: "Filter",

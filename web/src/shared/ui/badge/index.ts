@@ -20,17 +20,18 @@ export const LevelBadge = (text: Store<string>) => {
   h("span", () => {
     const touchClasses = createEvent<string>();
     const $classes = restore(touchClasses, "");
-    const touch = createEvent();
-
-    sample({
-      clock: touch,
-      source: levelCLasses(text),
-      target: touchClasses,
-    });
 
     spec({
       classList: [$classes] as ClassListArray,
       text: text,
+    });
+
+    const touch = createEvent();
+
+    sample({
+      clock: [touch, text],
+      source: levelCLasses(text),
+      target: touchClasses,
     });
 
     // Hack to apply classes from store

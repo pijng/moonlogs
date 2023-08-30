@@ -12,6 +12,7 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
     "text-white",
     "bg-blue-700",
     "border",
+    "dark:border-blue-600",
     "hover:bg-blue-800",
     "font-medium",
     "rounded-lg",
