@@ -17,6 +17,7 @@ var (
 		{Name: "schema_id", Type: field.TypeInt},
 		{Name: "query", Type: field.TypeJSON},
 		{Name: "group_hash", Type: field.TypeString, Nullable: true},
+		{Name: "level", Type: field.TypeString, Default: "Info"},
 	}
 	// LogRecordsTable holds the schema information for the "log_records" table.
 	LogRecordsTable = &schema.Table{

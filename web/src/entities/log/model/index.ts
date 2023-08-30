@@ -36,8 +36,14 @@ const getLogsFx = createEffect((schema_name: string) => {
 
 const queryLogsFx = createEffect(
   ({ schema_name, text, query, page }: { schema_name: string; text?: string; query?: string; page?: number }) => {
-    const objectQuery = JSON.parse(query || "{}");
-    const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => (v ? { ...acc, [k]: v } : acc), {});
+    const objectQuery = JSON.parse(query || "{}") as Record<string, string>;
+    const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => {
+      if (v.trim().length > 0) {
+        return { ...acc, [k]: v };
+      }
+
+      return acc;
+    }, {});
     return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, page: page });
   },
 );
@@ -81,7 +87,7 @@ sample({
       return { ...log, created_at: intl.format(new Date(log.created_at)) };
     });
 
-    logsGroup.formattedLogs = logsGroup.logs.map((l) => [l.created_at, l.text]);
+    logsGroup.formattedLogs = logsGroup.logs.map((l) => [l.created_at, l.level, l.text]);
 
     return logsGroup;
   },
@@ -105,7 +111,7 @@ export const $logsGroups = $logs.map((logs) => {
 
     acc[key] = acc[key] || logsGroup;
     acc[key].logs.push(formattedLog);
-    acc[key].formattedLogs.push([formattedLog.created_at, formattedLog.text]);
+    acc[key].formattedLogs.push([formattedLog.created_at, formattedLog.level, formattedLog.text]);
 
     return acc;
   }, {});

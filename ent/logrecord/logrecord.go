@@ -25,6 +25,8 @@ const (
 	FieldQuery = "query"
 	// FieldGroupHash holds the string denoting the group_hash field in the database.
 	FieldGroupHash = "group_hash"
+	// FieldLevel holds the string denoting the level field in the database.
+	FieldLevel = "level"
 	// Table holds the table name of the logrecord in the database.
 	Table = "log_records"
 )
@@ -38,6 +40,7 @@ var Columns = []string{
 	FieldSchemaID,
 	FieldQuery,
 	FieldGroupHash,
+	FieldLevel,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -59,6 +62,8 @@ var (
 	SchemaNameValidator func(string) error
 	// SchemaIDValidator is a validator for the "schema_id" field. It is called by the builders before save.
 	SchemaIDValidator func(int) error
+	// DefaultLevel holds the default value on creation for the "level" field.
+	DefaultLevel string
 )
 
 // OrderOption defines the ordering options for the LogRecord queries.
@@ -92,4 +97,9 @@ func BySchemaID(opts ...sql.OrderTermOption) OrderOption {
 // ByGroupHash orders the results by the group_hash field.
 func ByGroupHash(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldGroupHash, opts...).ToFunc()
+}
+
+// ByLevel orders the results by the level field.
+func ByLevel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLevel, opts...).ToFunc()
 }

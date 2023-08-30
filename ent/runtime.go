@@ -31,6 +31,10 @@ func init() {
 	logrecordDescSchemaID := logrecordFields[3].Descriptor()
 	// logrecord.SchemaIDValidator is a validator for the "schema_id" field. It is called by the builders before save.
 	logrecord.SchemaIDValidator = logrecordDescSchemaID.Validators[0].(func(int) error)
+	// logrecordDescLevel is the schema descriptor for level field.
+	logrecordDescLevel := logrecordFields[6].Descriptor()
+	// logrecord.DefaultLevel holds the default value on creation for the level field.
+	logrecord.DefaultLevel = logrecordDescLevel.Default.(string)
 	logschemaFields := schema.LogSchema{}.Fields()
 	_ = logschemaFields
 	// logschemaDescTitle is the schema descriptor for title field.

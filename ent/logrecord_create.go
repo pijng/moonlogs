@@ -73,6 +73,20 @@ func (lrc *LogRecordCreate) SetNillableGroupHash(s *string) *LogRecordCreate {
 	return lrc
 }
 
+// SetLevel sets the "level" field.
+func (lrc *LogRecordCreate) SetLevel(s string) *LogRecordCreate {
+	lrc.mutation.SetLevel(s)
+	return lrc
+}
+
+// SetNillableLevel sets the "level" field if the given value is not nil.
+func (lrc *LogRecordCreate) SetNillableLevel(s *string) *LogRecordCreate {
+	if s != nil {
+		lrc.SetLevel(*s)
+	}
+	return lrc
+}
+
 // Mutation returns the LogRecordMutation object of the builder.
 func (lrc *LogRecordCreate) Mutation() *LogRecordMutation {
 	return lrc.mutation
@@ -112,6 +126,10 @@ func (lrc *LogRecordCreate) defaults() {
 		v := logrecord.DefaultCreatedAt()
 		lrc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := lrc.mutation.Level(); !ok {
+		v := logrecord.DefaultLevel
+		lrc.mutation.SetLevel(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -145,6 +163,9 @@ func (lrc *LogRecordCreate) check() error {
 	}
 	if _, ok := lrc.mutation.Query(); !ok {
 		return &ValidationError{Name: "query", err: errors.New(`ent: missing required field "LogRecord.query"`)}
+	}
+	if _, ok := lrc.mutation.Level(); !ok {
+		return &ValidationError{Name: "level", err: errors.New(`ent: missing required field "LogRecord.level"`)}
 	}
 	return nil
 }
@@ -195,6 +216,10 @@ func (lrc *LogRecordCreate) createSpec() (*LogRecord, *sqlgraph.CreateSpec) {
 	if value, ok := lrc.mutation.GroupHash(); ok {
 		_spec.SetField(logrecord.FieldGroupHash, field.TypeString, value)
 		_node.GroupHash = value
+	}
+	if value, ok := lrc.mutation.Level(); ok {
+		_spec.SetField(logrecord.FieldLevel, field.TypeString, value)
+		_node.Level = value
 	}
 	return _node, _spec
 }

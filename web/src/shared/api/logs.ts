@@ -1,9 +1,12 @@
 import { get, post } from "./base";
 
+type Level = "Trace" | "Debug" | "Info" | "Warn" | "Error" | "Fatal";
+
 export type Log = {
   id: string;
   text: string;
   created_at: string;
+  level: Level;
   schema_name: string;
   group_hash: string;
   schema_id: number;

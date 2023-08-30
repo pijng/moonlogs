@@ -9,3 +9,4 @@ export { FloatingInput } from "./floating-input";
 export { Dropdown } from "./dropdown";
 export { DownIcon } from "./icons";
 export { Pagination } from "./pagination";
+export { LevelBadge } from "./badge";

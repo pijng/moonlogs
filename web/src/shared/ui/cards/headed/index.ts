@@ -88,7 +88,7 @@ export const CardHeaded = ({ tags, content, href }: { tags: Store<string[]>; con
 
         h("a", () => {
           spec({
-            attr: { href: href || "" },
+            attr: { href: href || "", target: "_blank" },
           });
           Button({ text: "Open", variant: createStore<ButtonVariant>("default"), size: "extra_small" });
         });

@@ -65,7 +65,6 @@ export const Button = ({
   preIcon?: () => void;
   postIcon?: () => void;
 }) => {
-  variant.watch((v) => console.log("VARITN", v));
   const localPreIcon =
     preIcon ||
     function () {

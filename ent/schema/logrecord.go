@@ -8,6 +8,17 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+type Level string
+
+const (
+	LevelTrace Level = "Trace"
+	LevelDebug Level = "Debug"
+	LevelInfo  Level = "Info"
+	LevelWarn  Level = "Warn"
+	LevelError Level = "Error"
+	LevelFatal Level = "Fatal"
+)
+
 type Query map[string]interface{}
 
 // LogRecord holds the schema definition for the LogRecord entity.
@@ -39,6 +50,7 @@ func (LogRecord) Fields() []ent.Field {
 		}).Immutable(),
 		field.JSON("query", Query{}),
 		field.String("group_hash").Immutable().Optional(),
+		field.String("level").Default(string(LevelInfo)).Immutable(),
 	}
 }
 

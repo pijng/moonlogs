@@ -29,7 +29,7 @@ export const ShowLogPage = () => {
           tags: logModel.$groupedLogs.map((g) => g.tags),
           content: () => {
             Table({
-              columns: createStore(["Time", "Text"]),
+              columns: createStore(["Time", "Level", "Text"]),
               rows: logModel.$groupedLogs.map((g) => g.formattedLogs),
             });
           },

@@ -1,5 +1,6 @@
-import { h, list, spec } from "forest";
+import { h, list, spec, variant } from "forest";
 import { Store } from "effector";
+import { LevelBadge } from "@/shared/ui";
 
 export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store<string[][]> }) => {
   h("div", () => {
@@ -33,14 +34,14 @@ export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store
           h("tr", () => {
             list(columns, ({ store: column, key: idx }) => {
               h("th", () => {
-                const $isFirstColumn = idx.map((idx) => idx === 0);
+                const $isLastColumn = idx.map((idx) => ![0, 1].includes(idx));
 
                 spec({
                   attr: { scope: "col" },
                   classList: {
                     "px-6": true,
                     "py-3": true,
-                    "w-48": $isFirstColumn,
+                    "w-48": $isLastColumn.map((state) => !state),
                   },
                   text: column,
                 });
@@ -64,10 +65,31 @@ export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store
                 ],
               });
 
-              list(row, ({ store: cell }) => {
-                h("td", {
-                  classList: ["px-6", "py-4"],
-                  text: cell,
+              list(row, ({ store: cell, key: idx }) => {
+                const $rowIndex: Store<{ case: "badge" | "other" }> = idx.map((idx) => {
+                  if (idx === 1) return { case: "badge" };
+                  return { case: "other" };
+                });
+
+                variant({
+                  source: $rowIndex,
+                  key: "case",
+                  cases: {
+                    badge: () => {
+                      h("td", () => {
+                        spec({
+                          classList: ["px-6", "py-4"],
+                        });
+                        LevelBadge(cell);
+                      });
+                    },
+                    other: () => {
+                      h("td", {
+                        classList: ["px-6", "py-4"],
+                        text: cell,
+                      });
+                    },
+                  },
                 });
               });
             });

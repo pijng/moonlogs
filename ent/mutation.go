@@ -43,6 +43,7 @@ type LogRecordMutation struct {
 	addschema_id  *int
 	query         *schema.Query
 	group_hash    *string
+	level         *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*LogRecord, error)
@@ -396,6 +397,42 @@ func (m *LogRecordMutation) ResetGroupHash() {
 	delete(m.clearedFields, logrecord.FieldGroupHash)
 }
 
+// SetLevel sets the "level" field.
+func (m *LogRecordMutation) SetLevel(s string) {
+	m.level = &s
+}
+
+// Level returns the value of the "level" field in the mutation.
+func (m *LogRecordMutation) Level() (r string, exists bool) {
+	v := m.level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLevel returns the old "level" field's value of the LogRecord entity.
+// If the LogRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LogRecordMutation) OldLevel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLevel: %w", err)
+	}
+	return oldValue.Level, nil
+}
+
+// ResetLevel resets all changes to the "level" field.
+func (m *LogRecordMutation) ResetLevel() {
+	m.level = nil
+}
+
 // Where appends a list predicates to the LogRecordMutation builder.
 func (m *LogRecordMutation) Where(ps ...predicate.LogRecord) {
 	m.predicates = append(m.predicates, ps...)
@@ -430,7 +467,7 @@ func (m *LogRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LogRecordMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.text != nil {
 		fields = append(fields, logrecord.FieldText)
 	}
@@ -448,6 +485,9 @@ func (m *LogRecordMutation) Fields() []string {
 	}
 	if m.group_hash != nil {
 		fields = append(fields, logrecord.FieldGroupHash)
+	}
+	if m.level != nil {
+		fields = append(fields, logrecord.FieldLevel)
 	}
 	return fields
 }
@@ -469,6 +509,8 @@ func (m *LogRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.Query()
 	case logrecord.FieldGroupHash:
 		return m.GroupHash()
+	case logrecord.FieldLevel:
+		return m.Level()
 	}
 	return nil, false
 }
@@ -490,6 +532,8 @@ func (m *LogRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldQuery(ctx)
 	case logrecord.FieldGroupHash:
 		return m.OldGroupHash(ctx)
+	case logrecord.FieldLevel:
+		return m.OldLevel(ctx)
 	}
 	return nil, fmt.Errorf("unknown LogRecord field %s", name)
 }
@@ -540,6 +584,13 @@ func (m *LogRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGroupHash(v)
+		return nil
+	case logrecord.FieldLevel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLevel(v)
 		return nil
 	}
 	return fmt.Errorf("unknown LogRecord field %s", name)
@@ -631,6 +682,9 @@ func (m *LogRecordMutation) ResetField(name string) error {
 		return nil
 	case logrecord.FieldGroupHash:
 		m.ResetGroupHash()
+		return nil
+	case logrecord.FieldLevel:
+		m.ResetLevel()
 		return nil
 	}
 	return fmt.Errorf("unknown LogRecord field %s", name)

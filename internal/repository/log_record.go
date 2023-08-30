@@ -33,6 +33,7 @@ func (r *LogRecordRepository) Create(logRecord ent.LogRecord, logSchemaId int, g
 		SetSchemaID(logSchemaId).
 		SetQuery(logRecord.Query).
 		SetGroupHash(groupHash).
+		SetLevel(logRecord.Level).
 		Save(r.ctx)
 
 	if err != nil {

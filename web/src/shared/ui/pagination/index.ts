@@ -7,7 +7,6 @@ const BASE_CLASSES = [
   "items-center",
   "justify-center",
   "px-3",
-  "w-9",
   "h-8",
   "leading-tight",
   "text-gray-500",
@@ -30,7 +29,6 @@ const ACTIVE_CLASSES = [
   "justify-center",
   "px-3",
   "h-8",
-  "w-9",
   "leading-tight",
   "text-blue-600",
   "border",
@@ -56,12 +54,12 @@ export const Pagination = (pages: Store<number>, currentPage: Store<string>, pag
   h("nav", () => {
     spec({
       visible: pages.map((pages) => pages > 0),
-      classList: ["flex", "justify-start", "pb-2"],
+      classList: ["flex", "pb-2"],
       attr: { "aria-label": "Page navigation" },
     });
 
     h("ul", () => {
-      spec({ classList: ["flex", "items-center", "-space-x-px", "h-8", "text-sm"] });
+      spec({ classList: ["grid", "grid-cols-10", "items-center", "-space-x-px", "h-8", "text-sm"] });
 
       const $pagesList = pages.map((count) => new Array(count).fill(null).map((_, i) => i + 1));
       const $truncatedPages = truncatedPages($pagesList, currentPage);

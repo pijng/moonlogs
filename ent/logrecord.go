@@ -30,7 +30,9 @@ type LogRecord struct {
 	// Query holds the value of the "query" field.
 	Query schema.Query `json:"query,omitempty"`
 	// GroupHash holds the value of the "group_hash" field.
-	GroupHash    string `json:"group_hash,omitempty"`
+	GroupHash string `json:"group_hash,omitempty"`
+	// Level holds the value of the "level" field.
+	Level        string `json:"level,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -43,7 +45,7 @@ func (*LogRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case logrecord.FieldID, logrecord.FieldSchemaID:
 			values[i] = new(sql.NullInt64)
-		case logrecord.FieldText, logrecord.FieldSchemaName, logrecord.FieldGroupHash:
+		case logrecord.FieldText, logrecord.FieldSchemaName, logrecord.FieldGroupHash, logrecord.FieldLevel:
 			values[i] = new(sql.NullString)
 		case logrecord.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -106,6 +108,12 @@ func (lr *LogRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				lr.GroupHash = value.String
 			}
+		case logrecord.FieldLevel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field level", values[i])
+			} else if value.Valid {
+				lr.Level = value.String
+			}
 		default:
 			lr.selectValues.Set(columns[i], values[i])
 		}
@@ -159,6 +167,9 @@ func (lr *LogRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("group_hash=")
 	builder.WriteString(lr.GroupHash)
+	builder.WriteString(", ")
+	builder.WriteString("level=")
+	builder.WriteString(lr.Level)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -79,6 +79,11 @@ func GroupHash(v string) predicate.LogRecord {
 	return predicate.LogRecord(sql.FieldEQ(FieldGroupHash, v))
 }
 
+// Level applies equality check predicate on the "level" field. It's identical to LevelEQ.
+func Level(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldEQ(FieldLevel, v))
+}
+
 // TextEQ applies the EQ predicate on the "text" field.
 func TextEQ(v string) predicate.LogRecord {
 	return predicate.LogRecord(sql.FieldEQ(FieldText, v))
@@ -362,6 +367,71 @@ func GroupHashEqualFold(v string) predicate.LogRecord {
 // GroupHashContainsFold applies the ContainsFold predicate on the "group_hash" field.
 func GroupHashContainsFold(v string) predicate.LogRecord {
 	return predicate.LogRecord(sql.FieldContainsFold(FieldGroupHash, v))
+}
+
+// LevelEQ applies the EQ predicate on the "level" field.
+func LevelEQ(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldEQ(FieldLevel, v))
+}
+
+// LevelNEQ applies the NEQ predicate on the "level" field.
+func LevelNEQ(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldNEQ(FieldLevel, v))
+}
+
+// LevelIn applies the In predicate on the "level" field.
+func LevelIn(vs ...string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldIn(FieldLevel, vs...))
+}
+
+// LevelNotIn applies the NotIn predicate on the "level" field.
+func LevelNotIn(vs ...string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldNotIn(FieldLevel, vs...))
+}
+
+// LevelGT applies the GT predicate on the "level" field.
+func LevelGT(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldGT(FieldLevel, v))
+}
+
+// LevelGTE applies the GTE predicate on the "level" field.
+func LevelGTE(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldGTE(FieldLevel, v))
+}
+
+// LevelLT applies the LT predicate on the "level" field.
+func LevelLT(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldLT(FieldLevel, v))
+}
+
+// LevelLTE applies the LTE predicate on the "level" field.
+func LevelLTE(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldLTE(FieldLevel, v))
+}
+
+// LevelContains applies the Contains predicate on the "level" field.
+func LevelContains(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldContains(FieldLevel, v))
+}
+
+// LevelHasPrefix applies the HasPrefix predicate on the "level" field.
+func LevelHasPrefix(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldHasPrefix(FieldLevel, v))
+}
+
+// LevelHasSuffix applies the HasSuffix predicate on the "level" field.
+func LevelHasSuffix(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldHasSuffix(FieldLevel, v))
+}
+
+// LevelEqualFold applies the EqualFold predicate on the "level" field.
+func LevelEqualFold(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldEqualFold(FieldLevel, v))
+}
+
+// LevelContainsFold applies the ContainsFold predicate on the "level" field.
+func LevelContainsFold(v string) predicate.LogRecord {
+	return predicate.LogRecord(sql.FieldContainsFold(FieldLevel, v))
 }
 
 // And groups predicates with the AND operator between them.

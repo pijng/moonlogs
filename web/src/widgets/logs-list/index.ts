@@ -15,7 +15,7 @@ export const LogsList = () => {
         href: group.map((g) => `${g.schema_name}/${g.group_hash}`),
         content: () => {
           Table({
-            columns: createStore(["Time", "Text"]),
+            columns: createStore(["Time", "Level", "Text"]),
             rows: group.map((g) => g.formattedLogs),
           });
         },
