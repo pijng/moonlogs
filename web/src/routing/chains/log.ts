@@ -2,8 +2,13 @@ import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { controls, logsRoute, showLogRoute } from "@/routing/shared";
 import { chainRoute, querySync } from "atomic-router";
-import { combine } from "effector";
+import { combine, sample } from "effector";
 import { debounce } from "patronum";
+
+sample({
+  clock: logsRoute.closed,
+  target: logModel.effects.reset,
+});
 
 chainRoute({
   route: logsRoute,

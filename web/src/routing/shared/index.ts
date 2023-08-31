@@ -1,4 +1,3 @@
-import { logModel } from "@/entities/log";
 import { createHistoryRouter, createRoute, createRouterControls } from "atomic-router";
 import { createLink, linkRouter } from "atomic-router-forest";
 import { createEvent, sample } from "effector";
@@ -9,21 +8,18 @@ export const Link = createLink();
 export const homeRoute = createRoute();
 export const logsRoute = createRoute<{ schemaName: string }>();
 export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
+export const membersRoute = createRoute();
 
 export const ROUTES = [
   { path: "/", route: homeRoute },
   { path: "/logs/:schemaName", route: logsRoute },
   { path: "/logs/:schemaName/:hash", route: showLogRoute },
+  { path: "/members", route: membersRoute },
 ];
 
 const history = createBrowserHistory();
 export const controls = createRouterControls();
 export const router = createHistoryRouter({ routes: ROUTES, controls });
-
-sample({
-  clock: logsRoute.closed,
-  target: logModel.effects.reset,
-});
 
 // This event need to setup initial configuration. You can move it into src/shared
 export const appMounted = createEvent();

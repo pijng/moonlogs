@@ -1,4 +1,4 @@
-import { homeRoute } from "@/routing";
+import { homeRoute, membersRoute } from "@/routing";
 import { RouteInstance } from "atomic-router";
 import { createEvent, createStore, restore, sample } from "effector";
 import { h, spec } from "forest";
@@ -138,8 +138,8 @@ export const Sidebar = () => {
         });
 
         SidebarItem("Home", homeRoute);
-        SidebarItem("Account", homeRoute);
-        SidebarItem("Members", homeRoute);
+        SidebarItem("Members", membersRoute);
+        SidebarItem("Settings", homeRoute);
       });
     });
   });

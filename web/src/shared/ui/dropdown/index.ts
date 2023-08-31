@@ -8,6 +8,8 @@ export const Dropdown = (items: Store<FilterItem[]>, itemChanged: Event<Record<s
     spec({
       classList: [
         "absolute",
+        "left-0",
+        "top-9",
         "border",
         "border-gray-200",
         "dark:bg-gray-800",

@@ -1,2 +1,2 @@
 export * from "./chains";
-export { Link, appMounted, controls, homeRoute, logsRoute, router } from "./shared";
+export { Link, appMounted, controls, homeRoute, logsRoute, membersRoute, router } from "./shared";

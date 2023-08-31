@@ -42,7 +42,7 @@ export const SearchBar = () => {
 
     h("div", () => {
       spec({
-        classList: ["flex"],
+        classList: ["flex", "relative"],
       });
 
       Filter($currentFilter, logModel.events.filterChanged);
