@@ -11,3 +11,6 @@ type LogRecord func(*sql.Selector)
 
 // LogSchema is the predicate function for logschema builders.
 type LogSchema func(*sql.Selector)
+
+// User is the predicate function for user builders.
+type User func(*sql.Selector)

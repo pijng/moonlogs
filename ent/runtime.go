@@ -6,6 +6,7 @@ import (
 	"moonlogs/ent/logrecord"
 	"moonlogs/ent/logschema"
 	"moonlogs/ent/schema"
+	"moonlogs/ent/user"
 	"time"
 )
 
@@ -45,4 +46,22 @@ func init() {
 	logschemaDescName := logschemaFields[2].Descriptor()
 	// logschema.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	logschema.NameValidator = logschemaDescName.Validators[0].(func(string) error)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[0].Descriptor()
+	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	// userDescEmail is the schema descriptor for email field.
+	userDescEmail := userFields[1].Descriptor()
+	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescPasswordDigest is the schema descriptor for password_digest field.
+	userDescPasswordDigest := userFields[2].Descriptor()
+	// user.PasswordDigestValidator is a validator for the "password_digest" field. It is called by the builders before save.
+	user.PasswordDigestValidator = userDescPasswordDigest.Validators[0].(func(string) error)
+	// userDescRole is the schema descriptor for role field.
+	userDescRole := userFields[3].Descriptor()
+	// user.RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	user.RoleValidator = userDescRole.Validators[0].(func(string) error)
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"moonlogs/ent/logrecord"
 	"moonlogs/ent/logschema"
+	"moonlogs/ent/user"
 	"reflect"
 	"sync"
 
@@ -76,6 +77,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			logrecord.Table: logrecord.ValidColumn,
 			logschema.Table: logschema.ValidColumn,
+			user.Table:      user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)
