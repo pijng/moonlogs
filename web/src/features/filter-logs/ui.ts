@@ -1,4 +1,4 @@
-import { Button, DownIcon, Dropdown } from "@/shared/ui";
+import { Button, ButtonVariant, DownIcon, Dropdown } from "@/shared/ui";
 import { Event, Store } from "effector";
 import { h, spec } from "forest";
 import { $filterIsOpened, filterClicked } from "./model";
@@ -15,7 +15,7 @@ export const Filter = (items: Store<FilterItem[]>, filterChanged: Event<Record<s
 
   Button({
     text: "Filter",
-    variant: $filtersApplied.map((state) => (state ? "default" : "alternative")),
+    variant: $filtersApplied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
     size: "small",
     event: filterClicked,
     preIcon: FilterIcon,

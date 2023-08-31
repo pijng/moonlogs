@@ -7,12 +7,24 @@ import (
 	"math"
 	"moonlogs/api/server/util"
 	"moonlogs/ent"
+	"moonlogs/ent/schema"
 	"moonlogs/internal/repository"
 	"net/http"
+	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
+
+var levels = []string{
+	string(schema.LevelTrace),
+	string(schema.LevelDebug),
+	string(schema.LevelInfo),
+	string(schema.LevelWarn),
+	string(schema.LevelError),
+	string(schema.LevelFatal),
+}
 
 func LogRecordCreate(w http.ResponseWriter, r *http.Request) {
 	var newLogRecord ent.LogRecord
@@ -27,6 +39,17 @@ func LogRecordCreate(w http.ResponseWriter, r *http.Request) {
 		error := fmt.Errorf("`query` field is required")
 		util.Return(w, false, http.StatusBadRequest, error, nil, util.Meta{})
 		return
+	}
+
+	if len(newLogRecord.Level) > 0 {
+		isValidLevel := slices.Contains(levels, newLogRecord.Level)
+		if !isValidLevel {
+			appropriateLevels := strings.Join(levels, ", ")
+			error := fmt.Errorf("`level` field should be one of: %v", appropriateLevels)
+
+			util.Return(w, false, http.StatusBadRequest, error, nil, util.Meta{})
+			return
+		}
 	}
 
 	logSchema, err := repository.NewLogSchemaRepository(r.Context()).GetByName(newLogRecord.SchemaName)

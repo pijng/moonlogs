@@ -28,7 +28,7 @@ $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
 const pageChanged = createEvent<string>();
 export const $currentPage = createStore("1")
   .on(pageChanged, (_, newPage) => newPage)
-  .reset([$searchQuery, $formattedSearchFilter]);
+  .reset([queryChanged, filterChanged]);
 
 const getLogsFx = createEffect((schema_name: string) => {
   return getLogs({ schema_name: schema_name });

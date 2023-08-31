@@ -1,7 +1,15 @@
-import { Event, Store } from "effector";
+import { Event, Store, createEvent, createStore, sample } from "effector";
 import { h, spec } from "forest";
+import { Button, ButtonVariant } from "@/shared/ui";
 
 export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) => {
+  const searchCleared = createEvent();
+  sample({
+    clock: searchCleared,
+    fn: () => "",
+    target: inputChanged,
+  });
+
   h("div", () => {
     spec({
       classList: ["bg-white", "dark:bg-gray-900", "max-w-xl", "py-3"],
@@ -15,7 +23,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
 
     h("div", () => {
       spec({
-        classList: ["relative"],
+        classList: ["relative", "flex"],
       });
 
       h("div", () => {
@@ -41,38 +49,47 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
         });
       });
 
-      h("input", {
-        attr: {
-          type: "text",
-          id: "table-search",
-          placeholder: "Search",
-          value: searchQuery,
-        },
-        handler: {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          input: inputChanged.prepend((e) => e.target.value),
-        },
-        classList: [
-          "block",
-          "w-full",
-          "p-2.5",
-          "pl-10",
-          "text-sm",
-          "text-gray-900",
-          "border",
-          "border-gray-300",
-          "rounded-lg",
-          "bg-gray-50",
-          "focus:ring-blue-500",
-          "focus:border-blue-500",
-          "dark:bg-gray-700",
-          "dark:border-gray-600",
-          "dark:placeholder-gray-400",
-          "dark:text-white",
-          "dark:focus:ring-blue-500",
-          "dark:focus:border-blue-500",
-        ],
+      h("input", () => {
+        spec({
+          attr: {
+            type: "text",
+            id: "table-search",
+            placeholder: "Search",
+            value: searchQuery,
+          },
+          handler: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            input: inputChanged.prepend((e) => e.target.value),
+          },
+          classList: [
+            "block",
+            "w-full",
+            "p-2.5",
+            "pl-10",
+            "text-sm",
+            "text-gray-900",
+            "border",
+            "border-gray-300",
+            "rounded-lg",
+            "bg-gray-50",
+            "focus:ring-blue-500",
+            "focus:border-blue-500",
+            "dark:bg-gray-700",
+            "dark:border-gray-600",
+            "dark:placeholder-gray-400",
+            "dark:text-white",
+            "dark:focus:ring-blue-500",
+            "dark:focus:border-blue-500",
+          ],
+        });
+      });
+
+      Button({
+        text: "Clear",
+        variant: createStore<ButtonVariant>("light"),
+        size: "small",
+        event: searchCleared,
       });
     });
   });

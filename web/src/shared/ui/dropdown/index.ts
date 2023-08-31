@@ -26,23 +26,13 @@ export const Dropdown = (items: Store<FilterItem[]>, itemChanged: Event<Record<s
 
     h("ul", () => {
       spec({
-        classList: [
-          "grid",
-          "grid-cols-2",
-          "sm:grid-cols-3",
-          "xl:grid-cols-4",
-          "gap-4",
-          "py-2",
-          "text-sm",
-          "text-gray-700",
-          "dark:text-gray-200",
-        ],
+        classList: ["flex", "flex-wrap", "py-2", "text-sm", "text-gray-700", "dark:text-gray-200"],
       });
 
       list(items, ({ store: item }) => {
         h("li", () => {
           spec({
-            classList: ["block", "px-4", "py-2"],
+            classList: ["block", "px-4", "py-2", "flex-auto", "shrink-0"],
           });
 
           const inputChanged = createEvent<InputEvent>();

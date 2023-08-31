@@ -2,7 +2,17 @@ import { Store, createStore } from "effector";
 import { h, list, spec } from "forest";
 import { Button, ButtonVariant } from "@/shared/ui";
 
-export const CardHeaded = ({ tags, content, href }: { tags: Store<string[]>; content: () => void; href?: Store<string> }) => {
+export const CardHeaded = ({
+  tags,
+  content,
+  href,
+  withMore,
+}: {
+  tags: Store<string[]>;
+  content: () => void;
+  href?: Store<string>;
+  withMore?: boolean;
+}) => {
   h("div", () => {
     spec({
       classList: [
@@ -101,6 +111,14 @@ export const CardHeaded = ({ tags, content, href }: { tags: Store<string[]>; con
       });
 
       content();
+    });
+
+    h("div", () => {
+      spec({
+        visible: createStore(withMore ?? false),
+        classList: ["text-center", "cursor-default", "pb-1", "dark:text-gray-400"],
+        text: "...",
+      });
     });
   });
 };

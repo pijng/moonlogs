@@ -59,7 +59,7 @@ export const Pagination = (pages: Store<number>, currentPage: Store<string>, pag
     });
 
     h("ul", () => {
-      spec({ classList: ["grid", "grid-cols-10", "items-center", "-space-x-px", "h-8", "text-sm"] });
+      spec({ classList: ["grid", "grid-cols-9", "items-center", "-space-x-px", "h-8", "text-sm"] });
 
       const $pagesList = pages.map((count) => new Array(count).fill(null).map((_, i) => i + 1));
       const $truncatedPages = truncatedPages($pagesList, currentPage);
@@ -324,18 +324,18 @@ const NextPage = (pages: Store<number>, pageChanged: Event<any>) => {
 
 const truncatedPages = (pagesList: Store<number[]>, currentPage: Store<string>) => {
   return combine([pagesList, currentPage], ([pagesList, currentPage]) => {
-    if (pagesList.length <= 6) return pagesList;
+    if (pagesList.length <= 5) return pagesList;
 
     const cur = parseInt(currentPage);
 
-    const minPage = Math.max(Math.min(cur - 4, pagesList.length - 7), 1);
-    const maxPage = Math.max(cur + 6, minPage);
+    const minPage = Math.max(Math.min(cur - 3, pagesList.length - 6), 1);
+    const maxPage = Math.max(cur + 5, minPage);
     const pages = pagesList.slice(minPage, maxPage);
 
-    const sliced = pages.slice(1, 6);
+    const sliced = pages.slice(1, 5);
     const nextPageIsLast = sliced[sliced.length - 1] === pagesList.length;
 
-    const lastIndex = nextPageIsLast ? 7 : 6;
+    const lastIndex = nextPageIsLast ? 6 : 5;
 
     return pages.filter((p) => p !== pagesList.length).slice(0, lastIndex);
   });

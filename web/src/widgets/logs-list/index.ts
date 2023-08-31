@@ -19,6 +19,7 @@ export const LogsList = () => {
             rows: group.map((g) => g.formattedLogs),
           });
         },
+        withMore: true,
       });
     });
   });

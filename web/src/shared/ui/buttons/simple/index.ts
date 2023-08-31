@@ -1,7 +1,7 @@
 import { Event, Store, createEvent, restore, sample } from "effector";
 import { ClassListArray, h, node, spec } from "forest";
 
-export type ButtonVariant = "default" | "alternative";
+export type ButtonVariant = "default" | "alternative" | "light";
 type Size = "base" | "small" | "extra_small";
 
 const BASE_CLASSES = ["inline-flex", "items-center"];
@@ -36,6 +36,7 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
     "dark:hover:text-white",
     "dark:hover:bg-gray-700",
   ],
+  light: ["block", "font-medium", "text-gray-900", "hover:text-blue-700", "dark:text-gray-400", "dark:hover:text-white"],
 };
 
 const SIZES: Record<Size, string[]> = {
