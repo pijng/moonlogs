@@ -1,5 +1,5 @@
 import { withRoute } from "atomic-router-forest";
-import { h, spec } from "forest";
+import { h } from "forest";
 
 import { logsRoute } from "@/routing/shared";
 import { LogsList, SchemaHeader, SearchBar } from "@/widgets";
@@ -14,14 +14,8 @@ export const LogsListPage = () => {
 
     SchemaHeader();
 
-    h("div", () => {
-      spec({
-        classList: ["mt-5"],
-      });
-
-      SearchBar();
-      Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
-      LogsList();
-    });
+    SearchBar();
+    Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+    LogsList();
   });
 };

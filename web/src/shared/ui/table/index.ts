@@ -1,8 +1,13 @@
 import { h, list, spec, variant } from "forest";
 import { Store } from "effector";
-import { LevelBadge } from "@/shared/ui";
+import { LevelBadge } from "..";
 
-export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store<string[][]> }) => {
+export type Cell = {
+  data: string;
+  component: "text" | "badge";
+};
+
+export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store<Cell[][]> }) => {
   h("div", () => {
     spec({
       classList: ["antialiased"],
@@ -41,7 +46,8 @@ export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store
                   classList: {
                     "px-6": true,
                     "py-3": true,
-                    "w-48": $isLastColumn.map((state) => !state),
+                    "w-24": $isLastColumn.map((state) => !state),
+                    "lg:w-48": $isLastColumn.map((state) => !state),
                   },
                   text: column,
                 });
@@ -65,31 +71,33 @@ export const Table = ({ columns, rows }: { columns: Store<string[]>; rows: Store
                 ],
               });
 
-              list(row, ({ store: cell, key: idx }) => {
-                const $rowIndex: Store<{ case: "badge" | "other" }> = idx.map((idx) => {
-                  if (idx === 1) return { case: "badge" };
-                  return { case: "other" };
-                });
+              list(row, ({ store: cell }) => {
+                const $componentName = cell.map((c) => ({ name: c.component }));
 
-                variant({
-                  source: $rowIndex,
-                  key: "case",
-                  cases: {
-                    badge: () => {
-                      h("td", () => {
-                        spec({
-                          classList: ["px-6", "py-4"],
+                h("td", () => {
+                  spec({
+                    classList: ["px-6", "py-4"],
+                  });
+
+                  variant({
+                    source: $componentName,
+                    key: "name",
+                    cases: {
+                      text: () => {
+                        h("div", {
+                          text: cell.map((c) => c.data),
                         });
-                        LevelBadge(cell);
-                      });
+                      },
+                      badge: () => {
+                        LevelBadge(cell.map((c) => c.data));
+                      },
+                      __: () => {
+                        h("div", {
+                          text: cell.map((c) => c.data),
+                        });
+                      },
                     },
-                    other: () => {
-                      h("td", {
-                        classList: ["px-6", "py-4"],
-                        text: cell,
-                      });
-                    },
-                  },
+                  });
                 });
               });
             });

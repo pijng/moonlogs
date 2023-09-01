@@ -10,6 +10,7 @@ type Role string
 const (
 	RoleMember Role = "Member"
 	RoleAdmin  Role = "Admin"
+	RoleSystem Role = "System"
 )
 
 // User holds the schema definition for the User entity.

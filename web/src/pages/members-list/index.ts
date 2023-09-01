@@ -2,9 +2,7 @@ import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
 import { membersRoute } from "@/routing/shared";
-import { LogsList, SchemaHeader, SearchBar } from "@/widgets";
-import { Pagination } from "@/shared/ui";
-import { logModel } from "@/entities/log";
+import { Header } from "@/shared/ui";
 
 export const MembersListPage = () => {
   h("div", () => {
@@ -12,7 +10,7 @@ export const MembersListPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(membersRoute);
 
-    SchemaHeader();
+    Header("Members");
 
     h("div", () => {
       spec({

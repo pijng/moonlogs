@@ -17,7 +17,7 @@ export const ShowLogPage = () => {
 
     h("div", () => {
       spec({
-        classList: ["mt-5"],
+        classList: ["mt-3"],
       });
 
       h("div", () => {
