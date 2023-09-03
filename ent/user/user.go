@@ -19,6 +19,8 @@ const (
 	FieldPasswordDigest = "password_digest"
 	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
+	// FieldToken holds the string denoting the token field in the database.
+	FieldToken = "token"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -30,6 +32,7 @@ var Columns = []string{
 	FieldEmail,
 	FieldPasswordDigest,
 	FieldRole,
+	FieldToken,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -49,6 +52,8 @@ var (
 	EmailValidator func(string) error
 	// PasswordDigestValidator is a validator for the "password_digest" field. It is called by the builders before save.
 	PasswordDigestValidator func(string) error
+	// DefaultRole holds the default value on creation for the "role" field.
+	DefaultRole string
 	// RoleValidator is a validator for the "role" field. It is called by the builders before save.
 	RoleValidator func(string) error
 )
@@ -79,4 +84,9 @@ func ByPasswordDigest(opts ...sql.OrderTermOption) OrderOption {
 // ByRole orders the results by the role field.
 func ByRole(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByToken orders the results by the token field.
+func ByToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldToken, opts...).ToFunc()
 }

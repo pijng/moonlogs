@@ -26,6 +26,8 @@ var levels = []string{
 	string(schema.LevelFatal),
 }
 
+var FNV64Hasher = fnv.New64a()
+
 func LogRecordCreate(w http.ResponseWriter, r *http.Request) {
 	var newLogRecord ent.LogRecord
 
@@ -64,9 +66,9 @@ func LogRecordCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hasher := fnv.New64a()
-	hasher.Write(bytes)
-	hashSum := hasher.Sum64()
+	FNV64Hasher.Write(bytes)
+	hashSum := FNV64Hasher.Sum64()
+	FNV64Hasher.Reset()
 
 	groupHash := fmt.Sprint(hashSum)
 

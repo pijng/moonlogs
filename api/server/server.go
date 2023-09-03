@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"moonlogs/api/server/router"
+	"moonlogs/api/server/session"
 	"net/http"
 	"os"
 	"os/signal"
@@ -44,8 +45,12 @@ func createServer() *http.Server {
 }
 
 func registerRouter(r *mux.Router) {
-	router.RegisterLogSchemaRouter(r)
-	router.RegisterLogRecordRouter(r)
+	store := session.RegisterSessionStore()
+
+	router.RegisterLogSchemaRouter(r, store)
+	router.RegisterLogRecordRouter(r, store)
+	router.RegisterUserRouter(r, store)
+	router.RegisterSessionRouter(r)
 	router.RegisterWebRouter(r)
 }
 

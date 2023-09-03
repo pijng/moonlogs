@@ -24,7 +24,8 @@ func (User) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("email").NotEmpty(),
 		field.String("password_digest").NotEmpty(),
-		field.String("role").NotEmpty(),
+		field.String("role").Default(string(RoleMember)).NotEmpty(),
+		field.String("token").Optional(),
 	}
 }
 

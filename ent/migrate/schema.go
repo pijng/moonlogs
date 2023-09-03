@@ -45,7 +45,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "password_digest", Type: field.TypeString},
-		{Name: "role", Type: field.TypeString},
+		{Name: "role", Type: field.TypeString, Default: "Member"},
+		{Name: "token", Type: field.TypeString, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
