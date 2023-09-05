@@ -59,6 +59,18 @@ func (r *UserRepository) GetByEmail(email string) (*ent.User, error) {
 	return u, nil
 }
 
+func (r *UserRepository) GetByToken(token string) (*ent.User, error) {
+	u, err := r.client.User.
+		Query().
+		Where(user.Token(token)).First(r.ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed querying user: %w", err)
+	}
+
+	return u, nil
+}
+
 func (r *UserRepository) DestroyById(id int) error {
 	return r.client.User.DeleteOneID(id).Exec(r.ctx)
 }
@@ -76,6 +88,18 @@ func (r *UserRepository) UpdateById(userToUpdate ent.User) (*ent.User, error) {
 	}
 
 	return u, nil
+}
+
+func (r *UserRepository) UpdateTokenById(id int, token string) error {
+	_, err := r.client.User.UpdateOneID(id).
+		SetToken(token).
+		Save(r.ctx)
+
+	if err != nil {
+		return fmt.Errorf("failed updating user: %w", err)
+	}
+
+	return nil
 }
 
 func (r *UserRepository) GetAll() ([]*ent.User, error) {

@@ -1,9 +1,9 @@
 import { chainRoute } from "atomic-router";
 import { schemaModel } from "@/entities/schema";
-import { homeRoute } from "@/routing/shared";
+import { chainAuthorized, homeRoute } from "@/routing/shared";
 
 chainRoute({
-  route: homeRoute,
+  route: chainAuthorized(homeRoute),
   beforeOpen: {
     effect: schemaModel.effects.getSchemasFx,
     mapParams: ({ params }) => params,

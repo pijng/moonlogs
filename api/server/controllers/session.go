@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"moonlogs/api/server/session"
 	"moonlogs/api/server/util"
 	"moonlogs/internal/repository"
@@ -24,7 +23,6 @@ var SHA256Hasher = sha256.New()
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var token string
-
 	var credentials Credentials
 
 	err := json.NewDecoder(r.Body).Decode(&credentials)
@@ -33,7 +31,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := repository.NewUserRepository(r.Context()).GetByEmail(credentials.Email)
+	userRepository := repository.NewUserRepository(r.Context())
+
+	user, err := userRepository.GetByEmail(credentials.Email)
 	if err != nil {
 		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
 		return
@@ -48,7 +48,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	hashBytes := SHA256Hasher.Sum(nil)
 	hashString := hex.EncodeToString(hashBytes)
 	SHA256Hasher.Reset()
-	fmt.Println(hashString)
+
 	if hashString != user.PasswordDigest {
 		util.Return(w, false, http.StatusUnauthorized, err, nil, util.Meta{})
 		return
@@ -77,6 +77,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
 		return
+	}
+
+	if token != user.Token {
+		err = userRepository.UpdateTokenById(user.ID, token)
+		if err != nil {
+			util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+			return
+		}
 	}
 
 	util.Return(w, true, http.StatusOK, nil, Session{Token: token}, util.Meta{})

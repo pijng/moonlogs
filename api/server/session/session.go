@@ -7,9 +7,11 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+type sessionKey string
+
 const (
-	NAME = "moonlogs"
-	KEY  = "moonlogs"
+	NAME            = "moonlogs"
+	KEY  sessionKey = "moonlogs"
 )
 
 var store *sessions.CookieStore
@@ -20,7 +22,7 @@ func RegisterSessionStore() *sessions.CookieStore {
 
 	store.Options = &sessions.Options{
 		MaxAge:   86400 * 30,
-		HttpOnly: false,
+		HttpOnly: true,
 	}
 
 	return store

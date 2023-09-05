@@ -1,6 +1,6 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
-import { controls, logsRoute, showLogRoute } from "@/routing/shared";
+import { chainAuthorized, controls, logsRoute, showLogRoute } from "@/routing/shared";
 import { chainRoute, querySync } from "atomic-router";
 import { combine, sample } from "effector";
 import { debounce } from "patronum";
@@ -11,7 +11,7 @@ sample({
 });
 
 chainRoute({
-  route: logsRoute,
+  route: chainAuthorized(logsRoute),
   beforeOpen: {
     effect: logModel.effects.queryLogsFx,
     mapParams: (route) => ({
@@ -24,7 +24,7 @@ chainRoute({
 });
 
 chainRoute({
-  route: logsRoute,
+  route: chainAuthorized(logsRoute),
   beforeOpen: {
     effect: schemaModel.effects.getSchemasFx,
     mapParams: () => ({}),
@@ -32,7 +32,7 @@ chainRoute({
 });
 
 chainRoute({
-  route: showLogRoute,
+  route: chainAuthorized(showLogRoute),
   beforeOpen: {
     effect: schemaModel.effects.getSchemasFx,
     mapParams: () => ({}),
@@ -40,7 +40,7 @@ chainRoute({
 });
 
 chainRoute({
-  route: showLogRoute,
+  route: chainAuthorized(showLogRoute),
   beforeOpen: {
     effect: logModel.effects.getLogGroupFx,
     mapParams: (route) => ({ schema_name: route.params.schemaName, hash: route.params.hash }),

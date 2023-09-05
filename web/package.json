@@ -31,7 +31,7 @@
     "node": ">=16"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "atomic-router": "^0.8.0",
     "atomic-router-forest": "^0.1.0",

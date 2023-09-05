@@ -1,8 +1,9 @@
 import { withRoute } from "atomic-router-forest";
-import { h, spec } from "forest";
+import { h } from "forest";
 
 import { membersRoute } from "@/routing/shared";
 import { Header } from "@/shared/ui";
+import { UsersList } from "@/widgets/users-list";
 
 export const MembersListPage = () => {
   h("div", () => {
@@ -12,14 +13,6 @@ export const MembersListPage = () => {
 
     Header("Members");
 
-    h("div", () => {
-      spec({
-        classList: ["mt-5"],
-      });
-
-      // SearchBar();
-      // Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
-      // LogsList();
-    });
+    UsersList();
   });
 };

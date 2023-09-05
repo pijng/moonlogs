@@ -21,9 +21,9 @@ export type SchemasReponse = {
 };
 
 export const getSchemas = (): Promise<SchemasReponse> => {
-  return get({ url: "/api/schemas", headers: {} });
+  return get({ url: "/api/schemas" });
 };
 
 export const querySchemas = (query: Record<string, any>): Promise<SchemasReponse> => {
-  return post({ url: "/api/schemas/search", headers: {}, body: JSON.stringify(query) });
+  return post({ url: "/api/schemas/search", body: JSON.stringify(query) });
 };

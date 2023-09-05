@@ -3,7 +3,7 @@ import { withRoute } from "atomic-router-forest";
 
 import { SchemaCard, schemaModel } from "@/entities/schema";
 import { homeRoute, logsRoute } from "@/routing";
-import { Header, Search } from "@/shared/ui";
+import { Search } from "@/shared/ui";
 
 export const HomePage = () => {
   h("div", {
@@ -11,8 +11,6 @@ export const HomePage = () => {
       // This allows to show/hide route if page is matched
       // It is required to call `withRoute` inside `h` call
       withRoute(homeRoute);
-
-      Header("Home");
 
       Search(schemaModel.events.queryChanged, schemaModel.$searchQuery);
 

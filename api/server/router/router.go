@@ -1,7 +1,11 @@
 package router
 
 import (
+	"context"
 	"moonlogs/api/server/controllers"
+	"moonlogs/api/server/session"
+	"moonlogs/api/server/util"
+	"moonlogs/internal/repository"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -49,21 +53,25 @@ func RegisterWebRouter(r *mux.Router) {
 
 func SessionMiddleware(store *sessions.CookieStore, next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Remove when auth is done
-		next.ServeHTTP(w, r)
+		sessionCookie, err := store.Get(r, session.NAME)
+		if err != nil {
+			util.Return(w, false, http.StatusInternalServerError, nil, nil, util.Meta{})
+			return
+		}
 
-		// session, err := store.Get(r, sessionName)
-		// if err != nil {
-		// 	util.Return(w, false, http.StatusInternalServerError, fmt.Errorf("Session error: %w", err), nil, util.Meta{})
-		// 	return
-		// }
+		token, ok := sessionCookie.Values["token"].(string)
+		if !ok || token == "" {
+			util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
+			return
+		}
 
-		// if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-		// 	util.Return(w, false, http.StatusUnauthorized, fmt.Errorf("Unauthorized"), nil, util.Meta{})
-		// 	return
-		// }
+		user, err := repository.NewUserRepository(r.Context()).GetByToken(token)
+		if err != nil || user == nil {
+			util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
+			return
+		}
 
-		// ctx := context.WithValue(r.Context(), sessionKey, session)
-		// next.ServeHTTP(w, r.WithContext(ctx))
+		ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
