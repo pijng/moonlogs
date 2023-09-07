@@ -1,6 +1,6 @@
-import { Event, Store, createEvent, createStore, sample } from "effector";
+import { Event, Store, createEvent, sample } from "effector";
 import { h, spec } from "forest";
-import { Button, ButtonVariant } from "@/shared/ui";
+import { Button } from "@/shared/ui";
 
 export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) => {
   const searchCleared = createEvent();
@@ -87,7 +87,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
 
       Button({
         text: "Clear",
-        variant: createStore<ButtonVariant>("light"),
+        variant: "light",
         size: "small",
         event: searchCleared,
       });

@@ -33,9 +33,6 @@ func Return(w http.ResponseWriter, success bool, code int, err error, data inter
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Credentials", "true")
-	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.WriteHeader(code)
 
 	err = json.NewEncoder(w).Encode(response)

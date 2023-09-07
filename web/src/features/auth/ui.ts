@@ -1,7 +1,6 @@
-import { Button, ButtonVariant, Input } from "@/shared/ui";
+import { Button, Input } from "@/shared/ui";
 import { emailChanged, logInSubmitted, passwordChanged } from "./model";
 import { h, spec } from "forest";
-import { createStore } from "effector";
 
 export const Auth = () => {
   h("div", () => {
@@ -16,7 +15,7 @@ export const Auth = () => {
       text: "Log in",
       event: logInSubmitted,
       size: "base",
-      variant: createStore<ButtonVariant>("default"),
+      variant: "default",
     });
   });
 };

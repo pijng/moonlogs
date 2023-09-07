@@ -137,7 +137,7 @@ export const Sidebar = () => {
           classList: ["space-y-2", "font-medium"],
         });
 
-        SidebarItem("Home", homeRoute);
+        SidebarItem("Categories", homeRoute);
         SidebarItem("Members", membersRoute);
         SidebarItem("Settings", homeRoute);
       });

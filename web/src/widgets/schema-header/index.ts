@@ -1,7 +1,8 @@
 import { schemaModel } from "@/entities/schema";
 import { router } from "@/routing";
-import { Header } from "@/shared/ui";
+import { Button, GearIcon, Header } from "@/shared/ui";
 import { combine } from "effector";
+import { h, spec } from "forest";
 
 const $schema = combine([router.$activeRoutes, schemaModel.$schemas], ([activeRoutes, schemas]) => {
   const schemaName = activeRoutes[0]?.$params.getState().schemaName;
@@ -11,5 +12,25 @@ const $schema = combine([router.$activeRoutes, schemaModel.$schemas], ([activeRo
 const $schemaTitle = $schema.map((s) => s?.title || "");
 
 export const SchemaHeader = () => {
-  Header($schemaTitle);
+  h("div", () => {
+    spec({
+      classList: ["flex", "items-center"],
+    });
+
+    Header($schemaTitle);
+
+    h("div", () => {
+      spec({
+        classList: ["ml-2.5"],
+      });
+
+      Button({
+        text: "",
+        variant: "light",
+        style: "round",
+        size: "small",
+        preIcon: GearIcon,
+      });
+    });
+  });
 };

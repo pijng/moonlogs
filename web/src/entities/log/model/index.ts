@@ -26,10 +26,12 @@ $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
   return JSON.stringify(newFilter);
 });
 
+const resetPage = createEvent();
 const pageChanged = createEvent<string>();
+
 export const $currentPage = createStore("1")
   .on(pageChanged, (_, newPage) => newPage)
-  .reset([queryChanged, filterChanged]);
+  .reset([queryChanged, filterChanged, resetPage]);
 
 const getLogsFx = createEffect((schema_name: string) => {
   return getLogs({ schema_name: schema_name });
@@ -130,7 +132,7 @@ export const $logsGroups = $logs.map((logs) => {
 
 sample({
   clock: reset,
-  target: [resetFilter, resetSearch],
+  target: [resetFilter, resetSearch, resetPage],
 });
 
 export const effects = {

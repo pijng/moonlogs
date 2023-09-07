@@ -1,6 +1,6 @@
 import { Store, createStore } from "effector";
 import { h, list, spec } from "forest";
-import { Button, ButtonVariant } from "@/shared/ui";
+import { Button } from "@/shared/ui";
 
 export const CardHeaded = ({
   tags,
@@ -93,14 +93,23 @@ export const CardHeaded = ({
       h("div", () => {
         spec({
           visible: createStore(Boolean(href)),
-          classList: ["basis-1/12", "p-4", "min-w-fit", "border-l", "border-gray-200", "dark:border-gray-700"],
+          classList: [
+            "basis-1/12",
+            "p-4",
+            "min-w-fit",
+            "border-l",
+            "border-gray-200",
+            "dark:border-gray-700",
+            "flex",
+            "justify-center",
+          ],
         });
 
         h("a", () => {
           spec({
             attr: { href: href || "", target: "_blank" },
           });
-          Button({ text: "Open", variant: createStore<ButtonVariant>("default"), size: "extra_small" });
+          Button({ text: "Open", variant: "default", size: "extra_small" });
         });
       });
     });

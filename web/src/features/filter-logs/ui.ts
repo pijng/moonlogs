@@ -2,7 +2,7 @@ import { Button, ButtonVariant, DownIcon, Dropdown } from "@/shared/ui";
 import { Event, Store } from "effector";
 import { h, spec } from "forest";
 import { $filterIsOpened, filterClicked } from "./model";
-import { FilterIcon } from "@/shared/ui/icons";
+import { FilterIcon } from "@/shared/ui";
 
 export type FilterItem = {
   name: string;

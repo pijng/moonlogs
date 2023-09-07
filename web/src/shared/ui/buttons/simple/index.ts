@@ -1,8 +1,9 @@
-import { Event, Store, createEvent, restore, sample } from "effector";
+import { Event, Store, createEvent, createStore, is, restore, sample } from "effector";
 import { ClassListArray, h, node, spec } from "forest";
 
 export type ButtonVariant = "default" | "alternative" | "light";
 type Size = "base" | "small" | "extra_small";
+type Style = "default" | "round";
 
 const BASE_CLASSES = ["inline-flex", "items-center"];
 
@@ -39,15 +40,31 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
   light: ["block", "font-medium", "text-gray-900", "hover:text-blue-700", "dark:text-gray-400", "dark:hover:text-white"],
 };
 
-const SIZES: Record<Size, string[]> = {
-  base: ["px-5", "py-2.5", "text-sm"],
-  small: ["px-3", "py-2", "text-sm"],
-  extra_small: ["px-3", "py-2", "text-xs"],
+const SIZES: Record<Size, Record<Style, string[]>> = {
+  base: {
+    default: ["px-5", "py-2.5", "text-sm"],
+    round: ["p-2.5", "text-sm"],
+  },
+  small: {
+    default: ["px-3", "py-2", "text-sm"],
+    round: ["p-2", "text-sm"],
+  },
+  extra_small: {
+    default: ["px-3", "py-2", "text-xs"],
+    round: ["p-1.5", "text-xs"],
+  },
 };
 
-const buttonClass = (variant: Store<ButtonVariant>, size: Size): Store<string> => {
+const STYLES: Record<Style, string[]> = {
+  round: ["rounded-full"],
+  default: [""],
+};
+
+const buttonClass = (variant: Store<ButtonVariant>, size: Size, style: Style): Store<string> => {
   const $currentVariant = variant.map((variant) => VARIANTS[variant]);
-  const $sumClasses = $currentVariant.map((variant) => BASE_CLASSES.concat(variant).concat(SIZES[size]));
+  const $sumClasses = $currentVariant.map((variant) =>
+    STYLES[style].concat(BASE_CLASSES).concat(variant).concat(SIZES[size][style]),
+  );
 
   return $sumClasses.map((classes) => classes.join(" "));
 };
@@ -57,12 +74,14 @@ export const Button = ({
   event,
   variant,
   size,
+  style,
   preIcon,
   postIcon,
 }: {
   text: string;
   event?: Event<any>;
-  variant: Store<ButtonVariant>;
+  variant: ButtonVariant | Store<ButtonVariant>;
+  style?: Style;
   size: Size;
   preIcon?: () => void;
   postIcon?: () => void;
@@ -94,10 +113,12 @@ export const Button = ({
     localPostIcon();
 
     const touch = createEvent();
+    const $localVariant = is.unit(variant) ? variant : createStore(variant);
+    const localStyle = style ?? "default";
 
     sample({
-      clock: [touch, variant],
-      source: buttonClass(variant, size),
+      clock: [touch, $localVariant],
+      source: buttonClass($localVariant, size, localStyle),
       target: touchClasses,
     });
 

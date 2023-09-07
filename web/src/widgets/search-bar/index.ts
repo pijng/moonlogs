@@ -2,8 +2,8 @@ import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { Filter } from "@/features";
 import { logsRoute } from "@/routing";
-import { Button, ButtonVariant, Search } from "@/shared/ui";
-import { combine, createEvent, createStore, sample } from "effector";
+import { Button, Search } from "@/shared/ui";
+import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
 
 const $currentSchema = combine([logsRoute.$params, schemaModel.$schemas], ([params, schemas]) => {
@@ -56,7 +56,7 @@ export const SearchBar = () => {
 
       Button({
         text: "Clear",
-        variant: createStore<ButtonVariant>("light"),
+        variant: "light",
         size: "small",
         event: filterCleared,
       });

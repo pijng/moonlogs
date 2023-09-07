@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func Serve() {
@@ -31,14 +32,22 @@ func Serve() {
 }
 
 func createServer() *http.Server {
-	r := mux.NewRouter()
-	registerRouter(r)
+	c := cors.New(cors.Options{
+		// TODO: replace this
+		AllowedOrigins:   []string{"http://localhost:1234"},
+		AllowedHeaders:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowCredentials: true,
+	})
 
+	r := mux.NewRouter()
 	r.Use(loggingMiddleware)
 
+	registerRouter(r)
+
 	return &http.Server{
-		Addr:         "0.0.0.0:4200",
-		Handler:      r,
+		Addr:         ":4200",
+		Handler:      c.Handler(r),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}

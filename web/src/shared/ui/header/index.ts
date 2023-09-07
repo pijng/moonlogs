@@ -11,7 +11,6 @@ export const Header = (text: string | Store<string>) => {
       "text-slate-900",
       "tracking-tight",
       "dark:text-slate-200",
-      "pb-3",
     ],
     text: text,
   });

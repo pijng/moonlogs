@@ -4,7 +4,7 @@ export { CardHeaded, CardLink } from "./cards";
 export { Dropdown } from "./dropdown";
 export { FloatingInput } from "./floating-input";
 export { Header } from "./header";
-export { DownIcon } from "./icons";
+export { DownIcon, FilterIcon, PreviousIcon, NextIcon, Cross, PlusIcon, GearIcon } from "./icons";
 export { Input } from "./input";
 export { Layout, layoutClicked } from "./layout";
 export { Link } from "./link";

@@ -48,6 +48,11 @@ linkRouter({
   Link,
 });
 
+sample({
+  clock: appMounted,
+  target: getSessionFx,
+});
+
 export const chainAuthorized = (route: RouteInstance<any>) => {
   const sessionCheckStarted = createEvent<RouteParamsAndQuery<any>>();
 

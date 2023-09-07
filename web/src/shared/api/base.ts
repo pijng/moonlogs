@@ -21,7 +21,8 @@ export const baseRequest = async ({
   try {
     const response = await fetch(`${BASE_URL}${url}`, {
       method,
-      referrerPolicy: "origin-when-cross-origin",
+      credentials: "include",
+      referrerPolicy: "origin",
       body,
       headers: { ...headers, Authorization: `Bearer ${token}` },
     });
