@@ -1,7 +1,24 @@
-import { Event, createEvent, sample } from "effector";
+import { Event, Store, createEvent, createStore, sample } from "effector";
 import { h, spec } from "forest";
+import { ErrorHint } from "@/shared/ui";
 
-export const Input = ({ type, label, inputChanged }: { type: string; label: string; inputChanged: Event<any> }) => {
+export const Input = ({
+  value,
+  type,
+  label,
+  required,
+  inputChanged,
+  errorVisible,
+  errorText,
+}: {
+  value?: Store<string>;
+  type: string;
+  label: string;
+  required?: boolean;
+  inputChanged: Event<any>;
+  errorVisible?: Store<boolean>;
+  errorText?: Store<string>;
+}) => {
   h("div", () => {
     spec({
       classList: ["mb-6"],
@@ -42,9 +59,11 @@ export const Input = ({ type, label, inputChanged }: { type: string; label: stri
           "dark:focus:ring-blue-500",
           "dark:focus:border-blue-500",
         ],
-        attr: { type: type },
+        attr: { type: type, required: required ?? false, value: value ?? createStore("") },
         handler: { on: { input: localInputChanged } },
       });
     });
+
+    ErrorHint(errorText, errorVisible);
   });
 };

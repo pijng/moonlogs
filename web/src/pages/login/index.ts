@@ -1,7 +1,7 @@
 import { h, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
-import { loginRoute } from "@/routing";
+import { loginRoute } from "@/routing/shared";
 import { AuthForm } from "@/widgets";
 
 export const LoginPage = () => {

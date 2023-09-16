@@ -1,6 +1,5 @@
 import { logModel } from "@/entities/log";
-import { CardHeaded, Table } from "@/shared/ui";
-import { createStore } from "effector";
+import { CardHeaded, LogsTable } from "@/shared/ui";
 import { h, list, spec } from "forest";
 
 export const LogsList = () => {
@@ -14,10 +13,7 @@ export const LogsList = () => {
         tags: group.map((g) => g.tags),
         href: group.map((g) => `${g.schema_name}/${g.group_hash}`),
         content: () => {
-          Table({
-            columns: createStore(["Time", "Level", "Text"]),
-            rows: group.map((g) => g.formattedLogs),
-          });
+          LogsTable(group.map((g) => g.logs));
         },
         withMore: true,
       });

@@ -1,30 +1,52 @@
-import { homeRoute } from "@/routing";
+import { homeRoute } from "@/routing/shared";
 import { postSession } from "@/shared/api";
 import { tokenReceived } from "@/shared/auth";
-import { attach, createEffect, createEvent, restore, sample } from "effector";
+import { rules } from "@/shared/lib";
+import { Event, createEffect, createEvent, createStore, sample } from "effector";
+import { createForm } from "effector-forms";
 
-export const emailChanged = createEvent<string>();
-export const passwordChanged = createEvent<string>();
+export const authForm = createForm({
+  fields: {
+    email: {
+      init: "",
+      rules: [rules.required(), rules.email()],
+    },
+    password: {
+      init: "",
+      rules: [rules.required()],
+    },
+  },
+  validateOn: ["submit"],
+});
 
-export const $email = restore(emailChanged, "");
-export const $password = restore(passwordChanged, "");
+export const $authError = createStore("");
 
-export const logInFx = attach({
-  source: { email: $email, password: $password },
-  effect: createEffect(({ email, password }: { email: string; password: string }) => {
-    return postSession(email, password);
-  }),
+export const logInFx = createEffect(({ email, password }: { email: string; password: string }) => {
+  return postSession(email, password);
+});
+
+sample({
+  source: authForm.formValidated as Event<{ email: string; password: string }>,
+  target: logInFx,
 });
 
 export const logInSubmitted = createEvent();
 
 sample({
-  source: logInSubmitted,
-  target: logInFx,
+  source: logInFx.doneData,
+  fn: (logInResponse) => logInResponse.data.token,
+  target: [tokenReceived, homeRoute.open],
 });
 
 sample({
   source: logInFx.doneData,
-  fn: (logInResponse) => logInResponse.data.token,
-  target: [tokenReceived, homeRoute.open],
+  filter: (logInResponse) => !logInResponse.success,
+  fn: (logInResponse) => {
+    if (logInResponse.code === 401) {
+      return "Wrong email or password";
+    }
+
+    return logInResponse.error;
+  },
+  target: $authError,
 });

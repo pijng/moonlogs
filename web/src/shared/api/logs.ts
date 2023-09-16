@@ -1,6 +1,6 @@
-import { get, post } from "./base";
+import { BaseResponse, get, post } from "./base";
 
-type Level = "Trace" | "Debug" | "Info" | "Warn" | "Error" | "Fatal";
+export type Level = "Trace" | "Debug" | "Info" | "Warn" | "Error" | "Fatal";
 
 export type Log = {
   id: string;
@@ -13,14 +13,9 @@ export type Log = {
   query: Record<string, any>;
 };
 
-export type LogsResponse = {
+export interface LogsResponse extends BaseResponse {
   data: Log[];
-  meta: {
-    page: number;
-    count: number;
-    pages: number;
-  };
-};
+}
 
 export const getLogs = ({
   schema_name,

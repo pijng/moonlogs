@@ -1,5 +1,5 @@
-import { Button, Input } from "@/shared/ui";
-import { emailChanged, logInSubmitted, passwordChanged } from "./model";
+import { Button, ErrorHint, Input } from "@/shared/ui";
+import { $authError, authForm } from "./model";
 import { h, spec } from "forest";
 
 export const Auth = () => {
@@ -8,14 +8,32 @@ export const Auth = () => {
       classList: ["mt-10", "max-w-sm", "w-full"],
     });
 
-    Input({ type: "email", label: "Email", inputChanged: emailChanged });
-    Input({ type: "password", label: "Password", inputChanged: passwordChanged });
+    h("form", () => {
+      Input({
+        type: "email",
+        label: "Email",
+        inputChanged: authForm.fields.email.changed,
+        errorText: authForm.fields.email.$errorText,
+        errorVisible: authForm.fields.email.$errors.map(Boolean),
+      });
 
-    Button({
-      text: "Log in",
-      event: logInSubmitted,
-      size: "base",
-      variant: "default",
+      Input({
+        type: "password",
+        label: "Password",
+        inputChanged: authForm.fields.password.changed,
+        errorText: authForm.fields.password.$errorText,
+        errorVisible: authForm.fields.password.$errors.map(Boolean),
+      });
+
+      Button({
+        text: "Create",
+        event: authForm.submit,
+        size: "base",
+        prevent: true,
+        variant: "default",
+      });
+
+      ErrorHint($authError, $authError.map(Boolean));
     });
   });
 };

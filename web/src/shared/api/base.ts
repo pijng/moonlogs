@@ -1,7 +1,18 @@
 import { attach, createEffect } from "effector";
-import { $token } from "../auth";
+import { $token, unauthorizedTriggered } from "../auth";
 
 export type FetchMethods = "GET" | "POST" | "PUT";
+export type BaseResponse = {
+  code: number;
+  success: boolean;
+  error: string;
+  data: any;
+  meta: {
+    page: number;
+    count: number;
+    pages: number;
+  };
+};
 
 const BASE_URL = process.env.NODE_ENV === "development" ? "//127.0.0.1:4200" : "";
 
@@ -29,11 +40,9 @@ export const baseRequest = async ({
 
     const responseText = await response.clone().text();
 
-    if (!response.ok) {
-      throw new Error(responseText);
+    if (response.status === 401) {
+      unauthorizedTriggered();
     }
-
-    if (response.status === 204) return null;
 
     const jsonResponse = JSON.parse(responseText);
 

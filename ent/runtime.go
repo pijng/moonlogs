@@ -57,11 +57,11 @@ func init() {
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
 	// userDescPasswordDigest is the schema descriptor for password_digest field.
-	userDescPasswordDigest := userFields[2].Descriptor()
+	userDescPasswordDigest := userFields[3].Descriptor()
 	// user.PasswordDigestValidator is a validator for the "password_digest" field. It is called by the builders before save.
 	user.PasswordDigestValidator = userDescPasswordDigest.Validators[0].(func(string) error)
 	// userDescRole is the schema descriptor for role field.
-	userDescRole := userFields[3].Descriptor()
+	userDescRole := userFields[4].Descriptor()
 	// user.DefaultRole holds the default value on creation for the role field.
 	user.DefaultRole = userDescRole.Default.(string)
 	// user.RoleValidator is a validator for the "role" field. It is called by the builders before save.

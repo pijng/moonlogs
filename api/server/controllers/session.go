@@ -73,6 +73,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	session.Values["token"] = token
 	session.Values["userID"] = user.ID
+
 	err = session.Save(r, w)
 	if err != nil {
 		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})

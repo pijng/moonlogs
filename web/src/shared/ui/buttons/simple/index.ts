@@ -16,7 +16,6 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
     "dark:border-blue-600",
     "hover:bg-blue-800",
     "font-medium",
-    "rounded-lg",
     "dark:bg-blue-600",
     "dark:hover:bg-blue-700",
     "focus:outline-none",
@@ -26,7 +25,6 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
     "font-medium",
     "text-gray-900",
     "bg-white",
-    "rounded-lg",
     "border",
     "border-gray-200",
     "hover:bg-gray-100",
@@ -42,15 +40,15 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
 
 const SIZES: Record<Size, Record<Style, string[]>> = {
   base: {
-    default: ["px-5", "py-2.5", "text-sm"],
+    default: ["px-5", "py-2.5", "text-sm", "rounded-lg"],
     round: ["p-2.5", "text-sm"],
   },
   small: {
-    default: ["px-3", "py-2", "text-sm"],
+    default: ["px-3", "py-2", "text-sm", "rounded-lg"],
     round: ["p-2", "text-sm"],
   },
   extra_small: {
-    default: ["px-3", "py-2", "text-xs"],
+    default: ["px-3", "py-2", "text-xs", "rounded-lg"],
     round: ["p-1.5", "text-xs"],
   },
 };
@@ -75,6 +73,8 @@ export const Button = ({
   variant,
   size,
   style,
+  visible,
+  prevent,
   preIcon,
   postIcon,
 }: {
@@ -83,6 +83,8 @@ export const Button = ({
   variant: ButtonVariant | Store<ButtonVariant>;
   style?: Style;
   size: Size;
+  visible?: Store<boolean>;
+  prevent?: boolean;
   preIcon?: () => void;
   postIcon?: () => void;
 }) => {
@@ -105,9 +107,10 @@ export const Button = ({
     const $classes = restore(touchClasses, "");
 
     spec({
-      handler: { click: event ?? createEvent() },
+      handler: { on: { click: event ?? createEvent() }, config: { prevent: prevent } },
       classList: [$classes] as ClassListArray,
       text: text,
+      visible: visible,
     });
 
     localPostIcon();

@@ -1,6 +1,7 @@
 import { userModel } from "@/entities/user";
-import { Table } from "@/shared/ui";
-import { createStore } from "effector";
+import { memberEditRoute } from "@/routing/shared";
+import { UsersTable } from "@/shared/ui";
+import { createEvent, sample } from "effector";
 import { h, spec } from "forest";
 
 export const UsersList = () => {
@@ -9,9 +10,13 @@ export const UsersList = () => {
       classList: ["flex", "flex-col", "space-y-6", "mt-3"],
     });
 
-    Table({
-      columns: createStore(["Email", "Name", "Role"]),
-      rows: userModel.$formattedUsers,
+    const editUserClicked = createEvent<number>();
+    sample({
+      source: editUserClicked,
+      fn: (id) => ({ id }),
+      target: memberEditRoute.open,
     });
+
+    UsersTable(userModel.$users, editUserClicked);
   });
 };

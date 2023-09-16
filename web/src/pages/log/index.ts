@@ -3,8 +3,7 @@ import { h, spec } from "forest";
 
 import { logModel } from "@/entities/log";
 import { showLogRoute } from "@/routing/shared";
-import { CardHeaded, Table } from "@/shared/ui";
-import { createStore } from "effector";
+import { CardHeaded, LogsTable } from "@/shared/ui";
 import { SchemaHeader } from "@/widgets";
 
 export const ShowLogPage = () => {
@@ -28,10 +27,7 @@ export const ShowLogPage = () => {
         CardHeaded({
           tags: logModel.$groupedLogs.map((g) => g.tags),
           content: () => {
-            Table({
-              columns: createStore(["Time", "Level", "Text"]),
-              rows: logModel.$groupedLogs.map((g) => g.formattedLogs),
-            });
+            LogsTable(logModel.$groupedLogs.map((g) => g.logs));
           },
         });
       });

@@ -90,6 +90,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
         variant: "light",
         size: "small",
         event: searchCleared,
+        visible: searchQuery.map((query) => query.length > 0),
       });
     });
   });

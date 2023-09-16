@@ -19,7 +19,7 @@ export const getSessionFx = createEffect(() => {
 sample({
   source: $isAuthorized,
   clock: getSessionFx.doneData,
-  filter: (isAuthorized, sessionResponse) => !isAuthorized && !!sessionResponse?.data?.token,
+  filter: (isAuthorized, sessionResponse) => !isAuthorized && !!sessionResponse?.data?.token && sessionResponse.success,
   fn: (_, sessionResponse) => sessionResponse.data.token,
   target: tokenReceived,
 });

@@ -1,3 +1,4 @@
+import { Level } from "@/shared/api";
 import { Store, createEvent, restore, sample } from "effector";
 import { ClassListArray, h, node, spec } from "forest";
 
@@ -11,12 +12,12 @@ const LEVEL_CLASSES: Record<string, string[]> = {
   fatal: ["bg-pink-100", "text-pink-800", "dark:bg-pink-900", "dark:text-pink-300"],
 };
 
-const levelCLasses = (text: Store<string>) => {
+const levelCLasses = (text: Store<Level>) => {
   const classes = text.map((text) => LEVEL_CLASSES[text.toLowerCase()]);
   return classes.map((classes) => BASE_CLASSES.concat(classes).join(" "));
 };
 
-export const LevelBadge = (text: Store<string>) => {
+export const LevelBadge = (text: Store<Level>) => {
   h("span", () => {
     const touchClasses = createEvent<string>();
     const $classes = restore(touchClasses, "");

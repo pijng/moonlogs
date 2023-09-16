@@ -1,5 +1,5 @@
 import { homeRoute, loginRoute } from "@/routing/shared";
-import { $isAuthorized, unauthorizedTriggered } from "@/shared/auth";
+import { getSessionFx, unauthorizedTriggered } from "@/shared/auth";
 import { sample } from "effector";
 
 sample({
@@ -8,8 +8,7 @@ sample({
 });
 
 sample({
-  source: $isAuthorized,
-  clock: loginRoute.opened,
-  filter: (isAuthorized) => Boolean(isAuthorized),
+  source: getSessionFx.doneData,
+  filter: (sessionResponse) => !!sessionResponse.data.token && sessionResponse.success,
   target: homeRoute.open,
 });

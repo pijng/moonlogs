@@ -1,6 +1,6 @@
 import { schemaModel } from "@/entities/schema";
 import { router } from "@/routing";
-import { Button, GearIcon, Header } from "@/shared/ui";
+import { Button, Header } from "@/shared/ui";
 import { combine } from "effector";
 import { h, spec } from "forest";
 
@@ -14,7 +14,7 @@ const $schemaTitle = $schema.map((s) => s?.title || "");
 export const SchemaHeader = () => {
   h("div", () => {
     spec({
-      classList: ["flex", "items-center"],
+      classList: ["flex", "items-center", "justify-between"],
     });
 
     Header($schemaTitle);
@@ -25,11 +25,9 @@ export const SchemaHeader = () => {
       });
 
       Button({
-        text: "",
-        variant: "light",
-        style: "round",
-        size: "small",
-        preIcon: GearIcon,
+        text: "Settings",
+        variant: "default",
+        size: "extra_small",
       });
     });
   });

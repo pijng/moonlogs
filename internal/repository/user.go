@@ -24,6 +24,7 @@ func (r *UserRepository) Create(user ent.User) (*ent.User, error) {
 	u, err := r.client.User.
 		Create().
 		SetEmail(user.Email).
+		SetPasswordDigest(user.PasswordDigest).
 		SetName(user.Name).
 		SetRole(user.Role).
 		Save(r.ctx)
@@ -76,13 +77,16 @@ func (r *UserRepository) DestroyById(id int) error {
 }
 
 func (r *UserRepository) UpdateById(userToUpdate ent.User) (*ent.User, error) {
-	u, err := r.client.User.UpdateOneID(userToUpdate.ID).
+	transaction := r.client.User.UpdateOneID(userToUpdate.ID).
 		SetEmail(userToUpdate.Email).
 		SetName(userToUpdate.Name).
-		SetRole(userToUpdate.Role).
-		SetPasswordDigest(userToUpdate.PasswordDigest).
-		Save(r.ctx)
+		SetRole(userToUpdate.Role)
 
+	if len(userToUpdate.PasswordDigest) > 0 {
+		transaction = transaction.SetPasswordDigest(userToUpdate.PasswordDigest).SetToken(userToUpdate.Token)
+	}
+
+	u, err := transaction.Save(r.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}

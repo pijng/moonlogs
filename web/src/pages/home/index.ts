@@ -2,8 +2,9 @@ import { h, list, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
 import { SchemaCard, schemaModel } from "@/entities/schema";
-import { homeRoute, logsRoute } from "@/routing";
-import { Button, Header, PlusIcon, Search } from "@/shared/ui";
+import { homeRoute, logsRoute } from "@/routing/shared";
+import { Search } from "@/shared/ui";
+import { HeaderWithCreation } from "@/widgets";
 
 export const HomePage = () => {
   h("div", {
@@ -12,25 +13,7 @@ export const HomePage = () => {
       // It is required to call `withRoute` inside `h` call
       withRoute(homeRoute);
 
-      h("div", () => {
-        spec({
-          classList: ["flex", "items-center"],
-        });
-        Header("Categories");
-
-        h("div", () => {
-          spec({
-            classList: ["ml-2.5"],
-          });
-          Button({
-            text: "",
-            variant: "default",
-            style: "round",
-            size: "extra_small",
-            preIcon: PlusIcon,
-          });
-        });
-      });
+      HeaderWithCreation("Categories", homeRoute);
 
       h("div", () => {
         spec({

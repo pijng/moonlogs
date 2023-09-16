@@ -1,10 +1,9 @@
 import { Log, getLogs } from "@/shared/api";
 import { getLogGroup } from "@/shared/api/logs";
 import { DATEFORMAT_OPTIONS, getLocale } from "@/shared/lib";
-import { Cell } from "@/shared/ui";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
-type LogsGroup = { tags: string[]; schema_name: string; group_hash: string; logs: Log[]; formattedLogs: Cell[][] };
+type LogsGroup = { tags: string[]; schema_name: string; group_hash: string; logs: Log[] };
 
 const reset = createEffect();
 
@@ -69,7 +68,6 @@ export const $groupedLogs = createStore<LogsGroup>({
   schema_name: "",
   group_hash: "",
   logs: [],
-  formattedLogs: [],
 });
 
 sample({
@@ -83,18 +81,11 @@ sample({
       schema_name: logs[0]?.schema_name,
       group_hash: logs[0]?.group_hash,
       logs: [],
-      formattedLogs: [],
     };
 
     logsGroup.logs = logs.map((log) => {
       return { ...log, created_at: intl.format(new Date(log.created_at)) };
     });
-
-    logsGroup.formattedLogs = logsGroup.logs.map((l) => [
-      { data: l.created_at, component: "text" },
-      { data: l.level, component: "badge" },
-      { data: l.text, component: "text" },
-    ]);
 
     return logsGroup;
   },
@@ -111,18 +102,12 @@ export const $logsGroups = $logs.map((logs) => {
       schema_name: log.schema_name,
       group_hash: log.group_hash,
       logs: [],
-      formattedLogs: [],
     };
 
     const formattedLog = { ...log, created_at: intl.format(new Date(log.created_at)) };
 
     acc[key] = acc[key] || logsGroup;
     acc[key].logs.push(formattedLog);
-    acc[key].formattedLogs.push([
-      { data: formattedLog.created_at, component: "text" },
-      { data: formattedLog.level, component: "badge" },
-      { data: formattedLog.text, component: "text" },
-    ]);
 
     return acc;
   }, {});

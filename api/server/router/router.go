@@ -37,6 +37,7 @@ func RegisterUserRouter(r *mux.Router, store *sessions.CookieStore) {
 	logRecordRouter.HandleFunc("", SessionMiddleware(store, controllers.UserGetAll)).Methods(http.MethodGet, http.MethodOptions)
 	logRecordRouter.HandleFunc("", SessionMiddleware(store, controllers.UserCreate)).Methods(http.MethodPost, http.MethodOptions)
 	logRecordRouter.HandleFunc("/{id}", SessionMiddleware(store, controllers.UserGetById)).Methods(http.MethodGet, http.MethodOptions)
+	logRecordRouter.HandleFunc("/{id}", SessionMiddleware(store, controllers.UserUpdateById)).Methods(http.MethodPut, http.MethodOptions)
 	logRecordRouter.HandleFunc("/{id}", SessionMiddleware(store, controllers.UserDestroyById)).Methods(http.MethodDelete, http.MethodOptions)
 }
 

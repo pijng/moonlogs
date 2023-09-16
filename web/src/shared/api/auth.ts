@@ -1,18 +1,13 @@
-import { get, post } from "./base";
+import { BaseResponse, get, post } from "./base";
 
-export type SessionReponse = {
+export interface SessionResponse extends BaseResponse {
   data: { token: string };
-  meta: {
-    page: number;
-    count: number;
-    per_page: number;
-  };
-};
+}
 
-export const postSession = (email: string, password: string): Promise<SessionReponse> => {
+export const postSession = (email: string, password: string): Promise<SessionResponse> => {
   return post({ url: "/api/session", body: JSON.stringify({ email, password }) });
 };
 
-export const getSession = (): Promise<SessionReponse> => {
+export const getSession = (): Promise<SessionResponse> => {
   return get({ url: "/api/session" });
 };

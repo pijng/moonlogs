@@ -1,7 +1,7 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { Filter } from "@/features";
-import { logsRoute } from "@/routing";
+import { logsRoute } from "@/routing/shared";
 import { Button, Search } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
@@ -54,11 +54,14 @@ export const SearchBar = () => {
         target: logModel.events.resetFilter,
       });
 
+      const $filtersApplied = $currentFilter.map((items) => items.filter((item) => item.value.trim().length > 0).length > 0);
+
       Button({
         text: "Clear",
         variant: "light",
         size: "small",
         event: filterCleared,
+        visible: $filtersApplied,
       });
     });
   });

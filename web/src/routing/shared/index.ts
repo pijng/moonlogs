@@ -18,6 +18,8 @@ export const homeRoute = createRoute();
 export const logsRoute = createRoute<{ schemaName: string }>();
 export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
 export const membersRoute = createRoute();
+export const memberCreateRoute = createRoute();
+export const memberEditRoute = createRoute<{ id: number }>();
 
 export const ROUTES = [
   { path: "/login", route: loginRoute },
@@ -25,6 +27,8 @@ export const ROUTES = [
   { path: "/logs/:schemaName", route: logsRoute },
   { path: "/logs/:schemaName/:hash", route: showLogRoute },
   { path: "/members", route: membersRoute },
+  { path: "/members/create", route: memberCreateRoute },
+  { path: "/members/:id/edit", route: memberEditRoute },
 ];
 
 const history = createBrowserHistory();
@@ -70,7 +74,7 @@ export const chainAuthorized = (route: RouteInstance<any>) => {
 
   sample({
     source: sessionCheck.doneData,
-    filter: (sessionResponse) => !sessionResponse?.data?.token,
+    filter: (sessionResponse) => !sessionResponse?.data?.token || !sessionResponse.success,
     target: unauthorizedTriggered,
   });
 

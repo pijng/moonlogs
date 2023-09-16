@@ -1,25 +1,25 @@
 import { User, getUsers } from "@/shared/api";
-import { Cell } from "@/shared/ui";
+import { getUser } from "@/shared/api/users";
 import { createEffect, createStore } from "effector";
 
 const getUsersFx = createEffect(() => {
   return getUsers();
 });
 
+const getUserFx = createEffect((id: number) => {
+  return getUser(id);
+});
+
 export const $users = createStore<User[]>([]).on(getUsersFx.doneData, (_, usersResponse) => usersResponse.data);
 
-export const $formattedUsers = $users.map((users) => {
-  return users.map<Cell[]>((user) => {
-    return [
-      { data: user.email, component: "text" },
-      { data: user.name, component: "text" },
-      { data: user.role, component: "text" },
-    ];
-  });
-});
+export const $currentUser = createStore<User>({ id: 0, name: "markooooo", email: "", role: "Member", token: "" }).on(
+  getUserFx.doneData,
+  (_, userResponse) => userResponse.data,
+);
 
 export const effects = {
   getUsersFx,
+  getUserFx,
 };
 
 export const events = {};
