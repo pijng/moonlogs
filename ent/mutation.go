@@ -743,18 +743,20 @@ func (m *LogRecordMutation) ResetEdge(name string) error {
 // LogSchemaMutation represents an operation that mutates the LogSchema nodes in the graph.
 type LogSchemaMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	title         *string
-	description   *string
-	name          *string
-	fields        *[]schema.Field
-	appendfields  []schema.Field
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*LogSchema, error)
-	predicates    []predicate.LogSchema
+	op                Op
+	typ               string
+	id                *int
+	title             *string
+	description       *string
+	name              *string
+	fields            *[]schema.Field
+	appendfields      []schema.Field
+	retention_time    *int64
+	addretention_time *int64
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*LogSchema, error)
+	predicates        []predicate.LogSchema
 }
 
 var _ ent.Mutation = (*LogSchemaMutation)(nil)
@@ -1014,6 +1016,76 @@ func (m *LogSchemaMutation) ResetFields() {
 	m.appendfields = nil
 }
 
+// SetRetentionTime sets the "retention_time" field.
+func (m *LogSchemaMutation) SetRetentionTime(i int64) {
+	m.retention_time = &i
+	m.addretention_time = nil
+}
+
+// RetentionTime returns the value of the "retention_time" field in the mutation.
+func (m *LogSchemaMutation) RetentionTime() (r int64, exists bool) {
+	v := m.retention_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRetentionTime returns the old "retention_time" field's value of the LogSchema entity.
+// If the LogSchema object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LogSchemaMutation) OldRetentionTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRetentionTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRetentionTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRetentionTime: %w", err)
+	}
+	return oldValue.RetentionTime, nil
+}
+
+// AddRetentionTime adds i to the "retention_time" field.
+func (m *LogSchemaMutation) AddRetentionTime(i int64) {
+	if m.addretention_time != nil {
+		*m.addretention_time += i
+	} else {
+		m.addretention_time = &i
+	}
+}
+
+// AddedRetentionTime returns the value that was added to the "retention_time" field in this mutation.
+func (m *LogSchemaMutation) AddedRetentionTime() (r int64, exists bool) {
+	v := m.addretention_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRetentionTime clears the value of the "retention_time" field.
+func (m *LogSchemaMutation) ClearRetentionTime() {
+	m.retention_time = nil
+	m.addretention_time = nil
+	m.clearedFields[logschema.FieldRetentionTime] = struct{}{}
+}
+
+// RetentionTimeCleared returns if the "retention_time" field was cleared in this mutation.
+func (m *LogSchemaMutation) RetentionTimeCleared() bool {
+	_, ok := m.clearedFields[logschema.FieldRetentionTime]
+	return ok
+}
+
+// ResetRetentionTime resets all changes to the "retention_time" field.
+func (m *LogSchemaMutation) ResetRetentionTime() {
+	m.retention_time = nil
+	m.addretention_time = nil
+	delete(m.clearedFields, logschema.FieldRetentionTime)
+}
+
 // Where appends a list predicates to the LogSchemaMutation builder.
 func (m *LogSchemaMutation) Where(ps ...predicate.LogSchema) {
 	m.predicates = append(m.predicates, ps...)
@@ -1048,7 +1120,7 @@ func (m *LogSchemaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LogSchemaMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.title != nil {
 		fields = append(fields, logschema.FieldTitle)
 	}
@@ -1060,6 +1132,9 @@ func (m *LogSchemaMutation) Fields() []string {
 	}
 	if m.fields != nil {
 		fields = append(fields, logschema.FieldFields)
+	}
+	if m.retention_time != nil {
+		fields = append(fields, logschema.FieldRetentionTime)
 	}
 	return fields
 }
@@ -1077,6 +1152,8 @@ func (m *LogSchemaMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case logschema.FieldFields:
 		return m.GetFields()
+	case logschema.FieldRetentionTime:
+		return m.RetentionTime()
 	}
 	return nil, false
 }
@@ -1094,6 +1171,8 @@ func (m *LogSchemaMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldName(ctx)
 	case logschema.FieldFields:
 		return m.OldFields(ctx)
+	case logschema.FieldRetentionTime:
+		return m.OldRetentionTime(ctx)
 	}
 	return nil, fmt.Errorf("unknown LogSchema field %s", name)
 }
@@ -1131,6 +1210,13 @@ func (m *LogSchemaMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetFields(v)
 		return nil
+	case logschema.FieldRetentionTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRetentionTime(v)
+		return nil
 	}
 	return fmt.Errorf("unknown LogSchema field %s", name)
 }
@@ -1138,13 +1224,21 @@ func (m *LogSchemaMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *LogSchemaMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addretention_time != nil {
+		fields = append(fields, logschema.FieldRetentionTime)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *LogSchemaMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case logschema.FieldRetentionTime:
+		return m.AddedRetentionTime()
+	}
 	return nil, false
 }
 
@@ -1153,6 +1247,13 @@ func (m *LogSchemaMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *LogSchemaMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case logschema.FieldRetentionTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRetentionTime(v)
+		return nil
 	}
 	return fmt.Errorf("unknown LogSchema numeric field %s", name)
 }
@@ -1160,7 +1261,11 @@ func (m *LogSchemaMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *LogSchemaMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(logschema.FieldRetentionTime) {
+		fields = append(fields, logschema.FieldRetentionTime)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1173,6 +1278,11 @@ func (m *LogSchemaMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *LogSchemaMutation) ClearField(name string) error {
+	switch name {
+	case logschema.FieldRetentionTime:
+		m.ClearRetentionTime()
+		return nil
+	}
 	return fmt.Errorf("unknown LogSchema nullable field %s", name)
 }
 
@@ -1191,6 +1301,9 @@ func (m *LogSchemaMutation) ResetField(name string) error {
 		return nil
 	case logschema.FieldFields:
 		m.ResetFields()
+		return nil
+	case logschema.FieldRetentionTime:
+		m.ResetRetentionTime()
 		return nil
 	}
 	return fmt.Errorf("unknown LogSchema field %s", name)

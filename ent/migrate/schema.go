@@ -32,6 +32,7 @@ var (
 		{Name: "description", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "fields", Type: field.TypeJSON},
+		{Name: "retention_time", Type: field.TypeInt64, Nullable: true},
 	}
 	// LogSchemasTable holds the schema information for the "log_schemas" table.
 	LogSchemasTable = &schema.Table{

@@ -19,6 +19,8 @@ const (
 	FieldName = "name"
 	// FieldFields holds the string denoting the fields field in the database.
 	FieldFields = "fields"
+	// FieldRetentionTime holds the string denoting the retention_time field in the database.
+	FieldRetentionTime = "retention_time"
 	// Table holds the table name of the logschema in the database.
 	Table = "log_schemas"
 )
@@ -30,6 +32,7 @@ var Columns = []string{
 	FieldDescription,
 	FieldName,
 	FieldFields,
+	FieldRetentionTime,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -70,4 +73,9 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByRetentionTime orders the results by the retention_time field.
+func ByRetentionTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRetentionTime, opts...).ToFunc()
 }

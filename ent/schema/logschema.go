@@ -35,6 +35,7 @@ func (LogSchema) Fields() []ent.Field {
 			return nil
 		}).Unique().Immutable(),
 		field.JSON("fields", []Field{}),
+		field.Int64("retention_time").Optional(),
 	}
 }
 

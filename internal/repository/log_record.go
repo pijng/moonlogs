@@ -8,6 +8,7 @@ import (
 	"moonlogs/ent/predicate"
 	"moonlogs/ent/schema"
 	"moonlogs/internal/config"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqljson"
@@ -129,4 +130,14 @@ func (r *LogRecordRepository) GetCountAll() (int, error) {
 	}
 
 	return count, nil
+}
+
+func (r *LogRecordRepository) FindStale(schemaID int, threshold time.Time) ([]*ent.LogRecord, error) {
+	return r.client.LogRecord.Query().Where(logrecord.SchemaID(schemaID), logrecord.CreatedAtLT(threshold)).All(r.ctx)
+}
+
+func (r *LogRecordRepository) DeleteByIDs(ids []int) error {
+	_, err := r.client.LogRecord.Delete().Where(logrecord.IDIn(ids...)).Exec(r.ctx)
+
+	return err
 }

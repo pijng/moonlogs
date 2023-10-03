@@ -25,8 +25,10 @@ type LogSchema struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Fields holds the value of the "fields" field.
-	Fields       []schema.Field `json:"fields,omitempty"`
-	selectValues sql.SelectValues
+	Fields []schema.Field `json:"fields,omitempty"`
+	// RetentionTime holds the value of the "retention_time" field.
+	RetentionTime int64 `json:"retention_time,omitempty"`
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -36,7 +38,7 @@ func (*LogSchema) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case logschema.FieldFields:
 			values[i] = new([]byte)
-		case logschema.FieldID:
+		case logschema.FieldID, logschema.FieldRetentionTime:
 			values[i] = new(sql.NullInt64)
 		case logschema.FieldTitle, logschema.FieldDescription, logschema.FieldName:
 			values[i] = new(sql.NullString)
@@ -87,6 +89,12 @@ func (ls *LogSchema) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field fields: %w", err)
 				}
 			}
+		case logschema.FieldRetentionTime:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field retention_time", values[i])
+			} else if value.Valid {
+				ls.RetentionTime = value.Int64
+			}
 		default:
 			ls.selectValues.Set(columns[i], values[i])
 		}
@@ -134,6 +142,9 @@ func (ls *LogSchema) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("fields=")
 	builder.WriteString(fmt.Sprintf("%v", ls.Fields))
+	builder.WriteString(", ")
+	builder.WriteString("retention_time=")
+	builder.WriteString(fmt.Sprintf("%v", ls.RetentionTime))
 	builder.WriteByte(')')
 	return builder.String()
 }

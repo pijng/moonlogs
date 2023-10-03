@@ -53,6 +53,33 @@ func (lsu *LogSchemaUpdate) AppendFields(s []schema.Field) *LogSchemaUpdate {
 	return lsu
 }
 
+// SetRetentionTime sets the "retention_time" field.
+func (lsu *LogSchemaUpdate) SetRetentionTime(i int64) *LogSchemaUpdate {
+	lsu.mutation.ResetRetentionTime()
+	lsu.mutation.SetRetentionTime(i)
+	return lsu
+}
+
+// SetNillableRetentionTime sets the "retention_time" field if the given value is not nil.
+func (lsu *LogSchemaUpdate) SetNillableRetentionTime(i *int64) *LogSchemaUpdate {
+	if i != nil {
+		lsu.SetRetentionTime(*i)
+	}
+	return lsu
+}
+
+// AddRetentionTime adds i to the "retention_time" field.
+func (lsu *LogSchemaUpdate) AddRetentionTime(i int64) *LogSchemaUpdate {
+	lsu.mutation.AddRetentionTime(i)
+	return lsu
+}
+
+// ClearRetentionTime clears the value of the "retention_time" field.
+func (lsu *LogSchemaUpdate) ClearRetentionTime() *LogSchemaUpdate {
+	lsu.mutation.ClearRetentionTime()
+	return lsu
+}
+
 // Mutation returns the LogSchemaMutation object of the builder.
 func (lsu *LogSchemaUpdate) Mutation() *LogSchemaMutation {
 	return lsu.mutation
@@ -121,6 +148,15 @@ func (lsu *LogSchemaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			sqljson.Append(u, logschema.FieldFields, value)
 		})
 	}
+	if value, ok := lsu.mutation.RetentionTime(); ok {
+		_spec.SetField(logschema.FieldRetentionTime, field.TypeInt64, value)
+	}
+	if value, ok := lsu.mutation.AddedRetentionTime(); ok {
+		_spec.AddField(logschema.FieldRetentionTime, field.TypeInt64, value)
+	}
+	if lsu.mutation.RetentionTimeCleared() {
+		_spec.ClearField(logschema.FieldRetentionTime, field.TypeInt64)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, lsu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{logschema.Label}
@@ -162,6 +198,33 @@ func (lsuo *LogSchemaUpdateOne) SetFields(s []schema.Field) *LogSchemaUpdateOne 
 // AppendFields appends s to the "fields" field.
 func (lsuo *LogSchemaUpdateOne) AppendFields(s []schema.Field) *LogSchemaUpdateOne {
 	lsuo.mutation.AppendFields(s)
+	return lsuo
+}
+
+// SetRetentionTime sets the "retention_time" field.
+func (lsuo *LogSchemaUpdateOne) SetRetentionTime(i int64) *LogSchemaUpdateOne {
+	lsuo.mutation.ResetRetentionTime()
+	lsuo.mutation.SetRetentionTime(i)
+	return lsuo
+}
+
+// SetNillableRetentionTime sets the "retention_time" field if the given value is not nil.
+func (lsuo *LogSchemaUpdateOne) SetNillableRetentionTime(i *int64) *LogSchemaUpdateOne {
+	if i != nil {
+		lsuo.SetRetentionTime(*i)
+	}
+	return lsuo
+}
+
+// AddRetentionTime adds i to the "retention_time" field.
+func (lsuo *LogSchemaUpdateOne) AddRetentionTime(i int64) *LogSchemaUpdateOne {
+	lsuo.mutation.AddRetentionTime(i)
+	return lsuo
+}
+
+// ClearRetentionTime clears the value of the "retention_time" field.
+func (lsuo *LogSchemaUpdateOne) ClearRetentionTime() *LogSchemaUpdateOne {
+	lsuo.mutation.ClearRetentionTime()
 	return lsuo
 }
 
@@ -262,6 +325,15 @@ func (lsuo *LogSchemaUpdateOne) sqlSave(ctx context.Context) (_node *LogSchema, 
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, logschema.FieldFields, value)
 		})
+	}
+	if value, ok := lsuo.mutation.RetentionTime(); ok {
+		_spec.SetField(logschema.FieldRetentionTime, field.TypeInt64, value)
+	}
+	if value, ok := lsuo.mutation.AddedRetentionTime(); ok {
+		_spec.AddField(logschema.FieldRetentionTime, field.TypeInt64, value)
+	}
+	if lsuo.mutation.RetentionTimeCleared() {
+		_spec.ClearField(logschema.FieldRetentionTime, field.TypeInt64)
 	}
 	_node = &LogSchema{config: lsuo.config}
 	_spec.Assign = _node.assignValues

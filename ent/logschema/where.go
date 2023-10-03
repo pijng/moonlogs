@@ -68,6 +68,11 @@ func Name(v string) predicate.LogSchema {
 	return predicate.LogSchema(sql.FieldEQ(FieldName, v))
 }
 
+// RetentionTime applies equality check predicate on the "retention_time" field. It's identical to RetentionTimeEQ.
+func RetentionTime(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldEQ(FieldRetentionTime, v))
+}
+
 // TitleEQ applies the EQ predicate on the "title" field.
 func TitleEQ(v string) predicate.LogSchema {
 	return predicate.LogSchema(sql.FieldEQ(FieldTitle, v))
@@ -261,6 +266,56 @@ func NameEqualFold(v string) predicate.LogSchema {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.LogSchema {
 	return predicate.LogSchema(sql.FieldContainsFold(FieldName, v))
+}
+
+// RetentionTimeEQ applies the EQ predicate on the "retention_time" field.
+func RetentionTimeEQ(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldEQ(FieldRetentionTime, v))
+}
+
+// RetentionTimeNEQ applies the NEQ predicate on the "retention_time" field.
+func RetentionTimeNEQ(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldNEQ(FieldRetentionTime, v))
+}
+
+// RetentionTimeIn applies the In predicate on the "retention_time" field.
+func RetentionTimeIn(vs ...int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldIn(FieldRetentionTime, vs...))
+}
+
+// RetentionTimeNotIn applies the NotIn predicate on the "retention_time" field.
+func RetentionTimeNotIn(vs ...int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldNotIn(FieldRetentionTime, vs...))
+}
+
+// RetentionTimeGT applies the GT predicate on the "retention_time" field.
+func RetentionTimeGT(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldGT(FieldRetentionTime, v))
+}
+
+// RetentionTimeGTE applies the GTE predicate on the "retention_time" field.
+func RetentionTimeGTE(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldGTE(FieldRetentionTime, v))
+}
+
+// RetentionTimeLT applies the LT predicate on the "retention_time" field.
+func RetentionTimeLT(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldLT(FieldRetentionTime, v))
+}
+
+// RetentionTimeLTE applies the LTE predicate on the "retention_time" field.
+func RetentionTimeLTE(v int64) predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldLTE(FieldRetentionTime, v))
+}
+
+// RetentionTimeIsNil applies the IsNil predicate on the "retention_time" field.
+func RetentionTimeIsNil() predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldIsNull(FieldRetentionTime))
+}
+
+// RetentionTimeNotNil applies the NotNil predicate on the "retention_time" field.
+func RetentionTimeNotNil() predicate.LogSchema {
+	return predicate.LogSchema(sql.FieldNotNull(FieldRetentionTime))
 }
 
 // And groups predicates with the AND operator between them.

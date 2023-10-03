@@ -47,6 +47,7 @@ func (r *LogSchemaRepository) Create(logSchema ent.LogSchema, formattedSchemaNam
 		Create().
 		SetName(formattedSchemaName).
 		SetDescription(logSchema.Description).
+		SetRetentionTime(logSchema.RetentionTime).
 		SetTitle(logSchema.Title).
 		SetFields(formattedFields).
 		Save(r.ctx)

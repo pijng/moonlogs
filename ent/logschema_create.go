@@ -44,6 +44,20 @@ func (lsc *LogSchemaCreate) SetFields(s []schema.Field) *LogSchemaCreate {
 	return lsc
 }
 
+// SetRetentionTime sets the "retention_time" field.
+func (lsc *LogSchemaCreate) SetRetentionTime(i int64) *LogSchemaCreate {
+	lsc.mutation.SetRetentionTime(i)
+	return lsc
+}
+
+// SetNillableRetentionTime sets the "retention_time" field if the given value is not nil.
+func (lsc *LogSchemaCreate) SetNillableRetentionTime(i *int64) *LogSchemaCreate {
+	if i != nil {
+		lsc.SetRetentionTime(*i)
+	}
+	return lsc
+}
+
 // Mutation returns the LogSchemaMutation object of the builder.
 func (lsc *LogSchemaCreate) Mutation() *LogSchemaMutation {
 	return lsc.mutation
@@ -141,6 +155,10 @@ func (lsc *LogSchemaCreate) createSpec() (*LogSchema, *sqlgraph.CreateSpec) {
 	if value, ok := lsc.mutation.GetFields(); ok {
 		_spec.SetField(logschema.FieldFields, field.TypeJSON, value)
 		_node.Fields = value
+	}
+	if value, ok := lsc.mutation.RetentionTime(); ok {
+		_spec.SetField(logschema.FieldRetentionTime, field.TypeInt64, value)
+		_node.RetentionTime = value
 	}
 	return _node, _spec
 }

@@ -59,7 +59,7 @@ export const Input = ({
           "dark:focus:ring-blue-500",
           "dark:focus:border-blue-500",
         ],
-        attr: { type: type, required: required ?? false, value: value ?? createStore("") },
+        attr: { type: type, required: Boolean(required), value: value ?? createStore("") },
         handler: { on: { input: localInputChanged } },
       });
     });
