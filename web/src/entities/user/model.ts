@@ -12,7 +12,7 @@ const getUserFx = createEffect((id: number) => {
 
 export const $users = createStore<User[]>([]).on(getUsersFx.doneData, (_, usersResponse) => usersResponse.data);
 
-export const $currentUser = createStore<User>({ id: 0, name: "markooooo", email: "", role: "Member", token: "" }).on(
+export const $currentUser = createStore<User>({ id: 0, name: "", email: "", role: "Member", token: "" }).on(
   getUserFx.doneData,
   (_, userResponse) => userResponse.data,
 );

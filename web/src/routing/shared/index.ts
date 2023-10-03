@@ -20,10 +20,14 @@ export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
 export const membersRoute = createRoute();
 export const memberCreateRoute = createRoute();
 export const memberEditRoute = createRoute<{ id: number }>();
+export const schemaCreateRoute = createRoute();
+export const schemaEditRoute = createRoute<{ id: number }>();
 
 export const ROUTES = [
   { path: "/login", route: loginRoute },
   { path: "/", route: homeRoute },
+  { path: "/schemas/create", route: schemaCreateRoute },
+  { path: "/schemas/:id/edit", route: schemaEditRoute },
   { path: "/logs/:schemaName", route: logsRoute },
   { path: "/logs/:schemaName/:hash", route: showLogRoute },
   { path: "/members", route: membersRoute },

@@ -1,8 +1,12 @@
-import { Schema, getSchemas, querySchemas } from "@/shared/api";
+import { Schema, getSchema, getSchemas, querySchemas } from "@/shared/api";
 import { combine, createEffect, createEvent, createStore } from "effector";
 
 const getSchemasFx = createEffect(() => {
   return getSchemas();
+});
+
+const getSchemaFx = createEffect((id: number) => {
+  return getSchema(id);
 });
 
 const querySchemasFx = createEffect((query: Record<string, any>) => {
@@ -25,8 +29,14 @@ export const $filteredSchemas = combine([$schemas, $searchQuery], ([schemas, sea
   });
 });
 
+export const $currentSchema = createStore<Schema>({ id: 0, title: "", description: "", name: "", fields: [] }).on(
+  getSchemaFx.doneData,
+  (_, schemaResponse) => schemaResponse.data,
+);
+
 export const effects = {
   getSchemasFx,
+  getSchemaFx,
   querySchemasFx,
 };
 

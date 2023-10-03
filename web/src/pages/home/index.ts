@@ -2,7 +2,7 @@ import { h, list, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
 import { SchemaCard, schemaModel } from "@/entities/schema";
-import { homeRoute, logsRoute } from "@/routing/shared";
+import { homeRoute, logsRoute, schemaCreateRoute } from "@/routing/shared";
 import { Search } from "@/shared/ui";
 import { HeaderWithCreation } from "@/widgets";
 
@@ -13,7 +13,7 @@ export const HomePage = () => {
       // It is required to call `withRoute` inside `h` call
       withRoute(homeRoute);
 
-      HeaderWithCreation("Categories", homeRoute);
+      HeaderWithCreation("Categories", schemaCreateRoute);
 
       h("div", () => {
         spec({

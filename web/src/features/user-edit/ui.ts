@@ -25,7 +25,7 @@ export const EditMemberForm = () => {
     });
 
     Select({
-      value: memberForm.fields.role.$value,
+      value: memberForm.fields.role.$value.map(String),
       id: "role",
       text: "Select a role",
       options: createStore<UserRole[]>(["Member", "Admin"]),

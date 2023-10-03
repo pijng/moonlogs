@@ -1,7 +1,8 @@
 import { schemaModel } from "@/entities/schema";
 import { router } from "@/routing";
+import { logsRoute, schemaEditRoute } from "@/routing/shared";
 import { Button, Header } from "@/shared/ui";
-import { combine } from "effector";
+import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
 
 const $schema = combine([router.$activeRoutes, schemaModel.$schemas], ([activeRoutes, schemas]) => {
@@ -12,6 +13,19 @@ const $schema = combine([router.$activeRoutes, schemaModel.$schemas], ([activeRo
 const $schemaTitle = $schema.map((s) => s?.title || "");
 
 export const SchemaHeader = () => {
+  const routeOpened = createEvent<number>();
+
+  sample({
+    source: [logsRoute.$params, schemaModel.$schemas] as const,
+    clock: routeOpened,
+    fn: ([params, schemas]) => {
+      const schemaId = schemas.find((s) => s.name === params.schemaName)?.id;
+
+      return { id: schemaId || 0 };
+    },
+    target: schemaEditRoute.open,
+  });
+
   h("div", () => {
     spec({
       classList: ["flex", "items-center", "justify-between"],
@@ -28,6 +42,7 @@ export const SchemaHeader = () => {
         text: "Settings",
         variant: "default",
         size: "extra_small",
+        event: routeOpened,
       });
     });
   });

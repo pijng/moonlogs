@@ -2,10 +2,10 @@ import { userModel } from "@/entities/user";
 import { membersRoute } from "@/routing/shared";
 import { UserToUpdate, editUser } from "@/shared/api";
 import { rules } from "@/shared/lib";
-import { Event, createEffect, createStore, sample } from "effector";
+import { createEffect, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
-export const memberForm = createForm({
+export const memberForm = createForm<Omit<UserToUpdate, "id">>({
   fields: {
     name: {
       init: "",
@@ -44,7 +44,7 @@ sample({
 
 sample({
   source: userModel.$currentUser,
-  clock: memberForm.formValidated as Event<Omit<UserToUpdate, "id">>,
+  clock: memberForm.formValidated,
   fn: (currentUser, userToEdit) => {
     return { ...userToEdit, id: currentUser.id };
   },

@@ -1,10 +1,10 @@
 import { membersRoute } from "@/routing/shared";
 import { UserToCreate, createUser } from "@/shared/api";
 import { rules } from "@/shared/lib";
-import { Event, createEffect, createStore, sample } from "effector";
+import { createEffect, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
-export const memberForm = createForm({
+export const memberForm = createForm<UserToCreate>({
   fields: {
     name: {
       init: "",
@@ -37,7 +37,7 @@ export const createUserFx = createEffect((user: UserToCreate) => {
 });
 
 sample({
-  source: memberForm.formValidated as Event<UserToCreate>,
+  source: memberForm.formValidated,
   target: createUserFx,
 });
 
