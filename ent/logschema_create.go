@@ -166,11 +166,15 @@ func (lsc *LogSchemaCreate) createSpec() (*LogSchema, *sqlgraph.CreateSpec) {
 // LogSchemaCreateBulk is the builder for creating many LogSchema entities in bulk.
 type LogSchemaCreateBulk struct {
 	config
+	err      error
 	builders []*LogSchemaCreate
 }
 
 // Save creates the LogSchema entities in the database.
 func (lscb *LogSchemaCreateBulk) Save(ctx context.Context) ([]*LogSchema, error) {
+	if lscb.err != nil {
+		return nil, lscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(lscb.builders))
 	nodes := make([]*LogSchema, len(lscb.builders))
 	mutators := make([]Mutator, len(lscb.builders))

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
 	"moonlogs/ent/migrate"
 
@@ -113,11 +114,14 @@ func Open(driverName, dataSourceName string, options ...Option) (*Client, error)
 	}
 }
 
+// ErrTxStarted is returned when trying to start a new transaction from a transactional client.
+var ErrTxStarted = errors.New("ent: cannot start a transaction within a transaction")
+
 // Tx returns a new transactional client. The provided context
 // is used until the transaction is committed or rolled back.
 func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot start a transaction within a transaction")
+		return nil, ErrTxStarted
 	}
 	tx, err := newTx(ctx, c.driver)
 	if err != nil {
@@ -241,6 +245,21 @@ func (c *LogRecordClient) CreateBulk(builders ...*LogRecordCreate) *LogRecordCre
 	return &LogRecordCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *LogRecordClient) MapCreateBulk(slice any, setFunc func(*LogRecordCreate, int)) *LogRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &LogRecordCreateBulk{err: fmt.Errorf("calling to LogRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*LogRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &LogRecordCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for LogRecord.
 func (c *LogRecordClient) Update() *LogRecordUpdate {
 	mutation := newLogRecordMutation(c.config, OpUpdate)
@@ -359,6 +378,21 @@ func (c *LogSchemaClient) CreateBulk(builders ...*LogSchemaCreate) *LogSchemaCre
 	return &LogSchemaCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *LogSchemaClient) MapCreateBulk(slice any, setFunc func(*LogSchemaCreate, int)) *LogSchemaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &LogSchemaCreateBulk{err: fmt.Errorf("calling to LogSchemaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*LogSchemaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &LogSchemaCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for LogSchema.
 func (c *LogSchemaClient) Update() *LogSchemaUpdate {
 	mutation := newLogSchemaMutation(c.config, OpUpdate)
@@ -474,6 +508,21 @@ func (c *UserClient) Create() *UserCreate {
 
 // CreateBulk returns a builder for creating a bulk of User entities.
 func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
+	return &UserCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserCreateBulk{config: c.config, builders: builders}
 }
 
