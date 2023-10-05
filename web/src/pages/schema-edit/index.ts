@@ -11,7 +11,7 @@ export const SchemaEditPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(schemaEditRoute);
 
-    Header("Edit category");
+    Header("Edit log group");
 
     h("div", () => {
       spec({

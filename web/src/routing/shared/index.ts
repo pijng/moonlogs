@@ -8,14 +8,14 @@ import {
   createRouterControls,
 } from "atomic-router";
 import { createLink, linkRouter } from "atomic-router-forest";
-import { createEvent, sample } from "effector";
+import { Store, createEvent, sample } from "effector";
 import { createBrowserHistory } from "history";
 
 export const Link = createLink();
 
 export const loginRoute = createRoute();
 export const homeRoute = createRoute();
-export const logsRoute = createRoute<{ schemaName: string }>();
+export const logsRoute = createRoute<{ schemaName: string | Store<string> }>();
 export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
 export const membersRoute = createRoute();
 export const memberCreateRoute = createRoute();

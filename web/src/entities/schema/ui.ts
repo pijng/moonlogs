@@ -1,22 +1,20 @@
+import { logsRoute } from "@/routing/shared";
 import { CardLink } from "@/shared/ui";
-import { RouteInstance } from "atomic-router";
 import { Store } from "effector";
 
 export const SchemaCard = ({
   title,
   description,
-  route,
-  link,
+  name,
 }: {
   title: Store<string>;
   description: Store<string>;
-  route: RouteInstance<{ schemaName: string }>;
-  link: Store<string>;
+  name: Store<string>;
 }) => {
   CardLink({
     title: title,
     description: description,
-    route: route,
-    link: link,
+    route: logsRoute,
+    params: { schemaName: name },
   });
 };

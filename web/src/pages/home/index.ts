@@ -2,7 +2,7 @@ import { h, list, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
 import { SchemaCard, schemaModel } from "@/entities/schema";
-import { homeRoute, logsRoute, schemaCreateRoute } from "@/routing/shared";
+import { homeRoute, schemaCreateRoute } from "@/routing/shared";
 import { Search } from "@/shared/ui";
 import { HeaderWithCreation } from "@/widgets";
 
@@ -13,7 +13,7 @@ export const HomePage = () => {
       // It is required to call `withRoute` inside `h` call
       withRoute(homeRoute);
 
-      HeaderWithCreation("Categories", schemaCreateRoute);
+      HeaderWithCreation("Log groups", schemaCreateRoute);
 
       h("div", () => {
         spec({
@@ -32,7 +32,7 @@ export const HomePage = () => {
             key: "name",
             fields: ["title", "description", "name"],
             fn({ fields: [title, description, name] }) {
-              SchemaCard({ title, description, route: logsRoute, link: name.map((l) => `logs/${l}`) });
+              SchemaCard({ title, description, name });
             },
           });
         });

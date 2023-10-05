@@ -38,6 +38,24 @@ func LogSchemaCreate(w http.ResponseWriter, r *http.Request) {
 	util.Return(w, true, http.StatusOK, nil, createdLogSchema, util.Meta{})
 }
 
+func LogSchemaUpdateById(w http.ResponseWriter, r *http.Request) {
+	var logSchemaToUpdate ent.LogSchema
+
+	err := json.NewDecoder(r.Body).Decode(&logSchemaToUpdate)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	logSchema, err := repository.NewLogSchemaRepository(r.Context()).UpdateById(logSchemaToUpdate)
+	if err != nil {
+		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		return
+	}
+
+	util.Return(w, true, http.StatusOK, nil, logSchema, util.Meta{})
+}
+
 func LogSchemaGetAll(w http.ResponseWriter, r *http.Request) {
 	logSchemas, err := repository.NewLogSchemaRepository(r.Context()).GetAll()
 	if err != nil {

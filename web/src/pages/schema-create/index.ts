@@ -11,7 +11,7 @@ export const SchemaCreatePage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(schemaCreateRoute);
 
-    Header("Create category");
+    Header("Create log group");
 
     h("div", () => {
       spec({

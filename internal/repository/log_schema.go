@@ -59,6 +59,20 @@ func (r *LogSchemaRepository) Create(logSchema ent.LogSchema, formattedSchemaNam
 	return ls, nil
 }
 
+func (r *LogSchemaRepository) UpdateById(logSchemaToUpdate ent.LogSchema) (*ent.LogSchema, error) {
+	ls, err := r.client.LogSchema.UpdateOneID(logSchemaToUpdate.ID).
+		SetDescription(logSchemaToUpdate.Description).
+		SetTitle(logSchemaToUpdate.Title).
+		SetRetentionTime(logSchemaToUpdate.RetentionTime).
+		Save(r.ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed updating log_schema: %w", err)
+	}
+
+	return ls, nil
+}
+
 func (r *LogSchemaRepository) GetById(id int) (*ent.LogSchema, error) {
 	ls, err := r.client.LogSchema.
 		Query().

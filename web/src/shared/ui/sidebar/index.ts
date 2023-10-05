@@ -1,4 +1,4 @@
-import { homeRoute, membersRoute } from "@/routing/shared";
+import { Link, homeRoute, membersRoute } from "@/routing/shared";
 import { RouteInstance } from "atomic-router";
 import { createEvent, createStore, restore, sample } from "effector";
 import { h, spec } from "forest";
@@ -137,7 +137,7 @@ export const Sidebar = () => {
           classList: ["space-y-2", "font-medium"],
         });
 
-        SidebarItem("Categories", homeRoute);
+        SidebarItem("Log groups", homeRoute);
         SidebarItem("Members", membersRoute);
         // SidebarItem("Settings", homeRoute);
       });
@@ -147,16 +147,8 @@ export const Sidebar = () => {
 
 export const SidebarItem = (text: string, route: RouteInstance<Record<string, any>>) => {
   h("li", () => {
-    const linkClicked = createEvent<MouseEvent>("link clicked");
-
-    sample({
-      clock: linkClicked,
-      target: route!.open,
-    });
-
-    h("a", {
-      attr: { href: "" },
-      handler: { on: { click: linkClicked }, config: { prevent: true } },
+    Link(route, {
+      text: text,
       classList: [
         "flex",
         "items-center",
@@ -168,7 +160,6 @@ export const SidebarItem = (text: string, route: RouteInstance<Record<string, an
         "dark:hover:bg-gray-700",
         "group",
       ],
-      text: text,
     });
   });
 };

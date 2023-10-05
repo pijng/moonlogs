@@ -18,6 +18,7 @@ func RegisterLogSchemaRouter(r *mux.Router, store *sessions.CookieStore) {
 	logSchemaRouter.HandleFunc("", SessionMiddleware(store, controllers.LogSchemaGetAll)).Methods(http.MethodGet, http.MethodOptions)
 	logSchemaRouter.HandleFunc("", SessionMiddleware(store, controllers.LogSchemaCreate)).Methods(http.MethodPost, http.MethodOptions)
 	logSchemaRouter.HandleFunc("/{id}", SessionMiddleware(store, controllers.LogSchemaGetById)).Methods(http.MethodGet, http.MethodOptions)
+	logSchemaRouter.HandleFunc("/{id}", SessionMiddleware(store, controllers.LogSchemaUpdateById)).Methods(http.MethodPut, http.MethodOptions)
 	logSchemaRouter.HandleFunc("/search", SessionMiddleware(store, controllers.LogSchemaGetByQuery)).Methods(http.MethodPost, http.MethodOptions)
 }
 
