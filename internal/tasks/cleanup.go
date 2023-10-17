@@ -11,7 +11,7 @@ func RunCleanupTask(logRecordUseCase *usecase.LogRecordUseCase, interval time.Du
 	defer ticker.Stop()
 
 	for range ticker.C {
-		err := logRecordUseCase.DeleteStateLogRecords()
+		err := logRecordUseCase.DeleteStaleLogRecords()
 
 		if err != nil {
 			log.Printf("Error cleaning up stale log records: %v", err)

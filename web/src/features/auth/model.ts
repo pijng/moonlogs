@@ -2,10 +2,10 @@ import { homeRoute } from "@/routing/shared";
 import { postSession } from "@/shared/api";
 import { tokenReceived } from "@/shared/auth";
 import { rules } from "@/shared/lib";
-import { Event, createEffect, createEvent, createStore, sample } from "effector";
+import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
-export const authForm = createForm({
+export const authForm = createForm<{ email: string; password: string }>({
   fields: {
     email: {
       init: "",
@@ -26,7 +26,7 @@ export const logInFx = createEffect(({ email, password }: { email: string; passw
 });
 
 sample({
-  source: authForm.formValidated as Event<{ email: string; password: string }>,
+  source: authForm.formValidated,
   target: logInFx,
 });
 

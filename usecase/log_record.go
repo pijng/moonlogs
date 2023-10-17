@@ -16,7 +16,7 @@ func NewLogRecordsUseCase(logRecordRepository *repository.LogRecordRepository, l
 	return &LogRecordUseCase{logRecordRepository: logRecordRepository, logSchemaRepository: logSchemaRepository}
 }
 
-func (uc *LogRecordUseCase) DeleteStateLogRecords() error {
+func (uc *LogRecordUseCase) DeleteStaleLogRecords() error {
 	schemas, err := uc.logSchemaRepository.GetAll()
 	if err != nil {
 		return fmt.Errorf("DeleteStateLogRecords: failed to query schemas: %w", err)

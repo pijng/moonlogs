@@ -1,4 +1,4 @@
-import { $isAuthorized, getSessionFx, tokenReceived, unauthorizedTriggered } from "@/shared/auth";
+import { $isAuthorized, getSessionFx, obtainSession, tokenReceived, unauthorizedTriggered } from "@/shared/auth";
 import {
   RouteInstance,
   RouteParamsAndQuery,
@@ -58,7 +58,7 @@ linkRouter({
 
 sample({
   clock: appMounted,
-  target: getSessionFx,
+  target: obtainSession,
 });
 
 export const chainAuthorized = (route: RouteInstance<any>) => {
@@ -69,15 +69,15 @@ export const chainAuthorized = (route: RouteInstance<any>) => {
     filter: $isAuthorized,
   });
 
-  const sessionCheck = sample({
+  sample({
     source: $isAuthorized,
     clock: sessionCheckStarted,
     filter: (isAuthorized) => !isAuthorized,
-    target: getSessionFx,
+    target: obtainSession,
   });
 
   sample({
-    source: sessionCheck.doneData,
+    source: getSessionFx.doneData,
     filter: (sessionResponse) => !sessionResponse?.data?.token || !sessionResponse.success,
     target: unauthorizedTriggered,
   });

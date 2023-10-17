@@ -16,6 +16,15 @@ export const getSessionFx = createEffect(() => {
   return getSession();
 });
 
+export const obtainSession = createEvent();
+
+sample({
+  source: getSessionFx.pending,
+  clock: obtainSession,
+  filter: (pending) => !pending,
+  target: getSessionFx,
+});
+
 sample({
   source: $isAuthorized,
   clock: getSessionFx.doneData,
