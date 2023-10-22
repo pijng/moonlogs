@@ -8,6 +8,7 @@ import (
 	"moonlogs/api/server/util"
 	"moonlogs/internal/repository"
 	"net/http"
+	"strings"
 )
 
 type Credentials struct {
@@ -99,10 +100,26 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var bearerToken string
+
+	reqAuth := r.Header.Get("Authorization")
+	splitToken := strings.Split(reqAuth, "Bearer ")
+	if len(splitToken) == 2 {
+		bearerToken = splitToken[1]
+	}
+
+	user, _ := repository.NewUserRepository(r.Context()).GetByToken(bearerToken)
+
 	token, ok := session.Values["token"].(string)
-	if !ok {
+	if !ok && user == nil {
 		util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
 		return
+	}
+
+	if token == "" && user != nil {
+		token = user.Token
+		session.Values["token"] = token
+		session.Values["userID"] = user.ID
 	}
 
 	err = session.Save(r, w)

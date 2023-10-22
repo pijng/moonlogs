@@ -7,6 +7,7 @@ import (
 	"moonlogs/api/server/util"
 	"moonlogs/internal/repository"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -61,16 +62,26 @@ func SessionMiddleware(store *sessions.CookieStore, next http.HandlerFunc) http.
 			return
 		}
 
+		var bearerToken string
+
+		reqAuth := r.Header.Get("Authorization")
+		splitToken := strings.Split(reqAuth, "Bearer ")
+		if len(splitToken) == 2 {
+			bearerToken = splitToken[1]
+		}
+
+		user, _ := repository.NewUserRepository(r.Context()).GetByToken(bearerToken)
+
 		token, ok := sessionCookie.Values["token"].(string)
-		if !ok || token == "" {
+		if !ok && user == nil {
 			util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
 			return
 		}
 
-		user, err := repository.NewUserRepository(r.Context()).GetByToken(token)
-		if err != nil || user == nil {
-			util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
-			return
+		if token == "" && user != nil {
+			token = user.Token
+			sessionCookie.Values["token"] = token
+			sessionCookie.Values["userID"] = user.ID
 		}
 
 		ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
