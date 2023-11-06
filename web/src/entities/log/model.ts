@@ -73,6 +73,7 @@ export const $groupedLogs = createStore<LogsGroup>({
 sample({
   source: getLogGroupFx.doneData,
   fn: (logsResponse) => {
+    // Extract to separate reducer
     const logs = logsResponse.data;
 
     const intl = Intl.DateTimeFormat(getLocale(), DATEFORMAT_OPTIONS);

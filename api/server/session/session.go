@@ -24,7 +24,7 @@ func RegisterSessionStore() *sessions.CookieStore {
 	store.Options = &sessions.Options{
 		MaxAge:   86400 * 30,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteNoneMode, // TODO: change this
 		Secure:   true,
 	}
 

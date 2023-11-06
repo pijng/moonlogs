@@ -26,7 +26,7 @@ export const Auth = () => {
       });
 
       Button({
-        text: "Create",
+        text: "Log in",
         event: authForm.submit,
         size: "base",
         prevent: true,
