@@ -1,5 +1,5 @@
 import { homeRoute, loginRoute } from "@/routing/shared";
-import { $isAuthorized, $token, unauthorizedTriggered } from "@/shared/auth";
+import { $isAuthorized, unauthorizedTriggered } from "@/shared/auth";
 import { sample } from "effector";
 
 sample({
@@ -8,8 +8,7 @@ sample({
 });
 
 sample({
-  source: $isAuthorized,
-  clock: [loginRoute.opened, $token],
-  filter: (isAuthorized) => isAuthorized,
+  source: [loginRoute.$isOpened, $isAuthorized],
+  filter: ([loginRouteOpened, isAuthorized]) => loginRouteOpened && isAuthorized,
   target: homeRoute.open,
 });
