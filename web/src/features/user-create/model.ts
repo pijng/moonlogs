@@ -44,7 +44,7 @@ sample({
 sample({
   source: createUserFx.doneData,
   filter: (userResponse) => userResponse.success && Boolean(userResponse.data.id),
-  target: membersRoute.open,
+  target: [membersRoute.open, memberForm.reset],
 });
 
 sample({

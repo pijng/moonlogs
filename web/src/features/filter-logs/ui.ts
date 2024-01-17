@@ -10,12 +10,27 @@ export type FilterItem = {
   value: string;
 };
 
-export const Filter = (items: Store<FilterItem[]>, filterChanged: Event<Record<string, any>>) => {
-  const $filtersApplied = items.map((items) => items.filter((item) => item.value.trim().length > 0).length > 0);
+export type KindItem = {
+  name: string;
+  title: string;
+};
 
+export const Filter = ({
+  filterItems,
+  filterChanged,
+  kindItems,
+  kindChanged,
+  applied,
+}: {
+  filterItems: Store<FilterItem[]>;
+  filterChanged: Event<Record<string, any>>;
+  kindItems: Store<KindItem[]>;
+  kindChanged: Event<string>;
+  applied: Store<boolean>;
+}) => {
   Button({
     text: "Filter",
-    variant: $filtersApplied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
+    variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
     size: "small",
     event: filterClicked,
     preIcon: FilterIcon,
@@ -27,6 +42,6 @@ export const Filter = (items: Store<FilterItem[]>, filterChanged: Event<Record<s
       visible: $filterIsOpened,
     });
 
-    Dropdown(items, filterChanged);
+    Dropdown({ items: filterItems, itemChanged: filterChanged, kinds: kindItems, kindChanged: kindChanged });
   });
 };

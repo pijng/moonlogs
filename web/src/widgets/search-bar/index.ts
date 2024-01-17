@@ -1,4 +1,5 @@
 import { logModel } from "@/entities/log";
+import { $currentKind } from "@/entities/log/model";
 import { schemaModel } from "@/entities/schema";
 import { Filter } from "@/features";
 import { logsRoute } from "@/routing/shared";
@@ -7,7 +8,11 @@ import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
 
 const $currentSchema = combine([logsRoute.$params, schemaModel.$schemas], ([params, schemas]) => {
-  return schemas.find((s) => s.name === params.schemaName) || null;
+  const currentSchema = schemas.find((s) => s.name === params.schemaName);
+
+  if (currentSchema) return currentSchema;
+
+  return { id: 0, title: "", description: "", name: "", fields: [], kinds: [] };
 });
 
 const $currentFilter = combine([$currentSchema, logModel.$formattedSearchFilter], ([schema, searchFilter]) => {
@@ -42,10 +47,23 @@ export const SearchBar = () => {
 
     h("div", () => {
       spec({
-        classList: ["flex", "relative"],
+        classList: ["w-fit", "relative", "flex"],
       });
 
-      Filter($currentFilter, logModel.events.filterChanged);
+      const $filtersApplied = combine($currentFilter, $currentKind, (items, kind) => {
+        const itemsApplied = items.filter((item) => item.value.trim().length > 0).length > 0;
+        const kindApplied = kind?.length > 0;
+
+        return itemsApplied || kindApplied;
+      });
+
+      Filter({
+        filterItems: $currentFilter,
+        filterChanged: logModel.events.filterChanged,
+        kindItems: $currentSchema.map((s) => s.kinds || []),
+        kindChanged: logModel.events.kindChanged,
+        applied: $filtersApplied,
+      });
 
       const filterCleared = createEvent<MouseEvent>();
       sample({
@@ -53,8 +71,6 @@ export const SearchBar = () => {
         fn: () => ({}),
         target: logModel.events.resetFilter,
       });
-
-      const $filtersApplied = $currentFilter.map((items) => items.filter((item) => item.value.trim().length > 0).length > 0);
 
       Button({
         text: "Clear",

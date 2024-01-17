@@ -1,7 +1,7 @@
 import { attach, createEffect } from "effector";
-import { $token, unauthorizedTriggered } from "../auth";
+import { $token, notAllowedTriggered, unauthorizedTriggered } from "../auth";
 
-export type FetchMethods = "GET" | "POST" | "PUT";
+export type FetchMethods = "GET" | "POST" | "PUT" | "DELETE";
 export type BaseResponse = {
   code: number;
   success: boolean;
@@ -44,9 +44,12 @@ export const baseRequest = async ({
       unauthorizedTriggered();
     }
 
+    if (response.status === 403) {
+      notAllowedTriggered();
+    }
+
     const jsonResponse = JSON.parse(responseText);
 
-    console.log(jsonResponse);
     return jsonResponse;
   } catch (error) {
     console.log(error);
@@ -84,5 +87,17 @@ export const put = attach({
   }),
   effect: createEffect(({ token, url, body, headers }: { token: string; url: string; body: BodyInit; headers?: HeadersInit }) => {
     return baseRequest({ token, url, method: "PUT", body, headers });
+  }),
+});
+
+export const del = attach({
+  source: $token,
+  mapParams: ({ url, headers }: { url: string; headers?: HeadersInit }, token) => ({
+    token,
+    url,
+    headers,
+  }),
+  effect: createEffect(({ token, url, headers }: { token: string; url: string; headers?: HeadersInit }) => {
+    return baseRequest({ token, url, method: "DELETE", headers });
   }),
 });

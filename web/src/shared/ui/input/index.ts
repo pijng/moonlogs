@@ -1,33 +1,61 @@
 import { Event, Store, createEvent, createStore, sample } from "effector";
-import { h, spec } from "forest";
-import { ErrorHint } from "@/shared/ui";
+import { DOMProperty, h, spec } from "forest";
+import { ErrorHint, Popover } from "@/shared/ui";
 
-export const Input = ({
+type InputType = "text" | "number" | "date" | "checkbox" | "email" | "password";
+
+export const Input = <T extends DOMProperty>({
   value,
   type,
   label,
   required,
   inputChanged,
-  errorVisible,
+  visible,
+  disabled,
   errorText,
+  hint,
 }: {
-  value?: Store<string>;
-  type: string;
+  value?: Store<T>;
+  type: InputType;
   label: string;
   required?: boolean;
-  inputChanged: Event<any>;
-  errorVisible?: Store<boolean>;
+  inputChanged?: Event<T>;
+  visible?: Store<boolean>;
+  disabled?: Store<boolean>;
   errorText?: Store<string>;
+  hint?: string;
 }) => {
   h("div", () => {
     spec({
-      classList: ["mb-6"],
+      classList: { relative: true, "mb-6": true, flex: type === "checkbox", "items-center": type === "checkbox" },
+      visible: visible,
     });
 
-    h("label", () => {
-      spec({
-        classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
-        text: label,
+    h("div", () => {
+      spec({ classList: { flex: true, "items-center": true, "mb-2": type !== "checkbox" } });
+
+      h("label", () => {
+        spec({
+          classList: {
+            block: true,
+            "mr-2": type === "checkbox",
+            "text-sm": true,
+            "font-medium": true,
+            "text-gray-900": true,
+            "dark:text-white": true,
+          },
+          text: label,
+          attr: { for: label },
+        });
+      });
+
+      h("div", () => {
+        spec({
+          classList: ["pl-1"],
+          visible: createStore(hint ?? "").map(Boolean),
+        });
+
+        Popover({ text: hint });
       });
     });
 
@@ -35,35 +63,53 @@ export const Input = ({
       const localInputChanged = createEvent<any>();
       sample({
         source: localInputChanged,
-        fn: (event) => event.target.value,
-        target: inputChanged,
+        fn: (event) => {
+          if (type === "number") {
+            return parseInt(event.target.value, 10);
+          }
+          if (type === "checkbox") {
+            return Boolean(event.target.checked);
+          }
+
+          return event.target.value;
+        },
+        target: [inputChanged],
       });
 
       spec({
-        classList: [
-          "bg-gray-50",
-          "border",
-          "border-gray-300",
-          "text-gray-900",
-          "text-sm",
-          "rounded-lg",
-          "focus:ring-blue-500",
-          "focus:border-blue-500",
-          "block",
-          "w-full",
-          "p-2.5",
-          "dark:bg-gray-700",
-          "dark:border-gray-600",
-          "dark:placeholder-gray-400",
-          "dark:text-white",
-          "dark:focus:ring-blue-500",
-          "dark:focus:border-blue-500",
-        ],
-        attr: { type: type, required: Boolean(required), value: value ?? createStore("") },
+        classList: {
+          "bg-gray-50": true,
+          border: true,
+          "border-gray-300": true,
+          "text-gray-900": true,
+          "text-sm": true,
+          "rounded-lg": true,
+          "focus:ring-blue-500": true,
+          "focus:border-blue-500": true,
+          block: true,
+          "w-full": type !== "checkbox",
+          "w-4": type === "checkbox",
+          "h-4": type === "checkbox",
+          "p-2.5": true,
+          "dark:bg-gray-700": true,
+          "dark:border-gray-600": true,
+          "dark:placeholder-gray-400": true,
+          "dark:text-white": true,
+          "dark:focus:ring-blue-500": true,
+          "dark:focus:border-blue-500": true,
+        },
+        attr: {
+          disabled: disabled ?? createStore(false),
+          id: label,
+          type: type,
+          required: Boolean(required),
+          value: value ?? createStore<T | null>(null),
+          checked: value ?? createStore<T | null>(null),
+        },
         handler: { on: { input: localInputChanged } },
       });
     });
 
-    ErrorHint(errorText, errorVisible);
+    ErrorHint(errorText, errorText?.map(Boolean));
   });
 };

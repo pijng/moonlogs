@@ -1,0 +1,1 @@
+export { RegisterAdmin } from "./ui";

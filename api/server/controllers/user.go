@@ -1,39 +1,28 @@
 package controllers
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"moonlogs/api/server/session"
 	"moonlogs/api/server/util"
-	"moonlogs/ent"
-	"moonlogs/ent/schema"
-	"moonlogs/internal/repository"
+	"moonlogs/internal/entities"
+	"moonlogs/internal/repositories"
+	"moonlogs/internal/usecases"
 	"net/http"
-	"slices"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
 
 type UserDTO struct {
-	Email string      `json:"email"`
-	Id    int         `json:"id"`
-	Name  string      `json:"name"`
-	Role  schema.Role `json:"role"`
+	Email string        `json:"email"`
+	Id    int           `json:"id"`
+	Name  string        `json:"name"`
+	Role  entities.Role `json:"role"`
+	Tags  entities.Tags `json:"tags"`
 }
 
-var roles = []string{
-	string(schema.RoleMember),
-	string(schema.RoleAdmin),
-}
-
-var passwordHasher = sha256.New()
-
-func UserCreate(w http.ResponseWriter, r *http.Request) {
-	var newUser ent.User
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	var newUser entities.User
 
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
@@ -41,136 +30,134 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repository.NewUserRepository(r.Context())
-
-	userWithIdenticalEmail, err := userRepository.GetByEmail(newUser.Email)
-	if userWithIdenticalEmail != nil && err == nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("User with email %s already exists", newUser.Email), nil, util.Meta{})
-		return
-	}
-
-	if len(newUser.Role) > 0 {
-		isValidRole := slices.Contains(roles, newUser.Role)
-		if !isValidRole {
-			appropriateRoles := strings.Join(roles, ", ")
-			error := fmt.Errorf("`role` field should be one of: %v", appropriateRoles)
-
-			util.Return(w, false, http.StatusBadRequest, error, nil, util.Meta{})
-			return
-		}
-	}
-
-	_, err = passwordHasher.Write([]byte(newUser.Password))
-	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
-		return
-	}
-
-	hashBytes := passwordHasher.Sum(nil)
-	hashString := hex.EncodeToString(hashBytes)
-	passwordHasher.Reset()
-
-	newUser.PasswordDigest = hashString
-
-	createdUser, err := userRepository.Create(newUser)
-	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
-		return
-	}
-
-	util.Return(w, true, http.StatusOK, nil, UserToDTO(createdUser), util.Meta{})
-}
-
-func UserDestroyById(w http.ResponseWriter, r *http.Request) {
-	var userToDestroy ent.User
-
-	err := json.NewDecoder(r.Body).Decode(&userToDestroy)
+	userRepository := repositories.NewUserRepository(r.Context())
+	user, err := usecases.NewUserUseCase(userRepository).CreateUser(newUser)
 	if err != nil {
 		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
 		return
 	}
 
-	err = repository.NewUserRepository(r.Context()).DestroyById(userToDestroy.ID)
-	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
-		return
-	}
-
-	util.Return(w, true, http.StatusOK, nil, userToDestroy.ID, util.Meta{})
+	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
 }
 
-func UserGetById(w http.ResponseWriter, r *http.Request) {
+func DestroyUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		error := fmt.Errorf("`id` path parameter is invalid")
-		util.Return(w, false, http.StatusBadRequest, error, nil, util.Meta{})
+		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
 		return
 	}
 
-	user, err := repository.NewUserRepository(r.Context()).GetById(id)
-	if err != nil {
-		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
-		return
-	}
-
-	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
-}
-
-func UserUpdateById(w http.ResponseWriter, r *http.Request) {
-	var userToUpdate ent.User
-
-	err := json.NewDecoder(r.Body).Decode(&userToUpdate)
-	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
-		return
-	}
-
-	if len(userToUpdate.Password) > 0 {
-		_, err = passwordHasher.Write([]byte(userToUpdate.Password))
-		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
-			return
-		}
-
-		hashBytes := passwordHasher.Sum(nil)
-		hashString := hex.EncodeToString(hashBytes)
-		passwordHasher.Reset()
-
-		userToUpdate.PasswordDigest = hashString
-	}
-
-	if len(userToUpdate.PasswordDigest) > 0 {
-		token, err := session.GenerateAuthToken()
-		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
-			return
-		}
-
-		userToUpdate.Token = token
-	}
-
-	user, err := repository.NewUserRepository(r.Context()).UpdateById(userToUpdate)
+	userRepository := repositories.NewUserRepository(r.Context())
+	err = usecases.NewUserUseCase(userRepository).DestroyUserByID(id)
 	if err != nil {
 		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
 		return
 	}
 
+	util.Return(w, true, http.StatusOK, nil, id, util.Meta{})
+}
+
+func GetUserByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		return
+	}
+
+	userRepository := repositories.NewUserRepository(r.Context())
+	user, err := usecases.NewUserUseCase(userRepository).GetUserByID(id)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	if user.ID == 0 {
+		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		return
+	}
+
 	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
 }
 
-func UserGetAll(w http.ResponseWriter, r *http.Request) {
-	users, err := repository.NewUserRepository(r.Context()).GetAll()
+func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		return
+	}
+
+	var userToUpdate entities.User
+
+	err = json.NewDecoder(r.Body).Decode(&userToUpdate)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	userRepository := repositories.NewUserRepository(r.Context())
+	user, err := usecases.NewUserUseCase(userRepository).UpdateUserByID(id, userToUpdate)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	if user == nil {
 		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		return
+	}
+
+	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
+}
+
+func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	userRepository := repositories.NewUserRepository(r.Context())
+	users, err := usecases.NewUserUseCase(userRepository).GetAllUsers()
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
 		return
 	}
 
 	util.Return(w, true, http.StatusOK, nil, UsersToDTO(users), util.Meta{})
 }
 
-func UsersToDTO(users []*ent.User) []UserDTO {
+func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
+	userUserCase := usecases.NewUserUseCase(repositories.NewUserRepository(r.Context()))
+	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
+
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	if !shouldCreateInitialAdmin {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	var newAdmin entities.User
+
+	err = json.NewDecoder(r.Body).Decode(&newAdmin)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		return
+	}
+
+	admin, err := userUserCase.CreateInitialAdmin(newAdmin)
+	if err != nil {
+		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("failed creating initial admin: %w", err), nil, util.Meta{})
+		return
+	}
+
+	util.Return(w, true, http.StatusOK, nil, Session{Token: admin.Token}, util.Meta{})
+}
+
+func UsersToDTO(users []*entities.User) []UserDTO {
 	usersDTO := make([]UserDTO, 0)
 	for _, user := range users {
 		usersDTO = append(usersDTO, UserToDTO(user))
@@ -179,11 +166,12 @@ func UsersToDTO(users []*ent.User) []UserDTO {
 	return usersDTO
 }
 
-func UserToDTO(user *ent.User) UserDTO {
+func UserToDTO(user *entities.User) UserDTO {
 	return UserDTO{
 		Id:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
-		Role:  schema.Role(user.Role),
+		Role:  user.Role,
+		Tags:  user.Tags,
 	}
 }

@@ -1,45 +1,45 @@
 import { Button, ErrorHint, Input, Select } from "@/shared/ui";
-import { h } from "forest";
-import { $editError, memberForm } from "./model";
+import { h, spec } from "forest";
+import { $editError, deleteUserClicked, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
 
 export const EditMemberForm = () => {
   h("form", () => {
     Input({
-      value: memberForm.fields.name.$value,
       type: "text",
       label: "Name",
+      value: memberForm.fields.name.$value,
       inputChanged: memberForm.fields.name.changed,
       errorText: memberForm.fields.name.$errorText,
-      errorVisible: memberForm.fields.name.$errors.map(Boolean),
     });
 
     Input({
-      value: memberForm.fields.email.$value,
       type: "email",
       label: "Email",
+      value: memberForm.fields.email.$value,
       inputChanged: memberForm.fields.email.changed,
       errorText: memberForm.fields.email.$errorText,
-      errorVisible: memberForm.fields.email.$errors.map(Boolean),
     });
 
-    Select({
-      value: memberForm.fields.role.$value.map(String),
-      id: "role",
-      text: "Select a role",
-      options: createStore<UserRole[]>(["Member", "Admin"]),
-      optionSelected: memberForm.fields.role.changed,
+    h("div", () => {
+      spec({ classList: ["mb-6"] });
+
+      Select({
+        text: "Select a role",
+        value: memberForm.fields.role.$value.map(String),
+        options: createStore<UserRole[]>(["Member", "Admin"]),
+        optionSelected: memberForm.fields.role.changed,
+      });
     });
 
     Input({
-      value: memberForm.fields.password.$value,
       type: "password",
       label: "Password",
       required: true,
+      value: memberForm.fields.password.$value,
       inputChanged: memberForm.fields.password.changed,
       errorText: memberForm.fields.password.$errorText,
-      errorVisible: memberForm.fields.password.$errors.map(Boolean),
     });
 
     Input({
@@ -49,15 +49,26 @@ export const EditMemberForm = () => {
       required: true,
       inputChanged: memberForm.fields.passwordConfirmation.changed,
       errorText: memberForm.fields.passwordConfirmation.$errorText,
-      errorVisible: memberForm.fields.passwordConfirmation.$errors.map(Boolean),
     });
 
-    Button({
-      text: "Save",
-      event: memberForm.submit,
-      size: "base",
-      prevent: true,
-      variant: "default",
+    h("div", () => {
+      spec({ classList: ["flex", "justify-start", "space-x-2"] });
+
+      Button({
+        text: "Save",
+        event: memberForm.submit,
+        size: "base",
+        prevent: true,
+        variant: "default",
+      });
+
+      Button({
+        text: "Delete",
+        event: deleteUserClicked,
+        size: "base",
+        prevent: true,
+        variant: "delete",
+      });
     });
 
     ErrorHint($editError, $editError.map(Boolean));

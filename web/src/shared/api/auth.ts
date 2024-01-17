@@ -1,7 +1,8 @@
 import { BaseResponse, get, post } from "./base";
+import { UserRole } from "./users";
 
 export interface SessionResponse extends BaseResponse {
-  data: { token: string };
+  data: { token: string; should_create_initial_admin: boolean; id: number; name: string; email: string; role: UserRole };
 }
 
 export const postSession = (email: string, password: string): Promise<SessionResponse> => {

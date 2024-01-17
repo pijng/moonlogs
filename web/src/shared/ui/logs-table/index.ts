@@ -35,19 +35,19 @@ export const LogsTable = (logs: Store<Log[]>) => {
           h("tr", () => {
             h("th", {
               attr: { scope: "col" },
-              classList: ["px-6", "py-3", "w-24", "lg:w-48"],
+              classList: ["px-4", "py-3", "w-24", "lg:w-48"],
               text: "Time",
             });
 
             h("th", {
               attr: { scope: "col" },
-              classList: ["px-6", "py-3", "w-16"],
+              classList: ["px-4", "py-3", "w-16"],
               text: "Level",
             });
 
             h("th", {
               attr: { scope: "col" },
-              classList: ["px-6", "py-3"],
+              classList: ["px-4", "py-3"],
               text: "Text",
             });
           });
@@ -70,7 +70,7 @@ export const LogsTable = (logs: Store<Log[]>) => {
 
               h("td", () => {
                 spec({
-                  classList: ["px-6", "py-4"],
+                  classList: ["px-4", "py-4"],
                 });
                 h("div", {
                   text: remap(log, "created_at"),
@@ -79,14 +79,14 @@ export const LogsTable = (logs: Store<Log[]>) => {
 
               h("td", () => {
                 spec({
-                  classList: ["px-6", "py-4"],
+                  classList: ["px-4", "py-4"],
                 });
                 LevelBadge(remap(log, "level"));
               });
 
               h("td", () => {
                 spec({
-                  classList: ["px-6", "py-4"],
+                  classList: ["px-4", "py-4"],
                 });
                 h("div", {
                   text: remap(log, "text"),

@@ -18,13 +18,12 @@ const (
 var store *sessions.CookieStore
 
 func RegisterSessionStore() *sessions.CookieStore {
-	// TODO: replace this with very secure key sheesh
 	store = sessions.NewCookieStore([]byte("moonlogs"))
 
 	store.Options = &sessions.Options{
 		MaxAge:   86400 * 30,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode, // TODO: change this
+		SameSite: http.SameSiteNoneMode, // TODO: change this MAYBE
 		Secure:   true,
 	}
 

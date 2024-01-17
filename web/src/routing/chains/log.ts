@@ -18,6 +18,7 @@ chainRoute({
       schema_name: route.params.schemaName,
       text: route.query.q,
       query: route.query.f,
+      kind: route.query.k,
       page: route.query.p,
     }),
   },
@@ -48,9 +49,9 @@ chainRoute({
 });
 
 querySync({
-  source: { q: logModel.$searchQuery, f: logModel.$formattedSearchFilter, p: logModel.$currentPage },
+  source: { q: logModel.$searchQuery, f: logModel.$formattedSearchFilter, k: logModel.$currentKind, p: logModel.$currentPage },
   clock: debounce({
-    source: combine(logModel.$searchQuery, logModel.$formattedSearchFilter, logModel.$currentPage),
+    source: combine(logModel.$searchQuery, logModel.$formattedSearchFilter, logModel.$currentKind, logModel.$currentPage),
     timeout: 200,
   }),
   route: logsRoute,

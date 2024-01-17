@@ -14,7 +14,6 @@ export const Auth = () => {
         label: "Email",
         inputChanged: authForm.fields.email.changed,
         errorText: authForm.fields.email.$errorText,
-        errorVisible: authForm.fields.email.$errors.map(Boolean),
       });
 
       Input({
@@ -22,7 +21,6 @@ export const Auth = () => {
         label: "Password",
         inputChanged: authForm.fields.password.changed,
         errorText: authForm.fields.password.$errorText,
-        errorVisible: authForm.fields.password.$errors.map(Boolean),
       });
 
       Button({

@@ -17,6 +17,8 @@ export const $currentUser = createStore<User>({ id: 0, name: "", email: "", role
   (_, userResponse) => userResponse.data,
 );
 
+export const $currentAccount = createStore<User>({ id: 0, name: "", email: "", role: "Member", token: "" });
+
 export const effects = {
   getUsersFx,
   getUserFx,

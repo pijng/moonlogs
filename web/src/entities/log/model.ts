@@ -9,8 +9,8 @@ const reset = createEffect();
 
 const resetSearch = createEvent();
 export const $searchQuery = createStore("").reset(resetSearch);
-const queryChanged = createEvent<string>();
 
+const queryChanged = createEvent<string>();
 $searchQuery.on(queryChanged, (_, query) => query);
 
 const resetFilter = createEvent();
@@ -25,20 +25,37 @@ $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
   return JSON.stringify(newFilter);
 });
 
+const kindChanged = createEvent<string>();
+export const $currentKind = createStore("").reset(resetFilter);
+$currentKind.on(kindChanged, (_, kind) => kind);
+
 const resetPage = createEvent();
 const pageChanged = createEvent<string>();
 
 export const $currentPage = createStore("1")
   .on(pageChanged, (_, newPage) => newPage)
-  .reset([queryChanged, filterChanged, resetPage]);
+  .reset([queryChanged, filterChanged, kindChanged, resetPage]);
 
 const getLogsFx = createEffect((schema_name: string) => {
   return getLogs({ schema_name: schema_name });
 });
 
 const queryLogsFx = createEffect(
-  ({ schema_name, text, query, page }: { schema_name: string; text?: string; query?: string; page?: number }) => {
+  ({
+    schema_name,
+    text,
+    query,
+    kind,
+    page,
+  }: {
+    schema_name: string;
+    text?: string;
+    query?: string;
+    kind?: string;
+    page?: number;
+  }) => {
     const objectQuery = JSON.parse(query || "{}") as Record<string, string>;
+
     const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => {
       if (v.trim().length > 0) {
         return { ...acc, [k]: v };
@@ -46,7 +63,8 @@ const queryLogsFx = createEffect(
 
       return acc;
     }, {});
-    return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, page: page });
+
+    return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, kind: kind, page: page });
   },
 );
 
@@ -131,6 +149,7 @@ export const effects = {
 export const events = {
   queryChanged,
   filterChanged,
+  kindChanged,
   resetFilter,
   resetSearch,
   pageChanged,

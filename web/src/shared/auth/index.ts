@@ -10,6 +10,8 @@ export const $isAuthorized = $token.map(Boolean);
 
 export const unauthorizedTriggered = createEvent();
 
+export const notAllowedTriggered = createEvent();
+
 $token.on(tokenReceived, (_, token) => token).reset(tokenErased);
 
 export const getSessionFx = createEffect(() => {
@@ -31,4 +33,14 @@ sample({
   filter: (isAuthorized, sessionResponse) => !isAuthorized && !!sessionResponse?.data?.token && sessionResponse.success,
   fn: (_, sessionResponse) => sessionResponse.data.token,
   target: tokenReceived,
+});
+
+export const createInitialAdmin = createEvent();
+
+sample({
+  source: $isAuthorized,
+  clock: getSessionFx.doneData,
+  filter: (isAuthorized, sessionResponse) =>
+    !isAuthorized && sessionResponse.success && sessionResponse.data.should_create_initial_admin,
+  target: createInitialAdmin,
 });

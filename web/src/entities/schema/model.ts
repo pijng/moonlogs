@@ -29,7 +29,7 @@ export const $filteredSchemas = combine([$schemas, $searchQuery], ([schemas, sea
   });
 });
 
-export const $currentSchema = createStore<Schema>({ id: 0, title: "", description: "", name: "", fields: [] }).on(
+export const $currentSchema = createStore<Schema>({ id: 0, title: "", description: "", name: "", fields: [], kinds: [] }).on(
   getSchemaFx.doneData,
   (_, schemaResponse) => schemaResponse.data,
 );

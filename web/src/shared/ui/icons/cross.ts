@@ -1,6 +1,6 @@
 import { h, spec } from "forest";
 
-export const Cross = () => {
+export const CrossIcon = () => {
   h("svg", () => {
     spec({
       classList: ["w-5", "h-5", "ml-2.5"],

@@ -2,26 +2,19 @@ import { Event, Store, createEvent, createStore, sample } from "effector";
 import { h, list, spec } from "forest";
 
 export const Select = ({
-  id,
   value,
   text,
   options,
   optionSelected,
 }: {
-  id: string;
   value?: Store<string>;
   text: string;
   options: Store<any[]>;
   optionSelected: Event<any>;
 }) => {
   h("div", () => {
-    spec({
-      classList: ["mb-6"],
-    });
-
     h("label", {
       classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
-      attr: { for: id.toLowerCase() },
       text: text,
     });
 
@@ -53,14 +46,19 @@ export const Select = ({
           "dark:focus:ring-blue-500",
           "dark:focus:border-blue-500",
         ],
-        attr: { id: id, value: value ?? createStore("") },
+        attr: { value: value ?? createStore("") },
         handler: { change: localOptionSelected },
+      });
+
+      h("option", {
+        attr: { value: "" },
+        text: "",
       });
 
       list(options, ({ store: option }) => {
         h("option", {
-          attr: { value: option },
-          text: option,
+          attr: { value: option.map((o) => o.name || o) },
+          text: option.map((o) => o.title || o),
         });
       });
     });

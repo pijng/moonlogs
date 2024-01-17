@@ -1,6 +1,7 @@
 import { schemaModel } from "@/entities/schema";
 import { router } from "@/routing";
 import { logsRoute, schemaEditRoute } from "@/routing/shared";
+import { PermissionGate } from "@/shared/lib";
 import { Button, Header } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
@@ -33,16 +34,18 @@ export const SchemaHeader = () => {
 
     Header($schemaTitle);
 
-    h("div", () => {
-      spec({
-        classList: ["ml-2.5"],
-      });
+    PermissionGate("Admin", () => {
+      h("div", () => {
+        spec({
+          classList: ["ml-2.5"],
+        });
 
-      Button({
-        text: "Settings",
-        variant: "default",
-        size: "extra_small",
-        event: routeOpened,
+        Button({
+          text: "Settings",
+          variant: "default",
+          size: "extra_small",
+          event: routeOpened,
+        });
       });
     });
   });

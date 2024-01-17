@@ -1,0 +1,1222 @@
+openapi: 3.0.3
+info:
+  title: Moonlogs
+  description: Moonlogs API
+  termsOfService: ''
+  contact:
+    email: shalpack@gmail.com
+    name: Pijng
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: '1.0'
+externalDocs:
+  description: Find out more about spec
+  url: ''
+servers: []
+tags:
+  - name: Default
+    description: ''
+paths:
+  /api/schemas:
+    get:
+      summary: ''
+      description: ''
+      operationId: ''
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schema'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - code
+                  - error
+                  - data
+      security:
+        - http1: []
+    post:
+      summary: ''
+      description: ''
+      operationId: ''
+      tags: &ref_0 []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schema'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Schema'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - error
+                  - meta
+                  - code
+                  - data
+      security:
+        - http1: []
+  /api/schemas/{id}:
+    get:
+      description: ''
+      operationId: ''
+      tags: []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: &ref_1
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Schema'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    put:
+      summary: ''
+      description: ''
+      operationId: ''
+      tags: *ref_0
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schema'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Schema'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+  /api/schemas/search:
+    post:
+      description: ''
+      operationId: ''
+      tags: []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaSearch'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schema'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - error
+                  - code
+                  - data
+                  - meta
+      security:
+        - http1: []
+  /api/logs:
+    post:
+      description: ''
+      operationId: ''
+      tags: &ref_2 []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Record'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Record'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - data
+                  - error
+                  - code
+                  - meta
+      security:
+        - http1: []
+    get:
+      description: ''
+      operationId: ''
+      tags: *ref_2
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Record'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+  /api/logs/{id}:
+    get:
+      description: ''
+      operationId: ''
+      tags: []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: &ref_3
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Record'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - data
+                  - meta
+                  - error
+                  - code
+      security:
+        - http1: []
+  /api/logs/group/{schema_name}/{hash}:
+    get:
+      description: ''
+      operationId: ''
+      tags: []
+      parameters:
+        - in: path
+          name: schema_name
+          description: ''
+          schema: *ref_3
+          required: true
+        - in: path
+          name: hash
+          description: ''
+          schema: *ref_3
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Record'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - data
+                  - meta
+                  - code
+                  - error
+      security:
+        - http1: []
+  /api/logs/search:
+    post:
+      description: ''
+      operationId: ''
+      tags: []
+      parameters:
+        - in: query
+          name: page
+          description: ''
+          schema: &ref_4
+            type: string
+        - in: query
+          name: limit
+          description: ''
+          schema: *ref_4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Record'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Record'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - error
+                  - data
+                  - code
+      security:
+        - http1: []
+  /api/users:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_5 []
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - error
+                  - meta
+                  - code
+                  - data
+      security:
+        - http1: []
+    post:
+      description: ''
+      operationId: ''
+      tags: *ref_5
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - data
+                  - error
+                  - code
+      security:
+        - http1: []
+  /api/users/{id}:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_6 []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_3
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - meta
+                  - data
+                  - error
+      security:
+        - http1: []
+    delete:
+      description: ''
+      operationId: ''
+      tags: *ref_6
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: &ref_7
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: integer
+                    description: Deleted User's ID
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - data
+                  - meta
+                  - code
+                  - error
+      security:
+        - http1: []
+    put:
+      description: ''
+      operationId: ''
+      tags: *ref_6
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_7
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - data
+                  - error
+                  - code
+      security:
+        - http1: []
+  /api/session:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_8 []
+      parameters: &ref_9 []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Session'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - data
+                  - error
+                  - code
+      security: []
+    post:
+      description: ''
+      operationId: ''
+      tags: *ref_8
+      parameters: *ref_9
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Session'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - data
+                  - error
+                  - code
+  /api/setup/register_admin:
+    post:
+      description: ''
+      operationId: ''
+      tags: []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      security: []
+  /api/api_tokens:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_10 []
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiToken'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    post:
+      description: ''
+      operationId: ''
+      tags: *ref_10
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiToken'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/ApiToken'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - data
+                  - meta
+                  - code
+                  - error
+      security:
+        - http1: []
+  /api/api_tokens/{id}:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_11 []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: &ref_12
+            type: integer
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/ApiToken'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    put:
+      description: ''
+      operationId: ''
+      tags: *ref_11
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_12
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiToken'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/ApiToken'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    delete:
+      description: ''
+      operationId: ''
+      tags: *ref_11
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_12
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: number
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+  /api/tags:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_13 []
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    post:
+      description: ''
+      operationId: ''
+      tags: *ref_13
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Tag'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+  /api/tags/{id}:
+    get:
+      description: ''
+      operationId: ''
+      tags: &ref_14 []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_12
+          required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Tag'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    put:
+      description: ''
+      operationId: ''
+      tags: *ref_14
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_12
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Tag'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+    delete:
+      description: ''
+      operationId: ''
+      tags: *ref_14
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: number
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+components:
+  schemas:
+    Schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaField'
+        kinds:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaKind'
+        tags:
+          type: array
+          items:
+            type: number
+        retention_time:
+          type: integer
+      required:
+        - id
+        - title
+        - name
+        - fields
+        - kinds
+        - tags
+    SchemaField:
+      type: object
+      properties:
+        title:
+          type: string
+        name:
+          type: string
+      required:
+        - title
+        - name
+    Record:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        schema_name:
+          type: string
+        schema_id:
+          type: integer
+        query:
+          type: object
+          properties: {}
+        kind:
+          type: string
+        created_at:
+          type: string
+        group_hash:
+          type: string
+        level:
+          oneOf:
+            - $ref: '#/components/schemas/Level'
+      required:
+        - id
+        - text
+        - schema_name
+        - query
+        - kind
+    Level:
+      type: string
+      enum:
+        - Trace
+        - Debug
+        - Info
+        - Warn
+        - Error
+        - Fatal
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        password_digest:
+          type: string
+        role:
+          oneOf:
+            - $ref: '#/components/schemas/UserRole'
+        tags:
+          type: array
+          items:
+            type: number
+        token:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - password
+        - role
+        - tags
+    UserRole:
+      type: string
+      enum:
+        - Member
+        - Admin
+        - System
+    SchemaSearch:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+    Meta:
+      type: object
+      properties:
+        page:
+          type: integer
+        count:
+          type: integer
+        pages:
+          type: integer
+      required:
+        - page
+        - count
+        - pages
+    Credentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    Session:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+    ApiToken:
+      type: object
+      properties:
+        id:
+          type: number
+        token:
+          type: string
+        name:
+          type: string
+        is_revoked:
+          type: boolean
+      required:
+        - id
+        - token
+        - name
+        - is_revoked
+    SchemaKind:
+      type: object
+      properties:
+        title:
+          type: string
+        name:
+          type: string
+      required:
+        - title
+        - name
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+        - id
+        - name
+  securitySchemes:
+    http1:
+      type: http
+      scheme: bearer

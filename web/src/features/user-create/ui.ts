@@ -1,5 +1,5 @@
 import { Button, ErrorHint, Input, Select } from "@/shared/ui";
-import { h } from "forest";
+import { h, spec } from "forest";
 import { $creationError, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
@@ -9,42 +9,46 @@ export const NewMemberForm = () => {
     Input({
       type: "text",
       label: "Name",
+      value: memberForm.fields.name.$value,
       inputChanged: memberForm.fields.name.changed,
       errorText: memberForm.fields.name.$errorText,
-      errorVisible: memberForm.fields.name.$errors.map(Boolean),
     });
 
     Input({
       type: "email",
       label: "Email",
+      value: memberForm.fields.email.$value,
       inputChanged: memberForm.fields.email.changed,
       errorText: memberForm.fields.email.$errorText,
-      errorVisible: memberForm.fields.email.$errors.map(Boolean),
     });
 
-    Select({
-      id: "role",
-      text: "Select a role",
-      options: createStore<UserRole[]>(["Member", "Admin"]),
-      optionSelected: memberForm.fields.role.changed,
+    h("div", () => {
+      spec({ classList: ["mb-6"] });
+
+      Select({
+        text: "Select a role",
+        value: memberForm.fields.role.$value.map(String),
+        options: createStore<UserRole[]>(["Member", "Admin"]),
+        optionSelected: memberForm.fields.role.changed,
+      });
     });
 
     Input({
       type: "password",
       label: "Password",
       required: true,
+      value: memberForm.fields.password.$value,
       inputChanged: memberForm.fields.password.changed,
       errorText: memberForm.fields.password.$errorText,
-      errorVisible: memberForm.fields.password.$errors.map(Boolean),
     });
 
     Input({
       type: "password",
       label: "Confirm password",
       required: true,
+      value: memberForm.fields.passwordConfirmation.$value,
       inputChanged: memberForm.fields.passwordConfirmation.changed,
       errorText: memberForm.fields.passwordConfirmation.$errorText,
-      errorVisible: memberForm.fields.passwordConfirmation.$errors.map(Boolean),
     });
 
     Button({

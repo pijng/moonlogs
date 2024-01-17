@@ -1,14 +1,17 @@
 package controllers
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"moonlogs/api/server/session"
 	"moonlogs/api/server/util"
-	"moonlogs/internal/repository"
+	"moonlogs/internal/entities"
+	"moonlogs/internal/repositories"
+	"moonlogs/internal/usecases"
 	"net/http"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Credentials struct {
@@ -17,10 +20,13 @@ type Credentials struct {
 }
 
 type Session struct {
-	Token string `json:"token"`
+	Token                    string        `json:"token"`
+	ID                       int           `json:"id"`
+	Name                     string        `json:"name"`
+	Email                    string        `json:"email"`
+	Role                     entities.Role `json:"role"`
+	ShouldCreateInitialAdmin bool          `json:"should_create_initial_admin"`
 }
-
-var SHA256Hasher = sha256.New()
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var token string
@@ -32,25 +38,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repository.NewUserRepository(r.Context())
+	userRepository := repositories.NewUserRepository(r.Context())
+	userUseCase := usecases.NewUserUseCase(userRepository)
 
-	user, err := userRepository.GetByEmail(credentials.Email)
-	if err != nil {
+	user, err := userUseCase.GetUserByEmail(credentials.Email)
+	if err != nil || user.ID == 0 {
 		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
 		return
 	}
 
-	_, err = SHA256Hasher.Write([]byte(credentials.Password))
+	err = checkPassword(user.PasswordDigest, credentials.Password)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
-		return
-	}
-
-	hashBytes := SHA256Hasher.Sum(nil)
-	hashString := hex.EncodeToString(hashBytes)
-	SHA256Hasher.Reset()
-
-	if hashString != user.PasswordDigest {
 		util.Return(w, false, http.StatusUnauthorized, err, nil, util.Meta{})
 		return
 	}
@@ -82,17 +80,38 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if token != user.Token {
-		err = userRepository.UpdateTokenById(user.ID, token)
+		err = userUseCase.UpdateUserTokenByID(user.ID, token)
 		if err != nil {
 			util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
 			return
 		}
 	}
 
-	util.Return(w, true, http.StatusOK, nil, Session{Token: token}, util.Meta{})
+	sessionPayload := Session{
+		Token: token,
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  user.Role,
+	}
+
+	util.Return(w, true, http.StatusOK, nil, sessionPayload, util.Meta{})
 }
 
 func GetSession(w http.ResponseWriter, r *http.Request) {
+	userUserCase := usecases.NewUserUseCase(repositories.NewUserRepository(r.Context()))
+
+	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
+	if err != nil {
+		util.Return(w, false, http.StatusInternalServerError, fmt.Errorf("failed checking if initial admin is required: %w", err), nil, util.Meta{})
+		return
+	}
+
+	if shouldCreateInitialAdmin {
+		util.Return(w, true, http.StatusOK, nil, Session{ShouldCreateInitialAdmin: true}, util.Meta{})
+		return
+	}
+
 	store := session.GetSessionStore()
 	session, err := store.Get(r, session.NAME)
 	if err != nil {
@@ -108,17 +127,19 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		bearerToken = splitToken[1]
 	}
 
-	user, _ := repository.NewUserRepository(r.Context()).GetByToken(bearerToken)
+	if bearerToken == "" {
+		bearerToken, _ = session.Values["token"].(string)
+	}
 
-	token, ok := session.Values["token"].(string)
-	if !ok && user == nil {
+	user, _ := userUserCase.GetUserByToken(bearerToken)
+	if user.ID == 0 {
 		util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
 		return
 	}
 
-	if token == "" && user != nil {
-		token = user.Token
-		session.Values["token"] = token
+	if bearerToken == "" {
+		bearerToken = user.Token
+		session.Values["token"] = bearerToken
 		session.Values["userID"] = user.ID
 	}
 
@@ -128,5 +149,17 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, Session{Token: token}, util.Meta{})
+	sessionPayload := Session{
+		Token: bearerToken,
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		Role:  user.Role,
+	}
+
+	util.Return(w, true, http.StatusOK, nil, sessionPayload, util.Meta{})
+}
+
+func checkPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

@@ -15,7 +15,7 @@ export const SchemaCreatePage = () => {
 
     h("div", () => {
       spec({
-        classList: ["pt-5", "max-w-2xl"],
+        classList: ["pt-5", "max-w-3xl"],
       });
 
       NewSchemaForm();

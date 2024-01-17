@@ -1,6 +1,7 @@
+import { userModel } from "@/entities/user";
 import { homeRoute } from "@/routing/shared";
 import { postSession } from "@/shared/api";
-import { tokenReceived } from "@/shared/auth";
+import { getSessionFx, tokenReceived } from "@/shared/auth";
 import { rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
@@ -35,7 +36,7 @@ export const logInSubmitted = createEvent();
 sample({
   source: logInFx.doneData,
   fn: (logInResponse) => logInResponse.data.token,
-  target: [tokenReceived, homeRoute.open],
+  target: [tokenReceived, homeRoute.open, authForm.reset],
 });
 
 sample({
@@ -49,4 +50,24 @@ sample({
     return logInResponse.error;
   },
   target: $authError,
+});
+
+sample({
+  source: getSessionFx.doneData,
+  filter: (sessionResponse) => sessionResponse.success && !!sessionResponse.data.token,
+  fn: (sessionResponse) => {
+    const { id, email, name, role, token } = sessionResponse.data;
+    return { id, email, name, role, token };
+  },
+  target: userModel.$currentAccount,
+});
+
+sample({
+  source: logInFx.doneData,
+  filter: (loginResponse) => loginResponse.success,
+  fn: (loginResponse) => {
+    const { id, email, name, role, token } = loginResponse.data;
+    return { id, email, name, role, token };
+  },
+  target: userModel.$currentAccount,
 });

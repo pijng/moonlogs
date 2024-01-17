@@ -1,6 +1,6 @@
 # moonlogs
 
-#### Generate new type
+#### Generate server from spec
 
-go run -mod=mod entgo.io/ent/cmd/ent new \<Model_name>
+`oapi-codegen --config api/server.cfg.yaml api/swagger.yaml`
 

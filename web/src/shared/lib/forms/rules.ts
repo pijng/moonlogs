@@ -1,7 +1,7 @@
 import { Rule } from "effector-forms";
 
 export const rules = {
-  required: (): Rule<string> => ({
+  required: (): Rule<any> => ({
     name: "required",
     validator: (value) => ({
       isValid: Boolean(value),

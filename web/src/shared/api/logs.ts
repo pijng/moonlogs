@@ -21,16 +21,18 @@ export const getLogs = ({
   schema_name,
   text,
   query,
+  kind,
   page,
 }: {
   schema_name: string;
   text?: string;
   query?: Record<string, string | number | boolean>;
+  kind?: string;
   page?: number;
 }): Promise<LogsResponse> => {
   return post({
     url: `/api/logs/search?page=${page}`,
-    body: JSON.stringify({ schema_name: schema_name, text: text, query: query }),
+    body: JSON.stringify({ schema_name: schema_name, text: text, query: query, kind: kind }),
   });
 };
 

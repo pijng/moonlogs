@@ -1,8 +1,8 @@
 import { Event, Store, createEvent, createStore, is, restore, sample } from "effector";
 import { ClassListArray, h, node, spec } from "forest";
 
-export type ButtonVariant = "default" | "alternative" | "light";
-type Size = "base" | "small" | "extra_small";
+export type ButtonVariant = "default" | "alternative" | "light" | "delete" | "delete_icon";
+type Size = "base" | "small" | "extra_small" | "plain";
 type Style = "default" | "round";
 
 const BASE_CLASSES = ["inline-flex", "items-center"];
@@ -35,6 +35,19 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
     "dark:hover:text-white",
     "dark:hover:bg-gray-700",
   ],
+  delete: [
+    "block",
+    "text-white",
+    "bg-red-600",
+    "border",
+    "dark:border-red-600",
+    "hover:bg-red-800",
+    "font-medium",
+    "dark:bg-red-600",
+    "dark:hover:bg-red-700",
+    "focus:outline-none",
+  ],
+  delete_icon: ["block", "text-red-600", "font-medium", "focus:outline-none"],
   light: ["block", "font-medium", "text-gray-900", "hover:text-blue-700", "dark:text-gray-400", "dark:hover:text-white"],
 };
 
@@ -50,6 +63,10 @@ const SIZES: Record<Size, Record<Style, string[]>> = {
   extra_small: {
     default: ["px-3", "py-2", "text-xs", "rounded-lg"],
     round: ["p-1.5", "text-xs"],
+  },
+  plain: {
+    default: ["text-xs", "rounded-lg"],
+    round: ["text-xs"],
   },
 };
 

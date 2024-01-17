@@ -1,15 +1,25 @@
-import { Link, homeRoute, membersRoute } from "@/routing/shared";
-import { RouteInstance } from "atomic-router";
+import { Link, apiTokensRoute, homeRoute, membersRoute, tagsRoute } from "@/routing/shared";
+import { RouteInstance, redirect } from "atomic-router";
 import { createEvent, createStore, restore, sample } from "effector";
 import { h, spec } from "forest";
 import { layoutClicked } from "..";
+import { PermissionGate } from "@/shared/lib";
 
-const sidebarToggled = createEvent<any>();
+export const sidebarToggled = createEvent<any>();
+export const sidebarClosed = createEvent<any>();
 const $isOpened = createStore(false);
 
 sample({
   source: $isOpened,
   clock: sidebarToggled,
+  fn: (state) => !state,
+  target: $isOpened,
+});
+
+sample({
+  source: $isOpened,
+  clock: sidebarClosed,
+  filter: (isOpened) => isOpened,
   fn: (state) => !state,
   target: $isOpened,
 });
@@ -104,9 +114,9 @@ export const Sidebar = () => {
       h("a", () => {
         const homeClicked = createEvent<MouseEvent>();
 
-        sample({
-          source: homeClicked,
-          target: homeRoute.open,
+        redirect({
+          clock: homeClicked,
+          route: homeRoute,
         });
 
         spec({
@@ -138,8 +148,18 @@ export const Sidebar = () => {
         });
 
         SidebarItem("Log groups", homeRoute);
-        SidebarItem("Members", membersRoute);
-        // SidebarItem("Settings", homeRoute);
+
+        PermissionGate("Admin", () => {
+          SidebarItem("Members", membersRoute);
+        });
+
+        PermissionGate("Admin", () => {
+          SidebarItem("Tags", tagsRoute);
+        });
+
+        PermissionGate("Admin", () => {
+          SidebarItem("API tokens", apiTokensRoute);
+        });
       });
     });
   });

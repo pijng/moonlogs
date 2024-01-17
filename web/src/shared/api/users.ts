@@ -1,4 +1,4 @@
-import { BaseResponse, get, post, put } from "./base";
+import { BaseResponse, del, get, post, put } from "./base";
 
 export type UserRole = "Member" | "Admin" | "System";
 
@@ -49,4 +49,8 @@ export const createUser = (user: UserToCreate): Promise<UserReponse> => {
 
 export const editUser = (user: UserToUpdate): Promise<UserReponse> => {
   return put({ url: `/api/users/${user.id}`, body: JSON.stringify(user) });
+};
+
+export const deleteUser = (id: number): Promise<UserReponse> => {
+  return del({ url: `/api/users/${id}` });
 };

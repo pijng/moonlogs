@@ -13,7 +13,7 @@ export const LoginPage = () => {
 
       h("div", () => {
         spec({
-          classList: ["h-screen", "flex", "flex-col", "items-center", "justify-center"],
+          classList: ["h-screen", "flex", "flex-col", "items-center", "justify-center", "px-7"],
         });
 
         AuthForm();

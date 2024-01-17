@@ -1,12 +1,27 @@
 import { Event, Store, createEvent, sample } from "effector";
 import { h, list, spec } from "forest";
-import { FloatingInput } from "@/shared/ui";
-import { FilterItem } from "@/features";
+import { FloatingInput, Select } from "@/shared/ui";
+import { FilterItem, KindItem } from "@/features";
+import { $currentKind } from "@/entities/log/model";
 
-export const Dropdown = (items: Store<FilterItem[]>, itemChanged: Event<Record<string, any>>) => {
+export const Dropdown = ({
+  items,
+  itemChanged,
+  kinds,
+  kindChanged,
+}: {
+  items: Store<FilterItem[]>;
+  itemChanged: Event<Record<string, any>>;
+  kinds: Store<KindItem[]>;
+  kindChanged: Event<string>;
+}) => {
   h("div", () => {
     spec({
       classList: [
+        "md:w-64",
+        "top-0",
+        "left-0",
+        "w-5/6",
         "absolute",
         "left-0",
         "top-9",
@@ -28,7 +43,16 @@ export const Dropdown = (items: Store<FilterItem[]>, itemChanged: Event<Record<s
 
     h("ul", () => {
       spec({
-        classList: ["flex", "flex-wrap", "py-2", "text-sm", "text-gray-700", "dark:text-gray-200"],
+        classList: ["flex", "flex-col", "flex-wrap", "py-2", "text-sm", "text-gray-700", "dark:text-gray-200"],
+      });
+
+      h("li", () => {
+        spec({
+          visible: kinds.map((kinds) => kinds?.length > 0),
+          classList: ["block", "px-4", "py-2", "flex-auto", "shrink-0"],
+        });
+
+        Select({ value: $currentKind, text: "Kind", options: kinds, optionSelected: kindChanged });
       });
 
       list(items, ({ store: item }) => {

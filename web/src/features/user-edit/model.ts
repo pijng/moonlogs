@@ -1,8 +1,10 @@
 import { userModel } from "@/entities/user";
 import { membersRoute } from "@/routing/shared";
 import { UserToUpdate, editUser } from "@/shared/api";
+import { deleteUser } from "@/shared/api/users";
 import { rules } from "@/shared/lib";
-import { createEffect, createStore, sample } from "effector";
+import { redirect } from "atomic-router";
+import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
 export const memberForm = createForm<Omit<UserToUpdate, "id">>({
@@ -62,4 +64,33 @@ sample({
   filter: (userResponse) => !userResponse.success,
   fn: (userResponse) => userResponse.error,
   target: $editError,
+});
+
+const deleteUserFx = createEffect((id: number) => {
+  deleteUser(id);
+});
+
+export const deleteUserClicked = createEvent<number>();
+const alertDeleteFx = createEffect((id: number): { confirmed: boolean; id: number } => {
+  const confirmed = confirm("Are you sure you want to delete this user?");
+
+  return confirmed ? { confirmed: true, id: id } : { confirmed: false, id: id };
+});
+
+sample({
+  clock: deleteUserClicked,
+  target: alertDeleteFx,
+});
+
+sample({
+  source: userModel.$currentUser,
+  clock: alertDeleteFx.doneData,
+  filter: (_, { confirmed }) => confirmed,
+  fn: ({ id }) => id,
+  target: deleteUserFx,
+});
+
+redirect({
+  clock: deleteUserFx.done,
+  route: membersRoute,
 });

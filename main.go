@@ -2,49 +2,33 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"moonlogs/api/server"
-	"moonlogs/ent"
 	"moonlogs/internal/config"
-	"moonlogs/internal/repository"
-	"moonlogs/internal/schema"
+	"moonlogs/internal/persistence"
 	"moonlogs/internal/tasks"
-	"moonlogs/usecase"
 	"time"
-
-	_ "github.com/mattn/go-sqlite3"
-)
-
-var (
-	developmentFlag = flag.Bool("development", true, "Development mode")
 )
 
 func main() {
-	flag.Parse()
-
-	client, err := ent.Open("sqlite3", "file:./database.sqlite?cache=shared&_fk=1")
+	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("failed opening connection to sqlite: %v", err)
-	}
-	defer client.Close()
-
-	if *developmentFlag {
-		schema.Generate(client)
+		log.Fatal(err)
 	}
 
-	config.SetClient(client)
+	_, err = persistence.InitDB(cfg.DBPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	runTasks(context.Background())
 
-	server.Serve()
+	err = server.ListenAndServe(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func runTasks(ctx context.Context) {
-	logRecordRepository := repository.NewLogRecordRepository(ctx)
-	logSchemaRepository := repository.NewLogSchemaRepository(ctx)
-	logRecordUseCase := usecase.NewLogRecordsUseCase(logRecordRepository, logSchemaRepository)
-
-	cleanupInterval := 1 * time.Hour
-	go tasks.RunCleanupTask(logRecordUseCase, cleanupInterval)
+	go tasks.RunCleanupTask(ctx, 1*time.Hour)
 }

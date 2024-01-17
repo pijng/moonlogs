@@ -1,1 +1,1 @@
-export { Filter, type FilterItem } from "./ui";
+export { Filter, type FilterItem, type KindItem } from "./ui";
