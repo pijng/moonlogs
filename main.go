@@ -16,7 +16,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, err = persistence.InitDB(cfg.DBPath)
+	_, err = persistence.InitDB(config.DB_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
