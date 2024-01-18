@@ -1,19 +1,30 @@
-# Stage 1: Copy the entire project
-FROM alpine:latest as base
+# Stage 1: Copy only the necessary dependency files
+FROM golang:alpine as deps
+
+WORKDIR /app
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Stage 2: Copy the entire project
+FROM alpine:3.14 as base
 
 WORKDIR /app
 COPY . .
 
-# Stage 2: Build the frontend
-FROM node:latest as frontend
+# Stage 3: Build the frontend
+FROM node:20 as frontend
 
 WORKDIR /app/web
 COPY --from=base /app/web/ ./
-RUN npm install
-RUN npm run clean
-RUN npm run build
 
-# Stage 3: Build the Go app
+# Combine Node.js commands
+RUN npm install \
+    && npm run clean \
+    && npm run build
+
+# Stage 4: Build the Go app
 FROM golang:alpine as backend
 
 WORKDIR /app
@@ -25,7 +36,7 @@ COPY --from=frontend /app/web/build /app/web/build
 RUN go build -o /app/moonlogs
 
 # Final Stage
-FROM alpine:latest
+FROM alpine:3.14
 
 WORKDIR /app
 COPY --from=backend /app/moonlogs ./

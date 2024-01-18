@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var hasherPool = sync.Pool{
+var FNVHasherPool = sync.Pool{
 	New: func() interface{} {
 		return fnv.New64a()
 	},
@@ -48,8 +48,8 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 		return nil, fmt.Errorf("failed creating record: %v", err)
 	}
 
-	FNV64Hasher := hasherPool.Get().(hash.Hash64)
-	defer hasherPool.Put(FNV64Hasher)
+	FNV64Hasher := FNVHasherPool.Get().(hash.Hash64)
+	defer FNVHasherPool.Put(FNV64Hasher)
 
 	FNV64Hasher.Write(bytes)
 	hashSum := FNV64Hasher.Sum64()

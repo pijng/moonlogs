@@ -6,11 +6,17 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"hash"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
+	"sync"
 )
 
-var tokenHasher = sha256.New()
+var sha256HasherPool = sync.Pool{
+	New: func() interface{} {
+		return sha256.New()
+	},
+}
 
 type ApiTokenUseCase struct {
 	apiTokenRepository *repositories.ApiTokenRepository
@@ -100,6 +106,9 @@ func generateToken(length int) (string, error) {
 }
 
 func hashToken(token string) (string, error) {
+	tokenHasher := sha256HasherPool.Get().(hash.Hash)
+	defer sha256HasherPool.Put(tokenHasher)
+
 	_, err := tokenHasher.Write([]byte(token))
 	if err != nil {
 		return "", fmt.Errorf("failed hashing token: %w", err)
