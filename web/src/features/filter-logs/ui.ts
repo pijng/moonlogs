@@ -18,12 +18,14 @@ export type KindItem = {
 export const Filter = ({
   filterItems,
   filterChanged,
+  currentKind,
   kindItems,
   kindChanged,
   applied,
 }: {
   filterItems: Store<FilterItem[]>;
   filterChanged: Event<Record<string, any>>;
+  currentKind: Store<string>;
   kindItems: Store<KindItem[]>;
   kindChanged: Event<string>;
   applied: Store<boolean>;
@@ -42,6 +44,12 @@ export const Filter = ({
       visible: $filterIsOpened,
     });
 
-    Dropdown({ items: filterItems, itemChanged: filterChanged, kinds: kindItems, kindChanged: kindChanged });
+    Dropdown({
+      items: filterItems,
+      itemChanged: filterChanged,
+      currentKind: currentKind,
+      kinds: kindItems,
+      kindChanged: kindChanged,
+    });
   });
 };

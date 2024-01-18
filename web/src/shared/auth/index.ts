@@ -38,9 +38,7 @@ sample({
 export const createInitialAdmin = createEvent();
 
 sample({
-  source: $isAuthorized,
   clock: getSessionFx.doneData,
-  filter: (isAuthorized, sessionResponse) =>
-    !isAuthorized && sessionResponse.success && sessionResponse.data.should_create_initial_admin,
+  filter: (sessionResponse) => sessionResponse.success && sessionResponse.data.should_create_initial_admin,
   target: createInitialAdmin,
 });

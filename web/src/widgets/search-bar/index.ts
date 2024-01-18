@@ -1,5 +1,4 @@
 import { logModel } from "@/entities/log";
-import { $currentKind } from "@/entities/log/model";
 import { schemaModel } from "@/entities/schema";
 import { Filter } from "@/features";
 import { logsRoute } from "@/routing/shared";
@@ -50,7 +49,7 @@ export const SearchBar = () => {
         classList: ["w-fit", "relative", "flex"],
       });
 
-      const $filtersApplied = combine($currentFilter, $currentKind, (items, kind) => {
+      const $filtersApplied = combine($currentFilter, logModel.$currentKind, (items, kind) => {
         const itemsApplied = items.filter((item) => item.value.trim().length > 0).length > 0;
         const kindApplied = kind?.length > 0;
 
@@ -60,6 +59,7 @@ export const SearchBar = () => {
       Filter({
         filterItems: $currentFilter,
         filterChanged: logModel.events.filterChanged,
+        currentKind: logModel.$currentKind,
         kindItems: $currentSchema.map((s) => s.kinds || []),
         kindChanged: logModel.events.kindChanged,
         applied: $filtersApplied,

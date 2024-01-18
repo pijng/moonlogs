@@ -28,7 +28,11 @@ func NewUserUseCase(userRepository *repositories.UserRepository) *UserUseCase {
 
 func (uc *UserUseCase) CreateUser(user entities.User) (*entities.User, error) {
 	userWithIdenticalEmail, err := uc.userRepository.GetUserByEmail(user.Email)
-	if userWithIdenticalEmail.ID != 0 && err == nil {
+	if err != nil {
+		return nil, fmt.Errorf("failed getting user: %w", err)
+	}
+
+	if userWithIdenticalEmail.ID != 0 {
 		return nil, fmt.Errorf("user with email %s already exists", user.Email)
 	}
 

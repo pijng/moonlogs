@@ -76,7 +76,7 @@ func (r *RecordRepository) GetAllRecords(limit int, offset int) ([]*entities.Rec
 }
 
 func (r *RecordRepository) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	lr, err := r.records.Where("schema_name = ? AND group_hash = ? ORDER BY created_at DESC", schemaName, groupHash).All(r.ctx)
+	lr, err := r.records.Where("schema_name = ? AND group_hash = ? ORDER BY created_at ASC", schemaName, groupHash).All(r.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying record: %w", err)
 	}

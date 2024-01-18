@@ -16,4 +16,5 @@ type Role string
 const (
 	MemberRole Role = "Member"
 	AdminRole  Role = "Admin"
+	TokenRole  Role = "TokenRole"
 )

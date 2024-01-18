@@ -2,16 +2,17 @@ import { Event, Store, createEvent, sample } from "effector";
 import { h, list, spec } from "forest";
 import { FloatingInput, Select } from "@/shared/ui";
 import { FilterItem, KindItem } from "@/features";
-import { $currentKind } from "@/entities/log/model";
 
 export const Dropdown = ({
   items,
   itemChanged,
+  currentKind,
   kinds,
   kindChanged,
 }: {
   items: Store<FilterItem[]>;
   itemChanged: Event<Record<string, any>>;
+  currentKind: Store<string>;
   kinds: Store<KindItem[]>;
   kindChanged: Event<string>;
 }) => {
@@ -52,7 +53,7 @@ export const Dropdown = ({
           classList: ["block", "px-4", "py-2", "flex-auto", "shrink-0"],
         });
 
-        Select({ value: $currentKind, text: "Kind", options: kinds, optionSelected: kindChanged });
+        Select({ value: currentKind, text: "Kind", options: kinds, optionSelected: kindChanged });
       });
 
       list(items, ({ store: item }) => {

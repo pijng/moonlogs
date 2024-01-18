@@ -43,7 +43,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := userUseCase.GetUserByEmail(credentials.Email)
 	if err != nil || user.ID == 0 {
-		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		util.Return(w, false, http.StatusUnauthorized, err, nil, util.Meta{})
 		return
 	}
 
@@ -131,7 +131,12 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		bearerToken, _ = session.Values["token"].(string)
 	}
 
-	user, _ := userUserCase.GetUserByToken(bearerToken)
+	user, err := userUserCase.GetUserByToken(bearerToken)
+	if err != nil {
+		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		return
+	}
+
 	if user.ID == 0 {
 		util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
 		return

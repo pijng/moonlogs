@@ -29,6 +29,11 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if schema.ID == 0 {
+		util.Return(w, false, http.StatusBadRequest, nil, nil, util.Meta{})
+		return
+	}
+
 	recordRepository := repositories.NewRecordRepository(r.Context())
 	record, err := usecases.NewRecordUseCase(recordRepository).CreateRecord(newRecord, schema.ID)
 	if err != nil {

@@ -21,9 +21,11 @@ func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema,
 		return nil, fmt.Errorf("failed querying schema by name: %w", err)
 	}
 
-	// if schema by the given name alrady exists – update the existing one
-	if existingSchema.ID > 0 {
-		return uc.UpdateSchemaByID(existingSchema.ID, schema)
+	// update relevant fields if schema by the given name already exists
+	if existingSchema.ID != 0 {
+		mergedSchema := mergeSchemaFields(*existingSchema, schema)
+
+		return uc.schemaRepository.UpdateSchemaByID(existingSchema.ID, mergedSchema)
 	}
 
 	if len(schema.Fields) == 0 {
@@ -113,4 +115,30 @@ func (uc *SchemaUseCase) DestroySchemaByID(id int) error {
 
 func normalizeName(name string) string {
 	return strings.ReplaceAll(strings.ToLower(name), " ", "_")
+}
+
+func mergeSchemaFields(existingSchema entities.Schema, newSchema entities.Schema) entities.Schema {
+	if newSchema.Title == "" {
+		newSchema.Title = existingSchema.Title
+	}
+	if newSchema.Name == "" {
+		newSchema.Name = existingSchema.Name
+	}
+	if newSchema.Description == "" {
+		newSchema.Description = existingSchema.Description
+	}
+	if len(newSchema.Kinds) == 0 {
+		newSchema.Kinds = existingSchema.Kinds
+	}
+	if len(newSchema.Fields) == 0 {
+		newSchema.Fields = existingSchema.Fields
+	}
+	if newSchema.RetentionTime == 0 {
+		newSchema.RetentionTime = existingSchema.RetentionTime
+	}
+	if len(newSchema.Tags) == 0 {
+		newSchema.Tags = existingSchema.Tags
+	}
+
+	return newSchema
 }

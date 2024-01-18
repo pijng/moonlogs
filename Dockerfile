@@ -30,4 +30,5 @@ FROM alpine:latest
 WORKDIR /app
 COPY --from=backend /app/moonlogs ./
 
-CMD ["./moonlogs"]
+ENTRYPOINT ["./moonlogs"]
+CMD []

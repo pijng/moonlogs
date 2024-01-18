@@ -1,4 +1,4 @@
-import { Event, Store, createEvent, createStore, sample } from "effector";
+import { Event, Store, combine, createEvent, createStore, sample } from "effector";
 import { h, list, spec } from "forest";
 
 export const Select = ({
@@ -57,7 +57,10 @@ export const Select = ({
 
       list(options, ({ store: option }) => {
         h("option", {
-          attr: { value: option.map((o) => o.name || o) },
+          attr: {
+            value: option.map((o) => o.name || o),
+            selected: combine(option, value, (option, value) => value === option.name),
+          },
           text: option.map((o) => o.title || o),
         });
       });
