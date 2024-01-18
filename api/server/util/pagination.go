@@ -17,7 +17,7 @@ func Pagination(r *http.Request) (int, int, int) {
 	}
 
 	if limit == 0 {
-		limit = 150
+		limit = 450
 	}
 
 	offset := (page - 1) * limit

@@ -1,4 +1,3 @@
 port: 4200
 read_timeout: 5s
 write_timeout: 1s
-db_path: ./database.sqlite

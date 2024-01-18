@@ -21,7 +21,13 @@ export const LogsListPage = () => {
 
       SearchBar();
       Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+
       LogsList();
+
+      h("div", () => {
+        spec({ classList: ["pt-4"] });
+        Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+      });
     });
   });
 };
