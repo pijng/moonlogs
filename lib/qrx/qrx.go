@@ -389,16 +389,6 @@ func MapLike(query map[string]interface{}) string {
 	return strings.Join(placeholders, " AND ")
 }
 
-// func IsEmpty[T any](structure *T) bool {
-// 	schema := &entities.Schema{}
-// 	emptySchema := new(entities.Schema)
-
-// 	fmt.Println(*schema == *emptySchema)
-// 	emptyT := new(T)
-// 	fmt.Println(structure == emptyT)
-// 	return structure == new(T)
-// }
-
 func scanRow(rows *sql.Rows, dest any) error {
 	rv := reflect.ValueOf(dest)
 	if rv.Kind() != reflect.Pointer || rv.IsNil() {
