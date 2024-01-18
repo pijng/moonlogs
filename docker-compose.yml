@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  moonlogs:
+    image: pijng/moonlogs
+    restart: always
+    ports:
+      - "4200:4200"
+    volumes:
+      - /data/moonlogs:/opt/moonlogs
+    command: --port=4200
