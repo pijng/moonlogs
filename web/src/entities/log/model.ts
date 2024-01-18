@@ -116,6 +116,8 @@ export const $logsGroups = $logs.map((logs) => {
   const groupedLogs = logs.reduce((acc: Record<string, LogsGroup>, log) => {
     const key = JSON.stringify(log.query);
 
+    if (acc[key]?.logs?.length === 10) return acc;
+
     const logsGroup: LogsGroup = {
       tags: Object.entries(log.query).map((q) => `${q[0]}: ${q[1]}`),
       schema_name: log.schema_name,
