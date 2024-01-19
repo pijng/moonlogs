@@ -5,7 +5,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 # Download dependencies
-RUN go mod download
+RUN go mod download \
+    && go mod tidy
 
 # Stage 2: Copy the entire project
 FROM alpine:3.14 as base

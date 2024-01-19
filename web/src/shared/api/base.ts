@@ -35,7 +35,7 @@ export const baseRequest = async ({
       credentials: "include",
       referrerPolicy: "origin",
       body,
-      headers: { ...headers, Authorization: `Bearer ${token}` },
+      headers: { ...headers, "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     });
 
     const responseText = await response.clone().text();

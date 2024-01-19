@@ -25,14 +25,14 @@ const (
 	Http1Scopes = "http1.Scopes"
 )
 
-// Defines values for LogLevel.
+// Defines values for Level.
 const (
-	Debug LogLevel = "Debug"
-	Error LogLevel = "Error"
-	Fatal LogLevel = "Fatal"
-	Info  LogLevel = "Info"
-	Trace LogLevel = "Trace"
-	Warn  LogLevel = "Warn"
+	Debug Level = "Debug"
+	Error Level = "Error"
+	Fatal Level = "Fatal"
+	Info  Level = "Info"
+	Trace Level = "Trace"
+	Warn  Level = "Warn"
 )
 
 // Defines values for UserRole.
@@ -42,47 +42,22 @@ const (
 	System UserRole = "System"
 )
 
+// ApiToken defines model for ApiToken.
+type ApiToken struct {
+	Id        float32 `json:"id"`
+	IsRevoked bool    `json:"is_revoked"`
+	Name      string  `json:"name"`
+	Token     string  `json:"token"`
+}
+
 // Credentials defines model for Credentials.
 type Credentials struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-// LogLevel defines model for LogLevel.
-type LogLevel string
-
-// LogRecord defines model for LogRecord.
-type LogRecord struct {
-	CreatedAt  *string                `json:"created_at,omitempty"`
-	GroupHash  *string                `json:"group_hash,omitempty"`
-	Id         int                    `json:"id"`
-	Level      *LogRecord_Level       `json:"level,omitempty"`
-	Query      map[string]interface{} `json:"query"`
-	SchemaId   *int                   `json:"schema_id,omitempty"`
-	SchemaName string                 `json:"schema_name"`
-	Text       string                 `json:"text"`
-}
-
-// LogRecord_Level defines model for LogRecord.Level.
-type LogRecord_Level struct {
-	union json.RawMessage
-}
-
-// LogSchema defines model for LogSchema.
-type LogSchema struct {
-	Description   *string       `json:"description,omitempty"`
-	Fields        []SchemaField `json:"fields"`
-	Id            int           `json:"id"`
-	Name          string        `json:"name"`
-	RetentionDays *int          `json:"retention_days,omitempty"`
-	Title         string        `json:"title"`
-}
-
-// LogSchemaSearch defines model for LogSchemaSearch.
-type LogSchemaSearch struct {
-	Description *string `json:"description,omitempty"`
-	Title       *string `json:"title,omitempty"`
-}
+// Level defines model for Level.
+type Level string
 
 // Meta defines model for Meta.
 type Meta struct {
@@ -91,15 +66,63 @@ type Meta struct {
 	Pages int `json:"pages"`
 }
 
+// Record defines model for Record.
+type Record struct {
+	CreatedAt  *string                `json:"created_at,omitempty"`
+	GroupHash  *string                `json:"group_hash,omitempty"`
+	Id         int                    `json:"id"`
+	Kind       string                 `json:"kind"`
+	Level      *Record_Level          `json:"level,omitempty"`
+	Query      map[string]interface{} `json:"query"`
+	SchemaId   *int                   `json:"schema_id,omitempty"`
+	SchemaName string                 `json:"schema_name"`
+	Text       string                 `json:"text"`
+}
+
+// Record_Level defines model for Record.Level.
+type Record_Level struct {
+	union json.RawMessage
+}
+
+// Schema defines model for Schema.
+type Schema struct {
+	Description   *string       `json:"description,omitempty"`
+	Fields        []SchemaField `json:"fields"`
+	Id            int           `json:"id"`
+	Kinds         []SchemaKind  `json:"kinds"`
+	Name          string        `json:"name"`
+	RetentionDays *int          `json:"retention_days,omitempty"`
+	Tags          []float32     `json:"tags"`
+	Title         string        `json:"title"`
+}
+
 // SchemaField defines model for SchemaField.
 type SchemaField struct {
 	Name  string `json:"name"`
 	Title string `json:"title"`
 }
 
+// SchemaKind defines model for SchemaKind.
+type SchemaKind struct {
+	Name  string `json:"name"`
+	Title string `json:"title"`
+}
+
+// SchemaSearch defines model for SchemaSearch.
+type SchemaSearch struct {
+	Description *string `json:"description,omitempty"`
+	Title       *string `json:"title,omitempty"`
+}
+
 // Session defines model for Session.
 type Session struct {
 	Token string `json:"token"`
+}
+
+// Tag defines model for Tag.
+type Tag struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // User defines model for User.
@@ -110,6 +133,7 @@ type User struct {
 	Password       string    `json:"password"`
 	PasswordDigest *string   `json:"password_digest,omitempty"`
 	Role           User_Role `json:"role"`
+	Tags           []float32 `json:"tags"`
 	Token          *string   `json:"token,omitempty"`
 }
 
@@ -121,29 +145,50 @@ type User_Role struct {
 // UserRole defines model for UserRole.
 type UserRole string
 
-// PostApiLogsSearchParams defines parameters for PostApiLogsSearch.
-type PostApiLogsSearchParams struct {
-	Page  *string `form:"page,omitempty" json:"page,omitempty"`
-	Limit *string `form:"limit,omitempty" json:"limit,omitempty"`
+// GetApiLogsParams defines parameters for GetApiLogs.
+type GetApiLogsParams struct {
+	Page  *int `form:"page,omitempty" json:"page,omitempty"`
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// PostApiLogsSearchParams defines parameters for PostApiLogsSearch.
+type PostApiLogsSearchParams struct {
+	Page  *int `form:"page,omitempty" json:"page,omitempty"`
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// PostApiApiTokensJSONRequestBody defines body for PostApiApiTokens for application/json ContentType.
+type PostApiApiTokensJSONRequestBody = ApiToken
+
+// PutApiApiTokensIdJSONRequestBody defines body for PutApiApiTokensId for application/json ContentType.
+type PutApiApiTokensIdJSONRequestBody = ApiToken
+
 // PostApiLogsJSONRequestBody defines body for PostApiLogs for application/json ContentType.
-type PostApiLogsJSONRequestBody = LogRecord
+type PostApiLogsJSONRequestBody = Record
 
 // PostApiLogsSearchJSONRequestBody defines body for PostApiLogsSearch for application/json ContentType.
-type PostApiLogsSearchJSONRequestBody = LogRecord
+type PostApiLogsSearchJSONRequestBody = Record
 
 // PostApiSchemasJSONRequestBody defines body for PostApiSchemas for application/json ContentType.
-type PostApiSchemasJSONRequestBody = LogSchema
+type PostApiSchemasJSONRequestBody = Schema
 
 // PostApiSchemasSearchJSONRequestBody defines body for PostApiSchemasSearch for application/json ContentType.
-type PostApiSchemasSearchJSONRequestBody = LogSchemaSearch
+type PostApiSchemasSearchJSONRequestBody = SchemaSearch
 
 // PutApiSchemasIdJSONRequestBody defines body for PutApiSchemasId for application/json ContentType.
-type PutApiSchemasIdJSONRequestBody = LogSchema
+type PutApiSchemasIdJSONRequestBody = Schema
 
 // PostApiSessionJSONRequestBody defines body for PostApiSession for application/json ContentType.
 type PostApiSessionJSONRequestBody = Credentials
+
+// PostApiSetupRegisterAdminJSONRequestBody defines body for PostApiSetupRegisterAdmin for application/json ContentType.
+type PostApiSetupRegisterAdminJSONRequestBody = User
+
+// PostApiTagsJSONRequestBody defines body for PostApiTags for application/json ContentType.
+type PostApiTagsJSONRequestBody = Tag
+
+// PutApiTagsIdJSONRequestBody defines body for PutApiTagsId for application/json ContentType.
+type PutApiTagsIdJSONRequestBody = Tag
 
 // PostApiUsersJSONRequestBody defines body for PostApiUsers for application/json ContentType.
 type PostApiUsersJSONRequestBody = User
@@ -151,22 +196,22 @@ type PostApiUsersJSONRequestBody = User
 // PutApiUsersIdJSONRequestBody defines body for PutApiUsersId for application/json ContentType.
 type PutApiUsersIdJSONRequestBody = User
 
-// AsLogLevel returns the union data inside the LogRecord_Level as a LogLevel
-func (t LogRecord_Level) AsLogLevel() (LogLevel, error) {
-	var body LogLevel
+// AsLevel returns the union data inside the Record_Level as a Level
+func (t Record_Level) AsLevel() (Level, error) {
+	var body Level
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromLogLevel overwrites any union data inside the LogRecord_Level as the provided LogLevel
-func (t *LogRecord_Level) FromLogLevel(v LogLevel) error {
+// FromLevel overwrites any union data inside the Record_Level as the provided Level
+func (t *Record_Level) FromLevel(v Level) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeLogLevel performs a merge with any union data inside the LogRecord_Level, using the provided LogLevel
-func (t *LogRecord_Level) MergeLogLevel(v LogLevel) error {
+// MergeLevel performs a merge with any union data inside the Record_Level, using the provided Level
+func (t *Record_Level) MergeLevel(v Level) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -177,12 +222,12 @@ func (t *LogRecord_Level) MergeLogLevel(v LogLevel) error {
 	return err
 }
 
-func (t LogRecord_Level) MarshalJSON() ([]byte, error) {
+func (t Record_Level) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
 
-func (t *LogRecord_Level) UnmarshalJSON(b []byte) error {
+func (t *Record_Level) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -226,8 +271,23 @@ func (t *User_Role) UnmarshalJSON(b []byte) error {
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
+	// (GET /api/api_tokens)
+	GetApiApiTokens(w http.ResponseWriter, r *http.Request)
+
+	// (POST /api/api_tokens)
+	PostApiApiTokens(w http.ResponseWriter, r *http.Request)
+
+	// (DELETE /api/api_tokens/{id})
+	DeleteApiApiTokensId(w http.ResponseWriter, r *http.Request, id int)
+
+	// (GET /api/api_tokens/{id})
+	GetApiApiTokensId(w http.ResponseWriter, r *http.Request, id int)
+
+	// (PUT /api/api_tokens/{id})
+	PutApiApiTokensId(w http.ResponseWriter, r *http.Request, id int)
+
 	// (GET /api/logs)
-	GetApiLogs(w http.ResponseWriter, r *http.Request)
+	GetApiLogs(w http.ResponseWriter, r *http.Request, params GetApiLogsParams)
 
 	// (POST /api/logs)
 	PostApiLogs(w http.ResponseWriter, r *http.Request)
@@ -239,7 +299,7 @@ type ServerInterface interface {
 	PostApiLogsSearch(w http.ResponseWriter, r *http.Request, params PostApiLogsSearchParams)
 
 	// (GET /api/logs/{id})
-	GetApiLogsId(w http.ResponseWriter, r *http.Request, id string)
+	GetApiLogsId(w http.ResponseWriter, r *http.Request, id int)
 
 	// (GET /api/schemas)
 	GetApiSchemas(w http.ResponseWriter, r *http.Request)
@@ -250,17 +310,38 @@ type ServerInterface interface {
 	// (POST /api/schemas/search)
 	PostApiSchemasSearch(w http.ResponseWriter, r *http.Request)
 
+	// (DELETE /api/schemas/{id})
+	DeleteApiSchemasId(w http.ResponseWriter, r *http.Request, id int)
+
 	// (GET /api/schemas/{id})
-	GetApiSchemasId(w http.ResponseWriter, r *http.Request, id string)
+	GetApiSchemasId(w http.ResponseWriter, r *http.Request, id int)
 
 	// (PUT /api/schemas/{id})
-	PutApiSchemasId(w http.ResponseWriter, r *http.Request, id string)
+	PutApiSchemasId(w http.ResponseWriter, r *http.Request, id int)
 
 	// (GET /api/session)
 	GetApiSession(w http.ResponseWriter, r *http.Request)
 
 	// (POST /api/session)
 	PostApiSession(w http.ResponseWriter, r *http.Request)
+
+	// (POST /api/setup/register_admin)
+	PostApiSetupRegisterAdmin(w http.ResponseWriter, r *http.Request)
+
+	// (GET /api/tags)
+	GetApiTags(w http.ResponseWriter, r *http.Request)
+
+	// (POST /api/tags)
+	PostApiTags(w http.ResponseWriter, r *http.Request)
+
+	// (DELETE /api/tags/{id})
+	DeleteApiTagsId(w http.ResponseWriter, r *http.Request, id int)
+
+	// (GET /api/tags/{id})
+	GetApiTagsId(w http.ResponseWriter, r *http.Request, id int)
+
+	// (PUT /api/tags/{id})
+	PutApiTagsId(w http.ResponseWriter, r *http.Request, id int)
 
 	// (GET /api/users)
 	GetApiUsers(w http.ResponseWriter, r *http.Request)
@@ -269,13 +350,13 @@ type ServerInterface interface {
 	PostApiUsers(w http.ResponseWriter, r *http.Request)
 
 	// (DELETE /api/users/{id})
-	DeleteApiUsersId(w http.ResponseWriter, r *http.Request, id string)
+	DeleteApiUsersId(w http.ResponseWriter, r *http.Request, id int)
 
 	// (GET /api/users/{id})
-	GetApiUsersId(w http.ResponseWriter, r *http.Request, id string)
+	GetApiUsersId(w http.ResponseWriter, r *http.Request, id int)
 
 	// (PUT /api/users/{id})
-	PutApiUsersId(w http.ResponseWriter, r *http.Request, id string)
+	PutApiUsersId(w http.ResponseWriter, r *http.Request, id int)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -287,14 +368,153 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// GetApiLogs operation middleware
-func (siw *ServerInterfaceWrapper) GetApiLogs(w http.ResponseWriter, r *http.Request) {
+// GetApiApiTokens operation middleware
+func (siw *ServerInterfaceWrapper) GetApiApiTokens(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	ctx = context.WithValue(ctx, Http1Scopes, []string{})
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetApiLogs(w, r)
+		siw.Handler.GetApiApiTokens(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostApiApiTokens operation middleware
+func (siw *ServerInterfaceWrapper) PostApiApiTokens(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostApiApiTokens(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteApiApiTokensId operation middleware
+func (siw *ServerInterfaceWrapper) DeleteApiApiTokensId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteApiApiTokensId(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiApiTokensId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiApiTokensId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiApiTokensId(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutApiApiTokensId operation middleware
+func (siw *ServerInterfaceWrapper) PutApiApiTokensId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutApiApiTokensId(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiLogs operation middleware
+func (siw *ServerInterfaceWrapper) GetApiLogs(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetApiLogsParams
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &params.Page)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "page", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiLogs(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -403,7 +623,7 @@ func (siw *ServerInterfaceWrapper) GetApiLogsId(w http.ResponseWriter, r *http.R
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
 	if err != nil {
@@ -475,6 +695,34 @@ func (siw *ServerInterfaceWrapper) PostApiSchemasSearch(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// DeleteApiSchemasId operation middleware
+func (siw *ServerInterfaceWrapper) DeleteApiSchemasId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteApiSchemasId(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // GetApiSchemasId operation middleware
 func (siw *ServerInterfaceWrapper) GetApiSchemasId(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -482,7 +730,7 @@ func (siw *ServerInterfaceWrapper) GetApiSchemasId(w http.ResponseWriter, r *htt
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
 	if err != nil {
@@ -510,7 +758,7 @@ func (siw *ServerInterfaceWrapper) PutApiSchemasId(w http.ResponseWriter, r *htt
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
 	if err != nil {
@@ -535,8 +783,6 @@ func (siw *ServerInterfaceWrapper) PutApiSchemasId(w http.ResponseWriter, r *htt
 func (siw *ServerInterfaceWrapper) GetApiSession(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	ctx = context.WithValue(ctx, Http1Scopes, []string{})
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetApiSession(w, r)
 	}))
@@ -554,6 +800,139 @@ func (siw *ServerInterfaceWrapper) PostApiSession(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostApiSession(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostApiSetupRegisterAdmin operation middleware
+func (siw *ServerInterfaceWrapper) PostApiSetupRegisterAdmin(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostApiSetupRegisterAdmin(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiTags operation middleware
+func (siw *ServerInterfaceWrapper) GetApiTags(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiTags(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostApiTags operation middleware
+func (siw *ServerInterfaceWrapper) PostApiTags(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostApiTags(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteApiTagsId operation middleware
+func (siw *ServerInterfaceWrapper) DeleteApiTagsId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteApiTagsId(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiTagsId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiTagsId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiTagsId(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutApiTagsId operation middleware
+func (siw *ServerInterfaceWrapper) PutApiTagsId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutApiTagsId(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -584,6 +963,8 @@ func (siw *ServerInterfaceWrapper) GetApiUsers(w http.ResponseWriter, r *http.Re
 func (siw *ServerInterfaceWrapper) PostApiUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	ctx = context.WithValue(ctx, Http1Scopes, []string{})
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostApiUsers(w, r)
 	}))
@@ -602,7 +983,7 @@ func (siw *ServerInterfaceWrapper) DeleteApiUsersId(w http.ResponseWriter, r *ht
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
 	if err != nil {
@@ -630,7 +1011,7 @@ func (siw *ServerInterfaceWrapper) GetApiUsersId(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
 	if err != nil {
@@ -658,7 +1039,7 @@ func (siw *ServerInterfaceWrapper) PutApiUsersId(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int
 
 	err = runtime.BindStyledParameter("simple", false, "id", mux.Vars(r)["id"], &id)
 	if err != nil {
@@ -792,6 +1173,16 @@ func HandlerWithOptions(si ServerInterface, options GorillaServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.HandleFunc(options.BaseURL+"/api/api_tokens", wrapper.GetApiApiTokens).Methods("GET")
+
+	r.HandleFunc(options.BaseURL+"/api/api_tokens", wrapper.PostApiApiTokens).Methods("POST")
+
+	r.HandleFunc(options.BaseURL+"/api/api_tokens/{id}", wrapper.DeleteApiApiTokensId).Methods("DELETE")
+
+	r.HandleFunc(options.BaseURL+"/api/api_tokens/{id}", wrapper.GetApiApiTokensId).Methods("GET")
+
+	r.HandleFunc(options.BaseURL+"/api/api_tokens/{id}", wrapper.PutApiApiTokensId).Methods("PUT")
+
 	r.HandleFunc(options.BaseURL+"/api/logs", wrapper.GetApiLogs).Methods("GET")
 
 	r.HandleFunc(options.BaseURL+"/api/logs", wrapper.PostApiLogs).Methods("POST")
@@ -808,6 +1199,8 @@ func HandlerWithOptions(si ServerInterface, options GorillaServerOptions) http.H
 
 	r.HandleFunc(options.BaseURL+"/api/schemas/search", wrapper.PostApiSchemasSearch).Methods("POST")
 
+	r.HandleFunc(options.BaseURL+"/api/schemas/{id}", wrapper.DeleteApiSchemasId).Methods("DELETE")
+
 	r.HandleFunc(options.BaseURL+"/api/schemas/{id}", wrapper.GetApiSchemasId).Methods("GET")
 
 	r.HandleFunc(options.BaseURL+"/api/schemas/{id}", wrapper.PutApiSchemasId).Methods("PUT")
@@ -815,6 +1208,18 @@ func HandlerWithOptions(si ServerInterface, options GorillaServerOptions) http.H
 	r.HandleFunc(options.BaseURL+"/api/session", wrapper.GetApiSession).Methods("GET")
 
 	r.HandleFunc(options.BaseURL+"/api/session", wrapper.PostApiSession).Methods("POST")
+
+	r.HandleFunc(options.BaseURL+"/api/setup/register_admin", wrapper.PostApiSetupRegisterAdmin).Methods("POST")
+
+	r.HandleFunc(options.BaseURL+"/api/tags", wrapper.GetApiTags).Methods("GET")
+
+	r.HandleFunc(options.BaseURL+"/api/tags", wrapper.PostApiTags).Methods("POST")
+
+	r.HandleFunc(options.BaseURL+"/api/tags/{id}", wrapper.DeleteApiTagsId).Methods("DELETE")
+
+	r.HandleFunc(options.BaseURL+"/api/tags/{id}", wrapper.GetApiTagsId).Methods("GET")
+
+	r.HandleFunc(options.BaseURL+"/api/tags/{id}", wrapper.PutApiTagsId).Methods("PUT")
 
 	r.HandleFunc(options.BaseURL+"/api/users", wrapper.GetApiUsers).Methods("GET")
 
@@ -829,7 +1234,123 @@ func HandlerWithOptions(si ServerInterface, options GorillaServerOptions) http.H
 	return r
 }
 
+type GetApiApiTokensRequestObject struct {
+}
+
+type GetApiApiTokensResponseObject interface {
+	VisitGetApiApiTokensResponse(w http.ResponseWriter) error
+}
+
+type GetApiApiTokens200JSONResponse struct {
+	Code    int        `json:"code"`
+	Data    []ApiToken `json:"data"`
+	Error   string     `json:"error"`
+	Meta    Meta       `json:"meta"`
+	Success bool       `json:"success"`
+}
+
+func (response GetApiApiTokens200JSONResponse) VisitGetApiApiTokensResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostApiApiTokensRequestObject struct {
+	Body *PostApiApiTokensJSONRequestBody
+}
+
+type PostApiApiTokensResponseObject interface {
+	VisitPostApiApiTokensResponse(w http.ResponseWriter) error
+}
+
+type PostApiApiTokens200JSONResponse struct {
+	Code    int      `json:"code"`
+	Data    ApiToken `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
+}
+
+func (response PostApiApiTokens200JSONResponse) VisitPostApiApiTokensResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteApiApiTokensIdRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteApiApiTokensIdResponseObject interface {
+	VisitDeleteApiApiTokensIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteApiApiTokensId200JSONResponse struct {
+	Code    int     `json:"code"`
+	Data    float32 `json:"data"`
+	Error   string  `json:"error"`
+	Meta    Meta    `json:"meta"`
+	Success bool    `json:"success"`
+}
+
+func (response DeleteApiApiTokensId200JSONResponse) VisitDeleteApiApiTokensIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiApiTokensIdRequestObject struct {
+	Id int `json:"id"`
+}
+
+type GetApiApiTokensIdResponseObject interface {
+	VisitGetApiApiTokensIdResponse(w http.ResponseWriter) error
+}
+
+type GetApiApiTokensId200JSONResponse struct {
+	Code    int      `json:"code"`
+	Data    ApiToken `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
+}
+
+func (response GetApiApiTokensId200JSONResponse) VisitGetApiApiTokensIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutApiApiTokensIdRequestObject struct {
+	Id   int `json:"id"`
+	Body *PutApiApiTokensIdJSONRequestBody
+}
+
+type PutApiApiTokensIdResponseObject interface {
+	VisitPutApiApiTokensIdResponse(w http.ResponseWriter) error
+}
+
+type PutApiApiTokensId200JSONResponse struct {
+	Code    int      `json:"code"`
+	Data    ApiToken `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
+}
+
+func (response PutApiApiTokensId200JSONResponse) VisitPutApiApiTokensIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetApiLogsRequestObject struct {
+	Params GetApiLogsParams
 }
 
 type GetApiLogsResponseObject interface {
@@ -837,11 +1358,11 @@ type GetApiLogsResponseObject interface {
 }
 
 type GetApiLogs200JSONResponse struct {
-	Code    int         `json:"code"`
-	Data    []LogRecord `json:"data"`
-	Error   string      `json:"error"`
-	Meta    Meta        `json:"meta"`
-	Success bool        `json:"success"`
+	Code    int      `json:"code"`
+	Data    []Record `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
 }
 
 func (response GetApiLogs200JSONResponse) VisitGetApiLogsResponse(w http.ResponseWriter) error {
@@ -860,11 +1381,11 @@ type PostApiLogsResponseObject interface {
 }
 
 type PostApiLogs200JSONResponse struct {
-	Code    int       `json:"code"`
-	Data    LogRecord `json:"data"`
-	Error   string    `json:"error"`
-	Meta    Meta      `json:"meta"`
-	Success bool      `json:"success"`
+	Code    int    `json:"code"`
+	Data    Record `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
 }
 
 func (response PostApiLogs200JSONResponse) VisitPostApiLogsResponse(w http.ResponseWriter) error {
@@ -884,11 +1405,11 @@ type GetApiLogsGroupSchemaNameHashResponseObject interface {
 }
 
 type GetApiLogsGroupSchemaNameHash200JSONResponse struct {
-	Code    int         `json:"code"`
-	Data    []LogRecord `json:"data"`
-	Error   string      `json:"error"`
-	Meta    Meta        `json:"meta"`
-	Success bool        `json:"success"`
+	Code    int      `json:"code"`
+	Data    []Record `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
 }
 
 func (response GetApiLogsGroupSchemaNameHash200JSONResponse) VisitGetApiLogsGroupSchemaNameHashResponse(w http.ResponseWriter) error {
@@ -908,11 +1429,11 @@ type PostApiLogsSearchResponseObject interface {
 }
 
 type PostApiLogsSearch200JSONResponse struct {
-	Code    int         `json:"code"`
-	Data    []LogRecord `json:"data"`
-	Error   string      `json:"error"`
-	Meta    Meta        `json:"meta"`
-	Success bool        `json:"success"`
+	Code    int      `json:"code"`
+	Data    []Record `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
 }
 
 func (response PostApiLogsSearch200JSONResponse) VisitPostApiLogsSearchResponse(w http.ResponseWriter) error {
@@ -923,7 +1444,7 @@ func (response PostApiLogsSearch200JSONResponse) VisitPostApiLogsSearchResponse(
 }
 
 type GetApiLogsIdRequestObject struct {
-	Id string `json:"id"`
+	Id int `json:"id"`
 }
 
 type GetApiLogsIdResponseObject interface {
@@ -931,11 +1452,11 @@ type GetApiLogsIdResponseObject interface {
 }
 
 type GetApiLogsId200JSONResponse struct {
-	Code    int       `json:"code"`
-	Data    LogRecord `json:"data"`
-	Error   string    `json:"error"`
-	Meta    Meta      `json:"meta"`
-	Success bool      `json:"success"`
+	Code    int    `json:"code"`
+	Data    Record `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
 }
 
 func (response GetApiLogsId200JSONResponse) VisitGetApiLogsIdResponse(w http.ResponseWriter) error {
@@ -953,11 +1474,11 @@ type GetApiSchemasResponseObject interface {
 }
 
 type GetApiSchemas200JSONResponse struct {
-	Code    int         `json:"code"`
-	Data    []LogSchema `json:"data"`
-	Error   string      `json:"error"`
-	Meta    Meta        `json:"meta"`
-	Success bool        `json:"success"`
+	Code    int      `json:"code"`
+	Data    []Schema `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
 }
 
 func (response GetApiSchemas200JSONResponse) VisitGetApiSchemasResponse(w http.ResponseWriter) error {
@@ -976,11 +1497,11 @@ type PostApiSchemasResponseObject interface {
 }
 
 type PostApiSchemas200JSONResponse struct {
-	Code    int       `json:"code"`
-	Data    LogSchema `json:"data"`
-	Error   string    `json:"error"`
-	Meta    Meta      `json:"meta"`
-	Success bool      `json:"success"`
+	Code    int    `json:"code"`
+	Data    Schema `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
 }
 
 func (response PostApiSchemas200JSONResponse) VisitPostApiSchemasResponse(w http.ResponseWriter) error {
@@ -999,11 +1520,11 @@ type PostApiSchemasSearchResponseObject interface {
 }
 
 type PostApiSchemasSearch200JSONResponse struct {
-	Code    int         `json:"code"`
-	Data    []LogSchema `json:"data"`
-	Error   string      `json:"error"`
-	Meta    Meta        `json:"meta"`
-	Success bool        `json:"success"`
+	Code    int      `json:"code"`
+	Data    []Schema `json:"data"`
+	Error   string   `json:"error"`
+	Meta    Meta     `json:"meta"`
+	Success bool     `json:"success"`
 }
 
 func (response PostApiSchemasSearch200JSONResponse) VisitPostApiSchemasSearchResponse(w http.ResponseWriter) error {
@@ -1013,8 +1534,31 @@ func (response PostApiSchemasSearch200JSONResponse) VisitPostApiSchemasSearchRes
 	return json.NewEncoder(w).Encode(response)
 }
 
+type DeleteApiSchemasIdRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteApiSchemasIdResponseObject interface {
+	VisitDeleteApiSchemasIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteApiSchemasId200JSONResponse struct {
+	Code    int    `json:"code"`
+	Data    int    `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
+}
+
+func (response DeleteApiSchemasId200JSONResponse) VisitDeleteApiSchemasIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetApiSchemasIdRequestObject struct {
-	Id string `json:"id"`
+	Id int `json:"id"`
 }
 
 type GetApiSchemasIdResponseObject interface {
@@ -1022,11 +1566,11 @@ type GetApiSchemasIdResponseObject interface {
 }
 
 type GetApiSchemasId200JSONResponse struct {
-	Code    int       `json:"code"`
-	Data    LogSchema `json:"data"`
-	Error   string    `json:"error"`
-	Meta    Meta      `json:"meta"`
-	Success bool      `json:"success"`
+	Code    int    `json:"code"`
+	Data    Schema `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
 }
 
 func (response GetApiSchemasId200JSONResponse) VisitGetApiSchemasIdResponse(w http.ResponseWriter) error {
@@ -1037,7 +1581,7 @@ func (response GetApiSchemasId200JSONResponse) VisitGetApiSchemasIdResponse(w ht
 }
 
 type PutApiSchemasIdRequestObject struct {
-	Id   string `json:"id"`
+	Id   int `json:"id"`
 	Body *PutApiSchemasIdJSONRequestBody
 }
 
@@ -1046,11 +1590,11 @@ type PutApiSchemasIdResponseObject interface {
 }
 
 type PutApiSchemasId200JSONResponse struct {
-	Code    int       `json:"code"`
-	Data    LogSchema `json:"data"`
-	Error   string    `json:"error"`
-	Meta    Meta      `json:"meta"`
-	Success bool      `json:"success"`
+	Code    int    `json:"code"`
+	Data    Schema `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
 }
 
 func (response PutApiSchemasId200JSONResponse) VisitPutApiSchemasIdResponse(w http.ResponseWriter) error {
@@ -1105,6 +1649,138 @@ func (response PostApiSession200JSONResponse) VisitPostApiSessionResponse(w http
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostApiSetupRegisterAdminRequestObject struct {
+	Body *PostApiSetupRegisterAdminJSONRequestBody
+}
+
+type PostApiSetupRegisterAdminResponseObject interface {
+	VisitPostApiSetupRegisterAdminResponse(w http.ResponseWriter) error
+}
+
+type PostApiSetupRegisterAdmin200JSONResponse User
+
+func (response PostApiSetupRegisterAdmin200JSONResponse) VisitPostApiSetupRegisterAdminResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiTagsRequestObject struct {
+}
+
+type GetApiTagsResponseObject interface {
+	VisitGetApiTagsResponse(w http.ResponseWriter) error
+}
+
+type GetApiTags200JSONResponse struct {
+	Code    int    `json:"code"`
+	Data    []Tag  `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
+}
+
+func (response GetApiTags200JSONResponse) VisitGetApiTagsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostApiTagsRequestObject struct {
+	Body *PostApiTagsJSONRequestBody
+}
+
+type PostApiTagsResponseObject interface {
+	VisitPostApiTagsResponse(w http.ResponseWriter) error
+}
+
+type PostApiTags200JSONResponse struct {
+	Code    int    `json:"code"`
+	Data    Tag    `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
+}
+
+func (response PostApiTags200JSONResponse) VisitPostApiTagsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteApiTagsIdRequestObject struct {
+	Id int `json:"id"`
+}
+
+type DeleteApiTagsIdResponseObject interface {
+	VisitDeleteApiTagsIdResponse(w http.ResponseWriter) error
+}
+
+type DeleteApiTagsId200JSONResponse struct {
+	Code    int     `json:"code"`
+	Data    float32 `json:"data"`
+	Error   string  `json:"error"`
+	Meta    Meta    `json:"meta"`
+	Success bool    `json:"success"`
+}
+
+func (response DeleteApiTagsId200JSONResponse) VisitDeleteApiTagsIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiTagsIdRequestObject struct {
+	Id int `json:"id"`
+}
+
+type GetApiTagsIdResponseObject interface {
+	VisitGetApiTagsIdResponse(w http.ResponseWriter) error
+}
+
+type GetApiTagsId200JSONResponse struct {
+	Code    int    `json:"code"`
+	Data    Tag    `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
+}
+
+func (response GetApiTagsId200JSONResponse) VisitGetApiTagsIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutApiTagsIdRequestObject struct {
+	Id   int `json:"id"`
+	Body *PutApiTagsIdJSONRequestBody
+}
+
+type PutApiTagsIdResponseObject interface {
+	VisitPutApiTagsIdResponse(w http.ResponseWriter) error
+}
+
+type PutApiTagsId200JSONResponse struct {
+	Code    int    `json:"code"`
+	Data    Tag    `json:"data"`
+	Error   string `json:"error"`
+	Meta    Meta   `json:"meta"`
+	Success bool   `json:"success"`
+}
+
+func (response PutApiTagsId200JSONResponse) VisitPutApiTagsIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetApiUsersRequestObject struct {
 }
 
@@ -1151,7 +1827,7 @@ func (response PostApiUsers200JSONResponse) VisitPostApiUsersResponse(w http.Res
 }
 
 type DeleteApiUsersIdRequestObject struct {
-	Id string `json:"id"`
+	Id int `json:"id"`
 }
 
 type DeleteApiUsersIdResponseObject interface {
@@ -1176,7 +1852,7 @@ func (response DeleteApiUsersId200JSONResponse) VisitDeleteApiUsersIdResponse(w 
 }
 
 type GetApiUsersIdRequestObject struct {
-	Id string `json:"id"`
+	Id int `json:"id"`
 }
 
 type GetApiUsersIdResponseObject interface {
@@ -1199,7 +1875,7 @@ func (response GetApiUsersId200JSONResponse) VisitGetApiUsersIdResponse(w http.R
 }
 
 type PutApiUsersIdRequestObject struct {
-	Id   string `json:"id"`
+	Id   int `json:"id"`
 	Body *PutApiUsersIdJSONRequestBody
 }
 
@@ -1225,6 +1901,21 @@ func (response PutApiUsersId200JSONResponse) VisitPutApiUsersIdResponse(w http.R
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
+	// (GET /api/api_tokens)
+	GetApiApiTokens(ctx context.Context, request GetApiApiTokensRequestObject) (GetApiApiTokensResponseObject, error)
+
+	// (POST /api/api_tokens)
+	PostApiApiTokens(ctx context.Context, request PostApiApiTokensRequestObject) (PostApiApiTokensResponseObject, error)
+
+	// (DELETE /api/api_tokens/{id})
+	DeleteApiApiTokensId(ctx context.Context, request DeleteApiApiTokensIdRequestObject) (DeleteApiApiTokensIdResponseObject, error)
+
+	// (GET /api/api_tokens/{id})
+	GetApiApiTokensId(ctx context.Context, request GetApiApiTokensIdRequestObject) (GetApiApiTokensIdResponseObject, error)
+
+	// (PUT /api/api_tokens/{id})
+	PutApiApiTokensId(ctx context.Context, request PutApiApiTokensIdRequestObject) (PutApiApiTokensIdResponseObject, error)
+
 	// (GET /api/logs)
 	GetApiLogs(ctx context.Context, request GetApiLogsRequestObject) (GetApiLogsResponseObject, error)
 
@@ -1249,6 +1940,9 @@ type StrictServerInterface interface {
 	// (POST /api/schemas/search)
 	PostApiSchemasSearch(ctx context.Context, request PostApiSchemasSearchRequestObject) (PostApiSchemasSearchResponseObject, error)
 
+	// (DELETE /api/schemas/{id})
+	DeleteApiSchemasId(ctx context.Context, request DeleteApiSchemasIdRequestObject) (DeleteApiSchemasIdResponseObject, error)
+
 	// (GET /api/schemas/{id})
 	GetApiSchemasId(ctx context.Context, request GetApiSchemasIdRequestObject) (GetApiSchemasIdResponseObject, error)
 
@@ -1260,6 +1954,24 @@ type StrictServerInterface interface {
 
 	// (POST /api/session)
 	PostApiSession(ctx context.Context, request PostApiSessionRequestObject) (PostApiSessionResponseObject, error)
+
+	// (POST /api/setup/register_admin)
+	PostApiSetupRegisterAdmin(ctx context.Context, request PostApiSetupRegisterAdminRequestObject) (PostApiSetupRegisterAdminResponseObject, error)
+
+	// (GET /api/tags)
+	GetApiTags(ctx context.Context, request GetApiTagsRequestObject) (GetApiTagsResponseObject, error)
+
+	// (POST /api/tags)
+	PostApiTags(ctx context.Context, request PostApiTagsRequestObject) (PostApiTagsResponseObject, error)
+
+	// (DELETE /api/tags/{id})
+	DeleteApiTagsId(ctx context.Context, request DeleteApiTagsIdRequestObject) (DeleteApiTagsIdResponseObject, error)
+
+	// (GET /api/tags/{id})
+	GetApiTagsId(ctx context.Context, request GetApiTagsIdRequestObject) (GetApiTagsIdResponseObject, error)
+
+	// (PUT /api/tags/{id})
+	PutApiTagsId(ctx context.Context, request PutApiTagsIdRequestObject) (PutApiTagsIdResponseObject, error)
 
 	// (GET /api/users)
 	GetApiUsers(ctx context.Context, request GetApiUsersRequestObject) (GetApiUsersResponseObject, error)
@@ -1306,9 +2018,151 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
+// GetApiApiTokens operation middleware
+func (sh *strictHandler) GetApiApiTokens(w http.ResponseWriter, r *http.Request) {
+	var request GetApiApiTokensRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiApiTokens(ctx, request.(GetApiApiTokensRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiApiTokens")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiApiTokensResponseObject); ok {
+		if err := validResponse.VisitGetApiApiTokensResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostApiApiTokens operation middleware
+func (sh *strictHandler) PostApiApiTokens(w http.ResponseWriter, r *http.Request) {
+	var request PostApiApiTokensRequestObject
+
+	var body PostApiApiTokensJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostApiApiTokens(ctx, request.(PostApiApiTokensRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostApiApiTokens")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostApiApiTokensResponseObject); ok {
+		if err := validResponse.VisitPostApiApiTokensResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteApiApiTokensId operation middleware
+func (sh *strictHandler) DeleteApiApiTokensId(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteApiApiTokensIdRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteApiApiTokensId(ctx, request.(DeleteApiApiTokensIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteApiApiTokensId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteApiApiTokensIdResponseObject); ok {
+		if err := validResponse.VisitDeleteApiApiTokensIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiApiTokensId operation middleware
+func (sh *strictHandler) GetApiApiTokensId(w http.ResponseWriter, r *http.Request, id int) {
+	var request GetApiApiTokensIdRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiApiTokensId(ctx, request.(GetApiApiTokensIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiApiTokensId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiApiTokensIdResponseObject); ok {
+		if err := validResponse.VisitGetApiApiTokensIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PutApiApiTokensId operation middleware
+func (sh *strictHandler) PutApiApiTokensId(w http.ResponseWriter, r *http.Request, id int) {
+	var request PutApiApiTokensIdRequestObject
+
+	request.Id = id
+
+	var body PutApiApiTokensIdJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PutApiApiTokensId(ctx, request.(PutApiApiTokensIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PutApiApiTokensId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PutApiApiTokensIdResponseObject); ok {
+		if err := validResponse.VisitPutApiApiTokensIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetApiLogs operation middleware
-func (sh *strictHandler) GetApiLogs(w http.ResponseWriter, r *http.Request) {
+func (sh *strictHandler) GetApiLogs(w http.ResponseWriter, r *http.Request, params GetApiLogsParams) {
 	var request GetApiLogsRequestObject
+
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiLogs(ctx, request.(GetApiLogsRequestObject))
@@ -1422,7 +2276,7 @@ func (sh *strictHandler) PostApiLogsSearch(w http.ResponseWriter, r *http.Reques
 }
 
 // GetApiLogsId operation middleware
-func (sh *strictHandler) GetApiLogsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) GetApiLogsId(w http.ResponseWriter, r *http.Request, id int) {
 	var request GetApiLogsIdRequestObject
 
 	request.Id = id
@@ -1533,8 +2387,34 @@ func (sh *strictHandler) PostApiSchemasSearch(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// DeleteApiSchemasId operation middleware
+func (sh *strictHandler) DeleteApiSchemasId(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteApiSchemasIdRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteApiSchemasId(ctx, request.(DeleteApiSchemasIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteApiSchemasId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteApiSchemasIdResponseObject); ok {
+		if err := validResponse.VisitDeleteApiSchemasIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetApiSchemasId operation middleware
-func (sh *strictHandler) GetApiSchemasId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) GetApiSchemasId(w http.ResponseWriter, r *http.Request, id int) {
 	var request GetApiSchemasIdRequestObject
 
 	request.Id = id
@@ -1560,7 +2440,7 @@ func (sh *strictHandler) GetApiSchemasId(w http.ResponseWriter, r *http.Request,
 }
 
 // PutApiSchemasId operation middleware
-func (sh *strictHandler) PutApiSchemasId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) PutApiSchemasId(w http.ResponseWriter, r *http.Request, id int) {
 	var request PutApiSchemasIdRequestObject
 
 	request.Id = id
@@ -1647,6 +2527,177 @@ func (sh *strictHandler) PostApiSession(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// PostApiSetupRegisterAdmin operation middleware
+func (sh *strictHandler) PostApiSetupRegisterAdmin(w http.ResponseWriter, r *http.Request) {
+	var request PostApiSetupRegisterAdminRequestObject
+
+	var body PostApiSetupRegisterAdminJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostApiSetupRegisterAdmin(ctx, request.(PostApiSetupRegisterAdminRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostApiSetupRegisterAdmin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostApiSetupRegisterAdminResponseObject); ok {
+		if err := validResponse.VisitPostApiSetupRegisterAdminResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiTags operation middleware
+func (sh *strictHandler) GetApiTags(w http.ResponseWriter, r *http.Request) {
+	var request GetApiTagsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiTags(ctx, request.(GetApiTagsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiTags")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiTagsResponseObject); ok {
+		if err := validResponse.VisitGetApiTagsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PostApiTags operation middleware
+func (sh *strictHandler) PostApiTags(w http.ResponseWriter, r *http.Request) {
+	var request PostApiTagsRequestObject
+
+	var body PostApiTagsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostApiTags(ctx, request.(PostApiTagsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostApiTags")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostApiTagsResponseObject); ok {
+		if err := validResponse.VisitPostApiTagsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteApiTagsId operation middleware
+func (sh *strictHandler) DeleteApiTagsId(w http.ResponseWriter, r *http.Request, id int) {
+	var request DeleteApiTagsIdRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteApiTagsId(ctx, request.(DeleteApiTagsIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteApiTagsId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteApiTagsIdResponseObject); ok {
+		if err := validResponse.VisitDeleteApiTagsIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetApiTagsId operation middleware
+func (sh *strictHandler) GetApiTagsId(w http.ResponseWriter, r *http.Request, id int) {
+	var request GetApiTagsIdRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiTagsId(ctx, request.(GetApiTagsIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiTagsId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiTagsIdResponseObject); ok {
+		if err := validResponse.VisitGetApiTagsIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PutApiTagsId operation middleware
+func (sh *strictHandler) PutApiTagsId(w http.ResponseWriter, r *http.Request, id int) {
+	var request PutApiTagsIdRequestObject
+
+	request.Id = id
+
+	var body PutApiTagsIdJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PutApiTagsId(ctx, request.(PutApiTagsIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PutApiTagsId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PutApiTagsIdResponseObject); ok {
+		if err := validResponse.VisitPutApiTagsIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetApiUsers operation middleware
 func (sh *strictHandler) GetApiUsers(w http.ResponseWriter, r *http.Request) {
 	var request GetApiUsersRequestObject
@@ -1703,7 +2754,7 @@ func (sh *strictHandler) PostApiUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteApiUsersId operation middleware
-func (sh *strictHandler) DeleteApiUsersId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) DeleteApiUsersId(w http.ResponseWriter, r *http.Request, id int) {
 	var request DeleteApiUsersIdRequestObject
 
 	request.Id = id
@@ -1729,7 +2780,7 @@ func (sh *strictHandler) DeleteApiUsersId(w http.ResponseWriter, r *http.Request
 }
 
 // GetApiUsersId operation middleware
-func (sh *strictHandler) GetApiUsersId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) GetApiUsersId(w http.ResponseWriter, r *http.Request, id int) {
 	var request GetApiUsersIdRequestObject
 
 	request.Id = id
@@ -1755,7 +2806,7 @@ func (sh *strictHandler) GetApiUsersId(w http.ResponseWriter, r *http.Request, i
 }
 
 // PutApiUsersId operation middleware
-func (sh *strictHandler) PutApiUsersId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) PutApiUsersId(w http.ResponseWriter, r *http.Request, id int) {
 	var request PutApiUsersIdRequestObject
 
 	request.Id = id
@@ -1790,28 +2841,33 @@ func (sh *strictHandler) PutApiUsersId(w http.ResponseWriter, r *http.Request, i
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xaUW/bNhD+K8ZtwF40y23f9JY1SWcg6YpkxR6CIKCli8xOIlWSamoY+u8DKcqSZdpW",
-	"Ym+W1rwpFo/Hu++7705SlhDyNOMMmZIQLEGGc0yJuXwvMEKmKEnMn5ngGQpF0fyFKaGJvlCLDCEAqQRl",
-	"MRQeZETKJy4ix83CA4FfcyowguDO7tGwuPcqCz77gqHS213x+Aq/ofGFLE+14Z+ChAgenOMsj8GDKXvk",
-	"4MFfRDDw4EIILsCDS6JI0tizPuIVj28wtGdcjysUSBRGD0Q5g4sFz7OHOZFz523ajJoyhTEK/XtSRcAZ",
-	"/vEIwd0Sfhb4CAH85Nf5923y/VXMxX3hwdccxaKxb52bcv3DNq/2NiMpOk+r8LvajxKNwC5d37E62BbQ",
-	"bs3SzQRHKENBM0U5cx7qkWISmZVUYWoudqWqdHOpjUxI5XZECLLYBcjWnAhUmvOcPSi6tqRhrKhKsGvi",
-	"zFrrcBXdzpzdIhHh/PmZ23GsDWfXqBzYhDxnyh1zRmLcfke6brXSYXbwrI/KzJWIJqQbR9xO5m6grOHh",
-	"9I5S2gyve1b8b2QdHJhlrp0/SxTPEdJnc3eH8tY3HyIao3Srm+BlCruplI7nRlsYleqYHlMUthg29N+e",
-	"YFvybuzxqjZwjekMtdKfRSnVyn+7kApTh+RrMcQwF1QtDLvK1M+Vyt6smp5eP0MizI7WXq+AQpvjd4WC",
-	"keSch5vFCJeURSOeq1HKBY7ITF/KDEMDo25OpriYIqFOfOG1zK85ZwmP5ejs0xQ8SGiITGJNdzjLSDjH",
-	"0dvxBDzIRWKPFvj+09PTmJi7Yy5i35pK/2r6/uLj7cWvb8eT8VylSaNEVu7Ag28oSrbDm/FEr+EZMpJR",
-	"CODdeDJ+Z9BRcxOyTzLqG7tgCTEaCmkmEx3FNIIAPqA6y+hVubVGHaX6jUeLKnzU6sLyJDGkkBnXR9U3",
-	"304ma2uWQLIsoaHZ2v8iy3qUW1pKyKMt2hSRUuY6tZJ6KnA0EjRDhatoUiulu7Y2cqtJmIchyqZazjhP",
-	"kLCNOqlWemV01QFsSNbrZqEURZPrpoQty+/uTZlmXDqA+8RlB+T2odIxuUXxX8PfGfXToWxhrVC2oL8M",
-	"5cKra9U3E6u/bExuhb/UA2zRoYw/aOOyH38kKf6u516tCIKkqFBI45pq+dAqUSl70JoT64iVyNFrALkh",
-	"087d5qXb7tvcv6rPkXlp3LS06DBeynrK3SdJdiB2E698CFlxxU6Z+ynWsktoShW8kFSDFcYhM9NSstUX",
-	"TcyHMXNJoy7aOI06SaEZeAcrXcPpnC06HMaDxluwHSy4tauG2W3sC5o+1rRr5D32rLsfvANVvcpv78bd",
-	"GvjTAV1Buw74y4BuFW3XycISYDVc/Ks0sF563OL7KAetp6GDHn3bLOnQ5S1DXht9PzTjyC9Ccpc05KfE",
-	"/bXhDIM8KympPxXsUhG7ajj1Xp24D6Og673Y0UfBvQgdUpnNz+g9q81hAr2qv1waWd5ZfZ/NmgE+oZmv",
-	"hb2cxo4xs++pyH2oHVKPZWL7VYgV2IOtwtU4HWGCCjeBPTe/V9D+ECP1+jfeMgHRSMf/ixxNz+uvzA3b",
-	"/8eLfm+vIv/wz1Snr/jmJ8ZW4R/3ceo0gL+2iD5P5Oaf0khc8sBif46PJE8UFPfFPwEAAP//FUh+kpYq",
-	"AAA=",
+	"H4sIAAAAAAAC/+xbS2/bOBD+KwZ3gb1orbS9+bTZpu0GfWzRpNhDEBiMNJHYSKJKUk0NQ/99wZclS7Qs",
+	"N04sOz60MMLHzPCbx8cxPUcBTXOaQSY4mswRD2JIsfp4mpNLegeZ/JwzmgMTBNQICeX/YpYDmqCsSG+A",
+	"odJDhE8Z/KB3UB++oTQBnMnxDKdQG+GCkSySA8KKaYyUHmLwvSBM7nglxdq5ZrMlmdeeXU9vvkEg5M6v",
+	"GYSQCYIT3jYDUkwSp0I55vyesnC9TnqP2gqXFh/gByhBkBWpXHXJcCC1P4ObIkIeOs9uKfLQf5hJ094w",
+	"Rhny0FsscFLbsNLvIwjctiegRSZqKpNMQKShyXEEq0e4a6hhqNrBMzLsMpexXyAwJ9fQjgEWEE6xcB55",
+	"xGiRT2PMY+fwksvV1L8jWehckNgzpxn8e4smV3P0O4NbNEG/+ZXL+8bffQ1ReV166HsBbFbbszJNT56u",
+	"0sUMr3Zz+Cn6ermcuryjVczY7Dr6CzW9ffQh8ICRXBCaORW7JZCEOrIFpOpD11lpMW/lImWW3g4zhmfr",
+	"oNpUyHtpqkPGyjNmIGS802wa4hl3KyJwtKxHK5M1xQkiEugLnZq7SFDmbK35Rvpq9PSxtiBc7VT9VFvS",
+	"arX09yacdiL8AjAL4s3dt0OLtiTg3OyzLKRnDdLTXDZc4mhNpay54IoTdfnTykP7yoFtUtQ21KWzClaD",
+	"05BEwN05nVGNS78ULO35IleoLPwLQboBizDB2areRueOKF1oWSvnH0Hp5KHTMCWygl/MuIDUUbpllYCg",
+	"YETMlM9rzGIh8hcL9qVYE2CmdjTr5QxUyuXwUwDLcHJGg3ZwoLckC0e0EKOUMhjhG/mR5xAo/CXJUDQh",
+	"EzgQNWdBPMZJjoO7vyL5h3FAU3tGE/SZfNNoLkv6SGmW0IiPTj+fIw8lJICMQ5Ut0GmOgxhGL8cnyEMF",
+	"S4wVE9+/v78fYzU6pizyzVLufzh//ebTxZs/X45PxrFIk1psL8QhD/0ApkMYvRifjF/IWTSHDOcETdCr",
+	"8cn4lUJUxOp8fJwT+W+q3EP9KQJlvIwaLK05D9EEvQNxmhPLeaUcBjynUjE5+eXJiT070CQL53lCArWB",
+	"/43rlMJXFOCAhivoV4g1k+tVExeM3OH9oEijKwpTQxa7dlaEUjpnEQTAuYu/N8LIzvS0cVYBY5GR2g6g",
+	"sqzHgMoJxvuvrlXc55Q70PlMeRue7wVw8TcNZxsh0++AS23vE3pAX+B3B3Qd2QbsGwNdes3I9OckLHVG",
+	"S0BA2wfO1N/rXnAeqkhnOAUBjCshRCYGGf1VBlMZvzJJsAK8GlCti8/1EyPfqmyHEst9Eu2BYDj86N1y",
+	"mi5cWbp4MmiPuX9/vcfmfsXnuvnYB035XE5kuyHGi0x/qsNvPPfChKREoEElk15k0PTZnisVNJ7xGJnA",
+	"nuyw8kCF984ZoMXXwP3wLOCr7q8/r/U7S38eYx6XPRLEO7lYt5A+4RT+wTzuVXiWu6trK1B1h3fuFmux",
+	"/bc5ZpUd3juU1/Gq4bgu1Zje5DBK0SGlvL31SuOOjVqnDH6YV9p78Jqs9wwuTgMqeQ20HwZz7Uv2DpAv",
+	"zKwhBqT5pnGIAenioNsmn3Votp+M7eEOi39WkO8OYgvqMtS/BnEjGPuSAQP9gg88ngMYEUOtyUNMAY2L",
+	"yVa6FFav3u1p4yFP3/3KiiQpd9O7ro0cRqn2elTmZ8DAhpD0n6xxvbPAPZKFfWlZ8+r5UFd+MLOGBIhR",
+	"aQgM3dVF7IHIelZeO/btB1r9KfHQom0vwa0FlShyn0FEuAA2xeoR1VoeLhd9MWvsu6vHwF09s9sC4L1k",
+	"ND3eHpF9DdeRdC5xNMxewSWOnu23VAtQtu+X6liHlYcM0odV8mXo9b/8ScCPz5J2jGvzrSr69aveAeF5",
+	"SJG7KcIdt77HRviY+ffef2wpKLhyjk4a9lXNGSIP0yRziO3abbTz1xCxCpbh3hC2GZAW7H297HcEYH8y",
+	"pkA/kOq9nK+0ieFIWvgHH52fVT8VGmAr/mFPdry16fYZELTdx3P9sV8jrLfbhn90SI8VYA8rwOInoVeL",
+	"XxiewS0uEoHK6/L/AAAA///n9Joxx0IAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

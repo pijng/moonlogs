@@ -32,7 +32,7 @@ export const getLogs = ({
   page?: number;
 }): Promise<LogsResponse> => {
   return post({
-    url: `/api/logs/search?page=${page}`,
+    url: `/api/logs/search?page=${page ?? 1}`,
     body: JSON.stringify({ schema_name: schema_name, text: text, query: query, kind: kind }),
   });
 };
