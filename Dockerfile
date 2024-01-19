@@ -25,7 +25,7 @@ RUN npm install \
     && npm run build
 
 # Stage 4: Build the Go app
-FROM golang:1.21 as backend
+FROM golang:alpine as backend
 
 WORKDIR /app
 COPY --from=base /app ./
