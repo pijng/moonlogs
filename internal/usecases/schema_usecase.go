@@ -133,8 +133,8 @@ func mergeSchemaFields(existingSchema entities.Schema, newSchema entities.Schema
 	if len(newSchema.Fields) == 0 {
 		newSchema.Fields = existingSchema.Fields
 	}
-	if newSchema.RetentionTime == 0 {
-		newSchema.RetentionTime = existingSchema.RetentionTime
+	if newSchema.RetentionDays == 0 {
+		newSchema.RetentionDays = existingSchema.RetentionDays
 	}
 	if len(newSchema.Tags) == 0 {
 		newSchema.Tags = existingSchema.Tags

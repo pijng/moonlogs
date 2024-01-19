@@ -37,9 +37,9 @@ export const NewSchemaForm = () => {
     Input({
       type: "number",
       label: "Retention days",
-      value: schemaForm.fields.retention_time.$value,
-      inputChanged: schemaForm.fields.retention_time.changed,
-      errorText: schemaForm.fields.retention_time.$errorText,
+      value: schemaForm.fields.retention_days.$value,
+      inputChanged: schemaForm.fields.retention_days.changed,
+      errorText: schemaForm.fields.retention_days.$errorText,
       hint: "Retention days - the number of days during which logs will be available after their creation. After the specified number of days elapses, the logs will be deleted. To set an infinite lifespan, specify 0 or leave the field empty",
     });
 

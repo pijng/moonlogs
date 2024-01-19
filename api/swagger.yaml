@@ -1051,7 +1051,7 @@ components:
           type: array
           items:
             type: number
-        retention_time:
+        retention_days:
           type: integer
       required:
         - id

@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS schemas (
 	fields JSON,
 	kinds JSON,
 	tags TEXT,
-	retention_time INTEGER
+	retention_days INTEGER
 );
 CREATE TABLE IF NOT EXISTS users (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,

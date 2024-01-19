@@ -61,12 +61,12 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 }
 
 func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
-	// Treat 0 retention-time as infinite
-	if schema.RetentionTime == 0 {
+	// Treat 0 retention days as infinite
+	if schema.RetentionDays == 0 {
 		return nil
 	}
 
-	threshold := time.Now().Add(-time.Duration(schema.RetentionTime) * 24 * time.Hour).Unix()
+	threshold := time.Now().Add(-time.Duration(schema.RetentionDays) * 24 * time.Hour).Unix()
 
 	staleRecords, err := uc.recordRepository.FindStale(schema.ID, threshold)
 	if err != nil {

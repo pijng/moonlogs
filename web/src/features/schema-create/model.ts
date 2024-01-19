@@ -28,7 +28,7 @@ export const schemaForm = createForm<SchemaToCreate>({
       init: "",
       rules: [rules.required()],
     },
-    retention_time: {
+    retention_days: {
       init: null,
       rules: [],
     },

@@ -24,7 +24,7 @@ func (r *SchemaRepository) CreateSchema(schema entities.Schema) (*entities.Schem
 	s, err := r.schemas.Create(r.ctx, map[string]interface{}{
 		"name":           schema.Name,
 		"description":    schema.Description,
-		"retention_time": schema.RetentionTime,
+		"retention_days": schema.RetentionDays,
 		"title":          schema.Title,
 		"fields":         schema.Fields,
 		"kinds":          schema.Kinds,
@@ -42,7 +42,7 @@ func (r *SchemaRepository) UpdateSchemaByID(id int, schema entities.Schema) (*en
 		"description":    schema.Description,
 		"title":          schema.Title,
 		"fields":         schema.Fields,
-		"retention_time": schema.RetentionTime,
+		"retention_days": schema.RetentionDays,
 	})
 
 	if err != nil {

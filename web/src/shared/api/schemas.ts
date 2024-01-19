@@ -16,7 +16,7 @@ export type SchemaToCreate = {
   title: string;
   description: string;
   name: string;
-  retention_time: number | null;
+  retention_days: number | null;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
 };
@@ -24,7 +24,7 @@ export type SchemaToCreate = {
 export type SchemaToUpdate = {
   id: number;
   title: string;
-  retention_time: number | null;
+  retention_days: number | null;
   description: string;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;

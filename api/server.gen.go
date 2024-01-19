@@ -74,7 +74,7 @@ type LogSchema struct {
 	Fields        []SchemaField `json:"fields"`
 	Id            int           `json:"id"`
 	Name          string        `json:"name"`
-	RetentionTime *int          `json:"retention_time,omitempty"`
+	RetentionDays *int          `json:"retention_days,omitempty"`
 	Title         string        `json:"title"`
 }
 

@@ -14,7 +14,7 @@ type Schema struct {
 	Fields        Fields `json:"fields" sql:"fields"`
 	Kinds         Kinds  `json:"kinds" sql:"kinds"`
 	Tags          Tags   `json:"tags" sql:"tags"`
-	RetentionTime int64  `json:"retention_time,omitempty" sql:"retention_time"`
+	RetentionDays int64  `json:"retention_days,omitempty" sql:"retention_days"`
 }
 
 type Field struct {
