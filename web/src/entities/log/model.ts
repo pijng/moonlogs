@@ -3,7 +3,7 @@ import { getLogGroup } from "@/shared/api/logs";
 import { DATEFORMAT_OPTIONS, getLocale } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
-type LogsGroup = { tags: Array<[string, any]>; schema_name: string; group_hash: string; logs: Log[] };
+type LogsGroup = { tags: Array<[string, any]>; schema_name: string; kind: string | null; group_hash: string; logs: Log[] };
 
 const reset = createEffect();
 
@@ -83,6 +83,7 @@ export const $pages = createStore(0)
 
 export const $groupedLogs = createStore<LogsGroup>({
   tags: [],
+  kind: null,
   schema_name: "",
   group_hash: "",
   logs: [],
@@ -96,6 +97,7 @@ sample({
 
     const intl = Intl.DateTimeFormat(getLocale(), DATEFORMAT_OPTIONS);
     const logsGroup: LogsGroup = {
+      kind: logs[0].kind,
       tags: Object.entries(logs[0]?.query),
       schema_name: logs[0]?.schema_name,
       group_hash: logs[0]?.group_hash,
@@ -120,6 +122,7 @@ export const $logsGroups = $logs.map((logs) => {
 
     const logsGroup: LogsGroup = {
       tags: Object.entries(log.query),
+      kind: log.kind,
       schema_name: log.schema_name,
       group_hash: log.group_hash,
       logs: [],

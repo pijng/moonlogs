@@ -9,6 +9,7 @@ export type Log = {
   level: Level;
   schema_name: string;
   group_hash: string;
+  kind: string | null;
   schema_id: number;
   query: Record<string, any>;
 };

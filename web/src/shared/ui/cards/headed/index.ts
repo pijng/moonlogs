@@ -5,12 +5,14 @@ import { Schema } from "@/shared/api";
 
 export const CardHeaded = ({
   tags,
+  kind,
   schema,
   content,
   href,
   withMore,
 }: {
   tags: Store<Array<[string, any]>>;
+  kind: Store<string | null>;
   schema: Store<Schema | null>;
   content: () => void;
   href?: Store<string>;
@@ -46,6 +48,9 @@ export const CardHeaded = ({
         ],
       });
 
+      const localSchema = schema || createStore({});
+      const localKind = kind || createStore(null);
+
       h("ul", () => {
         spec({
           classList: [
@@ -65,13 +70,41 @@ export const CardHeaded = ({
           attr: { role: "tablist", id: "defaultTab" },
         });
 
+        h("li", () => {
+          const $kindTitle = combine(localKind, localSchema, (kind, schema) => {
+            const schemaKind = schema?.kinds?.find((k) => k.name === kind);
+            if (!schemaKind) return null;
+
+            return schemaKind.title;
+          });
+
+          spec({ visible: $kindTitle.map(Boolean) });
+
+          h("kbd", {
+            classList: [
+              "block",
+              "px-2",
+              "py-1.5",
+              "text-xs",
+              "font-semibold",
+              "text-gray-800",
+              "bg-gray-100",
+              "border",
+              "border-gray-200",
+              "rounded-lg",
+              "dark:bg-gray-600",
+              "dark:text-gray-100",
+              "dark:border-gray-500",
+            ],
+            text: $kindTitle,
+          });
+        });
+
         list(tags, ({ store: tag }) => {
           h("li", () => {
             spec({
               classList: ["min-w-fit"],
             });
-
-            const localSchema = schema || createStore({});
 
             h("kbd", {
               classList: [

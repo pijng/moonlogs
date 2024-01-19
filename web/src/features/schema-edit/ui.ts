@@ -113,6 +113,85 @@ export const EditSchemaForm = () => {
     });
 
     h("div", () => {
+      spec({ classList: ["relative", "flex", "items-center", "mb-4"] });
+
+      Label({ text: "Kinds", hint: "Kinds - a set of select options by which log grouping will occur" });
+
+      h("div", () => {
+        spec({ classList: ["ml-1"] });
+
+        Button({
+          text: "",
+          variant: "default",
+          prevent: true,
+          style: "round",
+          size: "extra_small",
+          event: events.addKind,
+          preIcon: PlusIcon,
+        });
+      });
+    });
+
+    h("div", () => {
+      list(schemaForm.fields.kinds.$value, ({ store: kind, key: idx }) => {
+        const titleChanged = createEvent<string>();
+        const nameChanged = createEvent<string>();
+
+        sample({
+          source: idx,
+          clock: titleChanged,
+          fn: (idx, title) => ({ title: title, idx: idx }),
+          target: events.kindTitleChanged,
+        });
+
+        sample({
+          source: idx,
+          clock: nameChanged,
+          fn: (idx, name) => ({ name: name, idx: idx }),
+          target: events.kindNameChanged,
+        });
+
+        h("div", () => {
+          spec({
+            classList: ["grid", "gap-3", "place-items-stretch"],
+            style: {
+              gridTemplateColumns: "14fr 14fr 1fr",
+            },
+          });
+
+          Input({
+            type: "text",
+            label: "Title",
+            required: true,
+            value: kind.map((k) => k.title),
+            inputChanged: titleChanged,
+            errorText: schemaForm.fields.kinds.$errorText,
+            hint: "Title - used for the human-readable name of the kind in the web interface for log filtering",
+          });
+
+          Input({
+            type: "text",
+            label: "Name",
+            required: true,
+            value: kind.map((k) => k.name),
+            inputChanged: nameChanged,
+            errorText: schemaForm.fields.fields.$errorText,
+            hint: "Name - used as a textual identifier for the kind. Must be specified in Latin, in lowercase, and with underscores as separators",
+          });
+
+          Button({
+            text: "",
+            event: trigger({ source: idx, target: events.removeKind }),
+            size: "plain",
+            prevent: true,
+            variant: "delete_icon",
+            preIcon: TrashIcon,
+          });
+        });
+      });
+    });
+
+    h("div", () => {
       spec({ classList: ["flex", "justify-start", "space-x-2"] });
 
       Button({
