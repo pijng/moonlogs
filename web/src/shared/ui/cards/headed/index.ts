@@ -1,14 +1,17 @@
-import { Store, createStore } from "effector";
+import { Store, combine, createStore } from "effector";
 import { h, list, spec } from "forest";
 import { Button } from "@/shared/ui";
+import { Schema } from "@/shared/api";
 
 export const CardHeaded = ({
   tags,
+  schema,
   content,
   href,
   withMore,
 }: {
-  tags: Store<string[]>;
+  tags: Store<Array<[string, any]>>;
+  schema: Store<Schema | null>;
   content: () => void;
   href?: Store<string>;
   withMore?: boolean;
@@ -68,6 +71,8 @@ export const CardHeaded = ({
               classList: ["min-w-fit"],
             });
 
+            const localSchema = schema || createStore({});
+
             h("kbd", {
               classList: [
                 "block",
@@ -84,7 +89,13 @@ export const CardHeaded = ({
                 "dark:text-gray-100",
                 "dark:border-gray-500",
               ],
-              text: tag,
+              text: combine(tag, localSchema, (tag, schema) => {
+                const [tagKey, tagValue] = tag;
+                const field = schema?.fields.find((f) => f.name === tagKey);
+                if (!field) return `${tagKey}: ${tagValue}`;
+
+                return `${field.title}: ${tagValue}`;
+              }),
             });
           });
         });
