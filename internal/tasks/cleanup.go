@@ -6,10 +6,11 @@ import (
 	"moonlogs/internal/persistence"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
+	"moonlogs/lib/qrx"
 	"time"
 )
 
-func RunCleanupTask(ctx context.Context, interval time.Duration) {
+func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
@@ -39,6 +40,21 @@ func RunCleanupTask(ctx context.Context, interval time.Duration) {
 			if err != nil {
 				log.Printf("failed vacuuming db: %v", err)
 			}
+		}
+	}
+}
+
+func RunStatementsCleanupTask(ctx context.Context, interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			qrx.CleanCachedStatements()
+		case <-ctx.Done():
+			log.Printf("cached statement cleanup task canceled")
+			return
 		}
 	}
 }

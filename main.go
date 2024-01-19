@@ -30,5 +30,6 @@ func main() {
 }
 
 func runTasks(ctx context.Context) {
-	go tasks.RunCleanupTask(ctx, 1*time.Hour)
+	go tasks.RunRecordsCleanupTask(ctx, 1*time.Hour)
+	go tasks.RunStatementsCleanupTask(ctx, 15*time.Minute)
 }

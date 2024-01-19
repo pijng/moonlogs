@@ -454,3 +454,10 @@ func cachedFieldIndexes(structType reflect.Type) map[string]int {
 
 	return indexes
 }
+
+func CleanCachedStatements() {
+	stmtsCache.RWMutex.Lock()
+	defer stmtsCache.Unlock()
+
+	clear(stmtsCache.stmts)
+}
