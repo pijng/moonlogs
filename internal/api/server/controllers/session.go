@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/api/server/util"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
@@ -34,7 +34,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&credentials)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
@@ -43,13 +43,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := userUseCase.GetUserByEmail(credentials.Email)
 	if err != nil || user.ID == 0 {
-		util.Return(w, false, http.StatusUnauthorized, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusUnauthorized, err, nil, response.Meta{})
 		return
 	}
 
 	err = checkPassword(user.PasswordDigest, credentials.Password)
 	if err != nil {
-		util.Return(w, false, http.StatusUnauthorized, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusUnauthorized, err, nil, response.Meta{})
 		return
 	}
 
@@ -58,7 +58,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if token == "" {
 		token, err = session.GenerateAuthToken()
 		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
 		}
 	}
@@ -66,7 +66,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	store := session.GetSessionStore()
 	session, err := store.Get(r, session.NAME)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}
 
@@ -75,14 +75,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err = session.Save(r, w)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}
 
 	if token != user.Token {
 		err = userUseCase.UpdateUserTokenByID(user.ID, token)
 		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
 		}
 	}
@@ -95,7 +95,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Role:  user.Role,
 	}
 
-	util.Return(w, true, http.StatusOK, nil, sessionPayload, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})
 }
 
 func GetSession(w http.ResponseWriter, r *http.Request) {
@@ -103,19 +103,19 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 
 	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, fmt.Errorf("failed checking if initial admin is required: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, fmt.Errorf("failed checking if initial admin is required: %w", err), nil, response.Meta{})
 		return
 	}
 
 	if shouldCreateInitialAdmin {
-		util.Return(w, true, http.StatusOK, nil, Session{ShouldCreateInitialAdmin: true}, util.Meta{})
+		response.Return(w, true, http.StatusOK, nil, Session{ShouldCreateInitialAdmin: true}, response.Meta{})
 		return
 	}
 
 	store := session.GetSessionStore()
 	session, err := store.Get(r, session.NAME)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}
 
@@ -133,12 +133,12 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 
 	user, err := userUserCase.GetUserByToken(bearerToken)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}
 
 	if user.ID == 0 {
-		util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
+		response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 		return
 	}
 
@@ -150,7 +150,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 
 	err = session.Save(r, w)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}
 
@@ -162,7 +162,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		Role:  user.Role,
 	}
 
-	util.Return(w, true, http.StatusOK, nil, sessionPayload, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})
 }
 
 func checkPassword(hashedPassword, password string) error {

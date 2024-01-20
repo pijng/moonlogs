@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"moonlogs/internal/api/server/util"
+	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
@@ -18,18 +18,18 @@ func CreateTag(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&newTag)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	tagRepository := repositories.NewTagRepository(r.Context())
 	tag, err := usecases.NewTagUseCase(tagRepository).CreateTag(newTag.Name)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, tag, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, tag, response.Meta{})
 }
 
 func DestroyTagByID(w http.ResponseWriter, r *http.Request) {
@@ -37,18 +37,18 @@ func DestroyTagByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
 		return
 	}
 
 	tagRepository := repositories.NewTagRepository(r.Context())
 	err = usecases.NewTagUseCase(tagRepository).DestroyTagByID(id)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, id, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, id, response.Meta{})
 }
 
 func GetTagByID(w http.ResponseWriter, r *http.Request) {
@@ -56,23 +56,23 @@ func GetTagByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
 		return
 	}
 
 	tagRepository := repositories.NewTagRepository(r.Context())
 	tag, err := usecases.NewTagUseCase(tagRepository).GetTagByID(id)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	if tag.ID == 0 {
-		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, tag, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, tag, response.Meta{})
 }
 
 func UpdateTagByID(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +80,7 @@ func UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
 		return
 	}
 
@@ -88,32 +88,32 @@ func UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&tagToUpdate)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	tagRepository := repositories.NewTagRepository(r.Context())
 	tag, err := usecases.NewTagUseCase(tagRepository).UpdateTagByID(id, tagToUpdate)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	if tag == nil {
-		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, tag, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, tag, response.Meta{})
 }
 
 func GetAllTags(w http.ResponseWriter, r *http.Request) {
 	tagRepository := repositories.NewTagRepository(r.Context())
 	tags, err := usecases.NewTagUseCase(tagRepository).GetAllTags()
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, tags, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, tags, response.Meta{})
 }

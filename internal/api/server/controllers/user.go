@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"moonlogs/internal/api/server/util"
+	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
@@ -26,18 +26,18 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	userRepository := repositories.NewUserRepository(r.Context())
 	user, err := usecases.NewUserUseCase(userRepository).CreateUser(newUser)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
 func DestroyUserByID(w http.ResponseWriter, r *http.Request) {
@@ -45,18 +45,18 @@ func DestroyUserByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
 		return
 	}
 
 	userRepository := repositories.NewUserRepository(r.Context())
 	err = usecases.NewUserUseCase(userRepository).DestroyUserByID(id)
 	if err != nil {
-		util.Return(w, false, http.StatusInternalServerError, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, id, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, id, response.Meta{})
 }
 
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
@@ -64,23 +64,23 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
 		return
 	}
 
 	userRepository := repositories.NewUserRepository(r.Context())
 	user, err := usecases.NewUserUseCase(userRepository).GetUserByID(id)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	if user.ID == 0 {
-		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
 func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
 		return
 	}
 
@@ -96,34 +96,34 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&userToUpdate)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	userRepository := repositories.NewUserRepository(r.Context())
 	user, err := usecases.NewUserUseCase(userRepository).UpdateUserByID(id, userToUpdate)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	if user == nil {
-		util.Return(w, false, http.StatusNotFound, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, UserToDTO(user), util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	userRepository := repositories.NewUserRepository(r.Context())
 	users, err := usecases.NewUserUseCase(userRepository).GetAllUsers()
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, UsersToDTO(users), util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, UsersToDTO(users), response.Meta{})
 }
 
 func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
@@ -131,12 +131,12 @@ func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
 	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
 
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	if !shouldCreateInitialAdmin {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
@@ -144,17 +144,17 @@ func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&newAdmin)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, err, nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
 	admin, err := userUserCase.CreateInitialAdmin(newAdmin)
 	if err != nil {
-		util.Return(w, false, http.StatusBadRequest, fmt.Errorf("failed creating initial admin: %w", err), nil, util.Meta{})
+		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("failed creating initial admin: %w", err), nil, response.Meta{})
 		return
 	}
 
-	util.Return(w, true, http.StatusOK, nil, Session{Token: admin.Token}, util.Meta{})
+	response.Return(w, true, http.StatusOK, nil, Session{Token: admin.Token}, response.Meta{})
 }
 
 func UsersToDTO(users []*entities.User) []UserDTO {

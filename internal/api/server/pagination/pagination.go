@@ -1,11 +1,11 @@
-package util
+package pagination
 
 import (
 	"net/http"
 	"strconv"
 )
 
-func Pagination(r *http.Request) (int, int, int) {
+func Paginate(r *http.Request) (int, int, int) {
 	pageStr := r.URL.Query().Get("page")
 	limitStr := r.URL.Query().Get("limit")
 

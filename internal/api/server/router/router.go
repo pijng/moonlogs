@@ -3,8 +3,8 @@ package router
 import (
 	"context"
 	"moonlogs/internal/api/server/controllers"
+	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/api/server/util"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
@@ -101,7 +101,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 		apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
 		ok, err := usecases.NewApiTokenUseCase(apiTokenRepository).IsTokenValid(bearerToken)
 		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, nil, nil, util.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
 		}
 
@@ -112,7 +112,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 
 		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
 		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, nil, nil, util.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
 		}
 
@@ -121,7 +121,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 
 		token, ok := sessionCookie.Values["token"].(string)
 		if !ok || user.ID == 0 {
-			util.Return(w, false, http.StatusUnauthorized, nil, nil, util.Meta{})
+			response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 			return
 		}
 
@@ -149,14 +149,14 @@ func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.
 		apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
 		validAPIToken, err := usecases.NewApiTokenUseCase(apiTokenRepository).IsTokenValid(bearerToken)
 		if err != nil {
-			util.Return(w, false, http.StatusInternalServerError, nil, nil, util.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
 		}
 
 		// allow access by API token for certain actions only
 		if validAPIToken {
 			if !slices.Contains(requiredRoles, entities.TokenRole) {
-				util.Return(w, false, http.StatusForbidden, nil, nil, util.Meta{})
+				response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 				return
 			}
 
@@ -168,12 +168,12 @@ func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.
 		user, _ := usecases.NewUserUseCase(userRepository).GetUserByToken(bearerToken)
 
 		if user.ID == 0 {
-			util.Return(w, false, http.StatusForbidden, nil, nil, util.Meta{})
+			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 			return
 		}
 
 		if !slices.Contains(requiredRoles, user.Role) {
-			util.Return(w, false, http.StatusForbidden, nil, nil, util.Meta{})
+			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 			return
 		}
 
