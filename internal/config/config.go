@@ -19,6 +19,7 @@ const (
 
 type Config struct {
 	Port         int           `yaml:"port"`
+	DBPath       string        `yaml:"db_path"`
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
 }
@@ -35,7 +36,7 @@ func Load() (*Config, error) {
 	}
 
 	var cfg Config
-	if err = cleanenv.ReadConfig(CONFIG_PATH, &cfg); err != nil {
+	if err = cleanenv.ReadConfig(flagArgs.Config, &cfg); err != nil {
 		return nil, fmt.Errorf("failed reading config: %w", err)
 	}
 
@@ -43,8 +44,8 @@ func Load() (*Config, error) {
 }
 
 func fetchConfig(flagArgs args) error {
-	if _, err := os.Stat(CONFIG_PATH); os.IsNotExist(err) {
-		err = writeDefaultConfig(CONFIG_PATH, flagArgs)
+	if _, err := os.Stat(flagArgs.Config); os.IsNotExist(err) {
+		err = writeDefaultConfig(flagArgs.Config, flagArgs)
 		if err != nil {
 			return err
 		}
@@ -54,25 +55,11 @@ func fetchConfig(flagArgs args) error {
 }
 
 func writeDefaultConfig(filePath string, flagArgs args) error {
-	port := PORT
-	if flagArgs.Port > 0 {
-		port = flagArgs.Port
-	}
-
-	writeTimeout := WRITE_TIMEOUT
-	if flagArgs.WriteTimeout > 0 {
-		writeTimeout = flagArgs.WriteTimeout
-	}
-
-	readTimeout := READ_TIMEOUT
-	if flagArgs.ReadTimeout > 0 {
-		readTimeout = flagArgs.ReadTimeout
-	}
-
 	defaultConfig := fmt.Sprintf(`port: %v
+db_path: %s
 read_timeout: %s
 write_timeout: %s
-`, port, readTimeout, writeTimeout)
+`, flagArgs.Port, flagArgs.DBPath, flagArgs.ReadTimeout, flagArgs.WriteTimeout)
 
 	if err := os.WriteFile(filePath, []byte(defaultConfig), 0644); err != nil {
 		return fmt.Errorf("error writing default config file: %w", err)
@@ -84,7 +71,9 @@ write_timeout: %s
 }
 
 type args struct {
+	Config       string
 	Port         int
+	DBPath       string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
@@ -93,9 +82,11 @@ func processArgs() (args, error) {
 	var a args
 
 	f := flag.NewFlagSet("Moonlogs", flag.ExitOnError)
-	f.IntVar(&a.Port, "port", 4200, "port to run moonlogs on")
-	f.DurationVar(&a.WriteTimeout, "write-timeout", 1*time.Second, "write timeout duration")
-	f.DurationVar(&a.ReadTimeout, "read-timeout", 5*time.Second, "read timeout duration")
+	f.StringVar(&a.Config, "config", CONFIG_PATH, "path to config")
+	f.IntVar(&a.Port, "port", PORT, "port to run moonlogs on")
+	f.StringVar(&a.DBPath, "db-path", DB_PATH, "db path to connect to")
+	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
+	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 
 	fu := f.Usage
 	f.Usage = func() {
