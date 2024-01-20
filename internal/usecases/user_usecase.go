@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"fmt"
-	"moonlogs/api/server/session"
+	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"slices"

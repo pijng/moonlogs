@@ -2,9 +2,9 @@ package router
 
 import (
 	"context"
-	"moonlogs/api/server/controllers"
-	"moonlogs/api/server/session"
-	"moonlogs/api/server/util"
+	"moonlogs/internal/api/server/controllers"
+	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/api/server/util"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"

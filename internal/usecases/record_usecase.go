@@ -7,7 +7,7 @@ import (
 	"hash/fnv"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
-	"moonlogs/shared"
+	"moonlogs/internal/shared"
 	"slices"
 	"strings"
 	"sync"

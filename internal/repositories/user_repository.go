@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
-	"moonlogs/lib/qrx"
 )
 
 type UserRepository struct {

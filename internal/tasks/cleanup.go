@@ -3,10 +3,10 @@ package tasks
 import (
 	"context"
 	"log"
+	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
-	"moonlogs/lib/qrx"
 	"time"
 )
 

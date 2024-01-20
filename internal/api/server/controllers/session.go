@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"moonlogs/api/server/session"
-	"moonlogs/api/server/util"
+	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/api/server/util"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	"moonlogs/api/server"
+	"moonlogs/internal/api/server"
 	"moonlogs/internal/config"
 	"moonlogs/internal/persistence"
 	"moonlogs/internal/tasks"

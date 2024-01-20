@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"moonlogs/lib/qrx"
+	"moonlogs/internal/lib/qrx"
 
 	_ "github.com/glebarez/go-sqlite"
 )

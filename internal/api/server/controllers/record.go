@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"moonlogs/api/server/util"
+	"moonlogs/internal/api/server/util"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
