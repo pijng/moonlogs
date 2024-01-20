@@ -9,7 +9,6 @@ export type ApiToken = {
 
 export type ApiTokenToCreate = {
   name: string;
-  is_revoked: boolean;
 };
 
 export type ApiTokenToUpdate = {

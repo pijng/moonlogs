@@ -19,14 +19,6 @@ export const NewApiTokenForm = () => {
         hint: "Name - is used to indicate which service will use this API token. It does not affect the token functionally",
       });
 
-      Input({
-        type: "checkbox",
-        label: "Revoked",
-        value: apiTokenForm.fields.is_revoked.$value,
-        inputChanged: apiTokenForm.fields.is_revoked.changed,
-        errorText: apiTokenForm.fields.is_revoked.$errorText,
-      });
-
       Button({
         text: "Create",
         event: apiTokenForm.submit,

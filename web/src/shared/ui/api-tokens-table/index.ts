@@ -63,15 +63,16 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
           list(apiTokens, ({ store: apiToken }) => {
             h("tr", () => {
               spec({
-                classList: [
-                  "border-t",
-                  "w-full",
-                  "dark:border-gray-700",
-                  "hover:bg-gray-50",
-                  "dark:hover:bg-gray-600",
-                  "text-gray-900",
-                  "dark:text-gray-200",
-                ],
+                classList: {
+                  "border-t": true,
+                  "w-full": true,
+                  "dark:border-gray-700": true,
+                  "hover:bg-gray-50": true,
+                  "dark:hover:bg-gray-600": true,
+                  "text-gray-900": true,
+                  "dark:text-gray-200": true,
+                  "opacity-50": apiToken.map((at) => at.is_revoked),
+                },
               });
 
               h("td", () => {

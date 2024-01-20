@@ -10,10 +10,6 @@ export const apiTokenForm = createForm<ApiTokenToCreate>({
       init: "",
       rules: [rules.required()],
     },
-    is_revoked: {
-      init: false,
-      rules: [],
-    },
   },
   validateOn: ["submit"],
 });
