@@ -65,27 +65,27 @@ CREATE INDEX IF NOT EXISTS idx_created_at ON records(created_at);
 CREATE INDEX IF NOT EXISTS idx_created_at ON records(kind);
 CREATE INDEX IF NOT EXISTS idx_created_at ON records(group_hash);`
 
-func InitDB(dataSourceName string) (*sql.DB, error) {
+func InitDB(dataSourceName string) error {
 	if dbInstance != nil {
-		return dbInstance, nil
+		return nil
 	}
 
 	db, err := sql.Open("sqlite", fmt.Sprintf("%s:%s?%s", "file", dataSourceName, "cache=shared&_fk=1"))
 	if err != nil {
-		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
+		return fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("failed pinging sqlite: %w", err)
+		return fmt.Errorf("failed pinging sqlite: %w", err)
 	}
 
 	dbInstance = db
 
 	_, err = qrx.With(dbInstance).Exec(context.Background(), schema)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create tables: %w", err)
+		return fmt.Errorf("failed to create tables: %w", err)
 	}
 
-	return dbInstance, nil
+	return nil
 }
