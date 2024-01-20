@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.1
+  version: 1.0.2
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -27,6 +27,7 @@ paths:
       parameters: []
       responses:
         '200':
+          description: ''
           headers: {}
           content:
             application/json:
@@ -66,6 +67,7 @@ paths:
               $ref: '#/components/schemas/Schema'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -103,6 +105,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -144,6 +147,7 @@ paths:
               $ref: '#/components/schemas/Schema'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -179,9 +183,9 @@ paths:
           schema:
             type: integer
           required: true
-      requestBody: {}
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -218,6 +222,7 @@ paths:
               $ref: '#/components/schemas/SchemaSearch'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -256,6 +261,7 @@ paths:
               $ref: '#/components/schemas/Record'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -295,6 +301,7 @@ paths:
           schema: *ref_3
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -333,6 +340,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -375,6 +383,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -422,6 +431,7 @@ paths:
               $ref: '#/components/schemas/Record'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -455,6 +465,7 @@ paths:
       parameters: []
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -492,6 +503,7 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -528,6 +540,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -563,6 +576,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -604,6 +618,7 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -635,6 +650,7 @@ paths:
       parameters: &ref_9 []
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -669,6 +685,7 @@ paths:
               $ref: '#/components/schemas/Credentials'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -703,6 +720,7 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
+          description: ''
           headers: {}
           content:
             application/json:
@@ -717,6 +735,7 @@ paths:
       parameters: []
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -754,6 +773,7 @@ paths:
               $ref: '#/components/schemas/ApiToken'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -791,6 +811,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -831,6 +852,7 @@ paths:
               $ref: '#/components/schemas/ApiToken'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -866,6 +888,7 @@ paths:
           required: true
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -897,6 +920,7 @@ paths:
       parameters: []
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -934,6 +958,7 @@ paths:
               $ref: '#/components/schemas/Tag'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -1169,7 +1194,7 @@ components:
           type: string
         role:
           oneOf:
-            - $ref: '#/components/schemas/UserRole'
+            - $ref: '#/components/schemas/Role'
         tags:
           type: array
           items:
@@ -1183,12 +1208,11 @@ components:
         - password
         - role
         - tags
-    UserRole:
+    Role:
       type: string
       enum:
         - Member
         - Admin
-        - System
     SchemaSearch:
       type: object
       properties:
