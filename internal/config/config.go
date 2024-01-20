@@ -13,15 +13,13 @@ const (
 	PORT          = 4200
 	READ_TIMEOUT  = 5 * time.Second
 	WRITE_TIMEOUT = 1 * time.Second
-	CONFIG_PATH   = "/opt/moonlogs/config.yaml"
 	DB_PATH       = "/opt/moonlogs/database.sqlite"
-	DB_KEY        = ""
+	CONFIG_PATH   = "/opt/moonlogs/config.yaml"
 )
 
 type Config struct {
-	Port         int    `yaml:"port"`
-	DBPath       string `yaml:"db_path"`
-	DBKey        string
+	Port         int           `yaml:"port"`
+	DBPath       string        `yaml:"db_path"`
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
 }
@@ -41,8 +39,6 @@ func Load() (*Config, error) {
 	if err = cleanenv.ReadConfig(flagArgs.Config, &cfg); err != nil {
 		return nil, fmt.Errorf("failed reading config: %w", err)
 	}
-
-	cfg.DBKey = flagArgs.DBKey
 
 	return &cfg, nil
 }
@@ -78,7 +74,6 @@ type args struct {
 	Config       string
 	Port         int
 	DBPath       string
-	DBKey        string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
@@ -90,7 +85,6 @@ func processArgs() (args, error) {
 	f.StringVar(&a.Config, "config", CONFIG_PATH, "path to config")
 	f.IntVar(&a.Port, "port", PORT, "port to run moonlogs on")
 	f.StringVar(&a.DBPath, "db-path", DB_PATH, "db path to connect to")
-	f.StringVar(&a.DBKey, "db-key", DB_KEY, "key to encrypt db")
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 

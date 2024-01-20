@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"moonlogs/internal/lib/qrx"
 
-	_ "github.com/mutecomm/go-sqlcipher/v4"
+	_ "github.com/glebarez/go-sqlite"
 )
 
 var dbInstance *sql.DB
@@ -65,17 +65,12 @@ CREATE INDEX IF NOT EXISTS idx_created_at ON records(created_at);
 CREATE INDEX IF NOT EXISTS idx_created_at ON records(kind);
 CREATE INDEX IF NOT EXISTS idx_created_at ON records(group_hash);`
 
-func InitDB(dataSourceName string, key string) (*sql.DB, error) {
+func InitDB(dataSourceName string) (*sql.DB, error) {
 	if dbInstance != nil {
 		return dbInstance, nil
 	}
 
-	dsn := fmt.Sprintf("%s:%s?%s", "file", dataSourceName, "cache=shared&_fk=1")
-	if key != "" {
-		dsn = fmt.Sprintf("%s&_pragma_key=%s", dsn, key)
-	}
-
-	db, err := sql.Open("sqlite3", dsn)
+	db, err := sql.Open("sqlite", fmt.Sprintf("%s:%s?%s", "file", dataSourceName, "cache=shared&_fk=1"))
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
