@@ -3,6 +3,91 @@
 
 Moonlogs is a business event logging tool with a built-in user-friendly web interface for easy access to events.
 
+For a full list of key capabilities, please see the [Features](#features) section.
+
+
+## Installation
+
+### Prerequisites
+
+- Docker: Make sure you have Docker installed on your system.
+
+### Getting Started
+
+1. **Create a Docker Compose File:**
+
+Create a file named `docker-compose.yml` in your desired directory and copy the following content into it:
+
+```yaml
+version: '3'
+
+services:
+  moonlogs:
+    image: pijng/moonlogs
+    restart: always
+    ports:
+      - "4200:4200"
+    volumes:
+      - moonlogs-data:/opt/moonlogs
+    command: --port=4200
+volumes:
+  moonlogs-data:
+```
+
+Save the file.
+
+2. **Build and Run the Docker Containers:**
+
+Open a terminal in your project's root directory and run the following command:
+
+```bash
+docker-compose up -d
+```
+
+This will download the Moonlogs image and start the Moonlogs container in detached mode.
+
+3. **Access Moonlogs:**
+
+Navigate to [http://localhost:4200](http://localhost:<your-port>). You should see the Moonlogs UI. Follow the instructions for creating the initial administrator there.
+
+
+### Configuration Options
+
+- The Moonlogs container is configured to run on port 4200 by default. If you need to change the port, update the `--port` parameter in the `command` section of the `docker-compose.yml` file.
+
+- By default, Moonlogs uses a Docker volume named `moonlogs-data` to store configuration and database files. This ensures persistent data even if the container is stopped or removed.
+If you prefer to use your own bind mount for data storage, you can modify the `volumes` section in the `docker-compose.yml` file.
+
+    * Remove the line at the bottom of `docker-compose.yml`:
+
+        ```yaml
+        volumes:
+          moonlogs-data:
+        ```
+
+    * Change the `services.moonlogs.volumes` directive to:
+
+        ```yaml
+        volumes:
+          - <your-desired-dir-on-host>:/opt/moonlogs
+        ```
+
+    * The resulting file may look like the following:
+
+        ```yaml
+        version: '3'
+
+        services:
+          moonlogs:
+            image: pijng/moonlogs
+            restart: always
+            ports:
+              - "4200:4200"
+            volumes:
+              - /etc/moonlogs:/opt/moonlogs
+            command:
+              --port=4200
+        ```
 
 ## Features
 
