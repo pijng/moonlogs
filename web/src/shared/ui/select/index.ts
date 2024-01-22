@@ -5,13 +5,17 @@ export const Select = ({
   value,
   text,
   options,
+  selectedOption,
   optionSelected,
 }: {
-  value?: Store<string>;
+  value: Store<any>;
   text: string;
   options: Store<any[]>;
+  selectedOption?: Store<any>;
   optionSelected: Event<any>;
 }) => {
+  const localSelectedOption = selectedOption || createStore<any>(null);
+
   h("div", () => {
     h("label", {
       classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
@@ -46,7 +50,6 @@ export const Select = ({
           "dark:focus:ring-blue-500",
           "dark:focus:border-blue-500",
         ],
-        attr: { value: value ?? createStore("") },
         handler: { change: localOptionSelected },
       });
 
@@ -59,7 +62,10 @@ export const Select = ({
         h("option", {
           attr: {
             value: option.map((o) => o.name || o),
-            selected: combine(option, value, (option, value) => value === option.name),
+            selected: combine([option, value, localSelectedOption], ([option, value, selectedOption]) => {
+              const optionName = option.name || option;
+              return value === optionName || selectedOption === option.id;
+            }),
           },
           text: option.map((o) => o.title || o),
         });

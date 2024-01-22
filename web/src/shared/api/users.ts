@@ -7,6 +7,7 @@ export type User = {
   name: string;
   email: string;
   role: UserRole;
+  tag_ids: number[];
   token: string;
 };
 
@@ -14,6 +15,7 @@ export type UserToCreate = {
   name: string;
   email: string;
   role: UserRole;
+  tag_ids: number[];
   password: string;
   passwordConfirmation: string;
 };
@@ -23,6 +25,7 @@ export type UserToUpdate = {
   name: string;
   email: string;
   role: UserRole;
+  tag_ids: number[];
   password: string;
   passwordConfirmation: string;
 };

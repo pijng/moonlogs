@@ -27,6 +27,7 @@ func (r *UserRepository) CreateUser(user entities.User) (*entities.User, error) 
 		"password_digest": user.PasswordDigest,
 		"name":            user.Name,
 		"role":            user.Role,
+		"tag_ids":         user.Tags,
 		"token":           "",
 	})
 
@@ -72,9 +73,10 @@ func (r *UserRepository) DestroyUserByID(id int) error {
 
 func (r *UserRepository) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
 	data := map[string]interface{}{
-		"email": user.Email,
-		"name":  user.Name,
-		"role":  user.Role,
+		"email":   user.Email,
+		"name":    user.Name,
+		"role":    user.Role,
+		"tag_ids": user.Tags,
 	}
 
 	if len(user.PasswordDigest) > 0 {

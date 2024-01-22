@@ -28,6 +28,7 @@ func (r *SchemaRepository) CreateSchema(schema entities.Schema) (*entities.Schem
 		"title":          schema.Title,
 		"fields":         schema.Fields,
 		"kinds":          schema.Kinds,
+		"tag_id":         schema.TagID,
 	})
 
 	if err != nil {
@@ -43,6 +44,7 @@ func (r *SchemaRepository) UpdateSchemaByID(id int, schema entities.Schema) (*en
 		"title":          schema.Title,
 		"fields":         schema.Fields,
 		"retention_days": schema.RetentionDays,
+		"tag_id":         schema.TagID,
 	})
 
 	if err != nil {

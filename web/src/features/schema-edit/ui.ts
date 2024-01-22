@@ -1,8 +1,9 @@
-import { Button, ErrorHint, Input, Label, PlusIcon, TrashIcon } from "@/shared/ui";
+import { Button, ErrorHint, Input, Label, PlusIcon, Select, TrashIcon } from "@/shared/ui";
 import { h, list, spec } from "forest";
 import { $editError, deleteSchemaClicked, events, schemaForm } from "./model";
 import { trigger } from "@/shared/lib";
-import { createEvent, sample } from "effector";
+import { combine, createEvent, sample } from "effector";
+import { tagModel } from "@/entities/tag";
 
 export const EditSchemaForm = () => {
   h("form", () => {
@@ -24,6 +25,21 @@ export const EditSchemaForm = () => {
       hint: "Description - used for the human-readable description of group details in the web interface. Group search will also search for groups based on this characteristic",
     });
 
+    h("div", () => {
+      spec({ classList: ["mb-6"] });
+
+      const $selectedTag = combine(tagModel.$tags, schemaForm.fields.tag_id.$value, (tags, id) => {
+        return tags.find((t) => t.id === id)?.name || null;
+      });
+
+      Select({
+        text: "Select a tag",
+        value: $selectedTag,
+        options: tagModel.$tags.map((tags) => tags.map((t) => t.name)),
+        optionSelected: events.tagSelected,
+      });
+    });
+
     Input({
       type: "number",
       label: "Retention days",
@@ -34,7 +50,7 @@ export const EditSchemaForm = () => {
     });
 
     h("div", () => {
-      spec({ classList: ["relative", "flex", "items-center", "mb-6"] });
+      spec({ classList: ["relative", "flex", "items-center", "mb-4", "pt-4"] });
 
       Label({ text: "Group query fields", hint: "Group query fields - a set of fields by which log grouping will occur" });
 
@@ -113,7 +129,7 @@ export const EditSchemaForm = () => {
     });
 
     h("div", () => {
-      spec({ classList: ["relative", "flex", "items-center", "mb-4"] });
+      spec({ classList: ["relative", "flex", "items-center", "mb-4", "pt-4"] });
 
       Label({ text: "Kinds", hint: "Kinds - a set of select options by which log grouping will occur" });
 
@@ -192,7 +208,7 @@ export const EditSchemaForm = () => {
     });
 
     h("div", () => {
-      spec({ classList: ["flex", "justify-start", "space-x-2"] });
+      spec({ classList: ["flex", "justify-start", "space-x-2", "pt-4"] });
 
       Button({
         text: "Save",

@@ -1,4 +1,5 @@
 import { schemaModel } from "@/entities/schema";
+import { tagModel } from "@/entities/tag";
 import { homeRoute } from "@/routing/shared";
 import { SchemaField, SchemaKind, SchemaToUpdate, deleteSchema, editSchema } from "@/shared/api";
 import { rules } from "@/shared/lib";
@@ -15,6 +16,8 @@ const addKind = createEvent<SchemaKind>();
 const removeKind = createEvent<number>();
 const kindTitleChanged = createEvent<{ title: string; idx: number }>();
 const kindNameChanged = createEvent<{ name: string; idx: number }>();
+
+const tagSelected = createEvent<string>();
 
 export const schemaForm = createForm<Omit<SchemaToUpdate, "id">>({
   fields: {
@@ -38,8 +41,21 @@ export const schemaForm = createForm<Omit<SchemaToUpdate, "id">>({
       init: [],
       rules: [],
     },
+    tag_id: {
+      init: null,
+      rules: [],
+    },
   },
   validateOn: ["submit"],
+});
+
+sample({
+  source: tagModel.$tags,
+  clock: tagSelected,
+  fn: (tags, selectedTag) => {
+    return tags.find((t) => t.name === selectedTag)?.id || null;
+  },
+  target: schemaForm.fields.tag_id.onChange,
 });
 
 sample({
@@ -115,6 +131,7 @@ export const events = {
   removeKind,
   kindTitleChanged,
   kindNameChanged,
+  tagSelected,
 };
 
 export const $editError = createStore("");

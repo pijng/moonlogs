@@ -13,7 +13,7 @@ type Schema struct {
 	Name          string `json:"name" sql:"name"`
 	Fields        Fields `json:"fields" sql:"fields"`
 	Kinds         Kinds  `json:"kinds" sql:"kinds"`
-	Tags          Tags   `json:"tags" sql:"tags"`
+	TagID         int    `json:"tag_id,omitempty" sql:"tag_id"`
 	RetentionDays int64  `json:"retention_days,omitempty" sql:"retention_days"`
 }
 

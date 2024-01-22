@@ -18,7 +18,7 @@ type UserDTO struct {
 	Id    int           `json:"id"`
 	Name  string        `json:"name"`
 	Role  entities.Role `json:"role"`
-	Tags  entities.Tags `json:"tags"`
+	Tags  entities.Tags `json:"tag_ids"`
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {

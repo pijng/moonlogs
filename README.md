@@ -91,30 +91,22 @@ If you prefer to use your own bind mount for data storage, you can modify the `v
 
 ## Features
 
-- **Ability to create separate meta-groups to divide logs by domain areas (schemas)**
+#### Meta-groups for log organization
 
-    For example, you can create a separate schema for the checkout process, a schema for the change history of user access settings, and a separate schema for the Uber Eats integration module.
+Create separate meta-groups (schemas) to categorize logs by domain areas. For instance, create schemas for the checkout process, user access setting changes, and Uber Eats integration. Logs within each schema are recorded independently, facilitating efficient event retrieval.
 
-    Later, each log can be recorded in a separate independent schema, which makes it easy to find the necessary events.
+#### Query-based log subgrouping
 
-- **Additional grouping of logs by a given query within a schema to maintain information integrity**
+Group logs within a schema based on specified queries to enhance information integrity. Logs for distinct clients, such as those with IDs 4 and 5, will be segregated within the overall schema. This not only simplifies searchability but also ensures unrelated events remain separate even if in the same schema.
 
-    For example, when logs are written for a client with ID 4 and a client with ID 5, they will be recorded in different subgroups in the overall schema.
+#### Custom filters for schemas
 
-    This not only allows logs with different set of queries to be separated into separate groups – which increases the ease of searching for specific events – but also increases the integrity of the information because unrelated events will not be mixed together even if they are in the same schema.
+Define unique static filters for specific schemas, streamlining event retrieval. For example, a schema for Uber Eats may have filters like `organization_id`, `order_id`, `external_order_id`, and `restaurant_id`. This eliminates the need for manual DSL queries, particularly beneficial for non-technical users.
 
-- **Convenient filters for specific schemes**
+#### Convenient schema-based filters
 
-    You can define a unique static set of filters for specific schemes. For example, a scheme for Uber Eats will have the filter with fields like: `organization_id`, `order_id`, `external_order_id` and `restaurant_id`. And a scheme for loyalty programs will have a filter with fields: `organization_id`, `kind`, `program_id`, `bonus_provider`.
+Generate convenient filters on the web interface for each schema, simplifying event search by allowing users to input values. This eliminates the complexity of composing queries with an undefined set of parameters, making it user-friendly, especially for non-technical personnel.
 
-    Based on each such set of parameters, a convenient filter will be generated on the web interface side, allowing you to find the desired events by simply filling in the values. This eliminates the need to manually compose a query with a unique DSL with an undefined set of parameters, which can be confusing and difficult, especially for non-technical personnel.
+#### Flexible log retention time
 
-- **Flexible log retention time**
-
-    You can specify different retention times for each schema, depending on your needs.
-
-    For example, for a «Glovo integration» module schema, you can specify a retention time of 7 days. As a result, each individual log in this group will be deleted 7 days after its creation.
-    And for the «User's rights change history» schema you can leave the retention time empty - thus, the logs from this schema will be stored indefinitely.
-
-    Of course, this setting can be changed at any time as business requirements change.
-
+Specify varying retention times for each schema to align with specific business needs. For instance, set a 7-day retention time for logs in the "Glovo integration" schema, while logs in the "User's rights change history" schema can be stored indefinitely. Adjust these settings dynamically as business requirements evolve.

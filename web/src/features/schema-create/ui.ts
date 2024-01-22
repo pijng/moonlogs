@@ -1,8 +1,9 @@
-import { Button, ErrorHint, Input, Label, PlusIcon, TrashIcon } from "@/shared/ui";
+import { Button, ErrorHint, Input, Label, PlusIcon, Select, TrashIcon } from "@/shared/ui";
 import { h, list, spec } from "forest";
 import { $creationError, events, schemaForm } from "./model";
 import { createEvent, sample } from "effector";
 import { trigger } from "@/shared/lib";
+import { tagModel } from "@/entities/tag";
 
 export const NewSchemaForm = () => {
   h("form", () => {
@@ -34,6 +35,17 @@ export const NewSchemaForm = () => {
       hint: "Description - used for the human-readable description of group details in the web interface. Group search will also search for groups based on this characteristic",
     });
 
+    h("div", () => {
+      spec({ classList: ["mb-6"] });
+
+      Select({
+        text: "Select a tag",
+        value: schemaForm.fields.tag_id.$value.map(String),
+        options: tagModel.$tags.map((tags) => tags.map((t) => t.name)),
+        optionSelected: events.tagSelected,
+      });
+    });
+
     Input({
       type: "number",
       label: "Retention days",
@@ -44,7 +56,7 @@ export const NewSchemaForm = () => {
     });
 
     h("div", () => {
-      spec({ classList: ["relative", "flex", "items-center", "mb-4"] });
+      spec({ classList: ["relative", "flex", "items-center", "mb-4", "pt-2"] });
 
       Label({ text: "Group query fields", hint: "Group query fields - a set of fields by which log grouping will occur" });
 
@@ -123,7 +135,7 @@ export const NewSchemaForm = () => {
     });
 
     h("div", () => {
-      spec({ classList: ["relative", "flex", "items-center", "mb-4"] });
+      spec({ classList: ["relative", "flex", "items-center", "mb-4", "pt-4"] });
 
       Label({ text: "Kinds", hint: "Kinds - a set of select options by which log grouping will occur" });
 
@@ -202,6 +214,8 @@ export const NewSchemaForm = () => {
     });
 
     h("div", () => {
+      spec({ classList: ["pt-4"] });
+
       Button({
         text: "Create",
         event: schemaForm.submit,

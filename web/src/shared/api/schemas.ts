@@ -7,6 +7,7 @@ export type Schema = {
   name: string;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
+  tag_id: number | null;
 };
 
 export type SchemaField = { title: string; name: string };
@@ -19,6 +20,7 @@ export type SchemaToCreate = {
   retention_days: number | null;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
+  tag_id: number | null;
 };
 
 export type SchemaToUpdate = {
@@ -28,6 +30,7 @@ export type SchemaToUpdate = {
   description: string;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
+  tag_id: number | null;
 };
 
 export interface SchemasResponse extends BaseResponse {

@@ -7,7 +7,7 @@ type User struct {
 	Password       string `json:"password" sql:"password"`
 	PasswordDigest string `json:"password_digest" sql:"password_digest"`
 	Role           Role   `json:"role" sql:"role"`
-	Tags           Tags   `json:"tags" sql:"tags"`
+	Tags           Tags   `json:"tag_ids" sql:"tag_ids"`
 	Token          string `json:"token" sql:"token"`
 }
 

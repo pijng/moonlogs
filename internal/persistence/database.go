@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS schemas (
 	name TEXT,
 	fields JSON,
 	kinds JSON,
-	tags TEXT,
+	tag_id INTEGER,
 	retention_days INTEGER
 );
 CREATE TABLE IF NOT EXISTS users (
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
 	password TEXT,
 	password_digest TEXT,
 	role TEXT,
-	tags TEXT,
+	tag_ids TEXT,
 	token TEXT
 );
 CREATE TABLE IF NOT EXISTS api_tokens (
