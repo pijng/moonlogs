@@ -1,7 +1,7 @@
 import { Button, ErrorHint, Input, Label, PlusIcon, Select, TrashIcon } from "@/shared/ui";
 import { h, list, spec } from "forest";
 import { $creationError, events, schemaForm } from "./model";
-import { createEvent, sample } from "effector";
+import { combine, createEvent, sample } from "effector";
 import { trigger } from "@/shared/lib";
 import { tagModel } from "@/entities/tag";
 
@@ -38,9 +38,13 @@ export const NewSchemaForm = () => {
     h("div", () => {
       spec({ classList: ["mb-6"] });
 
+      const $selectedTag = combine(tagModel.$tags, schemaForm.fields.tag_id.$value, (tags, id) => {
+        return tags.find((t) => t.id === id)?.name || "";
+      });
+
       Select({
         text: "Select a tag",
-        value: schemaForm.fields.tag_id.$value.map(String),
+        value: $selectedTag,
         options: tagModel.$tags.map((tags) => tags.map((t) => t.name)),
         optionSelected: events.tagSelected,
       });

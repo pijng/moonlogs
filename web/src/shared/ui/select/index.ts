@@ -59,13 +59,15 @@ export const Select = ({
       });
 
       list(options, ({ store: option }) => {
+        const selected = combine([option, value, localSelectedOption], ([option, value, selectedOption]) => {
+          const optionName = option.name || option;
+          return value === optionName || selectedOption === option.id;
+        });
+
         h("option", {
           attr: {
             value: option.map((o) => o.name || o),
-            selected: combine([option, value, localSelectedOption], ([option, value, selectedOption]) => {
-              const optionName = option.name || option;
-              return value === optionName || selectedOption === option.id;
-            }),
+            selected: selected,
           },
           text: option.map((o) => o.title || o),
         });
