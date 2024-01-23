@@ -38,10 +38,10 @@ export const Multiselect = ({
 
     h("input", () => {
       const selectedText = combine(options, localSelectedOptions, (opts, selectedOpts) => {
-        if (selectedOpts.length === 0) return "Click to select tags";
+        if (!selectedOpts || selectedOpts.length === 0) return "Click to select tags";
 
         return opts
-          .filter((o) => selectedOpts.includes(o.id))
+          .filter((o) => selectedOpts?.includes(o.id))
           .map((o) => o.name)
           .join(", ");
       });
@@ -141,6 +141,7 @@ export const Multiselect = ({
 
             h("input", () => {
               const selected = combine(option, localSelectedOptions, (opt, selectedOpts) => {
+                if (!selectedOpts) return false;
                 return selectedOpts.includes(opt.id);
               });
 

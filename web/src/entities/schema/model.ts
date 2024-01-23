@@ -21,12 +21,23 @@ export const $searchQuery = createStore("");
 const queryChanged = createEvent<string>();
 $searchQuery.on(queryChanged, (_, query) => query);
 
-export const $filteredSchemas = combine([$schemas, $searchQuery], ([schemas, searchQuery]) => {
+const $filteredSchemas = combine([$schemas, $searchQuery], ([schemas, searchQuery]) => {
   return schemas.filter((s) => {
     const titleMatched = s.title.toLowerCase().includes(searchQuery.toLocaleLowerCase());
     const descriptionMatched = s.description.toLocaleLowerCase().includes(searchQuery.toLowerCase());
     return titleMatched || descriptionMatched;
   });
+});
+
+export const $groupedFilteredSchemas = $filteredSchemas.map((schemas) => {
+  return schemas.reduce((acc: Record<string, Schema[]>, schema) => {
+    const tag = schema.tag_id || "General";
+
+    acc[tag] = acc[tag] || [];
+    acc[tag].push(schema);
+
+    return acc;
+  }, {});
 });
 
 export const $currentSchema = createStore<Schema>({

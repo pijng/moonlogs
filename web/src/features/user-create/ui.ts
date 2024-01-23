@@ -34,14 +34,22 @@ export const NewMemberForm = () => {
       });
     });
 
-    Multiselect({
-      text: "Select tags",
-      options: tagModel.$tags,
-      selectedOptions: memberForm.fields.tag_ids.$value,
-      event: events.tagSelectionClicked,
-      visible: $tagsDropwdownIsOpened,
-      optionChecked: events.tagChecked,
-      optionUnchecked: events.tagUnchecked,
+    const $tagSelectionVisible = memberForm.fields.role.$value.map((role) => role !== "Admin");
+
+    h("div", () => {
+      spec({
+        visible: $tagSelectionVisible,
+      });
+
+      Multiselect({
+        text: "Select tags",
+        options: tagModel.$tags,
+        selectedOptions: memberForm.fields.tag_ids.$value,
+        event: events.tagSelectionClicked,
+        visible: $tagsDropwdownIsOpened,
+        optionChecked: events.tagChecked,
+        optionUnchecked: events.tagUnchecked,
+      });
     });
 
     Input({

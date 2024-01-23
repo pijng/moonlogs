@@ -50,6 +50,10 @@ func (uc *UserUseCase) CreateUser(user entities.User) (*entities.User, error) {
 		return nil, fmt.Errorf("failed hashing user password: %w", err)
 	}
 
+	if user.Role == entities.AdminRole {
+		user.Tags = []int{}
+	}
+
 	user.PasswordDigest = passwordDigest
 
 	return uc.userRepository.CreateUser(user)
@@ -80,6 +84,10 @@ func (uc *UserUseCase) UpdateUserByID(id int, user entities.User) (*entities.Use
 		}
 
 		user.Token = token
+	}
+
+	if user.Role == entities.AdminRole {
+		user.Tags = []int{}
 	}
 
 	return uc.userRepository.UpdateUserByID(id, user)
