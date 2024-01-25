@@ -7,6 +7,7 @@ import (
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
+	"moonlogs/internal/shared"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strings"
@@ -39,9 +40,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userRepository := repositories.NewUserRepository(r.Context())
-	userUseCase := usecases.NewUserUseCase(userRepository)
+	userUsecase := usecases.NewUserUseCase(userRepository)
 
-	user, err := userUseCase.GetUserByEmail(credentials.Email)
+	user, err := userUsecase.GetUserByEmail(credentials.Email)
 	if err != nil || user.ID == 0 {
 		response.Return(w, false, http.StatusUnauthorized, err, nil, response.Meta{})
 		return
@@ -56,7 +57,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	token = user.Token
 
 	if token == "" {
-		token, err = session.GenerateAuthToken()
+		token, err = shared.GenerateRandomToken(16)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
@@ -80,7 +81,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if token != user.Token {
-		err = userUseCase.UpdateUserTokenByID(user.ID, token)
+		err = userUsecase.UpdateUserTokenByID(user.ID, token)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
@@ -99,9 +100,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetSession(w http.ResponseWriter, r *http.Request) {
-	userUserCase := usecases.NewUserUseCase(repositories.NewUserRepository(r.Context()))
+	userUsecase := usecases.NewUserUseCase(repositories.NewUserRepository(r.Context()))
 
-	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
+	shouldCreateInitialAdmin, err := userUsecase.ShouldCreateInitialAdmin()
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, fmt.Errorf("failed checking if initial admin is required: %w", err), nil, response.Meta{})
 		return
@@ -131,7 +132,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		bearerToken, _ = session.Values["token"].(string)
 	}
 
-	user, err := userUserCase.GetUserByToken(bearerToken)
+	user, err := userUsecase.GetUserByToken(bearerToken)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

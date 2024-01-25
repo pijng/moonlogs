@@ -3,6 +3,9 @@ package session
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"moonlogs/internal/entities"
+	"moonlogs/internal/repositories"
+	"moonlogs/internal/usecases"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -46,4 +49,29 @@ func GenerateAuthToken() (string, error) {
 	authToken := base64.URLEncoding.EncodeToString(tokenBytes)
 
 	return authToken, nil
+}
+
+func GetUserFromContext(r *http.Request) *entities.User {
+	sessionStore, ok := r.Context().Value(KEY).(*sessions.Session)
+	if !ok {
+		return nil
+	}
+
+	iUserID, ok := sessionStore.Values["userID"]
+	if !ok {
+		return nil
+	}
+
+	userID, ok := iUserID.(int)
+	if !ok {
+		return nil
+	}
+
+	userRepository := repositories.NewUserRepository(r.Context())
+	user, err := usecases.NewUserUseCase(userRepository).GetUserByID(userID)
+	if err != nil {
+		return nil
+	}
+
+	return user
 }

@@ -1,4 +1,4 @@
-import { homeRoute, loginRoute, registerAdminRoute } from "@/routing/shared";
+import { forbiddenRoute, homeRoute, loginRoute, registerAdminRoute } from "@/routing/shared";
 import { $isAuthorized, createInitialAdmin, notAllowedTriggered, unauthorizedTriggered } from "@/shared/auth";
 import { redirect } from "atomic-router";
 import { sample } from "effector";
@@ -10,7 +10,7 @@ redirect({
 
 redirect({
   clock: notAllowedTriggered,
-  route: homeRoute,
+  route: forbiddenRoute,
 });
 
 redirect({

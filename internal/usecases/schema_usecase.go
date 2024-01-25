@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
+	"slices"
 	"strings"
 )
 
@@ -93,8 +94,24 @@ func (uc *SchemaUseCase) UpdateSchemaByID(id int, schema entities.Schema) (*enti
 	return uc.schemaRepository.UpdateSchemaByID(id, schema)
 }
 
-func (uc *SchemaUseCase) GetAllSchemas() ([]*entities.Schema, error) {
-	return uc.schemaRepository.GetAllSchemas()
+func (uc *SchemaUseCase) GetAllSchemas(user *entities.User) ([]*entities.Schema, error) {
+	schemas, err := uc.schemaRepository.GetAllSchemas()
+	if err != nil {
+		return nil, fmt.Errorf("failed querying all schemas")
+	}
+
+	if len(user.Tags) > 0 {
+		var filteredSchemas []*entities.Schema
+		for _, schema := range schemas {
+			if schema.TagID != 0 && slices.Contains(user.Tags, schema.TagID) {
+				filteredSchemas = append(filteredSchemas, schema)
+			}
+		}
+
+		return filteredSchemas, nil
+	}
+
+	return schemas, nil
 }
 
 func (uc *SchemaUseCase) GetSchemaByID(id int) (*entities.Schema, error) {

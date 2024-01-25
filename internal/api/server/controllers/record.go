@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"moonlogs/internal/api/server/access"
 	"moonlogs/internal/api/server/pagination"
 	"moonlogs/internal/api/server/response"
+	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
@@ -46,6 +48,13 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllRecords(w http.ResponseWriter, r *http.Request) {
+	user := session.GetUserFromContext(r)
+	// Deny access to all logs if user has any tags
+	if len(user.Tags) > 0 {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
+		return
+	}
+
 	limit, offset, page := pagination.Paginate(r)
 
 	recordRepository := repositories.NewRecordRepository(r.Context())
@@ -90,6 +99,11 @@ func GetRecordByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if access.IsSchemaForbiddenForUser(record.SchemaName, r) {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
+		return
+	}
+
 	response.Return(w, true, http.StatusOK, nil, record, response.Meta{})
 }
 
@@ -101,6 +115,11 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&recordsToGet)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+		return
+	}
+
+	if access.IsSchemaForbiddenForUser(recordsToGet.SchemaName, r) {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 		return
 	}
 
@@ -128,6 +147,11 @@ func GetRecordsByGroupHash(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupHash := vars["hash"]
 	schemaName := vars["schemaName"]
+
+	if access.IsSchemaForbiddenForUser(schemaName, r) {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
+		return
+	}
 
 	schemaRepository := repositories.NewSchemaRepository(r.Context())
 	schema, err := usecases.NewSchemaUseCase(schemaRepository).GetSchemaByName(schemaName)

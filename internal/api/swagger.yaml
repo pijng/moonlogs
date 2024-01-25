@@ -209,45 +209,6 @@ paths:
                   - code
       security:
         - http1: []
-  /api/schemas/search:
-    post:
-      description: ''
-      operationId: ''
-      tags: []
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SchemaSearch'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  code:
-                    type: integer
-                  error:
-                    type: string
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Schema'
-                  meta:
-                    $ref: '#/components/schemas/Meta'
-                required:
-                  - success
-                  - error
-                  - code
-                  - data
-                  - meta
-      security:
-        - http1: []
   /api/logs:
     post:
       description: ''
@@ -1118,10 +1079,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SchemaKind'
-        tags:
-          type: array
-          items:
-            type: number
+        tag_id:
+          type: integer
         retention_days:
           type: integer
       required:
@@ -1130,7 +1089,6 @@ components:
         - name
         - fields
         - kinds
-        - tags
     SchemaField:
       type: object
       properties:

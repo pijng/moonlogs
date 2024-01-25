@@ -3,7 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"moonlogs/internal/api/server/access"
 	"moonlogs/internal/api/server/response"
+	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
 	"moonlogs/internal/usecases"
@@ -66,8 +68,10 @@ func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllSchemas(w http.ResponseWriter, r *http.Request) {
+	user := session.GetUserFromContext(r)
+
 	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schemas, err := usecases.NewSchemaUseCase(schemaRepository).GetAllSchemas()
+	schemas, err := usecases.NewSchemaUseCase(schemaRepository).GetAllSchemas(user)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -98,27 +102,12 @@ func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if access.IsSchemaForbiddenForUser(schema.Name, r) {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
+		return
+	}
+
 	response.Return(w, true, http.StatusOK, nil, schema, response.Meta{})
-}
-
-func GetSchemasByTitleOrDescription(w http.ResponseWriter, r *http.Request) {
-	var schemaToGet entities.Schema
-
-	err := json.NewDecoder(r.Body).Decode(&schemaToGet)
-	if err != nil {
-		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
-
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schemas, err := usecases.NewSchemaUseCase(schemaRepository).GetSchemasByTitleOrDescription(schemaToGet.Title, schemaToGet.Description)
-
-	if err != nil {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
-	response.Return(w, true, http.StatusOK, nil, schemas, response.Meta{})
 }
 
 func DestroySchemaByID(w http.ResponseWriter, r *http.Request) {

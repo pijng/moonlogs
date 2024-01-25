@@ -24,7 +24,6 @@ func RegisterSchemaRouter(r *mux.Router) {
 	schemaRouter.HandleFunc("/{id}", controllers.GetSchemaByID).Methods(http.MethodGet)
 	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateSchemaByID, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPut)
 	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.DestroySchemaByID, entities.AdminRole)).Methods(http.MethodDelete)
-	schemaRouter.HandleFunc("/search", controllers.GetSchemasByTitleOrDescription).Methods(http.MethodPost)
 }
 
 func RegisterRecordRouter(r *mux.Router) {

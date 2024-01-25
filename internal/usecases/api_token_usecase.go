@@ -1,14 +1,13 @@
 package usecases
 
 import (
-	"crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"hash"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
+	"moonlogs/internal/shared"
 	"sync"
 )
 
@@ -31,7 +30,7 @@ func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, erro
 		return nil, fmt.Errorf("failed creating api token: `name` attribute is required")
 	}
 
-	token, err := generateToken(32)
+	token, err := shared.GenerateRandomToken(32)
 	if err != nil {
 		return nil, fmt.Errorf("failed generating token string: %w", err)
 	}
@@ -87,22 +86,6 @@ func (uc *ApiTokenUseCase) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 
 func (uc *ApiTokenUseCase) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
 	return uc.apiTokenRepository.UpdateApiTokenByID(id, apiToken)
-}
-
-func generateToken(length int) (string, error) {
-	numBytes := (length * 6) / 8
-
-	randomBytes := make([]byte, numBytes)
-	_, err := rand.Read(randomBytes)
-	if err != nil {
-		return "", err
-	}
-
-	token := base64.URLEncoding.EncodeToString(randomBytes)
-
-	token = token[:length]
-
-	return token, nil
 }
 
 func hashToken(token string) (string, error) {

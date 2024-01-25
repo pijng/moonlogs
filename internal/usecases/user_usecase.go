@@ -2,9 +2,9 @@ package usecases
 
 import (
 	"fmt"
-	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/repositories"
+	"moonlogs/internal/shared"
 	"slices"
 	"strings"
 
@@ -78,7 +78,7 @@ func (uc *UserUseCase) UpdateUserByID(id int, user entities.User) (*entities.Use
 	}
 
 	if len(user.PasswordDigest) > 0 {
-		token, err := session.GenerateAuthToken()
+		token, err := shared.GenerateRandomToken(16)
 		if err != nil {
 			return nil, fmt.Errorf("failed generating auth token for user: %w", err)
 		}
