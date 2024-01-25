@@ -1,6 +1,13 @@
 import { userModel } from "@/entities/user";
 import { UserRole } from "@/shared/api/users";
-import { $isAuthorized, getSessionFx, obtainSession, tokenReceived, unauthorizedTriggered } from "@/shared/auth";
+import {
+  $isAuthorized,
+  getSessionFx,
+  notFoundTriggered,
+  obtainSession,
+  tokenReceived,
+  unauthorizedTriggered,
+} from "@/shared/auth";
 import { sidebarClosed } from "@/shared/ui";
 import {
   RouteInstance,
@@ -64,6 +71,11 @@ export const router = createHistoryRouter({ routes: ROUTES, controls });
 
 // This event need to setup initial configuration. You can move it into src/shared
 export const appMounted = createEvent();
+
+sample({
+  clock: router.routeNotFound,
+  target: notFoundTriggered,
+});
 
 // Attach history for the router on the app start
 sample({
