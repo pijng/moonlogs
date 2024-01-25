@@ -1,9 +1,13 @@
 
-# Moonlogs
+# 🌘 moonlogs
 
-Moonlogs is a business event logging tool with a built-in user-friendly web interface for easy access to events.
+Moonlogs is a business event-logging tool with a built-in user-friendly web interface for easy access to events.
 
-For a full list of key capabilities, please see the [Features](#features) section.
+## Table of Contents
+
+- [Installation](#installation)
+- [Features](#features)
+- [Considerations](#considerations)
 
 
 ## Installation
@@ -44,18 +48,18 @@ Open a terminal in your project's root directory and run the following command:
 docker-compose up -d
 ```
 
-This will download the Moonlogs image and start the Moonlogs container in detached mode.
+This will download the moonlogs image and start the moonlogs container in detached mode.
 
-3. **Access Moonlogs:**
+3. **Access moonlogs:**
 
-Navigate to [http://localhost:4200](http://localhost:<your-port>). You should see the Moonlogs UI. Follow the instructions for creating the initial administrator there.
+Navigate to [http://localhost:4200](http://localhost:<your-port>). You should see the moonlogs UI. Follow the instructions for creating the initial administrator there.
 
 
 ### Configuration Options
 
-- The Moonlogs container is configured to run on port 4200 by default. If you need to change the port, update the `--port` parameter in the `command` section of the `docker-compose.yml` file.
+- The moonlogs container is configured to run on port 4200 by default. If you need to change the port, update the `--port` parameter in the `command` section of the `docker-compose.yml` file.
 
-- By default, Moonlogs uses a Docker volume named `moonlogs-data` to store configuration and database files. This ensures persistent data even if the container is stopped or removed.
+- By default, moonlogs uses a Docker volume named `moonlogs-data` to store configuration and database files. This ensures persistent data even if the container is stopped or removed.
 If you prefer to use your own bind mount for data storage, you can modify the `volumes` section in the `docker-compose.yml` file.
 
     * Remove the line at the bottom of `docker-compose.yml`:
@@ -110,3 +114,27 @@ Generate convenient filters on the web interface for each schema, simplifying ev
 #### Flexible log retention time
 
 Specify varying retention times for each schema to align with specific business needs. For instance, set a 7-day retention time for logs in the "Glovo integration" schema, while logs in the "User's rights change history" schema can be stored indefinitely. Adjust these settings dynamically as business requirements evolve.
+
+#### Granular Access Control with Tags
+
+Create and assign tags to schemas and users, enabling granular access control. Define access privileges based on tags, ensuring that users can only access the schemas and logs relevant to their responsibilities. This feature provides an additional layer of security and customization in managing access to log data.
+
+## Considerations
+
+Moonlogs is a specialized logging solution designed with a primary focus on capturing business event logs. It excels at providing insights into business processes, user interactions, and custom events tailored for your application.
+
+### When not to use moonlogs
+
+While moonlogs is powerful for business event-logging, there are specific scenarios where it might not be the best fit:
+
+**1. Auditing Logging**
+
+Moonlogs is not intended for exhaustive auditing purposes. If your requirement involves detailed audit logs for compliance or security, consider dedicated auditing tools like Datadog, SolarWinds, or other specialized solutions.
+
+**2. System Logs**
+
+Moonlogs is not designed to handle low-level system logs. For system-level monitoring and troubleshooting, solutions like ELK Stack or centralized logging systems may be more appropriate.
+
+**3. Application Performance Monitoring & Error Tracking**
+
+Moonlogs focuses on capturing business events and is not a substitute for dedicated Application Performance Monitoring (APM) or Error Tracking tools. For deep insights into application performance and error diagnostics, explore tools like New Relic, Dynatrace, Sentry, or similar APM solutions.
