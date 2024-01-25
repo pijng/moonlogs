@@ -21,6 +21,7 @@ export const Link = createLink();
 export const loginRoute = createRoute();
 export const registerAdminRoute = createRoute();
 export const forbiddenRoute = createRoute();
+export const notFoundRoute = createRoute();
 export const homeRoute = createRoute();
 export const logsRoute = createRoute<{ schemaName: string | Store<string> }>();
 export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
@@ -40,6 +41,7 @@ export const ROUTES = [
   { path: "/login", route: loginRoute },
   { path: "/register", route: registerAdminRoute },
   { path: "/forbidden", route: forbiddenRoute },
+  { path: "/not_found", route: notFoundRoute },
   { path: "/", route: homeRoute },
   { path: "/schemas/create", route: schemaCreateRoute },
   { path: "/schemas/:id/edit", route: schemaEditRoute },

@@ -9,8 +9,8 @@ export const $token = createStore("");
 export const $isAuthorized = $token.map(Boolean);
 
 export const unauthorizedTriggered = createEvent();
-
 export const notAllowedTriggered = createEvent();
+export const notFoundTriggered = createEvent();
 
 $token.on(tokenReceived, (_, token) => token).reset(tokenErased);
 

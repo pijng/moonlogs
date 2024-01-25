@@ -1,5 +1,5 @@
 import { attach, createEffect } from "effector";
-import { $token, notAllowedTriggered, unauthorizedTriggered } from "../auth";
+import { $token, notAllowedTriggered, notFoundTriggered, unauthorizedTriggered } from "../auth";
 
 export type FetchMethods = "GET" | "POST" | "PUT" | "DELETE";
 export type BaseResponse = {
@@ -40,12 +40,16 @@ export const baseRequest = async ({
 
     const responseText = await response.clone().text();
 
-    if (response.status === 401) {
-      unauthorizedTriggered();
-    }
-
-    if (response.status === 403) {
-      notAllowedTriggered();
+    switch (response.status) {
+      case 401:
+        unauthorizedTriggered();
+        break;
+      case 403:
+        notAllowedTriggered();
+        break;
+      case 404:
+        notFoundTriggered();
+        break;
     }
 
     const jsonResponse = JSON.parse(responseText);

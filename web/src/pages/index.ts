@@ -5,7 +5,7 @@ import { ShowLogPage } from "./log";
 import { LogsListPage } from "./logs-list";
 import { UsersListPage } from "./users-list";
 import { LoginPage } from "./login";
-import { forbiddenRoute, loginRoute, registerAdminRoute } from "@/routing/shared";
+import { forbiddenRoute, loginRoute, notFoundRoute, registerAdminRoute } from "@/routing/shared";
 import { UserCreatePage } from "./user-create";
 import { UserEditPage } from "./user-edit";
 import { SchemaCreatePage } from "./schema-create";
@@ -18,11 +18,14 @@ import { TagsListPage } from "./tags-list";
 import { TagCreatePage } from "./tag-create";
 import { TagEditPage } from "./tag-edit";
 import { ForbiddenPage } from "./forbidden";
+import { NotFoundPage } from "./not-found";
 
 export function Pages() {
   const $layoutVisible = combine(
-    [loginRoute.$isOpened, registerAdminRoute.$isOpened, forbiddenRoute.$isOpened],
-    ([loginOpened, registerOpened, forbiddenOpened]) => !loginOpened && !registerOpened && !forbiddenOpened,
+    [loginRoute.$isOpened, registerAdminRoute.$isOpened, forbiddenRoute.$isOpened, notFoundRoute.$isOpened],
+    ([loginOpened, registerOpened, forbiddenOpened, notFoundOpened]) => {
+      return !loginOpened && !registerOpened && !forbiddenOpened && !notFoundOpened;
+    },
   );
 
   Layout({
@@ -30,6 +33,7 @@ export function Pages() {
       LoginPage();
       RegisterAdminPage();
       ForbiddenPage();
+      NotFoundPage();
       HomePage();
       LogsListPage();
       ShowLogPage();
