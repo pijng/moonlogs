@@ -1,4 +1,4 @@
-package repositories
+package sqlite_adapter
 
 import (
 	"context"
@@ -8,20 +8,20 @@ import (
 	"moonlogs/internal/persistence"
 )
 
-type UserRepository struct {
+type UserStorage struct {
 	ctx   context.Context
 	users *qrx.TableQuerier[entities.User]
 }
 
-func NewUserRepository(ctx context.Context) *UserRepository {
-	return &UserRepository{
+func NewUserStorage(ctx context.Context) *UserStorage {
+	return &UserStorage{
 		ctx:   ctx,
 		users: qrx.Scan(entities.User{}).With(persistence.DB()).From("users"),
 	}
 }
 
-func (r *UserRepository) CreateUser(user entities.User) (*entities.User, error) {
-	u, err := r.users.Create(r.ctx, map[string]interface{}{
+func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
+	u, err := s.users.Create(s.ctx, map[string]interface{}{
 		"email":           user.Email,
 		"password":        "",
 		"password_digest": user.PasswordDigest,
@@ -38,7 +38,7 @@ func (r *UserRepository) CreateUser(user entities.User) (*entities.User, error) 
 	return u, nil
 }
 
-func (r *UserRepository) GetUserByID(id int) (*entities.User, error) {
+func (r *UserStorage) GetUserByID(id int) (*entities.User, error) {
 	u, err := r.users.Where("id = ?", id).First(r.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying user: %w", err)
@@ -47,7 +47,7 @@ func (r *UserRepository) GetUserByID(id int) (*entities.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) GetUserByEmail(email string) (*entities.User, error) {
+func (r *UserStorage) GetUserByEmail(email string) (*entities.User, error) {
 	u, err := r.users.Where("email = ?", email).First(r.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying user: %w", err)
@@ -56,7 +56,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*entities.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) GetUserByToken(token string) (*entities.User, error) {
+func (r *UserStorage) GetUserByToken(token string) (*entities.User, error) {
 	u, err := r.users.Where("token = ?", token).First(r.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying user: %w", err)
@@ -65,13 +65,13 @@ func (r *UserRepository) GetUserByToken(token string) (*entities.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) DestroyUserByID(id int) error {
+func (r *UserStorage) DestroyUserByID(id int) error {
 	_, err := r.users.DeleteOne(r.ctx, "id=?", id)
 
 	return err
 }
 
-func (r *UserRepository) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
+func (r *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
 	data := map[string]interface{}{
 		"email":   user.Email,
 		"name":    user.Name,
@@ -92,7 +92,7 @@ func (r *UserRepository) UpdateUserByID(id int, user entities.User) (*entities.U
 	return u, nil
 }
 
-func (r *UserRepository) UpdateUserTokenByID(id int, token string) error {
+func (r *UserStorage) UpdateUserTokenByID(id int, token string) error {
 	_, err := r.users.Where("id = ?", id).UpdateOne(r.ctx, map[string]interface{}{
 		"token": token,
 	})
@@ -104,7 +104,7 @@ func (r *UserRepository) UpdateUserTokenByID(id int, token string) error {
 	return nil
 }
 
-func (r *UserRepository) GetAllUsers() ([]*entities.User, error) {
+func (r *UserStorage) GetAllUsers() ([]*entities.User, error) {
 	u, err := r.users.All(r.ctx, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed querying user: %w", err)
@@ -113,11 +113,11 @@ func (r *UserRepository) GetAllUsers() ([]*entities.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) GetSystemUser() (*entities.User, error) {
+func (r *UserStorage) GetSystemUser() (*entities.User, error) {
 	return r.users.Where("role = 'System'").First(r.ctx)
 }
 
-func (r *UserRepository) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
+func (r *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
 	return r.users.Create(r.ctx, map[string]interface{}{
 		"name":            admin.Name,
 		"email":           admin.Email,

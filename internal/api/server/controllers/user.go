@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -30,8 +31,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repositories.NewUserRepository(r.Context())
-	user, err := usecases.NewUserUseCase(userRepository).CreateUser(newUser)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	user, err := usecases.NewUserUseCase(userStorage).CreateUser(newUser)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -49,8 +50,8 @@ func DestroyUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repositories.NewUserRepository(r.Context())
-	err = usecases.NewUserUseCase(userRepository).DestroyUserByID(id)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	err = usecases.NewUserUseCase(userStorage).DestroyUserByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
@@ -68,8 +69,8 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repositories.NewUserRepository(r.Context())
-	user, err := usecases.NewUserUseCase(userRepository).GetUserByID(id)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	user, err := usecases.NewUserUseCase(userStorage).GetUserByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -100,8 +101,8 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repositories.NewUserRepository(r.Context())
-	user, err := usecases.NewUserUseCase(userRepository).UpdateUserByID(id, userToUpdate)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	user, err := usecases.NewUserUseCase(userStorage).UpdateUserByID(id, userToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -116,8 +117,8 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	userRepository := repositories.NewUserRepository(r.Context())
-	users, err := usecases.NewUserUseCase(userRepository).GetAllUsers()
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	users, err := usecases.NewUserUseCase(userStorage).GetAllUsers()
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -127,7 +128,8 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
-	userUserCase := usecases.NewUserUseCase(repositories.NewUserRepository(r.Context()))
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	userUserCase := usecases.NewUserUseCase(userStorage)
 	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
 
 	if err != nil {

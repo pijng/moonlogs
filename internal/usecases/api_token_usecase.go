@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"hash"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
 	"moonlogs/internal/shared"
+	"moonlogs/internal/storage"
 	"sync"
 )
 
@@ -18,11 +18,11 @@ var sha256HasherPool = sync.Pool{
 }
 
 type ApiTokenUseCase struct {
-	apiTokenRepository *repositories.ApiTokenRepository
+	apiTokenStorage storage.ApiTokenStorage
 }
 
-func NewApiTokenUseCase(apiTokenRepository *repositories.ApiTokenRepository) *ApiTokenUseCase {
-	return &ApiTokenUseCase{apiTokenRepository: apiTokenRepository}
+func NewApiTokenUseCase(apiTokenStorage storage.ApiTokenStorage) *ApiTokenUseCase {
+	return &ApiTokenUseCase{apiTokenStorage: apiTokenStorage}
 }
 
 func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, error) {
@@ -40,7 +40,7 @@ func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, erro
 		return nil, fmt.Errorf("failed hashing token: %w", err)
 	}
 
-	apiToken, err := uc.apiTokenRepository.CreateApiToken(entities.ApiToken{Name: name, TokenDigest: tokenHash, IsRevoked: false})
+	apiToken, err := uc.apiTokenStorage.CreateApiToken(entities.ApiToken{Name: name, TokenDigest: tokenHash, IsRevoked: false})
 	if err != nil {
 		return nil, fmt.Errorf("failed creating api token: %w", err)
 	}
@@ -58,7 +58,7 @@ func (uc *ApiTokenUseCase) IsTokenValid(token string) (bool, error) {
 		return false, fmt.Errorf("failed hashing token: %w", err)
 	}
 
-	apiToken, err := uc.apiTokenRepository.GetApiTokenByDigest(tokenHash)
+	apiToken, err := uc.apiTokenStorage.GetApiTokenByDigest(tokenHash)
 	if err != nil {
 		return false, fmt.Errorf("failed querying token by digest: %w", err)
 	}
@@ -73,19 +73,19 @@ func (uc *ApiTokenUseCase) IsTokenValid(token string) (bool, error) {
 }
 
 func (uc *ApiTokenUseCase) GetAllApiTokens() ([]*entities.ApiToken, error) {
-	return uc.apiTokenRepository.GetAllApiTokens()
+	return uc.apiTokenStorage.GetAllApiTokens()
 }
 
 func (uc *ApiTokenUseCase) DestroyApiTokenByID(id int) error {
-	return uc.apiTokenRepository.DestroyApiTokenByID(id)
+	return uc.apiTokenStorage.DestroyApiTokenByID(id)
 }
 
 func (uc *ApiTokenUseCase) GetApiTokenByID(id int) (*entities.ApiToken, error) {
-	return uc.apiTokenRepository.GetApiTokenByID(id)
+	return uc.apiTokenStorage.GetApiTokenByID(id)
 }
 
 func (uc *ApiTokenUseCase) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	return uc.apiTokenRepository.UpdateApiTokenByID(id, apiToken)
+	return uc.apiTokenStorage.UpdateApiTokenByID(id, apiToken)
 }
 
 func hashToken(token string) (string, error) {

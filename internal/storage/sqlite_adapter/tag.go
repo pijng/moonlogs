@@ -1,4 +1,4 @@
-package repositories
+package sqlite_adapter
 
 import (
 	"context"
@@ -8,19 +8,19 @@ import (
 	"moonlogs/internal/persistence"
 )
 
-type TagRepository struct {
+type TagStorage struct {
 	ctx  context.Context
 	tags *qrx.TableQuerier[entities.Tag]
 }
 
-func NewTagRepository(ctx context.Context) *TagRepository {
-	return &TagRepository{
+func NewTagStorage(ctx context.Context) *TagStorage {
+	return &TagStorage{
 		ctx:  ctx,
 		tags: qrx.Scan(entities.Tag{}).With(persistence.DB()).From("tags"),
 	}
 }
 
-func (r *TagRepository) CreateTag(tag entities.Tag) (*entities.Tag, error) {
+func (r *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 	u, err := r.tags.Create(r.ctx, map[string]interface{}{
 		"name": tag.Name,
 	})
@@ -32,8 +32,8 @@ func (r *TagRepository) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 	return u, nil
 }
 
-func (r *TagRepository) GetTagByID(id int) (*entities.Tag, error) {
-	u, err := r.tags.Where("id = ?", id).First(r.ctx)
+func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
+	u, err := s.tags.Where("id = ?", id).First(s.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying tag: %w", err)
 	}
@@ -41,13 +41,13 @@ func (r *TagRepository) GetTagByID(id int) (*entities.Tag, error) {
 	return u, nil
 }
 
-func (r *TagRepository) DestroyTagByID(id int) error {
+func (r *TagStorage) DestroyTagByID(id int) error {
 	_, err := r.tags.DeleteOne(r.ctx, "id=?", id)
 
 	return err
 }
 
-func (r *TagRepository) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
+func (r *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
 	data := map[string]interface{}{
 		"name": tag.Name,
 	}
@@ -60,7 +60,7 @@ func (r *TagRepository) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, 
 	return u, nil
 }
 
-func (r *TagRepository) GetAllTags() ([]*entities.Tag, error) {
+func (r *TagStorage) GetAllTags() ([]*entities.Tag, error) {
 	u, err := r.tags.All(r.ctx, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed querying tags: %w", err)

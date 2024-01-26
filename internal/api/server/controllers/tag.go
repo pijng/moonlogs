@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -22,8 +23,8 @@ func CreateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagRepository := repositories.NewTagRepository(r.Context())
-	tag, err := usecases.NewTagUseCase(tagRepository).CreateTag(newTag.Name)
+	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
+	tag, err := usecases.NewTagUseCase(tagStorage).CreateTag(newTag.Name)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -41,8 +42,8 @@ func DestroyTagByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagRepository := repositories.NewTagRepository(r.Context())
-	err = usecases.NewTagUseCase(tagRepository).DestroyTagByID(id)
+	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
+	err = usecases.NewTagUseCase(tagStorage).DestroyTagByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -60,8 +61,8 @@ func GetTagByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagRepository := repositories.NewTagRepository(r.Context())
-	tag, err := usecases.NewTagUseCase(tagRepository).GetTagByID(id)
+	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
+	tag, err := usecases.NewTagUseCase(tagStorage).GetTagByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -92,8 +93,8 @@ func UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagRepository := repositories.NewTagRepository(r.Context())
-	tag, err := usecases.NewTagUseCase(tagRepository).UpdateTagByID(id, tagToUpdate)
+	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
+	tag, err := usecases.NewTagUseCase(tagStorage).UpdateTagByID(id, tagToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -108,8 +109,8 @@ func UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllTags(w http.ResponseWriter, r *http.Request) {
-	tagRepository := repositories.NewTagRepository(r.Context())
-	tags, err := usecases.NewTagUseCase(tagRepository).GetAllTags()
+	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
+	tags, err := usecases.NewTagUseCase(tagStorage).GetAllTags()
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

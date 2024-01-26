@@ -5,8 +5,9 @@ import (
 	"moonlogs/internal/api/server/controllers"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"slices"
@@ -97,8 +98,8 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			bearerToken = splitToken[1]
 		}
 
-		apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-		ok, err := usecases.NewApiTokenUseCase(apiTokenRepository).IsTokenValid(bearerToken)
+		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+		ok, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
@@ -115,8 +116,8 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		userRepository := repositories.NewUserRepository(r.Context())
-		user, _ := usecases.NewUserUseCase(userRepository).GetUserByToken(bearerToken)
+		userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+		user, _ := usecases.NewUserUseCase(userStorage).GetUserByToken(bearerToken)
 
 		token, ok := sessionCookie.Values["token"].(string)
 		if !ok || user.ID == 0 {
@@ -145,8 +146,8 @@ func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.
 			bearerToken = splitToken[1]
 		}
 
-		apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-		validAPIToken, err := usecases.NewApiTokenUseCase(apiTokenRepository).IsTokenValid(bearerToken)
+		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+		validAPIToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
@@ -163,8 +164,8 @@ func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.
 			return
 		}
 
-		userRepository := repositories.NewUserRepository(r.Context())
-		user, _ := usecases.NewUserUseCase(userRepository).GetUserByToken(bearerToken)
+		userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+		user, _ := usecases.NewUserUseCase(userStorage).GetUserByToken(bearerToken)
 
 		if user.ID == 0 {
 			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})

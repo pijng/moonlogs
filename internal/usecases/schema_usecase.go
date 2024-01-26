@@ -3,17 +3,17 @@ package usecases
 import (
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"slices"
 	"strings"
 )
 
 type SchemaUseCase struct {
-	schemaRepository *repositories.SchemaRepository
+	schemaStorage storage.SchemaStorage
 }
 
-func NewSchemaUseCase(schemaRepository *repositories.SchemaRepository) *SchemaUseCase {
-	return &SchemaUseCase{schemaRepository: schemaRepository}
+func NewSchemaUseCase(schemaStorage storage.SchemaStorage) *SchemaUseCase {
+	return &SchemaUseCase{schemaStorage: schemaStorage}
 }
 
 func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema, error) {
@@ -26,7 +26,7 @@ func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema,
 	if existingSchema.ID != 0 {
 		mergedSchema := mergeSchemaFields(*existingSchema, schema)
 
-		return uc.schemaRepository.UpdateSchemaByID(existingSchema.ID, mergedSchema)
+		return uc.schemaStorage.UpdateSchemaByID(existingSchema.ID, mergedSchema)
 	}
 
 	if len(schema.Fields) == 0 {
@@ -69,7 +69,7 @@ func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema,
 
 	schema.Kinds = formattedKinds
 
-	return uc.schemaRepository.CreateSchema(schema)
+	return uc.schemaStorage.CreateSchema(schema)
 }
 
 func (uc *SchemaUseCase) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
@@ -91,11 +91,11 @@ func (uc *SchemaUseCase) UpdateSchemaByID(id int, schema entities.Schema) (*enti
 	schema.Name = normalizeName(schema.Name)
 	schema.Fields = formattedFields
 
-	return uc.schemaRepository.UpdateSchemaByID(id, schema)
+	return uc.schemaStorage.UpdateSchemaByID(id, schema)
 }
 
 func (uc *SchemaUseCase) GetAllSchemas(user *entities.User) ([]*entities.Schema, error) {
-	schemas, err := uc.schemaRepository.GetAllSchemas()
+	schemas, err := uc.schemaStorage.GetAllSchemas()
 	if err != nil {
 		return nil, fmt.Errorf("failed querying all schemas")
 	}
@@ -115,19 +115,19 @@ func (uc *SchemaUseCase) GetAllSchemas(user *entities.User) ([]*entities.Schema,
 }
 
 func (uc *SchemaUseCase) GetSchemaByID(id int) (*entities.Schema, error) {
-	return uc.schemaRepository.GetById(id)
+	return uc.schemaStorage.GetById(id)
 }
 
 func (uc *SchemaUseCase) GetSchemaByName(name string) (*entities.Schema, error) {
-	return uc.schemaRepository.GetByName(name)
+	return uc.schemaStorage.GetByName(name)
 }
 
 func (uc *SchemaUseCase) GetSchemasByTitleOrDescription(title string, description string) ([]*entities.Schema, error) {
-	return uc.schemaRepository.GetSchemasByTitleOrDescription(title, description)
+	return uc.schemaStorage.GetSchemasByTitleOrDescription(title, description)
 }
 
 func (uc *SchemaUseCase) DestroySchemaByID(id int) error {
-	return uc.schemaRepository.DestroySchemaByID(id)
+	return uc.schemaStorage.DestroySchemaByID(id)
 }
 
 func normalizeName(name string) string {

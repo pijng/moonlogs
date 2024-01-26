@@ -3,8 +3,8 @@ package usecases
 import (
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
 	"moonlogs/internal/shared"
+	"moonlogs/internal/storage"
 	"slices"
 	"strings"
 
@@ -19,15 +19,15 @@ var appropriateRoles = []string{
 var appropriateRolesInfo = strings.Join(appropriateRoles, ", ")
 
 type UserUseCase struct {
-	userRepository *repositories.UserRepository
+	userStorage storage.UserStorage
 }
 
-func NewUserUseCase(userRepository *repositories.UserRepository) *UserUseCase {
-	return &UserUseCase{userRepository: userRepository}
+func NewUserUseCase(userStorage storage.UserStorage) *UserUseCase {
+	return &UserUseCase{userStorage: userStorage}
 }
 
 func (uc *UserUseCase) CreateUser(user entities.User) (*entities.User, error) {
-	userWithIdenticalEmail, err := uc.userRepository.GetUserByEmail(user.Email)
+	userWithIdenticalEmail, err := uc.userStorage.GetUserByEmail(user.Email)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user: %w", err)
 	}
@@ -56,15 +56,15 @@ func (uc *UserUseCase) CreateUser(user entities.User) (*entities.User, error) {
 
 	user.PasswordDigest = passwordDigest
 
-	return uc.userRepository.CreateUser(user)
+	return uc.userStorage.CreateUser(user)
 }
 
 func (uc *UserUseCase) DestroyUserByID(id int) error {
-	return uc.userRepository.DestroyUserByID(id)
+	return uc.userStorage.DestroyUserByID(id)
 }
 
 func (uc *UserUseCase) GetUserByID(id int) (*entities.User, error) {
-	return uc.userRepository.GetUserByID(id)
+	return uc.userStorage.GetUserByID(id)
 }
 
 func (uc *UserUseCase) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
@@ -90,27 +90,27 @@ func (uc *UserUseCase) UpdateUserByID(id int, user entities.User) (*entities.Use
 		user.Tags = []int{}
 	}
 
-	return uc.userRepository.UpdateUserByID(id, user)
+	return uc.userStorage.UpdateUserByID(id, user)
 }
 
 func (uc *UserUseCase) GetAllUsers() ([]*entities.User, error) {
-	return uc.userRepository.GetAllUsers()
+	return uc.userStorage.GetAllUsers()
 }
 
 func (uc *UserUseCase) GetUserByToken(token string) (*entities.User, error) {
-	return uc.userRepository.GetUserByToken(token)
+	return uc.userStorage.GetUserByToken(token)
 }
 
 func (uc *UserUseCase) GetUserByEmail(email string) (*entities.User, error) {
-	return uc.userRepository.GetUserByEmail(email)
+	return uc.userStorage.GetUserByEmail(email)
 }
 
 func (uc *UserUseCase) UpdateUserTokenByID(id int, token string) error {
-	return uc.userRepository.UpdateUserTokenByID(id, token)
+	return uc.userStorage.UpdateUserTokenByID(id, token)
 }
 
 func (uc *UserUseCase) ShouldCreateInitialAdmin() (bool, error) {
-	users, err := uc.userRepository.GetAllUsers()
+	users, err := uc.userStorage.GetAllUsers()
 	if err != nil {
 		return false, fmt.Errorf("failed querying system user: %w", err)
 	}
@@ -123,7 +123,7 @@ func (uc *UserUseCase) ShouldCreateInitialAdmin() (bool, error) {
 }
 
 func (uc *UserUseCase) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
-	users, err := uc.userRepository.GetAllUsers()
+	users, err := uc.userStorage.GetAllUsers()
 	if err != nil {
 		return nil, fmt.Errorf("failed querying users: %w", err)
 	}
@@ -139,7 +139,7 @@ func (uc *UserUseCase) CreateInitialAdmin(admin entities.User) (*entities.User, 
 
 	admin.PasswordDigest = passwordDigest
 
-	return uc.userRepository.CreateInitialAdmin(admin)
+	return uc.userStorage.CreateInitialAdmin(admin)
 }
 
 func hashPassword(password string) (string, error) {

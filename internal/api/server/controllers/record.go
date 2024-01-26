@@ -8,8 +8,9 @@ import (
 	"moonlogs/internal/api/server/pagination"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -26,7 +27,8 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schema, err := repositories.NewSchemaRepository(r.Context()).GetByName(newRecord.SchemaName)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByName(newRecord.SchemaName)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -37,8 +39,8 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recordRepository := repositories.NewRecordRepository(r.Context())
-	record, err := usecases.NewRecordUseCase(recordRepository).CreateRecord(newRecord, schema.ID)
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	record, err := usecases.NewRecordUseCase(recordStorage).CreateRecord(newRecord, schema.ID)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -57,8 +59,8 @@ func GetAllRecords(w http.ResponseWriter, r *http.Request) {
 
 	limit, offset, page := pagination.Paginate(r)
 
-	recordRepository := repositories.NewRecordRepository(r.Context())
-	recordUseCase := usecases.NewRecordUseCase(recordRepository)
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	recordUseCase := usecases.NewRecordUseCase(recordStorage)
 
 	records, err := recordUseCase.GetAllRecords(limit, offset)
 	if err != nil {
@@ -87,8 +89,8 @@ func GetRecordByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recordRepository := repositories.NewRecordRepository(r.Context())
-	record, err := usecases.NewRecordUseCase(recordRepository).GetRecordByID(id)
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	record, err := usecases.NewRecordUseCase(recordStorage).GetRecordByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -123,8 +125,8 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recordRepository := repositories.NewRecordRepository(r.Context())
-	recordUseCase := usecases.NewRecordUseCase(recordRepository)
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	recordUseCase := usecases.NewRecordUseCase(recordStorage)
 
 	records, err := recordUseCase.GetRecordsByQuery(recordsToGet, limit, offset)
 	if err != nil {
@@ -153,15 +155,15 @@ func GetRecordsByGroupHash(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schema, err := usecases.NewSchemaUseCase(schemaRepository).GetSchemaByName(schemaName)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByName(schemaName)
 	if err != nil || schema.ID == 0 {
 		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 
-	recordRepository := repositories.NewRecordRepository(r.Context())
-	records, err := usecases.NewRecordUseCase(recordRepository).GetRecordsByGroupHash(schemaName, groupHash)
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	records, err := usecases.NewRecordUseCase(recordStorage).GetRecordsByGroupHash(schemaName, groupHash)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

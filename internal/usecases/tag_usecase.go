@@ -3,15 +3,15 @@ package usecases
 import (
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 )
 
 type TagUseCase struct {
-	tagRepository *repositories.TagRepository
+	tagStorage storage.TagStorage
 }
 
-func NewTagUseCase(tagRepository *repositories.TagRepository) *TagUseCase {
-	return &TagUseCase{tagRepository: tagRepository}
+func NewTagUseCase(tagStorage storage.TagStorage) *TagUseCase {
+	return &TagUseCase{tagStorage: tagStorage}
 }
 
 func (uc *TagUseCase) CreateTag(name string) (*entities.Tag, error) {
@@ -19,21 +19,21 @@ func (uc *TagUseCase) CreateTag(name string) (*entities.Tag, error) {
 		return nil, fmt.Errorf("failed creating tag: `name` attribute is required")
 	}
 
-	return uc.tagRepository.CreateTag(entities.Tag{Name: name})
+	return uc.tagStorage.CreateTag(entities.Tag{Name: name})
 }
 
 func (uc *TagUseCase) GetAllTags() ([]*entities.Tag, error) {
-	return uc.tagRepository.GetAllTags()
+	return uc.tagStorage.GetAllTags()
 }
 
 func (uc *TagUseCase) DestroyTagByID(id int) error {
-	return uc.tagRepository.DestroyTagByID(id)
+	return uc.tagStorage.DestroyTagByID(id)
 }
 
 func (uc *TagUseCase) GetTagByID(id int) (*entities.Tag, error) {
-	return uc.tagRepository.GetTagByID(id)
+	return uc.tagStorage.GetTagByID(id)
 }
 
 func (uc *TagUseCase) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
-	return uc.tagRepository.UpdateTagByID(id, tag)
+	return uc.tagStorage.UpdateTagByID(id, tag)
 }

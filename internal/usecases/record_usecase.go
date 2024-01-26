@@ -6,8 +6,8 @@ import (
 	"hash"
 	"hash/fnv"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
 	"moonlogs/internal/shared"
+	"moonlogs/internal/storage"
 	"slices"
 	"strings"
 	"sync"
@@ -21,11 +21,11 @@ var FNVHasherPool = sync.Pool{
 }
 
 type RecordUseCase struct {
-	recordRepository *repositories.RecordRepository
+	recordStorage storage.RecordStorage
 }
 
-func NewRecordUseCase(recordRepository *repositories.RecordRepository) *RecordUseCase {
-	return &RecordUseCase{recordRepository: recordRepository}
+func NewRecordUseCase(recordStorage storage.RecordStorage) *RecordUseCase {
+	return &RecordUseCase{recordStorage: recordStorage}
 }
 
 func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*entities.Record, error) {
@@ -57,7 +57,7 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 
 	groupHash := fmt.Sprint(hashSum)
 
-	return uc.recordRepository.CreateRecord(record, schemaID, groupHash)
+	return uc.recordStorage.CreateRecord(record, schemaID, groupHash)
 }
 
 func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
@@ -68,7 +68,7 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 
 	threshold := time.Now().Add(-time.Duration(schema.RetentionDays) * 24 * time.Hour).Unix()
 
-	staleRecords, err := uc.recordRepository.FindStale(schema.ID, threshold)
+	staleRecords, err := uc.recordStorage.FindStale(schema.ID, threshold)
 	if err != nil {
 		return fmt.Errorf("DeleteStaleRecords: failed to query stale log records: %w", err)
 	}
@@ -81,7 +81,7 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 	recordIDsBatches := shared.BatchSlice(staleRecordIDs, 500)
 
 	for _, recordIDs := range recordIDsBatches {
-		err = uc.recordRepository.DestroyByIDs(recordIDs)
+		err = uc.recordStorage.DestroyByIDs(recordIDs)
 
 		if err != nil {
 			return fmt.Errorf("DeleteStatelecords: failed to delete stale log records: %w", err)
@@ -92,25 +92,25 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 }
 
 func (uc *RecordUseCase) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
-	return uc.recordRepository.GetAllRecords(limit, offset)
+	return uc.recordStorage.GetAllRecords(limit, offset)
 }
 
 func (uc *RecordUseCase) GetAllRecordsCount() (int, error) {
-	return uc.recordRepository.GetAllRecordsCount()
+	return uc.recordStorage.GetAllRecordsCount()
 }
 
 func (uc *RecordUseCase) GetRecordByID(id int) (*entities.Record, error) {
-	return uc.recordRepository.GetRecordByID(id)
+	return uc.recordStorage.GetRecordByID(id)
 }
 
 func (uc *RecordUseCase) GetRecordsByQuery(record entities.Record, limit int, offset int) ([]*entities.Record, error) {
-	return uc.recordRepository.GetRecordsByQuery(record, limit, offset)
+	return uc.recordStorage.GetRecordsByQuery(record, limit, offset)
 }
 
 func (uc *RecordUseCase) GetRecordsCountByQuery(record entities.Record) (int, error) {
-	return uc.recordRepository.GetRecordsCountByQuery(record)
+	return uc.recordStorage.GetRecordsCountByQuery(record)
 }
 
 func (uc *RecordUseCase) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	return uc.recordRepository.GetRecordsByGroupHash(schemaName, groupHash)
+	return uc.recordStorage.GetRecordsByGroupHash(schemaName, groupHash)
 }

@@ -15,11 +15,16 @@ const (
 	WRITE_TIMEOUT = 1 * time.Second
 	DB_PATH       = "/opt/moonlogs/database.sqlite"
 	CONFIG_PATH   = "/opt/moonlogs/config.yaml"
+
+	DB_SQLITE_ADAPTER = "sqlite"
 )
+
+var config *Config
 
 type Config struct {
 	Port         int           `yaml:"port"`
 	DBPath       string        `yaml:"db_path"`
+	DBAdapter    string        `yaml:"db_adapter"`
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
 }
@@ -40,7 +45,13 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed reading config: %w", err)
 	}
 
+	config = &cfg
+
 	return &cfg, nil
+}
+
+func Get() *Config {
+	return config
 }
 
 func fetchConfig(flagArgs args) error {
@@ -57,9 +68,10 @@ func fetchConfig(flagArgs args) error {
 func writeDefaultConfig(filePath string, flagArgs args) error {
 	defaultConfig := fmt.Sprintf(`port: %v
 db_path: %s
+db_adapter: %s
 read_timeout: %s
 write_timeout: %s
-`, flagArgs.Port, flagArgs.DBPath, flagArgs.ReadTimeout, flagArgs.WriteTimeout)
+`, flagArgs.Port, flagArgs.DBPath, flagArgs.DBAdapter, flagArgs.ReadTimeout, flagArgs.WriteTimeout)
 
 	if err := os.WriteFile(filePath, []byte(defaultConfig), 0644); err != nil {
 		return fmt.Errorf("error writing default config file: %w", err)
@@ -74,6 +86,7 @@ type args struct {
 	Config       string
 	Port         int
 	DBPath       string
+	DBAdapter    string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
@@ -85,6 +98,7 @@ func processArgs() (args, error) {
 	f.StringVar(&a.Config, "config", CONFIG_PATH, "path to config")
 	f.IntVar(&a.Port, "port", PORT, "port to run moonlogs on")
 	f.StringVar(&a.DBPath, "db-path", DB_PATH, "db path to connect to")
+	f.StringVar(&a.DBAdapter, "db-adapter", DB_SQLITE_ADAPTER, "db adapter to connect to")
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 

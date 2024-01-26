@@ -2,15 +2,16 @@ package access
 
 import (
 	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/config"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"slices"
 )
 
 func IsSchemaForbiddenForUser(schemaName string, r *http.Request) bool {
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schema, err := usecases.NewSchemaUseCase(schemaRepository).GetSchemaByName(schemaName)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByName(schemaName)
 	if err != nil || schema.ID == 0 {
 		return true
 	}

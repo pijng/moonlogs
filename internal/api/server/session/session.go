@@ -3,8 +3,9 @@ package session
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 
@@ -67,8 +68,8 @@ func GetUserFromContext(r *http.Request) *entities.User {
 		return nil
 	}
 
-	userRepository := repositories.NewUserRepository(r.Context())
-	user, err := usecases.NewUserUseCase(userRepository).GetUserByID(userID)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	user, err := usecases.NewUserUseCase(userStorage).GetUserByID(userID)
 	if err != nil {
 		return nil
 	}

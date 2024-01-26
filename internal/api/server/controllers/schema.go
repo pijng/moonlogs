@@ -6,8 +6,9 @@ import (
 	"moonlogs/internal/api/server/access"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -24,8 +25,8 @@ func CreateSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schema, err := usecases.NewSchemaUseCase(schemaRepository).CreateSchema(newSchema)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).CreateSchema(newSchema)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -52,8 +53,8 @@ func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schema, err := usecases.NewSchemaUseCase(schemaRepository).UpdateSchemaByID(id, schemaToUpdate)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).UpdateSchemaByID(id, schemaToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -70,8 +71,8 @@ func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 func GetAllSchemas(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromContext(r)
 
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schemas, err := usecases.NewSchemaUseCase(schemaRepository).GetAllSchemas(user)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schemas, err := usecases.NewSchemaUseCase(schemaStorage).GetAllSchemas(user)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -90,8 +91,8 @@ func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	schema, err := usecases.NewSchemaUseCase(schemaRepository).GetSchemaByID(id)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -119,8 +120,8 @@ func DestroySchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaRepository := repositories.NewSchemaRepository(r.Context())
-	err = usecases.NewSchemaUseCase(schemaRepository).DestroySchemaByID(id)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	err = usecases.NewSchemaUseCase(schemaStorage).DestroySchemaByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

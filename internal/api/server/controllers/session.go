@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
 	"moonlogs/internal/shared"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strings"
@@ -39,8 +40,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepository := repositories.NewUserRepository(r.Context())
-	userUsecase := usecases.NewUserUseCase(userRepository)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	userUsecase := usecases.NewUserUseCase(userStorage)
 
 	user, err := userUsecase.GetUserByEmail(credentials.Email)
 	if err != nil || user.ID == 0 {
@@ -100,7 +101,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetSession(w http.ResponseWriter, r *http.Request) {
-	userUsecase := usecases.NewUserUseCase(repositories.NewUserRepository(r.Context()))
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	userUsecase := usecases.NewUserUseCase(userStorage)
 
 	shouldCreateInitialAdmin, err := userUsecase.ShouldCreateInitialAdmin()
 	if err != nil {

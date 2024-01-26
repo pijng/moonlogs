@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
+	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -22,8 +23,8 @@ func CreateApiToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-	apiToken, err := usecases.NewApiTokenUseCase(apiTokenRepository).CreateApiToken(newApiToken.Name)
+	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+	apiToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).CreateApiToken(newApiToken.Name)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -41,8 +42,8 @@ func DestroyApiTokenByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-	err = usecases.NewApiTokenUseCase(apiTokenRepository).DestroyApiTokenByID(id)
+	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+	err = usecases.NewApiTokenUseCase(apiTokenStorage).DestroyApiTokenByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
@@ -60,8 +61,8 @@ func GetApiTokenByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-	apiToken, err := usecases.NewApiTokenUseCase(apiTokenRepository).GetApiTokenByID(id)
+	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+	apiToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).GetApiTokenByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -92,8 +93,8 @@ func UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-	apiToken, err := usecases.NewApiTokenUseCase(apiTokenRepository).UpdateApiTokenByID(id, apiTokenToUpdate)
+	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+	apiToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).UpdateApiTokenByID(id, apiTokenToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -108,8 +109,8 @@ func UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllApiTokens(w http.ResponseWriter, r *http.Request) {
-	apiTokenRepository := repositories.NewApiTokenRepository(r.Context())
-	apiTokens, err := usecases.NewApiTokenUseCase(apiTokenRepository).GetAllApiTokens()
+	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
+	apiTokens, err := usecases.NewApiTokenUseCase(apiTokenStorage).GetAllApiTokens()
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

@@ -3,9 +3,10 @@ package tasks
 import (
 	"context"
 	"log"
+	"moonlogs/internal/config"
 	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
-	"moonlogs/internal/repositories"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"time"
 )
@@ -14,12 +15,12 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	schemaRepository := repositories.NewSchemaRepository(ctx)
-	recordRepository := repositories.NewRecordRepository(ctx)
-	recordUseCase := usecases.NewRecordUseCase(recordRepository)
+	schemaStorage := storage.NewSchemaStorage(ctx, config.Get().DBAdapter)
+	recordStorage := storage.NewRecordStorage(ctx, config.Get().DBAdapter)
+	recordUseCase := usecases.NewRecordUseCase(recordStorage)
 
 	for range ticker.C {
-		schemas, err := schemaRepository.GetAllSchemas()
+		schemas, err := schemaStorage.GetAllSchemas()
 		if err != nil {
 			log.Printf("failed getting log schemas: %v", err)
 			continue

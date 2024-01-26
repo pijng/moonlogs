@@ -1,4 +1,4 @@
-package repositories
+package sqlite_adapter
 
 import (
 	"context"
@@ -10,20 +10,20 @@ import (
 	"time"
 )
 
-type RecordRepository struct {
+type RecordStorage struct {
 	ctx     context.Context
 	records *qrx.TableQuerier[entities.Record]
 }
 
-func NewRecordRepository(ctx context.Context) *RecordRepository {
-	return &RecordRepository{
+func NewRecordStorage(ctx context.Context) *RecordStorage {
+	return &RecordStorage{
 		ctx:     ctx,
 		records: qrx.Scan(entities.Record{}).With(persistence.DB()).From("records"),
 	}
 }
 
-func (r *RecordRepository) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
-	lr, err := r.records.Create(r.ctx, map[string]interface{}{
+func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
+	lr, err := s.records.Create(s.ctx, map[string]interface{}{
 		"text":        record.Text,
 		"schema_name": record.SchemaName,
 		"schema_id":   schemaID,
@@ -41,8 +41,8 @@ func (r *RecordRepository) CreateRecord(record entities.Record, schemaID int, gr
 	return lr, nil
 }
 
-func (r *RecordRepository) GetRecordByID(id int) (*entities.Record, error) {
-	lr, err := r.records.Where("id = ?", id).First(r.ctx)
+func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
+	lr, err := s.records.Where("id = ?", id).First(s.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying record: %w", err)
 	}
@@ -50,14 +50,14 @@ func (r *RecordRepository) GetRecordByID(id int) (*entities.Record, error) {
 	return lr, nil
 }
 
-func (r *RecordRepository) GetRecordsByQuery(record entities.Record, limit int, offset int) ([]*entities.Record, error) {
-	lr, err := r.records.Where(
+func (s *RecordStorage) GetRecordsByQuery(record entities.Record, limit int, offset int) ([]*entities.Record, error) {
+	lr, err := s.records.Where(
 		fmt.Sprintf(
 			`(schema_id = ? OR schema_name = ?) AND text LIKE ? AND kind LIKE ? AND %s ORDER BY created_at DESC LIMIT ? OFFSET ?`,
 			qrx.MapLike(record.Query),
 		),
 		record.SchemaID, record.SchemaName, qrx.Contains(record.Text), qrx.Contains(record.Kind), limit, offset,
-	).All(r.ctx)
+	).All(s.ctx)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed querying record: %w", err)
@@ -66,8 +66,8 @@ func (r *RecordRepository) GetRecordsByQuery(record entities.Record, limit int, 
 	return lr, nil
 }
 
-func (r *RecordRepository) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
-	lr, err := r.records.All(r.ctx, "LIMIT ? OFFSET ?", limit, offset)
+func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
+	lr, err := s.records.All(s.ctx, "LIMIT ? OFFSET ?", limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying record: %w", err)
 	}
@@ -75,8 +75,8 @@ func (r *RecordRepository) GetAllRecords(limit int, offset int) ([]*entities.Rec
 	return lr, nil
 }
 
-func (r *RecordRepository) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	lr, err := r.records.Where("schema_name = ? AND group_hash = ? ORDER BY created_at ASC", schemaName, groupHash).All(r.ctx)
+func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
+	lr, err := s.records.Where("schema_name = ? AND group_hash = ? ORDER BY created_at ASC", schemaName, groupHash).All(s.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying record: %w", err)
 	}
@@ -84,9 +84,9 @@ func (r *RecordRepository) GetRecordsByGroupHash(schemaName string, groupHash st
 	return lr, nil
 }
 
-func (r *RecordRepository) GetRecordsCountByQuery(record entities.Record) (int, error) {
-	count, err := r.records.CountWhere(
-		r.ctx,
+func (s *RecordStorage) GetRecordsCountByQuery(record entities.Record) (int, error) {
+	count, err := s.records.CountWhere(
+		s.ctx,
 		fmt.Sprintf("schema_name = ? AND kind LIKE ? AND text LIKE ? AND %s", qrx.MapLike(record.Query)),
 		record.SchemaName, qrx.Contains(record.Kind), qrx.Contains(record.Text))
 	if err != nil {
@@ -96,8 +96,8 @@ func (r *RecordRepository) GetRecordsCountByQuery(record entities.Record) (int, 
 	return count, nil
 }
 
-func (r *RecordRepository) GetAllRecordsCount() (int, error) {
-	count, err := r.records.Count(r.ctx)
+func (s *RecordStorage) GetAllRecordsCount() (int, error) {
+	count, err := s.records.Count(s.ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed querying record: %w", err)
 	}
@@ -105,11 +105,11 @@ func (r *RecordRepository) GetAllRecordsCount() (int, error) {
 	return count, nil
 }
 
-func (r *RecordRepository) FindStale(schemaID int, threshold int64) ([]*entities.Record, error) {
-	return r.records.Where("schema_id = ? AND created_at <= ?", schemaID, threshold).All(r.ctx)
+func (s *RecordStorage) FindStale(schemaID int, threshold int64) ([]*entities.Record, error) {
+	return s.records.Where("schema_id = ? AND created_at <= ?", schemaID, threshold).All(s.ctx)
 }
 
-func (r *RecordRepository) DestroyByIDs(ids []int) error {
+func (s *RecordStorage) DestroyByIDs(ids []int) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -121,7 +121,7 @@ func (r *RecordRepository) DestroyByIDs(ids []int) error {
 		args[i] = id
 	}
 
-	_, err := r.records.DeleteAll(r.ctx, fmt.Sprintf("id IN (%s)", strings.Join(placeholders, ",")), args...)
+	_, err := s.records.DeleteAll(s.ctx, fmt.Sprintf("id IN (%s)", strings.Join(placeholders, ",")), args...)
 
 	return err
 }
