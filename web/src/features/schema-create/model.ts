@@ -95,7 +95,7 @@ sample({
 sample({
   source: schemaForm.fields.kinds.$value,
   clock: addKind,
-  fn: (kinds) => [...kinds, { title: "", name: "" }],
+  fn: (kinds) => [...(kinds || []), { title: "", name: "" }],
   target: schemaForm.fields.kinds.onChange,
 });
 
