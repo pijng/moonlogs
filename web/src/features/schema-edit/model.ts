@@ -30,7 +30,7 @@ export const schemaForm = createForm<Omit<SchemaToUpdate, "id">>({
       rules: [rules.required()],
     },
     retention_days: {
-      init: "",
+      init: 0,
       rules: [],
     },
     fields: {

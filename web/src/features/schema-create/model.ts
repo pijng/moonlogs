@@ -32,7 +32,7 @@ export const schemaForm = createForm<SchemaToCreate>({
       rules: [rules.required()],
     },
     retention_days: {
-      init: "",
+      init: 0,
       rules: [],
     },
     fields: {

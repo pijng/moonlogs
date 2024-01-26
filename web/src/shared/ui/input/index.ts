@@ -65,7 +65,11 @@ export const Input = <T extends DOMProperty>({
         source: localInputChanged,
         fn: (event) => {
           if (type === "number") {
-            return parseInt(event.target.value, 10);
+            try {
+              return parseInt(event.target.value, 10);
+            } catch {
+              return 0;
+            }
           }
           if (type === "checkbox") {
             return Boolean(event.target.checked);

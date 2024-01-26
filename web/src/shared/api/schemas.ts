@@ -17,7 +17,7 @@ export type SchemaToCreate = {
   title: string;
   description: string;
   name: string;
-  retention_days: number | string;
+  retention_days: number;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
   tag_id: number | null;
@@ -26,7 +26,7 @@ export type SchemaToCreate = {
 export type SchemaToUpdate = {
   id: number;
   title: string;
-  retention_days: number | string;
+  retention_days: number;
   description: string;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
