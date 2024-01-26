@@ -43,6 +43,7 @@ func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entit
 		"description":    schema.Description,
 		"title":          schema.Title,
 		"fields":         schema.Fields,
+		"kinds":          schema.Kinds,
 		"retention_days": schema.RetentionDays,
 		"tag_id":         schema.TagID,
 	})

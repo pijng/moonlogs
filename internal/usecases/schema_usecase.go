@@ -144,14 +144,8 @@ func mergeSchemaFields(existingSchema entities.Schema, newSchema entities.Schema
 	if newSchema.Description == "" {
 		newSchema.Description = existingSchema.Description
 	}
-	if len(newSchema.Kinds) == 0 {
-		newSchema.Kinds = existingSchema.Kinds
-	}
 	if len(newSchema.Fields) == 0 {
 		newSchema.Fields = existingSchema.Fields
-	}
-	if newSchema.RetentionDays == 0 {
-		newSchema.RetentionDays = existingSchema.RetentionDays
 	}
 	if newSchema.TagID == 0 {
 		newSchema.TagID = existingSchema.TagID
