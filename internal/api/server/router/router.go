@@ -24,7 +24,7 @@ func RegisterSchemaRouter(r *mux.Router) {
 	schemaRouter.HandleFunc("", roleMiddleware(controllers.CreateSchema, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
 	schemaRouter.HandleFunc("/{id}", controllers.GetSchemaByID).Methods(http.MethodGet)
 	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateSchemaByID, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPut)
-	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.DestroySchemaByID, entities.AdminRole)).Methods(http.MethodDelete)
+	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteSchemaByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
 func RegisterRecordRouter(r *mux.Router) {
@@ -46,7 +46,7 @@ func RegisterUserRouter(r *mux.Router) {
 	userRouter.HandleFunc("", roleMiddleware(controllers.CreateUser, entities.AdminRole)).Methods(http.MethodPost)
 	userRouter.HandleFunc("/{id}", controllers.GetUserByID).Methods(http.MethodGet)
 	userRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateUserByID, entities.AdminRole)).Methods(http.MethodPut)
-	userRouter.HandleFunc("/{id}", roleMiddleware(controllers.DestroyUserByID, entities.AdminRole)).Methods(http.MethodDelete)
+	userRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteUserByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
 func RegisterApiTokenRouter(r *mux.Router) {
@@ -57,7 +57,7 @@ func RegisterApiTokenRouter(r *mux.Router) {
 	apiTokenRouter.HandleFunc("", roleMiddleware(controllers.CreateApiToken, entities.AdminRole)).Methods(http.MethodPost)
 	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.GetApiTokenByID, entities.AdminRole)).Methods(http.MethodGet)
 	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateApiTokenByID, entities.AdminRole)).Methods(http.MethodPut)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.DestroyApiTokenByID, entities.AdminRole)).Methods(http.MethodDelete)
+	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteApiTokenByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
 func RegisterTagRouter(r *mux.Router) {
@@ -68,7 +68,7 @@ func RegisterTagRouter(r *mux.Router) {
 	apiTokenRouter.HandleFunc("", roleMiddleware(controllers.CreateTag, entities.AdminRole)).Methods(http.MethodPost)
 	apiTokenRouter.HandleFunc("/{id}", controllers.GetTagByID).Methods(http.MethodGet)
 	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateTagByID, entities.AdminRole)).Methods(http.MethodPut)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.DestroyTagByID, entities.AdminRole)).Methods(http.MethodDelete)
+	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
 func RegisterSessionRouter(r *mux.Router) {

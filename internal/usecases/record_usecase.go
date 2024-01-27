@@ -81,7 +81,7 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 	recordIDsBatches := shared.BatchSlice(staleRecordIDs, 500)
 
 	for _, recordIDs := range recordIDsBatches {
-		err = uc.recordStorage.DestroyByIDs(recordIDs)
+		err = uc.recordStorage.DeleteByIDs(recordIDs)
 
 		if err != nil {
 			return fmt.Errorf("DeleteStatelecords: failed to delete stale log records: %w", err)

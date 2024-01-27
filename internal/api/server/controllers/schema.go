@@ -111,7 +111,7 @@ func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, schema, response.Meta{})
 }
 
-func DestroySchemaByID(w http.ResponseWriter, r *http.Request) {
+func DeleteSchemaByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -121,7 +121,7 @@ func DestroySchemaByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewSchemaUseCase(schemaStorage).DestroySchemaByID(id)
+	err = usecases.NewSchemaUseCase(schemaStorage).DeleteSchemaByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

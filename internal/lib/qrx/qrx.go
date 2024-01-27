@@ -374,6 +374,17 @@ func Contains(value any) string {
 	return fmt.Sprintf("%%%s%%", value)
 }
 
+func In[T any](values []T) ([]string, []any) {
+	placeholders := make([]string, len(values))
+	args := make([]any, len(values))
+	for i, value := range values {
+		placeholders[i] = "?"
+		args[i] = value
+	}
+
+	return placeholders, args
+}
+
 // MapLike generates a WHERE clause for querying based on a map of conditions.
 func MapLike(query map[string]interface{}) string {
 	if len(query) == 0 {

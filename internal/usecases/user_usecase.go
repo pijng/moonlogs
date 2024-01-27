@@ -59,12 +59,16 @@ func (uc *UserUseCase) CreateUser(user entities.User) (*entities.User, error) {
 	return uc.userStorage.CreateUser(user)
 }
 
-func (uc *UserUseCase) DestroyUserByID(id int) error {
-	return uc.userStorage.DestroyUserByID(id)
+func (uc *UserUseCase) DeleteUserByID(id int) error {
+	return uc.userStorage.DeleteUserByID(id)
 }
 
 func (uc *UserUseCase) GetUserByID(id int) (*entities.User, error) {
 	return uc.userStorage.GetUserByID(id)
+}
+
+func (uc *UserUseCase) GetUsersByTagID(tagID int) ([]*entities.User, error) {
+	return uc.userStorage.GetUsersByTagID(tagID)
 }
 
 func (uc *UserUseCase) UpdateUserByID(id int, user entities.User) (*entities.User, error) {

@@ -26,8 +26,8 @@ func (uc *TagUseCase) GetAllTags() ([]*entities.Tag, error) {
 	return uc.tagStorage.GetAllTags()
 }
 
-func (uc *TagUseCase) DestroyTagByID(id int) error {
-	return uc.tagStorage.DestroyTagByID(id)
+func (uc *TagUseCase) DeleteTagByID(id int) error {
+	return uc.tagStorage.DeleteTagByID(id)
 }
 
 func (uc *TagUseCase) GetTagByID(id int) (*entities.Tag, error) {

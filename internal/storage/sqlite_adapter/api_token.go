@@ -75,7 +75,7 @@ func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {
 	return t, nil
 }
 
-func (s *ApiTokenStorage) DestroyApiTokenByID(id int) error {
+func (s *ApiTokenStorage) DeleteApiTokenByID(id int) error {
 	_, err := s.tokens.DeleteOne(s.ctx, "id = ?", id)
 
 	return err

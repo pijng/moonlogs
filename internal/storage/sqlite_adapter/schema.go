@@ -64,6 +64,15 @@ func (s *SchemaStorage) GetById(id int) (*entities.Schema, error) {
 	return sm, nil
 }
 
+func (s *SchemaStorage) GetByTagID(id int) ([]*entities.Schema, error) {
+	sm, err := s.schemas.Where("tag_id = ?", id).All(s.ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying schema: %w", err)
+	}
+
+	return sm, nil
+}
+
 func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
 	sm, err := s.schemas.Where("name = ?", name).First(s.ctx)
 	if err != nil {
@@ -91,7 +100,7 @@ func (s *SchemaStorage) GetAllSchemas() ([]*entities.Schema, error) {
 	return sm, nil
 }
 
-func (s *SchemaStorage) DestroySchemaByID(id int) error {
+func (s *SchemaStorage) DeleteSchemaByID(id int) error {
 	_, err := s.schemas.DeleteOne(s.ctx, "id = ?", id)
 
 	return err

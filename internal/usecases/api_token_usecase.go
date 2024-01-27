@@ -76,8 +76,8 @@ func (uc *ApiTokenUseCase) GetAllApiTokens() ([]*entities.ApiToken, error) {
 	return uc.apiTokenStorage.GetAllApiTokens()
 }
 
-func (uc *ApiTokenUseCase) DestroyApiTokenByID(id int) error {
-	return uc.apiTokenStorage.DestroyApiTokenByID(id)
+func (uc *ApiTokenUseCase) DeleteApiTokenByID(id int) error {
+	return uc.apiTokenStorage.DeleteApiTokenByID(id)
 }
 
 func (uc *ApiTokenUseCase) GetApiTokenByID(id int) (*entities.ApiToken, error) {

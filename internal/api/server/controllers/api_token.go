@@ -33,7 +33,7 @@ func CreateApiToken(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, apiToken, response.Meta{})
 }
 
-func DestroyApiTokenByID(w http.ResponseWriter, r *http.Request) {
+func DeleteApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -43,7 +43,7 @@ func DestroyApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewApiTokenUseCase(apiTokenStorage).DestroyApiTokenByID(id)
+	err = usecases.NewApiTokenUseCase(apiTokenStorage).DeleteApiTokenByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

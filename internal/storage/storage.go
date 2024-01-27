@@ -9,11 +9,12 @@ import (
 type UserStorage interface {
 	CreateInitialAdmin(admin entities.User) (*entities.User, error)
 	CreateUser(user entities.User) (*entities.User, error)
-	DestroyUserByID(id int) error
+	DeleteUserByID(id int) error
 	GetAllUsers() ([]*entities.User, error)
 	GetSystemUser() (*entities.User, error)
 	GetUserByEmail(email string) (*entities.User, error)
 	GetUserByID(id int) (*entities.User, error)
+	GetUsersByTagID(id int) ([]*entities.User, error)
 	GetUserByToken(token string) (*entities.User, error)
 	UpdateUserByID(id int, user entities.User) (*entities.User, error)
 	UpdateUserTokenByID(id int, token string) error
@@ -32,7 +33,7 @@ func NewUserStorage(ctx context.Context, storageType string) UserStorage {
 
 type TagStorage interface {
 	CreateTag(tag entities.Tag) (*entities.Tag, error)
-	DestroyTagByID(id int) error
+	DeleteTagByID(id int) error
 	GetAllTags() ([]*entities.Tag, error)
 	GetTagByID(id int) (*entities.Tag, error)
 	UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error)
@@ -51,9 +52,10 @@ func NewTagStorage(ctx context.Context, storageType string) TagStorage {
 
 type SchemaStorage interface {
 	CreateSchema(schema entities.Schema) (*entities.Schema, error)
-	DestroySchemaByID(id int) error
+	DeleteSchemaByID(id int) error
 	GetAllSchemas() ([]*entities.Schema, error)
 	GetById(id int) (*entities.Schema, error)
+	GetByTagID(id int) ([]*entities.Schema, error)
 	GetByName(name string) (*entities.Schema, error)
 	GetSchemasByTitleOrDescription(title string, description string) ([]*entities.Schema, error)
 	UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error)
@@ -72,7 +74,7 @@ func NewSchemaStorage(ctx context.Context, storageType string) SchemaStorage {
 
 type RecordStorage interface {
 	CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error)
-	DestroyByIDs(ids []int) error
+	DeleteByIDs(ids []int) error
 	FindStale(schemaID int, threshold int64) ([]*entities.Record, error)
 	GetAllRecords(limit int, offset int) ([]*entities.Record, error)
 	GetAllRecordsCount() (int, error)
@@ -95,7 +97,7 @@ func NewRecordStorage(ctx context.Context, storageType string) RecordStorage {
 
 type ApiTokenStorage interface {
 	CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error)
-	DestroyApiTokenByID(id int) error
+	DeleteApiTokenByID(id int) error
 	GetAllApiTokens() ([]*entities.ApiToken, error)
 	GetApiTokenByDigest(digest string) (*entities.ApiToken, error)
 	GetApiTokenByID(id int) (*entities.ApiToken, error)

@@ -109,17 +109,12 @@ func (s *RecordStorage) FindStale(schemaID int, threshold int64) ([]*entities.Re
 	return s.records.Where("schema_id = ? AND created_at <= ?", schemaID, threshold).All(s.ctx)
 }
 
-func (s *RecordStorage) DestroyByIDs(ids []int) error {
+func (s *RecordStorage) DeleteByIDs(ids []int) error {
 	if len(ids) == 0 {
 		return nil
 	}
 
-	placeholders := make([]string, len(ids))
-	args := make([]any, len(ids))
-	for i, id := range ids {
-		placeholders[i] = "?"
-		args[i] = id
-	}
+	placeholders, args := qrx.In(ids)
 
 	_, err := s.records.DeleteAll(s.ctx, fmt.Sprintf("id IN (%s)", strings.Join(placeholders, ",")), args...)
 

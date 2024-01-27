@@ -47,6 +47,15 @@ func (r *UserStorage) GetUserByID(id int) (*entities.User, error) {
 	return u, nil
 }
 
+func (r *UserStorage) GetUsersByTagID(tagID int) ([]*entities.User, error) {
+	u, err := r.users.Where("tag_ids LIKE ?", qrx.Contains(tagID)).All(r.ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying user: %w", err)
+	}
+
+	return u, nil
+}
+
 func (r *UserStorage) GetUserByEmail(email string) (*entities.User, error) {
 	u, err := r.users.Where("email = ?", email).First(r.ctx)
 	if err != nil {
@@ -65,7 +74,7 @@ func (r *UserStorage) GetUserByToken(token string) (*entities.User, error) {
 	return u, nil
 }
 
-func (r *UserStorage) DestroyUserByID(id int) error {
+func (r *UserStorage) DeleteUserByID(id int) error {
 	_, err := r.users.DeleteOne(r.ctx, "id=?", id)
 
 	return err

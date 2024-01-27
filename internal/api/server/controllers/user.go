@@ -41,7 +41,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
-func DestroyUserByID(w http.ResponseWriter, r *http.Request) {
+func DeleteUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -51,7 +51,7 @@ func DestroyUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewUserUseCase(userStorage).DestroyUserByID(id)
+	err = usecases.NewUserUseCase(userStorage).DeleteUserByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

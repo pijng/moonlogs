@@ -6,6 +6,7 @@ import (
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/mediators"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
@@ -33,7 +34,7 @@ func CreateTag(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, tag, response.Meta{})
 }
 
-func DestroyTagByID(w http.ResponseWriter, r *http.Request) {
+func DeleteTagByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -43,7 +44,15 @@ func DestroyTagByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewTagUseCase(tagStorage).DestroyTagByID(id)
+	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
+	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
+	tagUsecase := usecases.NewTagUseCase(tagStorage)
+	schemaUsecase := usecases.NewSchemaUseCase(schemaStorage)
+	userUsecase := usecases.NewUserUseCase(userStorage)
+
+	tagMediator := mediators.NewTagMediator(tagUsecase, schemaUsecase, userUsecase)
+
+	err = tagMediator.DestroyTagByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

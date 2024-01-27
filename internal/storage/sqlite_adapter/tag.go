@@ -41,7 +41,7 @@ func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 	return u, nil
 }
 
-func (r *TagStorage) DestroyTagByID(id int) error {
+func (r *TagStorage) DeleteTagByID(id int) error {
 	_, err := r.tags.DeleteOne(r.ctx, "id=?", id)
 
 	return err

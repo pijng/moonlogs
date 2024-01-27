@@ -118,6 +118,10 @@ func (uc *SchemaUseCase) GetSchemaByID(id int) (*entities.Schema, error) {
 	return uc.schemaStorage.GetById(id)
 }
 
+func (uc *SchemaUseCase) GetSchemaByTagID(tagID int) ([]*entities.Schema, error) {
+	return uc.schemaStorage.GetByTagID(tagID)
+}
+
 func (uc *SchemaUseCase) GetSchemaByName(name string) (*entities.Schema, error) {
 	return uc.schemaStorage.GetByName(name)
 }
@@ -126,8 +130,8 @@ func (uc *SchemaUseCase) GetSchemasByTitleOrDescription(title string, descriptio
 	return uc.schemaStorage.GetSchemasByTitleOrDescription(title, description)
 }
 
-func (uc *SchemaUseCase) DestroySchemaByID(id int) error {
-	return uc.schemaStorage.DestroySchemaByID(id)
+func (uc *SchemaUseCase) DeleteSchemaByID(id int) error {
+	return uc.schemaStorage.DeleteSchemaByID(id)
 }
 
 func normalizeName(name string) string {
