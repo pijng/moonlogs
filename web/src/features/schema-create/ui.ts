@@ -1,6 +1,6 @@
 import { Button, ErrorHint, Input, Label, PlusIcon, Select, TrashIcon } from "@/shared/ui";
 import { h, list, spec } from "forest";
-import { $creationError, events, schemaForm } from "./model";
+import { $creationError, createSchemaFx, events, schemaForm } from "./model";
 import { combine, createEvent, sample } from "effector";
 import { trigger } from "@/shared/lib";
 import { tagModel } from "@/entities/tag";
@@ -39,7 +39,7 @@ export const NewSchemaForm = () => {
       spec({ classList: ["mb-6"] });
 
       const $selectedTag = combine(tagModel.$tags, schemaForm.fields.tag_id.$value, (tags, id) => {
-        return tags.find((t) => t.id === id)?.name || "";
+        return tags.find((t) => t.id === id)?.name || null;
       });
 
       Select({
@@ -47,6 +47,7 @@ export const NewSchemaForm = () => {
         value: $selectedTag,
         options: tagModel.$tags.map((tags) => tags.map((t) => t.name)),
         optionSelected: events.tagSelected,
+        clear: [createSchemaFx.done],
       });
     });
 

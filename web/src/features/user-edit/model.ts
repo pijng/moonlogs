@@ -75,7 +75,7 @@ sample({
   target: $editError,
 });
 
-const deleteUserFx = createEffect((id: number) => {
+export const deleteUserFx = createEffect((id: number) => {
   deleteUser(id);
 });
 

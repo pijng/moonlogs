@@ -38,7 +38,7 @@ func (jm *JSONMap) Scan(value interface{}) error {
 
 func (jm JSONMap) Value() (driver.Value, error) {
 	if jm == nil {
-		return nil, nil
+		jm = make(JSONMap)
 	}
 
 	b, err := json.Marshal(jm)

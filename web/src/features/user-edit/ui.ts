@@ -1,6 +1,6 @@
 import { Button, ErrorHint, Input, Multiselect, Select } from "@/shared/ui";
 import { h, spec } from "forest";
-import { $editError, $tagsDropwdownIsOpened, deleteUserClicked, events, memberForm } from "./model";
+import { $editError, $tagsDropwdownIsOpened, deleteUserClicked, deleteUserFx, editUserFx, events, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
 import { tagModel } from "@/entities/tag";
@@ -31,6 +31,7 @@ export const EditMemberForm = () => {
         value: memberForm.fields.role.$value.map(String),
         options: createStore<UserRole[]>(["Member", "Admin"]),
         optionSelected: memberForm.fields.role.changed,
+        clear: [editUserFx.done, deleteUserFx.done],
       });
     });
 

@@ -167,7 +167,7 @@ sample({
   target: $editError,
 });
 
-const deleteSchemaFx = createEffect((id: number) => {
+export const deleteSchemaFx = createEffect((id: number) => {
   deleteSchema(id);
 });
 

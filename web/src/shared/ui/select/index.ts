@@ -1,20 +1,22 @@
-import { Event, Store, combine, createEvent, createStore, sample } from "effector";
-import { h, list, spec } from "forest";
+import { Event, Store, combine, createEffect, createEvent, sample } from "effector";
+import { DOMElement, h, list, node, spec } from "forest";
 
 export const Select = ({
   value,
   text,
   options,
-  selectedOption,
   optionSelected,
+  clear,
 }: {
   value: Store<any>;
   text: string;
   options: Store<any[]>;
-  selectedOption?: Store<any>;
   optionSelected: Event<any>;
+  clear?: Event<any>[];
 }) => {
-  const localSelectedOption = selectedOption || createStore<any>(null);
+  const $selected = combine([options, value], ([options, value]) => {
+    return options.find((o) => o === value || o.id === value) ?? null;
+  });
 
   h("div", () => {
     h("label", {
@@ -54,22 +56,34 @@ export const Select = ({
       });
 
       h("option", {
-        attr: { value: "" },
+        attr: { value: "", selected: true },
         text: "",
       });
 
       list(options, ({ store: option }) => {
-        const selected = combine([option, value, localSelectedOption], ([option, value, selectedOption]) => {
-          const optionName = option.name || option;
-          return value === optionName || selectedOption === option.id;
+        const localSelected = combine([$selected, option], ([selected, option]) => {
+          return selected === option;
         });
 
         h("option", {
           attr: {
             value: option.map((o) => o.name || o),
-            selected: selected,
+            selected: localSelected,
           },
           text: option.map((o) => o.title || o),
+        });
+      });
+
+      // I hate myself
+      node((ref: DOMElement) => {
+        const selectElement = ref as HTMLSelectElement;
+        const clearSelectionFx = createEffect(() => {
+          selectElement.selectedIndex = -1;
+        });
+
+        sample({
+          clock: clear || [createEvent()],
+          target: clearSelectionFx,
         });
       });
     });

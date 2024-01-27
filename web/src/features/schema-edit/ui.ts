@@ -1,6 +1,6 @@
 import { Button, ErrorHint, Input, Label, PlusIcon, Select, TrashIcon } from "@/shared/ui";
 import { h, list, spec } from "forest";
-import { $editError, deleteSchemaClicked, events, schemaForm } from "./model";
+import { $editError, deleteSchemaClicked, deleteSchemaFx, editSchemaFx, events, schemaForm } from "./model";
 import { trigger } from "@/shared/lib";
 import { combine, createEvent, sample } from "effector";
 import { tagModel } from "@/entities/tag";
@@ -37,6 +37,7 @@ export const EditSchemaForm = () => {
         value: $selectedTag,
         options: tagModel.$tags.map((tags) => tags.map((t) => t.name)),
         optionSelected: events.tagSelected,
+        clear: [editSchemaFx.done, deleteSchemaFx.done],
       });
     });
 

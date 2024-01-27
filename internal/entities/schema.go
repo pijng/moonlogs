@@ -46,7 +46,7 @@ func (fs *Fields) Scan(value interface{}) error {
 
 func (fs Fields) Value() (driver.Value, error) {
 	if fs == nil {
-		return nil, nil
+		fs = make([]Field, 0)
 	}
 
 	b, err := json.Marshal(fs)
@@ -70,7 +70,7 @@ func (fs *Kinds) Scan(value interface{}) error {
 
 func (fs Kinds) Value() (driver.Value, error) {
 	if fs == nil {
-		return nil, nil
+		fs = make([]Kind, 0)
 	}
 
 	b, err := json.Marshal(fs)
