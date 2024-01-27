@@ -6,13 +6,11 @@ export const Select = ({
   text,
   options,
   optionSelected,
-  clear,
 }: {
   value: Store<any>;
   text: string;
   options: Store<any[]>;
   optionSelected: Event<any>;
-  clear?: Event<any>[];
 }) => {
   const $selected = combine([options, value], ([options, value]) => {
     return options.find((o) => o === value || o.id === value) ?? null;
@@ -62,7 +60,7 @@ export const Select = ({
 
       list(options, ({ store: option }) => {
         const localSelected = combine([$selected, option], ([selected, option]) => {
-          return selected === option;
+          return selected === option || selected === option.id;
         });
 
         h("option", {
@@ -70,7 +68,7 @@ export const Select = ({
             value: option.map((o) => o.name || o),
             selected: localSelected,
           },
-          text: option.map((o) => o.title || o),
+          text: option.map((o) => o.title || o.name || o),
         });
       });
 
@@ -82,7 +80,8 @@ export const Select = ({
         });
 
         sample({
-          clock: clear || [createEvent()],
+          source: value,
+          filter: (value) => !Boolean(value),
           target: clearSelectionFx,
         });
       });

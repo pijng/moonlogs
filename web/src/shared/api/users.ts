@@ -1,6 +1,6 @@
 import { BaseResponse, del, get, post, put } from "./base";
 
-export type UserRole = "Member" | "Admin" | "System";
+export type UserRole = "Member" | "Admin";
 
 export type User = {
   id: number;
