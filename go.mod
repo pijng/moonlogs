@@ -1,6 +1,6 @@
 module moonlogs
 
-go 1.21
+go 1.20
 
 require (
 	github.com/glebarez/go-sqlite v1.22.0

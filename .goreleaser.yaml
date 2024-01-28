@@ -32,6 +32,7 @@ snapshot:
   name_template: "{{ incpatch .Version }}-next"
 nfpms:
   - id: packages # here we say that artifacts built with nfpm will be identified with `packages` string.
+    maintainer: 'Mark shalpack@gmail.com'
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 publishers:
   - name: fury.io
