@@ -1,15 +1,14 @@
 before:
   hooks:
     # You may remove this if you don't use go modules.
-    - go mod tidy
+    # - go mod tidy
     # you may remove this if you don't need go generate
-    - go generate ./...
+    # - go generate ./...
 builds:
   - env:
       - CGO_ENABLED=0
     goos:
       - linux
-      - windows
       - darwin
 
 archives:
