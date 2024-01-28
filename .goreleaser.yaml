@@ -29,18 +29,6 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
-nfpms:
-  - id: packages # here we say that artifacts built with nfpm will be identified with `packages` string.
-    maintainer: 'Mark shalpack@gmail.com'
-    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-publishers:
-  - name: fury.io
-    # by specifying `packages` id here goreleaser will only use this publisher
-    # with artifacts identified by this id
-    ids:
-      - packages
-    dir: "{{ dir .ArtifactPath }}"
-    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/pijng/
 changelog:
   sort: asc
   filters:
@@ -48,7 +36,21 @@ changelog:
       - '^docs:'
       - '^test:'
 
-# The lines beneath this are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+nfpms:
+  - id: nfpm-default
+    package_name: moonlogs
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    vendor: Mark Cholak
+    homepage: https://github.com/pijng/moonlogs/
+    maintainer: Mark Cholak <shalpack@gmail.com>
+    description: Business event-logging tool with a built-in user-friendly web interface for easy access to events.
+    license: Apache-2.0
+    formats:
+      - deb
+      - rpm
+publishers:
+  - name: fury.io
+    ids:
+      - nfpm-default
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -s -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/pijng/
