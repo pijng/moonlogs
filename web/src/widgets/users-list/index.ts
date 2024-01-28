@@ -1,7 +1,8 @@
 import { userModel } from "@/entities/user";
 import { memberEditRoute } from "@/routing/shared";
 import { UsersTable } from "@/shared/ui";
-import { createEvent, sample } from "effector";
+import { redirect } from "atomic-router";
+import { createEvent } from "effector";
 import { h, spec } from "forest";
 
 export const UsersList = () => {
@@ -11,10 +12,10 @@ export const UsersList = () => {
     });
 
     const editUserClicked = createEvent<number>();
-    sample({
-      source: editUserClicked,
-      fn: (id) => ({ id }),
-      target: memberEditRoute.open,
+    redirect({
+      clock: editUserClicked,
+      params: (id) => ({ id: id }),
+      route: memberEditRoute,
     });
 
     UsersTable(userModel.$users, editUserClicked);

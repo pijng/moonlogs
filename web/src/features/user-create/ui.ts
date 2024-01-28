@@ -1,6 +1,6 @@
 import { Button, ErrorHint, Input, Multiselect, Select } from "@/shared/ui";
 import { h, spec } from "forest";
-import { $creationError, $tagsDropwdownIsOpened, events, memberForm } from "./model";
+import { $creationError, events, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
 import { tagModel } from "@/entities/tag";
@@ -28,7 +28,7 @@ export const NewMemberForm = () => {
 
       Select({
         text: "Select a role",
-        value: memberForm.fields.role.$value.map(String),
+        value: memberForm.fields.role.$value,
         options: createStore<UserRole[]>(["Member", "Admin"]),
         optionSelected: memberForm.fields.role.changed,
       });
@@ -45,8 +45,6 @@ export const NewMemberForm = () => {
         text: "Select tags",
         options: tagModel.$tags,
         selectedOptions: memberForm.fields.tag_ids.$value,
-        event: events.tagSelectionClicked,
-        visible: $tagsDropwdownIsOpened,
         optionChecked: events.tagChecked,
         optionUnchecked: events.tagUnchecked,
       });

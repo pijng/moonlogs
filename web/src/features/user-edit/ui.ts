@@ -1,6 +1,6 @@
 import { Button, ErrorHint, Input, Multiselect, Select } from "@/shared/ui";
 import { h, spec } from "forest";
-import { $editError, $tagsDropwdownIsOpened, deleteUserClicked, events, memberForm } from "./model";
+import { $editError, deleteUserClicked, events, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
 import { tagModel } from "@/entities/tag";
@@ -45,8 +45,6 @@ export const EditMemberForm = () => {
         text: "Select tags",
         options: tagModel.$tags,
         selectedOptions: memberForm.fields.tag_ids.$value,
-        event: events.tagSelectionClicked,
-        visible: $tagsDropwdownIsOpened,
         optionChecked: events.tagChecked,
         optionUnchecked: events.tagUnchecked,
       });

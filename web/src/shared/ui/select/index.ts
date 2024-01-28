@@ -1,5 +1,6 @@
-import { Event, Store, combine, createEffect, createEvent, sample } from "effector";
-import { DOMElement, h, list, node, spec } from "forest";
+import { hashCode } from "@/shared/lib";
+import { Event, Store, combine, createEvent, createStore, sample } from "effector";
+import { h, list, node, spec } from "forest";
 
 export const Select = ({
   value,
@@ -12,26 +13,52 @@ export const Select = ({
   options: Store<any[]>;
   optionSelected: Event<any>;
 }) => {
+  const $optionsHash = options.map((o) => hashCode(o.join("")));
+
+  const dropdownTriggered = createEvent<MouseEvent>();
+  const $localVisible = createStore(false);
+  const outsideClicked = createEvent<any>();
+  sample({
+    source: $localVisible,
+    clock: dropdownTriggered,
+    fn: (v) => !v,
+    target: $localVisible,
+  });
+
+  sample({
+    clock: optionSelected,
+    fn: () => false,
+    target: $localVisible,
+  });
+
+  sample({
+    source: { visible: $localVisible, hash: $optionsHash },
+    clock: outsideClicked,
+    filter: ({ visible, hash }, event) => {
+      return hash !== event.target.id && visible;
+    },
+    fn: () => false,
+    target: $localVisible,
+  });
+
   const $selected = combine([options, value], ([options, value]) => {
-    return options.find((o) => o === value || o.id === value) ?? null;
+    return options.find((o) => o === value || o.id === value || o.name === value) ?? null;
   });
 
   h("div", () => {
+    spec({
+      classList: ["relative"],
+    });
+
     h("label", {
       classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
       text: text,
     });
 
-    h("select", () => {
-      const localOptionSelected = createEvent<any>();
-      sample({
-        source: localOptionSelected,
-        fn: (option) => option.target.value,
-        target: optionSelected,
-      });
-
+    h("input", () => {
       spec({
         classList: [
+          "cursor-default",
           "bg-gray-50",
           "border",
           "border-gray-300",
@@ -49,41 +76,91 @@ export const Select = ({
           "dark:text-white",
           "dark:focus:ring-blue-500",
           "dark:focus:border-blue-500",
+          "cursor-pointer",
         ],
-        handler: { change: localOptionSelected },
+        attr: {
+          readonly: true,
+          type: "select",
+          value: $selected.map((s) => s?.title || s?.name || s),
+          id: $optionsHash,
+        },
+        handler: { on: { click: dropdownTriggered } },
+      });
+    });
+
+    h("div", () => {
+      spec({
+        visible: $localVisible,
+        classList: [
+          "max-h-56",
+          "overflow-scroll",
+          "left-0",
+          "absolute",
+          "left-0",
+          "top-18",
+          "w-fit",
+          "border",
+          "border-gray-200",
+          "dark:bg-gray-800",
+          "dark:border-gray-700",
+          "z-50",
+          "bg-white",
+          "divide-y",
+          "divide-gray-100",
+          "rounded-lg",
+          "shadow",
+          "dark:bg-gray-700",
+          "dark:divide-gray-600",
+          "shadow-2xl",
+        ],
       });
 
-      h("option", {
-        attr: { value: "", selected: true },
-        text: "",
+      h("ul", () => {
+        spec({
+          classList: ["flex", "flex-col", "flex-wrap", "text-gray-700", "dark:text-gray-200"],
+        });
+
+        list(options, ({ store: option }) => {
+          h("li", () => {
+            const localOptionSelected = createEvent<any>();
+            sample({
+              source: option,
+              clock: localOptionSelected,
+              fn: (option) => option.name || option,
+              target: optionSelected,
+            });
+
+            spec({
+              classList: [
+                "hover:bg-gray-100",
+                "dark:hover:bg-gray-600",
+                "flex",
+                "border-gray-300",
+                "dark:border-gray-700",
+                "items-center",
+                "px-6",
+                "py-2.5",
+                "flex-auto",
+                "w-full",
+                "text-sm",
+                "font-medium",
+                "text-gray-900",
+                "dark:text-white",
+                "shrink-0",
+                "block",
+                "cursor-pointer",
+              ],
+              text: option.map((o) => o.title || o.name || o),
+              handler: { on: { click: localOptionSelected } },
+            });
+          });
+        });
       });
+    });
 
-      list(options, ({ store: option }) => {
-        const localSelected = combine([$selected, option], ([selected, option]) => {
-          return selected === option || selected === option.id;
-        });
-
-        h("option", {
-          attr: {
-            value: option.map((o) => o.name || o),
-            selected: localSelected,
-          },
-          text: option.map((o) => o.title || o.name || o),
-        });
-      });
-
-      // I hate myself
-      node((ref: DOMElement) => {
-        const selectElement = ref as HTMLSelectElement;
-        const clearSelectionFx = createEffect(() => {
-          selectElement.selectedIndex = -1;
-        });
-
-        sample({
-          source: value,
-          filter: (value) => !Boolean(value),
-          target: clearSelectionFx,
-        });
+    node(() => {
+      document.addEventListener("click", (event) => {
+        outsideClicked(event);
       });
     });
   });

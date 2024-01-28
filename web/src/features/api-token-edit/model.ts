@@ -2,6 +2,7 @@ import { apiTokenModel } from "@/entities/api-token";
 import { apiTokensRoute } from "@/routing/shared";
 import { ApiTokenToUpdate, deleteApiToken, editApiToken } from "@/shared/api";
 import { rules } from "@/shared/lib";
+import { redirect } from "atomic-router";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
@@ -76,7 +77,7 @@ sample({
   target: deleteApiTokenFx,
 });
 
-sample({
+redirect({
   clock: deleteApiTokenFx.done,
-  target: apiTokensRoute.open,
+  route: apiTokensRoute,
 });

@@ -1,5 +1,5 @@
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
-import { h, list, remap, spec } from "forest";
+import { DOMElement, h, list, node, remap, spec } from "forest";
 import { condition } from "patronum";
 
 type SelectItem = {
@@ -13,17 +13,32 @@ export const Multiselect = ({
   selectedOptions,
   optionChecked,
   optionUnchecked,
-  visible,
-  event,
 }: {
   text: string;
   options: Store<SelectItem[]>;
   selectedOptions?: Store<number[]>;
   optionChecked: Event<any>;
   optionUnchecked: Event<any>;
-  visible: Store<boolean>;
-  event: Event<any>;
 }) => {
+  const dropdownTriggered = createEvent<MouseEvent>();
+  const $localVisible = createStore(false);
+  const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
+
+  sample({
+    source: $localVisible,
+    clock: dropdownTriggered,
+    fn: (v) => !v,
+    target: $localVisible,
+  });
+
+  sample({
+    source: $localVisible,
+    clock: outsideClicked,
+    filter: (visible, { node, event }) => !node.contains(event.target) && visible,
+    fn: () => false,
+    target: $localVisible,
+  });
+
   const localSelectedOptions = selectedOptions || createStore<number[]>([]);
 
   h("div", () => {
@@ -66,19 +81,20 @@ export const Multiselect = ({
           "dark:text-white",
           "dark:focus:ring-blue-500",
           "dark:focus:border-blue-500",
+          "cursor-pointer",
         ],
         attr: {
           readonly: true,
           type: "select",
           value: selectedText,
         },
-        handler: { on: { click: event } },
+        handler: { on: { click: dropdownTriggered } },
       });
     });
 
     h("div", () => {
       spec({
-        visible: visible,
+        visible: $localVisible,
         classList: [
           "max-h-56",
           "overflow-scroll",
@@ -111,7 +127,17 @@ export const Multiselect = ({
         list(options, ({ store: option }) => {
           h("li", () => {
             spec({
-              classList: ["flex", "border-gray-300", "dark:border-gray-700", "items-center", "px-5", "flex-auto", "shrink-0"],
+              classList: [
+                "hover:bg-gray-100",
+                "dark:hover:bg-gray-600",
+                "flex",
+                "border-gray-300",
+                "dark:border-gray-700",
+                "items-center",
+                "px-5",
+                "flex-auto",
+                "shrink-0",
+              ],
             });
 
             const localOptionSelected = createEvent<any>();
@@ -187,6 +213,12 @@ export const Multiselect = ({
             });
           });
         });
+      });
+    });
+
+    node((node) => {
+      document.addEventListener("click", (event) => {
+        outsideClicked({ node, event });
       });
     });
   });

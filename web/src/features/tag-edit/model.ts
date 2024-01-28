@@ -2,6 +2,7 @@ import { tagModel } from "@/entities/tag";
 import { tagsRoute } from "@/routing/shared";
 import { TagToUpdate, deleteTag, editTag } from "@/shared/api";
 import { rules } from "@/shared/lib";
+import { redirect } from "atomic-router";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
@@ -72,7 +73,7 @@ sample({
   target: deleteTagFx,
 });
 
-sample({
+redirect({
   clock: deleteTagFx.done,
-  target: tagsRoute.open,
+  route: tagsRoute,
 });
