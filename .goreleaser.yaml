@@ -1,5 +1,3 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -32,6 +30,17 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+nfpms:
+  - id: packages # here we say that artifacts built with nfpm will be identified with `packages` string.
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+publishers:
+  - name: fury.io
+    # by specifying `packages` id here goreleaser will only use this publisher
+    # with artifacts identified by this id
+    ids:
+      - packages
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/pijng/
 changelog:
   sort: asc
   filters:
