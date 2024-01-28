@@ -13,6 +13,7 @@ FROM alpine:3.14 as base
 
 WORKDIR /app
 COPY . .
+COPY web/ /app/web/
 
 # Stage 3: Build the frontend
 FROM node:20 as frontend

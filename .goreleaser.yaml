@@ -48,9 +48,21 @@ nfpms:
     formats:
       - deb
       - rpm
+
 publishers:
   - name: fury.io
     ids:
       - nfpm-default
     dir: "{{ dir .ArtifactPath }}"
     cmd: curl -s -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/pijng/
+
+dockers:
+  - image_templates:
+      - "pijng/moonlogs:{{ .Tag }}"
+      - "pijng/moonlogs:v{{ .Major }}"
+      - "pijng/moonlogs:v{{ .Major }}.{{ .Minor }}"
+      - "pijng/moonlogs:latest"
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile
+    skip_push: false
