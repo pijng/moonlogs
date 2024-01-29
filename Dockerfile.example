@@ -1,27 +1,7 @@
-# Stage 1: Build the Go app
-FROM golang:alpine as backend
-
-WORKDIR /app
-COPY . .
-
-# Build the Go binary
-RUN go build -o /app/moonlogs
-
-# Stage 2: Build the frontend
-FROM node:20 as frontend
-
-WORKDIR /app/web
-COPY web/ ./
-
-# Install dependencies and build the frontend
-RUN npm run clean && npm install && npm run build
-
-# Final Stage
 FROM alpine:3.14
 
-WORKDIR /app
-COPY --from=backend /app/moonlogs ./
-COPY --from=frontend /app/web/build /app/web/build
+COPY moonlogs /moonlogs/moonlogs
 
+WORKDIR "/moonlogs"
 ENTRYPOINT ["./moonlogs"]
 CMD []
