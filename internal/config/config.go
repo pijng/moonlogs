@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -72,6 +73,13 @@ db_adapter: %s
 read_timeout: %s
 write_timeout: %s
 `, flagArgs.Port, flagArgs.DBPath, flagArgs.DBAdapter, flagArgs.ReadTimeout, flagArgs.WriteTimeout)
+
+	dir := filepath.Dir(filePath)
+
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("error creating config dir: %w", err)
+	}
 
 	if err := os.WriteFile(filePath, []byte(defaultConfig), 0644); err != nil {
 		return fmt.Errorf("error writing default config file: %w", err)

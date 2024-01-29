@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"moonlogs/internal/lib/qrx"
+	"os"
+	"path/filepath"
 
 	_ "github.com/glebarez/go-sqlite"
 )
@@ -68,6 +70,12 @@ CREATE INDEX IF NOT EXISTS idx_created_at ON records(group_hash);`
 func InitDB(dataSourceName string) error {
 	if dbInstance != nil {
 		return nil
+	}
+
+	dir := filepath.Dir(dataSourceName)
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("error creating db dir: %w", err)
 	}
 
 	db, err := sql.Open("sqlite", fmt.Sprintf("%s:%s?%s", "file", dataSourceName, "cache=shared&_fk=1"))

@@ -45,6 +45,9 @@ nfpms:
     maintainer: Mark Cholak <shalpack@gmail.com>
     description: Business event-logging tool with a built-in user-friendly web interface for easy access to events.
     license: Apache-2.0
+    scripts:
+      postinstall: "scripts/postinstall.sh"
+      postremove: "scripts/postremove.sh"
     formats:
       - deb
       - rpm
