@@ -7,6 +7,7 @@ Moonlogs is a business event-logging tool with a built-in user-friendly web inte
 
 - [Installation](#installation)
 - [Features](#features)
+- [SDKs](#SDK)
 - [Considerations](#considerations)
 
 
@@ -118,6 +119,17 @@ Specify varying retention times for each schema to align with specific business 
 #### Granular Access Control with Tags
 
 Create and assign tags to schemas and users, enabling granular access control. Define access privileges based on tags, ensuring that users can only access the schemas and logs relevant to their responsibilities. This feature provides an additional layer of security and customization in managing access to log data.
+
+## SDK
+
+Moonlogs provides Software Development Kits (SDKs) to simplify the integration process for various programming languages. Choose the SDK that matches your preferred language to quickly incorporate our functionality into your projects.
+
+#### Available SDKs
+
+- [Ruby SDK](https://github.com/pijng/moonlogs-ruby)
+
+Feel free to contribute to the SDKs or report issues on their respective GitHub repositories.
+
 
 ## Considerations
 
