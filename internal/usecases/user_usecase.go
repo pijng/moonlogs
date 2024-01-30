@@ -94,6 +94,10 @@ func (uc *UserUseCase) UpdateUserByID(id int, user entities.User) (*entities.Use
 		user.Tags = []int{}
 	}
 
+	if user.IsRevoked {
+		user.Token = ""
+	}
+
 	return uc.userStorage.UpdateUserByID(id, user)
 }
 

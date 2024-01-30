@@ -47,14 +47,15 @@ CREATE TABLE IF NOT EXISTS users (
 	password_digest TEXT,
 	role TEXT,
 	tag_ids TEXT,
-	token TEXT
+	token TEXT,
+	is_revoked INTEGER DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS api_tokens (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	token TEXT,
 	token_digest TEXT,
 	name TEXT,
-	is_revoked INTEGER
+	is_revoked INTEGER DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS tags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,

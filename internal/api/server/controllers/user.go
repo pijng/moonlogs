@@ -15,11 +15,12 @@ import (
 )
 
 type UserDTO struct {
-	Email string        `json:"email"`
-	Id    int           `json:"id"`
-	Name  string        `json:"name"`
-	Role  entities.Role `json:"role"`
-	Tags  entities.Tags `json:"tag_ids"`
+	Email     string        `json:"email"`
+	Id        int           `json:"id"`
+	Name      string        `json:"name"`
+	Role      entities.Role `json:"role"`
+	Tags      entities.Tags `json:"tag_ids"`
+	IsRevoked bool          `json:"is_revoked"`
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -170,10 +171,11 @@ func UsersToDTO(users []*entities.User) []UserDTO {
 
 func UserToDTO(user *entities.User) UserDTO {
 	return UserDTO{
-		Id:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  user.Role,
-		Tags:  user.Tags,
+		Id:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Role:      user.Role,
+		Tags:      user.Tags,
+		IsRevoked: bool(user.IsRevoked),
 	}
 }

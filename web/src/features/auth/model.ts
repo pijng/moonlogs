@@ -56,8 +56,8 @@ sample({
   source: getSessionFx.doneData,
   filter: (sessionResponse) => sessionResponse.success && !!sessionResponse.data.token,
   fn: (sessionResponse) => {
-    const { id, email, name, role, tag_ids, token } = sessionResponse.data;
-    return { id, email, name, role, tag_ids, token };
+    const { id, email, name, role, tag_ids, token, is_revoked } = sessionResponse.data;
+    return { id, email, name, role, tag_ids, token, is_revoked };
   },
   target: userModel.$currentAccount,
 });
@@ -66,8 +66,8 @@ sample({
   source: logInFx.doneData,
   filter: (loginResponse) => loginResponse.success,
   fn: (loginResponse) => {
-    const { id, email, name, role, tag_ids, token } = loginResponse.data;
-    return { id, email, name, role, tag_ids, token };
+    const { id, email, name, role, tag_ids, token, is_revoked } = loginResponse.data;
+    return { id, email, name, role, tag_ids, token, is_revoked };
   },
   target: userModel.$currentAccount,
 });

@@ -12,12 +12,25 @@ const getUserFx = createEffect((id: number) => {
 
 export const $users = createStore<User[]>([]).on(getUsersFx.doneData, (_, usersResponse) => usersResponse.data);
 
-export const $currentUser = createStore<User>({ id: 0, name: "", email: "", role: "Member", tag_ids: [], token: "" }).on(
-  getUserFx.doneData,
-  (_, userResponse) => userResponse.data,
-);
+export const $currentUser = createStore<User>({
+  id: 0,
+  name: "",
+  email: "",
+  role: "Member",
+  tag_ids: [],
+  token: "",
+  is_revoked: false,
+}).on(getUserFx.doneData, (_, userResponse) => userResponse.data);
 
-export const $currentAccount = createStore<User>({ id: 0, name: "", email: "", role: "Member", tag_ids: [], token: "" });
+export const $currentAccount = createStore<User>({
+  id: 0,
+  name: "",
+  email: "",
+  role: "Member",
+  tag_ids: [],
+  token: "",
+  is_revoked: false,
+});
 
 export const effects = {
   getUsersFx,

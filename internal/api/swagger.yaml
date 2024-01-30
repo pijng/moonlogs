@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.0.1
+  version: 0.1.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -1159,6 +1159,8 @@ components:
             type: number
         token:
           type: string
+        is_revoked:
+          type: boolean
       required:
         - id
         - name
@@ -1166,6 +1168,7 @@ components:
         - password
         - role
         - tags
+        - is_revoked
     Role:
       type: string
       enum:

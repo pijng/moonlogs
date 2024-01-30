@@ -20,6 +20,10 @@ export const memberForm = createForm<Omit<UserToUpdate, "id">>({
       init: "",
       rules: [rules.required(), rules.email()],
     },
+    is_revoked: {
+      init: false,
+      rules: [],
+    },
     role: {
       init: "Member",
       rules: [rules.required()],

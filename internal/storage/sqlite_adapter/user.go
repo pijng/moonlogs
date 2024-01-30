@@ -29,6 +29,7 @@ func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
 		"role":            user.Role,
 		"tag_ids":         user.Tags,
 		"token":           "",
+		"is_revoked":      user.IsRevoked,
 	})
 
 	if err != nil {
@@ -82,10 +83,12 @@ func (r *UserStorage) DeleteUserByID(id int) error {
 
 func (r *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
 	data := map[string]interface{}{
-		"email":   user.Email,
-		"name":    user.Name,
-		"role":    user.Role,
-		"tag_ids": user.Tags,
+		"email":      user.Email,
+		"name":       user.Name,
+		"role":       user.Role,
+		"tag_ids":    user.Tags,
+		"is_revoked": user.IsRevoked,
+		"token":      user.Token,
 	}
 
 	if len(user.PasswordDigest) > 0 {
@@ -134,5 +137,6 @@ func (r *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, e
 		"password_digest": admin.PasswordDigest,
 		"role":            "Admin",
 		"token":           "",
+		"is_revoked":      admin.IsRevoked,
 	})
 }

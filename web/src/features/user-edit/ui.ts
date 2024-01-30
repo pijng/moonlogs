@@ -23,6 +23,14 @@ export const EditMemberForm = () => {
       errorText: memberForm.fields.email.$errorText,
     });
 
+    Input({
+      type: "checkbox",
+      label: "Revoked",
+      value: memberForm.fields.is_revoked.$value,
+      inputChanged: memberForm.fields.is_revoked.changed,
+      errorText: memberForm.fields.is_revoked.$errorText,
+    });
+
     h("div", () => {
       spec({ classList: ["mb-6"] });
 

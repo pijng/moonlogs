@@ -10,6 +10,7 @@ export interface SessionResponse extends BaseResponse {
     email: string;
     role: UserRole;
     tag_ids: number[];
+    is_revoked: boolean;
   };
 }
 

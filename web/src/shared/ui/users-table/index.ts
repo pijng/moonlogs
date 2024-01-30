@@ -54,6 +54,12 @@ export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
+              text: "Revoked",
+            });
+
+            h("th", {
+              attr: { scope: "col" },
+              classList: ["px-6", "py-3"],
               text: "Actions",
             });
           });
@@ -63,15 +69,16 @@ export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => 
           list(users, ({ store: user }) => {
             h("tr", () => {
               spec({
-                classList: [
-                  "border-t",
-                  "w-full",
-                  "dark:border-gray-700",
-                  "hover:bg-gray-50",
-                  "dark:hover:bg-gray-600",
-                  "text-gray-900",
-                  "dark:text-gray-200",
-                ],
+                classList: {
+                  "border-t": true,
+                  "w-full": true,
+                  "dark:border-gray-700": true,
+                  "hover:bg-gray-50": true,
+                  "dark:hover:bg-gray-600": true,
+                  "text-gray-900": true,
+                  "dark:text-gray-200": true,
+                  "opacity-50": user.map((u) => u.is_revoked),
+                },
               });
 
               h("td", () => {
@@ -98,6 +105,15 @@ export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => 
                 });
                 h("div", {
                   text: remap(user, "role"),
+                });
+              });
+
+              h("td", () => {
+                spec({
+                  classList: ["px-6", "py-4"],
+                });
+                h("div", {
+                  text: remap(user, "is_revoked"),
                 });
               });
 

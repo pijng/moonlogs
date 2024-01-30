@@ -9,6 +9,7 @@ export type User = {
   role: UserRole;
   tag_ids: number[];
   token: string;
+  is_revoked: boolean;
 };
 
 export type UserToCreate = {
@@ -24,6 +25,7 @@ export type UserToUpdate = {
   id: number;
   name: string;
   email: string;
+  is_revoked: boolean;
   role: UserRole;
   tag_ids: number[];
   password: string;
