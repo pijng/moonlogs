@@ -7,7 +7,7 @@ services:
     ports:
       - "4200:4200"
     volumes:
-      - moonlogs-data:/opt/moonlogs
+      - moonlogs-data:/etc/moonlogs
     command: --port=4200
 volumes:
   moonlogs-data:

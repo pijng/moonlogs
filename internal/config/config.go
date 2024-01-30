@@ -14,8 +14,8 @@ const (
 	PORT          = 4200
 	READ_TIMEOUT  = 5 * time.Second
 	WRITE_TIMEOUT = 1 * time.Second
-	DB_PATH       = "/opt/moonlogs/database.sqlite"
-	CONFIG_PATH   = "/opt/moonlogs/config.yaml"
+	DB_PATH       = "/etc/moonlogs/database.sqlite"
+	CONFIG_PATH   = "/etc/moonlogs/config.yaml"
 
 	DB_SQLITE_ADAPTER = "sqlite"
 )

@@ -33,7 +33,7 @@ services:
     ports:
       - "4200:4200"
     volumes:
-      - moonlogs-data:/opt/moonlogs
+      - moonlogs-data:/etc/moonlogs
     command: --port=4200
 volumes:
   moonlogs-data:
@@ -74,7 +74,7 @@ If you prefer to use your own bind mount for data storage, you can modify the `v
 
         ```yaml
         volumes:
-          - <your-desired-dir-on-host>:/opt/moonlogs
+          - <your-desired-dir-on-host>:/etc/moonlogs
         ```
 
     * The resulting file may look like the following:
@@ -89,7 +89,7 @@ If you prefer to use your own bind mount for data storage, you can modify the `v
             ports:
               - "4200:4200"
             volumes:
-              - /etc/moonlogs:/opt/moonlogs
+              - /etc/moonlogs:/etc/moonlogs
             command:
               --port=4200
         ```
