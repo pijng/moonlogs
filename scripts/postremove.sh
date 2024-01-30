@@ -3,20 +3,18 @@
 SERVICE_FILE="/etc/systemd/system/moonlogs.service"
 
 remove() {
-    printf "\033[32m Post Remove of a normal remove\033[0m\n"
-    echo "Remove" > /tmp/postremove-proof
+    printf "\033[32m removing moonlogs.service\033[0m\n"
 
     rm -f "${SERVICE_FILE}"
 }
 
 purge() {
-    printf "\033[32m Post Remove purge, deb only\033[0m\n"
-    echo "Purge" > /tmp/postremove-proof
+    printf "\033[32m purging moonlogs.service\033[0m\n"
+
+    rm -f "${SERVICE_FILE}"
 }
 
 upgrade() {
-    printf "\033[32m Post Remove of an upgrade\033[0m\n"
-    echo "Upgrade" > /tmp/postremove-proof
 }
 
 echo "$@"

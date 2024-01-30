@@ -5,10 +5,7 @@ SERVICE_NAME="moonlogs"
 APP_BINARY="/usr/bin/moonlogs"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 INSTALL_USER="${SUDO_USER:-$(whoami)}"
-
-DB_PATH="/etc/moonlogs/database.sqlite"
-CONFIG_FILE="/etc/moonlogs/config.yaml"
-
+INSTALL_USER_GROUP=$(id -gn "${SUDO_USER:-$(whoami)}")
 
 # Check if systemd is available
 if command -v systemctl >/dev/null 2>&1; then
@@ -19,10 +16,10 @@ Description=moonlogs
 After=network.target
 
 [Service]
-ExecStart=${APP_BINARY} --db-path=${DB_PATH} --config=${CONFIG_FILE}
+ExecStart=${APP_BINARY}
 Restart=always
 User=${INSTALL_USER}
-Group=nogroup
+Group=${INSTALL_USER_GROUP}
 
 [Install]
 WantedBy=multi-user.target
