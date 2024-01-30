@@ -68,6 +68,8 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
             "p-2.5",
             "pl-10",
             "text-sm",
+            "focus:outline",
+            "outline-2",
             "text-gray-900",
             "border",
             "border-gray-300",
@@ -81,6 +83,8 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
             "dark:text-white",
             "dark:focus:ring-blue-500",
             "dark:focus:border-blue-500",
+            "focus:outline",
+            "outline-2",
           ],
         });
       });

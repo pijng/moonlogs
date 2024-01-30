@@ -60,6 +60,8 @@ export const Select = ({
         classList: [
           "cursor-default",
           "bg-gray-50",
+          "focus:outline",
+          "outline-2",
           "border",
           "border-gray-300",
           "text-gray-900",

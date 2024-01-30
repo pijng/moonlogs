@@ -90,6 +90,8 @@ export const Input = <T extends DOMProperty>({
           "rounded-lg": true,
           "focus:ring-blue-500": true,
           "focus:border-blue-500": true,
+          "focus:outline": type !== "checkbox",
+          "outline-2": type !== "checkbox",
           block: true,
           "w-full": type !== "checkbox",
           "w-4": type === "checkbox",
