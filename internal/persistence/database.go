@@ -21,19 +21,19 @@ var schema = `
 CREATE TABLE IF NOT EXISTS records (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	text TEXT,
-	created_at INTEGER,
-	schema_name TEXT,
-	schema_id INTEGER,
+	created_at INTEGER NOT NULL,
+	schema_name TEXT NOT NULL,
+	schema_id INTEGER NOT NULL,
 	query JSON,
 	kind string,
-	group_hash TEXT,
-	level TEXT
+	group_hash TEXT NOT NULL,
+	level TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS schemas (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	title TEXT,
+	title TEXT NOT NULL,
 	description TEXT,
-	name TEXT,
+	name TEXT NOT NULL,
 	fields JSON,
 	kinds JSON,
 	tag_id INTEGER,
@@ -41,11 +41,11 @@ CREATE TABLE IF NOT EXISTS schemas (
 );
 CREATE TABLE IF NOT EXISTS users (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	name TEXT,
-	email TEXT,
+	name TEXT NOT NULL,
+	email TEXT NOT NULL,
 	password TEXT,
-	password_digest TEXT,
-	role TEXT,
+	password_digest TEXT NOT NULL,
+	role TEXT NOT NULL,
 	tag_ids TEXT,
 	token TEXT,
 	is_revoked INTEGER DEFAULT 0
@@ -53,13 +53,13 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS api_tokens (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	token TEXT,
-	token_digest TEXT,
-	name TEXT,
+	token_digest TEXT NOT NULL,
+	name TEXT NOT NULL,
 	is_revoked INTEGER DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS tags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	name TEXT
+	name TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_schema_id ON records(schema_id);
