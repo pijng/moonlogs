@@ -1,17 +1,20 @@
 import { hashCode } from "@/shared/lib";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
 import { h, list, node, spec } from "forest";
+import { DownIcon } from "../icons";
 
 export const Select = ({
   value,
   text,
   options,
   optionSelected,
+  withBlank,
 }: {
   value: Store<any>;
   text: string;
   options: Store<any[]>;
   optionSelected: Event<any>;
+  withBlank?: Store<boolean>;
 }) => {
   const $optionsHash = options.map((o) => hashCode(o.join("")));
 
@@ -42,7 +45,7 @@ export const Select = ({
   });
 
   const $selected = combine([options, value], ([options, value]) => {
-    return options.find((o) => o === value || o.id === value || o.name === value) ?? null;
+    return options.find((o) => o === value || o.id === value || o.name === value) || "";
   });
 
   h("div", () => {
@@ -55,38 +58,48 @@ export const Select = ({
       text: text,
     });
 
-    h("input", () => {
-      spec({
-        classList: [
-          "cursor-default",
-          "bg-gray-50",
-          "focus:outline",
-          "outline-2",
-          "border",
-          "border-gray-300",
-          "text-gray-900",
-          "text-sm",
-          "rounded-lg",
-          "focus:ring-blue-500",
-          "focus:border-blue-500",
-          "block",
-          "w-full",
-          "p-2.5",
-          "dark:bg-gray-700",
-          "dark:border-gray-600",
-          "dark:placeholder-gray-400",
-          "dark:text-white",
-          "dark:focus:ring-blue-500",
-          "dark:focus:border-blue-500",
-          "cursor-pointer",
-        ],
-        attr: {
-          readonly: true,
-          type: "select",
-          value: $selected.map((s) => s?.title || s?.name || s),
-          id: $optionsHash,
-        },
-        handler: { on: { click: dropdownTriggered } },
+    h("div", () => {
+      spec({ classList: ["relative"] });
+
+      h("input", () => {
+        spec({
+          classList: [
+            "cursor-default",
+            "bg-gray-50",
+            "focus:outline",
+            "outline-1",
+            "border",
+            "border-gray-300",
+            "text-gray-900",
+            "text-sm",
+            "rounded-lg",
+            "focus:ring-blue-500",
+            "focus:border-blue-500",
+            "block",
+            "w-full",
+            "p-2.5",
+            "dark:bg-gray-700",
+            "dark:border-gray-600",
+            "dark:placeholder-gray-400",
+            "dark:text-white",
+            "dark:focus:ring-blue-500",
+            "dark:focus:border-blue-500",
+            "cursor-pointer",
+          ],
+          attr: {
+            readonly: true,
+            type: "select",
+            value: $selected.map((s) => s?.title || s?.name || s),
+            id: $optionsHash,
+          },
+          handler: { on: { click: dropdownTriggered } },
+        });
+      });
+
+      h("div", () => {
+        spec({ classList: ["absolute", "top-4", "right-2"] });
+
+        DownIcon();
       });
     });
 
@@ -120,6 +133,31 @@ export const Select = ({
       h("ul", () => {
         spec({
           classList: ["flex", "flex-col", "flex-wrap", "text-gray-700", "dark:text-gray-200"],
+        });
+
+        h("li", {
+          classList: [
+            "hover:bg-gray-100",
+            "dark:hover:bg-gray-600",
+            "flex",
+            "border-gray-300",
+            "dark:border-gray-700",
+            "items-center",
+            "px-6",
+            "py-2.5",
+            "flex-auto",
+            "w-full",
+            "text-sm",
+            "font-medium",
+            "text-gray-900",
+            "dark:text-white",
+            "shrink-0",
+            "block",
+            "cursor-pointer",
+          ],
+          text: "—",
+          visible: withBlank,
+          handler: { on: { click: optionSelected.prepend(() => null) } },
         });
 
         list(options, ({ store: option }) => {

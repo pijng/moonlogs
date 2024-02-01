@@ -6,3 +6,4 @@ export { ApiTokensList } from "./api-tokens-list";
 export { AuthForm } from "./auth-form";
 export { RegisterAdminForm } from "./register-admin-form";
 export { HeaderWithCreation } from "./header-with-creation";
+export { UserProfile } from "./user-profile";

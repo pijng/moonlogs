@@ -1,6 +1,8 @@
 import { User, getUsers } from "@/shared/api";
 import { getUser } from "@/shared/api/users";
-import { createEffect, createStore } from "effector";
+import { createEffect, createEvent, createStore, sample } from "effector";
+
+const THEME_KEY = "theme";
 
 const getUsersFx = createEffect(() => {
   return getUsers();
@@ -32,9 +34,32 @@ export const $currentAccount = createStore<User>({
   is_revoked: false,
 });
 
+const loadThemeFromStorageFx = createEffect(() => {
+  return localStorage.getItem(THEME_KEY);
+});
+
+const setThemeToStorageFx = createEffect((theme: string) => {
+  return localStorage.setItem(THEME_KEY, theme);
+});
+
+export const $currentTheme = createStore<string | null>("light");
+export const themeChanged = createEvent<string>();
+
+sample({
+  source: themeChanged,
+  fn: (theme) => theme.toLowerCase(),
+  target: [setThemeToStorageFx, $currentTheme],
+});
+
+sample({
+  source: loadThemeFromStorageFx.doneData,
+  target: $currentTheme,
+});
+
 export const effects = {
   getUsersFx,
   getUserFx,
+  loadThemeFromStorageFx,
 };
 
 export const events = {};

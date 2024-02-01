@@ -113,7 +113,7 @@ export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => 
                   classList: ["px-6", "py-4"],
                 });
                 h("div", {
-                  text: remap(user, "is_revoked"),
+                  text: user.map((u) => (u.is_revoked ? "Revoked" : "Active")),
                 });
               });
 

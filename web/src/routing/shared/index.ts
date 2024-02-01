@@ -30,6 +30,7 @@ export const registerAdminRoute = createRoute();
 export const forbiddenRoute = createRoute();
 export const notFoundRoute = createRoute();
 export const homeRoute = createRoute();
+export const profileRoute = createRoute();
 export const logsRoute = createRoute<{ schemaName: string | Store<string> }>();
 export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
 export const membersRoute = createRoute();
@@ -49,6 +50,7 @@ export const ROUTES = [
   { path: "/register", route: registerAdminRoute },
   { path: "/forbidden", route: forbiddenRoute },
   { path: "/not_found", route: notFoundRoute },
+  { path: "/profile", route: profileRoute },
   { path: "/", route: homeRoute },
   { path: "/schemas/create", route: schemaCreateRoute },
   { path: "/schemas/:id/edit", route: schemaEditRoute },
@@ -94,6 +96,11 @@ linkRouter({
 sample({
   clock: appMounted,
   target: obtainSession,
+});
+
+sample({
+  clock: appMounted,
+  target: userModel.effects.loadThemeFromStorageFx,
 });
 
 export const chainAuthorized = (route: RouteInstance<any>) => {

@@ -98,7 +98,7 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
                   classList: ["px-6", "py-4"],
                 });
                 h("div", {
-                  text: remap(apiToken, "is_revoked"),
+                  text: apiToken.map((token) => (token.is_revoked ? "Revoked" : "Active")),
                 });
               });
 

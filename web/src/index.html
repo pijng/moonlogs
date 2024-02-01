@@ -7,14 +7,12 @@
   <title>Moonlogs</title>
   <script>
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark')
+      document.body?.classList?.add('dark')
     } else {
-      document.documentElement.classList.remove('dark')
+      document.body?.classList?.remove('dark')
     }
   </script>
 </head>
-<body class="w-full min-h-screen bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-300">
-</body>
 
 <script type="module" src="index.ts"></script>
 

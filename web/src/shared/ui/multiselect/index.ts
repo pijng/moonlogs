@@ -71,7 +71,7 @@ export const Multiselect = ({
           "text-sm",
           "rounded-lg",
           "focus:outline",
-          "outline-2",
+          "outline-1",
           "focus:ring-blue-500",
           "focus:border-blue-500",
           "block",

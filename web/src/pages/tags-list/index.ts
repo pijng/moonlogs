@@ -14,9 +14,7 @@ export const TagsListPage = () => {
     HeaderWithCreation("Tags", tagCreateRoute);
 
     h("div", () => {
-      spec({
-        classList: ["pt-3"],
-      });
+      spec({ classList: ["pt-3", "max-w-3xl"] });
 
       TagsList();
     });

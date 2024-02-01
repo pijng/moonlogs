@@ -19,6 +19,7 @@ import { TagCreatePage } from "./tag-create";
 import { TagEditPage } from "./tag-edit";
 import { ForbiddenPage } from "./forbidden";
 import { NotFoundPage } from "./not-found";
+import { ProfilePage } from "./profile";
 
 export function Pages() {
   const $layoutVisible = combine(
@@ -34,6 +35,7 @@ export function Pages() {
       RegisterAdminPage();
       ForbiddenPage();
       NotFoundPage();
+      ProfilePage();
       HomePage();
       LogsListPage();
       ShowLogPage();

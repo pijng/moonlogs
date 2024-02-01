@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./src/**/*.{html,ts}"],
   theme: {
-    extend: {},
+    extend: {
+      maxWidth: {
+        5: "5rem",
+      },
+    },
   },
   darkMode: "class",
 };
