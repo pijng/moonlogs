@@ -41,7 +41,7 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
 
             h("th", {
               attr: { scope: "col" },
-              classList: ["px-6", "py-3"],
+              classList: ["px-6", "py-3", "max-w-28", "w-28"],
               text: "Actions",
             });
           });

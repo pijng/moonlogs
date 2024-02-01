@@ -29,6 +29,7 @@ type Session struct {
 	Role                     entities.Role `json:"role"`
 	ShouldCreateInitialAdmin bool          `json:"should_create_initial_admin"`
 	IsRevoked                bool          `json:"is_revoked"`
+	Tags                     entities.Tags `json:"tag_ids"`
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +98,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Email:     user.Email,
 		Role:      user.Role,
 		IsRevoked: bool(user.IsRevoked),
+		Tags:      user.Tags,
 	}
 
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})
@@ -166,6 +168,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		Email:     user.Email,
 		Role:      user.Role,
 		IsRevoked: bool(user.IsRevoked),
+		Tags:      user.Tags,
 	}
 
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})

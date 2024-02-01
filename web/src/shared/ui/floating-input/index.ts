@@ -31,7 +31,7 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
         "focus:border-blue-600",
         "placeholder:opacity-0",
         "focus:outline",
-        "outline-2",
+        "outline-1",
         "peer",
       ],
     });

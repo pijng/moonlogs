@@ -1,4 +1,4 @@
-import { Link, apiTokensRoute, homeRoute, membersRoute, tagsRoute } from "@/routing/shared";
+import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/routing/shared";
 import { RouteInstance, redirect } from "atomic-router";
 import { createEvent, createStore, restore, sample } from "effector";
 import { h, spec } from "forest";
@@ -62,7 +62,7 @@ export const SidebarButton = () => {
         "focus:ring-2",
         "focus:ring-gray-200",
         "dark:text-gray-400",
-        "dark:hover:bg-gray-700",
+        "dark:hover:bg-gray-200",
         "dark:focus:ring-gray-600",
       ],
     });
@@ -147,6 +147,8 @@ export const Sidebar = () => {
           classList: ["space-y-2", "font-medium"],
         });
 
+        SidebarItem("Profile", profileRoute);
+
         SidebarItem("Log groups", homeRoute);
 
         PermissionGate("Admin", () => {
@@ -169,17 +171,19 @@ export const SidebarItem = (text: string, route: RouteInstance<Record<string, an
   h("li", () => {
     Link(route, {
       text: text,
-      classList: [
-        "flex",
-        "items-center",
-        "p-2",
-        "text-gray-900",
-        "rounded-lg",
-        "dark:text-white",
-        "hover:bg-gray-100",
-        "dark:hover:bg-gray-700",
-        "group",
-      ],
+      classList: {
+        flex: true,
+        "items-center": true,
+        "p-2": true,
+        "text-gray-900": true,
+        "rounded-lg": true,
+        "dark:text-white": true,
+        "hover:bg-gray-200": true,
+        "bg-gray-200": route.$isOpened,
+        "dark:bg-gray-700": route.$isOpened,
+        "dark:hover:bg-gray-700": true,
+        group: true,
+      },
     });
   });
 };
