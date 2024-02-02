@@ -1,3 +1,5 @@
+[![goreleaser](https://github.com/pijng/moonlogs/actions/workflows/release.yml/badge.svg)](https://github.com/pijng/moonlogs/actions/workflows/release.yml)
+
 
 # 🌘 moonlogs
 
