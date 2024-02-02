@@ -1,7 +1,7 @@
 
 # 🌘 moonlogs
 
-Moonlogs is a business event-logging tool with a built-in user-friendly web interface for easy access to events.
+Moonlogs is a business-event logging tool with a built-in user-friendly web interface for easy access to events.
 
 ## Table of Contents
 
@@ -137,7 +137,7 @@ Moonlogs is a specialized logging solution designed with a primary focus on capt
 
 ### When not to use moonlogs
 
-While moonlogs is powerful for business event-logging, there are specific scenarios where it might not be the best fit:
+While moonlogs is powerful for business-event logging, there are specific scenarios where it might not be the best fit:
 
 **1. Auditing Logging**
 
