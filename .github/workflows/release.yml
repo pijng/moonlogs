@@ -68,6 +68,7 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURYPUSHTOKEN }}
 
   publish-docker:
+    needs: goreleaser
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
