@@ -51,7 +51,7 @@ import (
 
 const (
 	LOWEST_TIME = math.MinInt
-	MAX_TIME    = math.MaxInt64
+	MAX_TIME    = math.MaxInt
 )
 
 // Executor is a struct for executing SQL queries.
