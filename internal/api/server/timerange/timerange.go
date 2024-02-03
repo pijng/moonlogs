@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	// Required for time.LoadLocation to work
+	_ "time/tzdata"
 )
 
 const (
