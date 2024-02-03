@@ -42,9 +42,16 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 	"strings"
 	"sync"
+	"time"
+)
+
+const (
+	LOWEST_TIME = math.MinInt
+	MAX_TIME    = math.MaxInt64
 )
 
 // Executor is a struct for executing SQL queries.
@@ -372,6 +379,20 @@ func putSemicolon(query string) string {
 // Contains returns a formatted string for SQL LIKE queries with wildcard characters.
 func Contains(value any) string {
 	return fmt.Sprintf("%%%s%%", value)
+}
+
+func Between(from *time.Time, to *time.Time) string {
+	fromPart := LOWEST_TIME
+	if from != nil {
+		fromPart = int(from.Unix())
+	}
+
+	toPart := MAX_TIME
+	if to != nil {
+		toPart = int(to.Unix())
+	}
+
+	return fmt.Sprintf("%d and %d", fromPart, toPart)
 }
 
 func In[T any](values []T) ([]string, []any) {

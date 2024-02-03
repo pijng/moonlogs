@@ -29,12 +29,22 @@ const kindChanged = createEvent<string>();
 export const $currentKind = createStore("").reset(resetFilter);
 $currentKind.on(kindChanged, (_, kind) => kind);
 
+const resetTimeFilter = createEvent();
+
+const fromTimeChanged = createEvent<any>();
+export const $currentFromTime = createStore("").reset(resetTimeFilter);
+$currentFromTime.on(fromTimeChanged, (_, from) => from);
+
+const toTimeChanged = createEvent<any>();
+export const $currentToTime = createStore("").reset(resetTimeFilter);
+$currentToTime.on(toTimeChanged, (_, to) => to);
+
 const resetPage = createEvent();
 const pageChanged = createEvent<string>();
 
 export const $currentPage = createStore("1")
   .on(pageChanged, (_, newPage) => newPage)
-  .reset([queryChanged, filterChanged, kindChanged, resetPage]);
+  .reset([queryChanged, filterChanged, kindChanged, fromTimeChanged, toTimeChanged, resetPage]);
 
 const getLogsFx = createEffect((schema_name: string) => {
   return getLogs({ schema_name: schema_name });
@@ -46,12 +56,16 @@ const queryLogsFx = createEffect(
     text,
     query,
     kind,
+    from,
+    to,
     page,
   }: {
     schema_name: string;
     text?: string;
     query?: string;
     kind?: string;
+    from?: Date;
+    to?: Date;
     page?: number;
   }) => {
     const objectQuery = JSON.parse(query || "{}") as Record<string, string>;
@@ -64,7 +78,7 @@ const queryLogsFx = createEffect(
       return acc;
     }, {});
 
-    return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, kind: kind, page: page });
+    return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, kind: kind, from: from, to: to, page: page });
   },
 );
 
@@ -156,6 +170,9 @@ export const events = {
   filterChanged,
   kindChanged,
   resetFilter,
+  fromTimeChanged,
+  toTimeChanged,
+  resetTimeFilter,
   resetSearch,
   pageChanged,
 };

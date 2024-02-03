@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.2.1
+  version: 0.3.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -385,6 +385,15 @@ paths:
           name: limit
           description: ''
           schema: *ref_5
+        - in: query
+          name: from
+          description: Time in format "YYYY-DD-MMTHH:SS"
+          schema: &ref_6
+            type: string
+        - in: query
+          name: to
+          description: Time in format "YYYY-DD-MMTHH:SS"
+          schema: *ref_6
       requestBody:
         content:
           application/json:
@@ -422,7 +431,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_6 []
+      tags: &ref_7 []
       parameters: []
       responses:
         '200':
@@ -455,7 +464,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_6
+      tags: *ref_7
       parameters: []
       requestBody:
         content:
@@ -492,7 +501,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_7 []
+      tags: &ref_8 []
       parameters:
         - in: path
           name: id
@@ -528,7 +537,7 @@ paths:
     delete:
       description: ''
       operationId: ''
-      tags: *ref_7
+      tags: *ref_8
       parameters:
         - in: path
           name: id
@@ -565,7 +574,7 @@ paths:
     put:
       description: ''
       operationId: ''
-      tags: *ref_7
+      tags: *ref_8
       parameters:
         - in: path
           name: id
@@ -607,8 +616,8 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_8 []
-      parameters: &ref_9 []
+      tags: &ref_9 []
+      parameters: &ref_10 []
       responses:
         '200':
           description: ''
@@ -637,8 +646,8 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_8
-      parameters: *ref_9
+      tags: *ref_9
+      parameters: *ref_10
       requestBody:
         content:
           application/json:
@@ -692,7 +701,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_10 []
+      tags: &ref_11 []
       parameters: []
       responses:
         '200':
@@ -725,7 +734,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_10
+      tags: *ref_11
       parameters: []
       requestBody:
         content:
@@ -762,12 +771,12 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_11 []
+      tags: &ref_12 []
       parameters:
         - in: path
           name: id
           description: ''
-          schema: &ref_12
+          schema: &ref_13
             type: integer
           required: true
       responses:
@@ -799,12 +808,12 @@ paths:
     put:
       description: ''
       operationId: ''
-      tags: *ref_11
+      tags: *ref_12
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_12
+          schema: *ref_13
           required: true
       requestBody:
         content:
@@ -840,12 +849,12 @@ paths:
     delete:
       description: ''
       operationId: ''
-      tags: *ref_11
+      tags: *ref_12
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_12
+          schema: *ref_13
           required: true
       responses:
         '200':
@@ -877,7 +886,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_13 []
+      tags: &ref_14 []
       parameters: []
       responses:
         '200':
@@ -910,7 +919,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_13
+      tags: *ref_14
       parameters: []
       requestBody:
         content:
@@ -947,12 +956,12 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_14 []
+      tags: &ref_15 []
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_12
+          schema: *ref_13
           required: true
       responses:
         '200':
@@ -983,12 +992,12 @@ paths:
     put:
       description: ''
       operationId: ''
-      tags: *ref_14
+      tags: *ref_15
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_12
+          schema: *ref_13
           required: true
       requestBody:
         content:
@@ -1024,7 +1033,7 @@ paths:
     delete:
       description: ''
       operationId: ''
-      tags: *ref_14
+      tags: *ref_15
       parameters:
         - in: path
           name: id

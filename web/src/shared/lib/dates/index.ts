@@ -6,3 +6,5 @@ export const DATEFORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   month: "numeric",
   day: "numeric",
 };
+
+export const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;

@@ -7,3 +7,4 @@ export { GearIcon } from "./gear";
 export { PlusIcon } from "./plus";
 export { TrashIcon } from "./trash";
 export { QuestionIcon } from "./question";
+export { ClockIcon } from "./clock";

@@ -103,12 +103,12 @@ func (uc *RecordUseCase) GetRecordByID(id int) (*entities.Record, error) {
 	return uc.recordStorage.GetRecordByID(id)
 }
 
-func (uc *RecordUseCase) GetRecordsByQuery(record entities.Record, limit int, offset int) ([]*entities.Record, error) {
-	return uc.recordStorage.GetRecordsByQuery(record, limit, offset)
+func (uc *RecordUseCase) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, error) {
+	return uc.recordStorage.GetRecordsByQuery(record, from, to, limit, offset)
 }
 
-func (uc *RecordUseCase) GetRecordsCountByQuery(record entities.Record) (int, error) {
-	return uc.recordStorage.GetRecordsCountByQuery(record)
+func (uc *RecordUseCase) GetRecordsCountByQuery(record entities.Record, from *time.Time, to *time.Time) (int, error) {
+	return uc.recordStorage.GetRecordsCountByQuery(record, from, to)
 }
 
 func (uc *RecordUseCase) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {

@@ -1,3 +1,4 @@
+import { TIMEZONE } from "@/shared/lib";
 import { BaseResponse, get, post } from "./base";
 
 export type Level = "Trace" | "Debug" | "Info" | "Warn" | "Error" | "Fatal";
@@ -23,17 +24,21 @@ export const getLogs = ({
   text,
   query,
   kind,
+  from,
+  to,
   page,
 }: {
   schema_name: string;
   text?: string;
   query?: Record<string, string | number | boolean>;
   kind?: string;
+  from?: Date;
+  to?: Date;
   page?: number;
 }): Promise<LogsResponse> => {
   return post({
-    url: `/api/logs/search?page=${page ?? 1}`,
-    body: JSON.stringify({ schema_name: schema_name, text: text, query: query, kind: kind }),
+    url: `/api/logs/search?from=${from ?? ""}&to=${to ?? ""}&tz=${TIMEZONE}&page=${page ?? 1}`,
+    body: JSON.stringify({ schema_name, text, query, kind }),
   });
 };
 

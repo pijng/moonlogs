@@ -2,7 +2,7 @@ import { Event, Store, createEvent, createStore, sample } from "effector";
 import { DOMProperty, h, spec } from "forest";
 import { ErrorHint, Popover } from "@/shared/ui";
 
-type InputType = "text" | "number" | "date" | "checkbox" | "email" | "password";
+type InputType = "text" | "number" | "date" | "datetime-local" | "checkbox" | "email" | "password";
 
 export const Input = <T extends DOMProperty>({
   value,
@@ -27,7 +27,12 @@ export const Input = <T extends DOMProperty>({
 }) => {
   h("div", () => {
     spec({
-      classList: { relative: true, "mb-6": true, flex: type === "checkbox", "items-center": type === "checkbox" },
+      classList: {
+        relative: true,
+        "mb-6": type !== "datetime-local",
+        flex: type === "checkbox",
+        "items-center": type === "checkbox",
+      },
       visible: visible,
     });
 

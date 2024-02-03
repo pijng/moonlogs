@@ -4,6 +4,7 @@ import (
 	"context"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage/sqlite_adapter"
+	"time"
 )
 
 type UserStorage interface {
@@ -80,8 +81,8 @@ type RecordStorage interface {
 	GetAllRecordsCount() (int, error)
 	GetRecordByID(id int) (*entities.Record, error)
 	GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error)
-	GetRecordsByQuery(record entities.Record, limit int, offset int) ([]*entities.Record, error)
-	GetRecordsCountByQuery(record entities.Record) (int, error)
+	GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, error)
+	GetRecordsCountByQuery(record entities.Record, from *time.Time, to *time.Time) (int, error)
 }
 
 func NewRecordStorage(ctx context.Context, storageType string) RecordStorage {

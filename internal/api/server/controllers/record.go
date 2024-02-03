@@ -8,6 +8,7 @@ import (
 	"moonlogs/internal/api/server/pagination"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
+	"moonlogs/internal/api/server/timerange"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage"
@@ -111,10 +112,15 @@ func GetRecordByID(w http.ResponseWriter, r *http.Request) {
 
 func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 	limit, offset, page := pagination.Paginate(r)
+	from, to, err := timerange.Parse(r)
+	if err != nil {
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+		return
+	}
 
 	var recordsToGet entities.Record
 
-	err := json.NewDecoder(r.Body).Decode(&recordsToGet)
+	err = json.NewDecoder(r.Body).Decode(&recordsToGet)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -128,13 +134,13 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
 	recordUseCase := usecases.NewRecordUseCase(recordStorage)
 
-	records, err := recordUseCase.GetRecordsByQuery(recordsToGet, limit, offset)
+	records, err := recordUseCase.GetRecordsByQuery(recordsToGet, from, to, limit, offset)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	count, err := recordUseCase.GetRecordsCountByQuery(recordsToGet)
+	count, err := recordUseCase.GetRecordsCountByQuery(recordsToGet, from, to)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

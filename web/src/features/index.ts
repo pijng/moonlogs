@@ -1,4 +1,5 @@
 export { Filter, type FilterItem, type KindItem } from "./filter-logs";
+export { FilterDate } from "./filter-date-logs";
 export { Auth, logInFx } from "./auth";
 export { RegisterAdmin } from "./register-admin";
 export { NewMemberForm } from "./user-create";
