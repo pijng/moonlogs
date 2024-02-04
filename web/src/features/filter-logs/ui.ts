@@ -1,7 +1,6 @@
 import { Button, ButtonVariant, DownIcon, Dropdown } from "@/shared/ui";
-import { Event, Store } from "effector";
-import { h, spec } from "forest";
-import { $filterIsOpened, filterClicked } from "./model";
+import { Event, Store, createEvent, createStore, sample } from "effector";
+import { DOMElement, h, node, spec } from "forest";
 import { FilterIcon } from "@/shared/ui";
 
 export type FilterItem = {
@@ -30,26 +29,55 @@ export const Filter = ({
   kindChanged: Event<string>;
   applied: Store<boolean>;
 }) => {
-  Button({
-    text: "Filter",
-    variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
-    size: "small",
-    event: filterClicked,
-    preIcon: FilterIcon,
-    postIcon: DownIcon,
+  const dropdownTriggered = createEvent<MouseEvent>();
+  const $localVisible = createStore(false);
+  const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
+
+  sample({
+    source: $localVisible,
+    clock: dropdownTriggered,
+    fn: (v) => !v,
+    target: $localVisible,
+  });
+
+  sample({
+    source: $localVisible,
+    clock: outsideClicked,
+    filter: (visible, { node, event }) => !node.contains(event.target) && visible,
+    fn: () => false,
+    target: $localVisible,
   });
 
   h("div", () => {
-    spec({
-      visible: $filterIsOpened,
+    spec({ classList: ["relative"] });
+
+    Button({
+      text: "Filter",
+      variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
+      size: "small",
+      event: dropdownTriggered,
+      preIcon: FilterIcon,
+      postIcon: DownIcon,
     });
 
-    Dropdown({
-      items: filterItems,
-      itemChanged: filterChanged,
-      currentKind: currentKind,
-      kinds: kindItems,
-      kindChanged: kindChanged,
+    h("div", () => {
+      spec({
+        visible: $localVisible,
+      });
+
+      Dropdown({
+        items: filterItems,
+        itemChanged: filterChanged,
+        currentKind: currentKind,
+        kinds: kindItems,
+        kindChanged: kindChanged,
+      });
+    });
+
+    node((node) => {
+      document.addEventListener("click", (event) => {
+        outsideClicked({ node, event });
+      });
     });
   });
 };

@@ -1,5 +1,5 @@
 import { h, spec } from "forest";
-import { Sidebar, SidebarButton } from "@/shared/ui";
+import { Sidebar } from "@/shared/ui";
 import { Store, createEvent } from "effector";
 
 export const layoutClicked = createEvent<MouseEvent>();
@@ -16,7 +16,6 @@ export const Layout = ({ content, layoutVisible }: { content: () => void; layout
         visible: layoutVisible,
       });
 
-      SidebarButton();
       Sidebar();
     });
 

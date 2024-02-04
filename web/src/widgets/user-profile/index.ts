@@ -55,7 +55,7 @@ export const UserProfile = () => {
 
         const $userTagNames = combine([tagModel.$tags, remap(userModel.$currentAccount, "tag_ids")], ([tags, tagIds]) => {
           const appliedTags = tags
-            .filter((t) => tagIds.includes(t.id))
+            .filter((t) => tagIds?.includes(t.id))
             .map((t) => t.name)
             .join(", ");
 

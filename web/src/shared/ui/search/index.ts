@@ -58,9 +58,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
             value: searchQuery,
           },
           handler: {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            input: inputChanged.prepend((e) => e.target.value),
+            input: inputChanged.prepend((e: any) => e.target.value),
           },
           classList: [
             "block",

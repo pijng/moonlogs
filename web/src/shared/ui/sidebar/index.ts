@@ -1,46 +1,39 @@
 import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/routing/shared";
 import { RouteInstance, redirect } from "atomic-router";
-import { createEvent, createStore, restore, sample } from "effector";
-import { h, spec } from "forest";
-import { layoutClicked } from "..";
+import { createEvent, createStore, sample } from "effector";
+import { DOMElement, h, node, spec } from "forest";
 import { PermissionGate } from "@/shared/lib";
 
-export const sidebarToggled = createEvent<any>();
-export const sidebarClosed = createEvent<any>();
-const $isOpened = createStore(false);
+export const sidebarClosed = createEvent();
+const sidebarTriggered = createEvent<MouseEvent>();
+const $sidebarVisible = createStore(false);
+const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
 
 sample({
-  source: $isOpened,
-  clock: sidebarToggled,
-  fn: (state) => !state,
-  target: $isOpened,
-});
-
-sample({
-  source: $isOpened,
   clock: sidebarClosed,
-  filter: (isOpened) => isOpened,
-  fn: (state) => !state,
-  target: $isOpened,
+  fn: () => false,
+  target: $sidebarVisible,
 });
 
 sample({
-  source: [$isOpened, restore(sidebarToggled, null)],
-  clock: layoutClicked,
-  filter: ([isOpened, clicked], layoutClicked) => {
-    const path = layoutClicked.composedPath();
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return !path.includes(clicked?.currentTarget) && !layoutClicked.target.closest("aside") && isOpened;
-  },
-  target: sidebarToggled,
+  source: $sidebarVisible,
+  clock: sidebarTriggered,
+  fn: (v) => !v,
+  target: $sidebarVisible,
 });
 
-export const SidebarButton = () => {
+sample({
+  source: $sidebarVisible,
+  clock: outsideClicked,
+  filter: (visible, { node, event }) => !node.contains(event.target),
+  fn: () => false,
+  target: $sidebarVisible,
+});
+
+const SidebarButton = () => {
   h("button", () => {
     spec({
-      handler: { on: { click: sidebarToggled } },
+      handler: { on: { click: sidebarTriggered } },
       attr: {
         "data-drawer-target": "default-sidebar",
         "data-drawer-toggle": "default-sidebar",
@@ -89,78 +82,88 @@ export const SidebarButton = () => {
 };
 
 export const Sidebar = () => {
-  h("aside", () => {
-    spec({
-      attr: { id: "default-sidebar", "aria-label": "Sidebar" },
-      classList: {
-        fixed: true,
-        "top-0": true,
-        "left-0": true,
-        "z-40": true,
-        "w-64": true,
-        "h-screen": true,
-        "transition-transform": true,
-        "-translate-x-full": $isOpened.map((s) => !s),
-        "sm:translate-x-0": $isOpened.map((s) => !s),
-      },
+  h("div", () => {
+    SidebarButton();
+
+    h("aside", () => {
+      spec({
+        attr: { id: "default-sidebar", "aria-label": "Sidebar" },
+        classList: {
+          fixed: true,
+          "top-0": true,
+          "left-0": true,
+          "z-40": true,
+          "w-64": true,
+          "h-screen": true,
+          "transition-transform": true,
+          "-translate-x-full": $sidebarVisible.map((v) => !v),
+          "sm:translate-x-0": $sidebarVisible.map((v) => !v),
+        },
+      });
+
+      h("div", () => {
+        spec({
+          classList: ["h-full", "px-3", "py-4", "overflow-y-auto", "bg-gray-50", "dark:bg-gray-800"],
+        });
+
+        h("a", () => {
+          const homeClicked = createEvent<MouseEvent>();
+
+          redirect({
+            clock: homeClicked,
+            route: homeRoute,
+          });
+
+          spec({
+            classList: ["flex", "items-center", "pl-2.5", "mb-5"],
+            attr: { href: "" },
+            handler: {
+              on: {
+                click: homeClicked,
+              },
+              config: { prevent: true },
+            },
+          });
+
+          h("span", {
+            classList: ["mr-3", "leading-7", "text-2xl"],
+            attr: { alt: "Moonlogs logo" },
+            text: "🌘",
+          });
+
+          h("span", {
+            classList: ["self-center", "text-xl", "font-semibold", "whitespace-nowrap", "dark:text-white"],
+            text: "Moonlogs",
+          });
+        });
+
+        h("ul", () => {
+          spec({
+            classList: ["space-y-2", "font-medium"],
+          });
+
+          SidebarItem("Profile", profileRoute);
+
+          SidebarItem("Log groups", homeRoute);
+
+          PermissionGate("Admin", () => {
+            SidebarItem("Members", membersRoute);
+          });
+
+          PermissionGate("Admin", () => {
+            SidebarItem("Tags", tagsRoute);
+          });
+
+          PermissionGate("Admin", () => {
+            SidebarItem("API tokens", apiTokensRoute);
+          });
+        });
+      });
     });
 
-    h("div", () => {
-      spec({
-        classList: ["h-full", "px-3", "py-4", "overflow-y-auto", "bg-gray-50", "dark:bg-gray-800"],
-      });
-
-      h("a", () => {
-        const homeClicked = createEvent<MouseEvent>();
-
-        redirect({
-          clock: homeClicked,
-          route: homeRoute,
-        });
-
-        spec({
-          classList: ["flex", "items-center", "pl-2.5", "mb-5"],
-          attr: { href: "" },
-          handler: {
-            on: {
-              click: homeClicked,
-            },
-            config: { prevent: true },
-          },
-        });
-
-        h("span", {
-          classList: ["mr-3", "leading-7", "text-2xl"],
-          attr: { alt: "Moonlogs logo" },
-          text: "🌘",
-        });
-
-        h("span", {
-          classList: ["self-center", "text-xl", "font-semibold", "whitespace-nowrap", "dark:text-white"],
-          text: "Moonlogs",
-        });
-      });
-
-      h("ul", () => {
-        spec({
-          classList: ["space-y-2", "font-medium"],
-        });
-
-        SidebarItem("Profile", profileRoute);
-
-        SidebarItem("Log groups", homeRoute);
-
-        PermissionGate("Admin", () => {
-          SidebarItem("Members", membersRoute);
-        });
-
-        PermissionGate("Admin", () => {
-          SidebarItem("Tags", tagsRoute);
-        });
-
-        PermissionGate("Admin", () => {
-          SidebarItem("API tokens", apiTokensRoute);
-        });
+    node((node) => {
+      document.addEventListener("click", (event) => {
+        outsideClicked({ node, event });
       });
     });
   });
