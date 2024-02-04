@@ -152,21 +152,34 @@ If you prefer to use your own bind mount for data storage, you can modify the `v
 
 #### Meta-groups for log organization
 
+![Meta-groups](./assets/meta_groups.png)
+
 Create separate meta-groups (schemas) to categorize logs by domain areas. For instance, create schemas for the checkout process, user access setting changes, and Uber Eats integration. Logs within each schema are recorded independently, facilitating efficient event retrieval.
 
 #### Query-based log subgrouping
+
+![Subgrouping](./assets/subgrouping.png)
+![Integrity](./assets/events_integrity.png)
 
 Group logs within a schema based on specified queries to enhance information integrity. Logs for distinct clients, such as those with IDs 4 and 5, will be segregated within the overall schema. This not only simplifies searchability but also ensures unrelated events remain separate even if in the same schema.
 
 #### Convenient schema-based filters
 
+![Query filters](./assets/filters.png)
+![Time filters](./assets/filters_time.png)
+
 Generate convenient filters on the web interface for each schema, simplifying event search by allowing users to simply input values. This eliminates the complexity of composing queries with an undefined set of parameters, making it user-friendly, especially for non-technical personnel.
 
 #### Flexible log retention time
 
+![Retention days](./assets/retention_days.png)
+
 Specify varying retention times for each schema to align with specific business needs. For instance, set a 7-day retention time for logs in the "Glovo integration" schema, while logs in the "User's rights change history" schema can be stored indefinitely. Adjust these settings dynamically as business requirements evolve.
 
 #### Granular Access Control with Tags
+
+![Tags](./assets/tags.png)
+![Member access by tags](./assets/tags_access.png)
 
 Create and assign tags to schemas and users, enabling granular access control. Define access privileges based on tags, ensuring that users can only access the schemas and logs relevant to their responsibilities. This feature provides an additional layer of security and customization in managing access to log data.
 
