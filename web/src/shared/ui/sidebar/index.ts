@@ -50,9 +50,8 @@ export const SidebarButton = () => {
       classList: [
         "inline-flex",
         "items-center",
-        "p-2",
-        "mt-2",
-        "ml-3",
+        "pt-3.5",
+        "pl-3.5",
         "text-sm",
         "text-gray-500",
         "rounded-lg",

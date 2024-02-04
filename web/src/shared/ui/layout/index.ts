@@ -23,7 +23,9 @@ export const Layout = ({ content, layoutVisible }: { content: () => void; layout
     h("div", () => {
       spec({
         classList: {
-          "p-7": layoutVisible.map((visible) => visible),
+          "py-2": layoutVisible.map((visible) => visible),
+          "px-4": layoutVisible.map((visible) => visible),
+          "sm:p-7": layoutVisible.map((visible) => visible),
           "sm:ml-64": layoutVisible,
         },
       });
