@@ -11,6 +11,7 @@ export const Input = <T extends DOMProperty>({
   required,
   inputChanged,
   visible,
+  autofocus,
   disabled,
   errorText,
   hint,
@@ -21,6 +22,7 @@ export const Input = <T extends DOMProperty>({
   required?: boolean;
   inputChanged?: Event<T>;
   visible?: Store<boolean>;
+  autofocus?: boolean;
   disabled?: Store<boolean>;
   errorText?: Store<string>;
   hint?: string;
@@ -114,6 +116,7 @@ export const Input = <T extends DOMProperty>({
           id: label,
           type: type,
           required: Boolean(required),
+          autofocus: createStore(autofocus ?? false),
           value: value ?? createStore<T | null>(null),
           checked: value ?? createStore<T | null>(null),
         },

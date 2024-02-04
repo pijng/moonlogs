@@ -12,6 +12,7 @@ export const Auth = () => {
       Input({
         type: "email",
         label: "Email",
+        autofocus: true,
         inputChanged: authForm.fields.email.changed,
         errorText: authForm.fields.email.$errorText,
       });

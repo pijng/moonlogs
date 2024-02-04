@@ -12,6 +12,7 @@ export const RegisterAdmin = () => {
       Input({
         type: "text",
         label: "Name",
+        autofocus: true,
         inputChanged: registerAdminForm.fields.name.changed,
         errorText: registerAdminForm.fields.name.$errorText,
       });
