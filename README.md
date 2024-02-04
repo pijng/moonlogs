@@ -158,13 +158,9 @@ Create separate meta-groups (schemas) to categorize logs by domain areas. For in
 
 Group logs within a schema based on specified queries to enhance information integrity. Logs for distinct clients, such as those with IDs 4 and 5, will be segregated within the overall schema. This not only simplifies searchability but also ensures unrelated events remain separate even if in the same schema.
 
-#### Custom filters for schemas
-
-Define unique static filters for specific schemas, streamlining event retrieval. For example, a schema for Uber Eats may have filters like `organization_id`, `order_id`, `external_order_id`, and `restaurant_id`. This eliminates the need for manual DSL queries, particularly beneficial for non-technical users.
-
 #### Convenient schema-based filters
 
-Generate convenient filters on the web interface for each schema, simplifying event search by allowing users to input values. This eliminates the complexity of composing queries with an undefined set of parameters, making it user-friendly, especially for non-technical personnel.
+Generate convenient filters on the web interface for each schema, simplifying event search by allowing users to simply input values. This eliminates the complexity of composing queries with an undefined set of parameters, making it user-friendly, especially for non-technical personnel.
 
 #### Flexible log retention time
 
