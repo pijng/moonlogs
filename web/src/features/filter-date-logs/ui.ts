@@ -54,8 +54,7 @@ export const FilterDate = ({
       h("div", () => {
         spec({
           classList: [
-            "max-w-fit",
-            "md:w-64",
+            "w-fit",
             "top-0",
             "left-0",
             "w-5/6",

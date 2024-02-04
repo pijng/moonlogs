@@ -19,7 +19,7 @@ export const Dropdown = ({
   h("div", () => {
     spec({
       classList: [
-        "md:w-64",
+        "w-max",
         "top-0",
         "left-0",
         "w-5/6",
