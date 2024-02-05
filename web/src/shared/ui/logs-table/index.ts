@@ -64,7 +64,7 @@ export const LogsTable = (logs: Store<Log[]>) => {
                   "hover:bg-gray-50",
                   "dark:hover:bg-gray-600",
                   "text-gray-900",
-                  "dark:text-gray-200",
+                  "dark:text-gray-100",
                 ],
               });
 
