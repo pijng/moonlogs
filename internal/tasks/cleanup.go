@@ -30,11 +30,13 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 			err = recordUseCase.DeleteStaleRecords(schema)
 			if err != nil {
 				log.Printf("failed cleaning up stale log records: %v", err)
+				continue
 			}
 
 			_, err = persistence.DB().ExecContext(ctx, "ANALYZE;")
 			if err != nil {
 				log.Printf("failed optimizing db's query planner statistics: %v", err)
+				continue
 			}
 
 			_, err = persistence.DB().ExecContext(ctx, "VACUUM;")
@@ -55,7 +57,6 @@ func RunStatementsCleanupTask(ctx context.Context, interval time.Duration) {
 			qrx.CleanCachedStatements()
 		case <-ctx.Done():
 			log.Printf("cached statement cleanup task canceled")
-			return
 		}
 	}
 }
