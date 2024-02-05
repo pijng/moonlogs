@@ -491,5 +491,9 @@ func CleanCachedStatements() {
 	stmtsCache.RWMutex.Lock()
 	defer stmtsCache.Unlock()
 
+	for _, stmt := range stmtsCache.stmts {
+		stmt.Close()
+	}
+
 	clear(stmtsCache.stmts)
 }
