@@ -17,7 +17,7 @@ export type SchemaToCreate = {
   title: string;
   description: string;
   name: string;
-  retention_days: number;
+  retention_days: number | string;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
   tag_id: number | null;
@@ -26,7 +26,7 @@ export type SchemaToCreate = {
 export type SchemaToUpdate = {
   id: number;
   title: string;
-  retention_days: number;
+  retention_days: number | string;
   description: string;
   fields: Array<SchemaField>;
   kinds: Array<SchemaKind>;
@@ -54,11 +54,17 @@ export const querySchemas = (query: Record<string, any>): Promise<SchemasRespons
 };
 
 export const createSchema = (schema: SchemaToCreate): Promise<SchemaResponse> => {
-  return post({ url: "/api/schemas", body: JSON.stringify(schema) });
+  const retention_days = schema.retention_days === "" ? 0 : schema.retention_days;
+  const modifiedSchema: SchemaToCreate = { ...schema, retention_days: retention_days };
+
+  return post({ url: "/api/schemas", body: JSON.stringify(modifiedSchema) });
 };
 
 export const editSchema = (schema: SchemaToUpdate): Promise<SchemaResponse> => {
-  return put({ url: `/api/schemas/${schema.id}`, body: JSON.stringify(schema) });
+  const retention_days = schema.retention_days === "" ? 0 : schema.retention_days;
+  const modifiedSchema: SchemaToUpdate = { ...schema, retention_days: retention_days };
+
+  return put({ url: `/api/schemas/${schema.id}`, body: JSON.stringify(modifiedSchema) });
 };
 
 export const deleteSchema = (id: number): Promise<SchemaResponse> => {
