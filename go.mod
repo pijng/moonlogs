@@ -26,6 +26,7 @@ require (
 )
 
 require (
+	github.com/goccy/go-json v0.10.2
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	golang.org/x/crypto v0.18.0

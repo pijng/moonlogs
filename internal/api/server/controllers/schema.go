@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/access"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
@@ -19,7 +19,7 @@ import (
 func CreateSchema(w http.ResponseWriter, r *http.Request) {
 	var newSchema entities.Schema
 
-	err := json.NewDecoder(r.Body).Decode(&newSchema)
+	err := serialize.NewJSONDecoder(r.Body).Decode(&newSchema)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -47,7 +47,7 @@ func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 
 	var schemaToUpdate entities.Schema
 
-	err = json.NewDecoder(r.Body).Decode(&schemaToUpdate)
+	err = serialize.NewJSONDecoder(r.Body).Decode(&schemaToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

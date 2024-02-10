@@ -2,8 +2,8 @@ package entities
 
 import (
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
+	"moonlogs/internal/lib/serialize"
 )
 
 type Schema struct {
@@ -36,9 +36,9 @@ func (fs *Fields) Scan(value interface{}) error {
 
 	switch v := value.(type) {
 	case []byte:
-		return json.Unmarshal(v, fs)
+		return serialize.JSONUnmarshal(v, fs)
 	case string:
-		return json.Unmarshal([]byte(v), fs)
+		return serialize.JSONUnmarshal([]byte(v), fs)
 	default:
 		return fmt.Errorf("unsupported type for Fields.Scan")
 	}
@@ -49,7 +49,7 @@ func (fs Fields) Value() (driver.Value, error) {
 		fs = make([]Field, 0)
 	}
 
-	b, err := json.Marshal(fs)
+	b, err := serialize.JSONMarshal(fs)
 	return string(b), err
 }
 
@@ -60,9 +60,9 @@ func (fs *Kinds) Scan(value interface{}) error {
 
 	switch v := value.(type) {
 	case []byte:
-		return json.Unmarshal(v, fs)
+		return serialize.JSONUnmarshal(v, fs)
 	case string:
-		return json.Unmarshal([]byte(v), fs)
+		return serialize.JSONUnmarshal([]byte(v), fs)
 	default:
 		return fmt.Errorf("unsupported type for Kinds.Scan")
 	}
@@ -73,6 +73,6 @@ func (fs Kinds) Value() (driver.Value, error) {
 		fs = make([]Kind, 0)
 	}
 
-	b, err := json.Marshal(fs)
+	b, err := serialize.JSONMarshal(fs)
 	return string(b), err
 }

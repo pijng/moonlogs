@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/mediators"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
@@ -18,7 +18,7 @@ import (
 func CreateTag(w http.ResponseWriter, r *http.Request) {
 	var newTag entities.Tag
 
-	err := json.NewDecoder(r.Body).Decode(&newTag)
+	err := serialize.NewJSONDecoder(r.Body).Decode(&newTag)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -96,7 +96,7 @@ func UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 
 	var tagToUpdate entities.Tag
 
-	err = json.NewDecoder(r.Body).Decode(&tagToUpdate)
+	err = serialize.NewJSONDecoder(r.Body).Decode(&tagToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

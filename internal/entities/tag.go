@@ -2,8 +2,8 @@ package entities
 
 import (
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
+	"moonlogs/internal/lib/serialize"
 )
 
 type Tag struct {
@@ -20,16 +20,16 @@ func (t *Tags) Scan(value interface{}) error {
 
 	switch v := value.(type) {
 	case string:
-		return json.Unmarshal([]byte(v), t)
+		return serialize.JSONUnmarshal([]byte(v), t)
 	case []byte:
-		return json.Unmarshal(v, t)
+		return serialize.JSONUnmarshal(v, t)
 	default:
 		return fmt.Errorf("unsupported type for Tags: %T", value)
 	}
 }
 
 func (t Tags) Value() (driver.Value, error) {
-	b, err := json.Marshal(t)
+	b, err := serialize.JSONMarshal(t)
 
 	return string(b), err
 }

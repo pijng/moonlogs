@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
@@ -17,7 +17,7 @@ import (
 func CreateApiToken(w http.ResponseWriter, r *http.Request) {
 	var newApiToken entities.ApiToken
 
-	err := json.NewDecoder(r.Body).Decode(&newApiToken)
+	err := serialize.NewJSONDecoder(r.Body).Decode(&newApiToken)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -87,7 +87,7 @@ func UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
 
 	var apiTokenToUpdate entities.ApiToken
 
-	err = json.NewDecoder(r.Body).Decode(&apiTokenToUpdate)
+	err = serialize.NewJSONDecoder(r.Body).Decode(&apiTokenToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

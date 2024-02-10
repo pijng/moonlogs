@@ -1,11 +1,11 @@
 package usecases
 
 import (
-	"encoding/json"
 	"fmt"
 	"hash"
 	"hash/fnv"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"slices"
@@ -43,7 +43,7 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 		record.Level = entities.InfoLevel
 	}
 
-	bytes, err := json.Marshal(record.Query)
+	bytes, err := serialize.JSONMarshal(record.Query)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating record: %v", err)
 	}

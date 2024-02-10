@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
@@ -36,7 +36,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var token string
 	var credentials Credentials
 
-	err := json.NewDecoder(r.Body).Decode(&credentials)
+	err := serialize.NewJSONDecoder(r.Body).Decode(&credentials)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

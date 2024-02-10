@@ -1,7 +1,7 @@
 package response
 
 import (
-	"encoding/json"
+	"moonlogs/internal/lib/serialize"
 	"net/http"
 )
 
@@ -35,7 +35,7 @@ func Return(w http.ResponseWriter, success bool, code int, err error, data inter
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	err = json.NewEncoder(w).Encode(response)
+	err = serialize.NewJSONEncoder(w).Encode(response)
 	if err != nil {
 		response.Error = err.Error()
 	}

@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
@@ -26,7 +26,7 @@ type UserDTO struct {
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var newUser entities.User
 
-	err := json.NewDecoder(r.Body).Decode(&newUser)
+	err := serialize.NewJSONDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -96,7 +96,7 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 
 	var userToUpdate entities.User
 
-	err = json.NewDecoder(r.Body).Decode(&userToUpdate)
+	err = serialize.NewJSONDecoder(r.Body).Decode(&userToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -145,7 +145,7 @@ func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
 
 	var newAdmin entities.User
 
-	err = json.NewDecoder(r.Body).Decode(&newAdmin)
+	err = serialize.NewJSONDecoder(r.Body).Decode(&newAdmin)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

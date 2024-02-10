@@ -2,8 +2,8 @@ package entities
 
 import (
 	"database/sql/driver"
-	"encoding/json"
 	"fmt"
+	"moonlogs/internal/lib/serialize"
 	"time"
 )
 
@@ -28,9 +28,9 @@ func (jm *JSONMap) Scan(value interface{}) error {
 
 	switch v := value.(type) {
 	case []byte:
-		return json.Unmarshal(v, jm)
+		return serialize.JSONUnmarshal(v, jm)
 	case string:
-		return json.Unmarshal([]byte(v), jm)
+		return serialize.JSONUnmarshal([]byte(v), jm)
 	default:
 		return fmt.Errorf("unsupported type for Query.Scan")
 	}
@@ -41,7 +41,7 @@ func (jm JSONMap) Value() (driver.Value, error) {
 		jm = make(JSONMap)
 	}
 
-	b, err := json.Marshal(jm)
+	b, err := serialize.JSONMarshal(jm)
 	return string(b), err
 }
 

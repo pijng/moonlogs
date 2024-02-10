@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
 	"moonlogs/internal/api/server/access"
@@ -11,6 +10,7 @@ import (
 	"moonlogs/internal/api/server/timerange"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
@@ -22,7 +22,7 @@ import (
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	var newRecord entities.Record
 
-	err := json.NewDecoder(r.Body).Decode(&newRecord)
+	err := serialize.NewJSONDecoder(r.Body).Decode(&newRecord)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -120,7 +120,7 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 
 	var recordsToGet entities.Record
 
-	err = json.NewDecoder(r.Body).Decode(&recordsToGet)
+	err = serialize.NewJSONDecoder(r.Body).Decode(&recordsToGet)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
