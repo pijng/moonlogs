@@ -7,11 +7,11 @@ import (
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"slices"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -90,13 +90,7 @@ func RegisterWebRouter(r *mux.Router) {
 
 func SessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var bearerToken string
-
-		reqAuth := r.Header.Get("Authorization")
-		splitToken := strings.Split(reqAuth, "Bearer ")
-		if len(splitToken) == 2 {
-			bearerToken = splitToken[1]
-		}
+		bearerToken := shared.ExtractBearerToken(r)
 
 		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
 		ok, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
@@ -138,13 +132,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 
 func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var bearerToken string
-
-		reqAuth := r.Header.Get("Authorization")
-		splitToken := strings.Split(reqAuth, "Bearer ")
-		if len(splitToken) == 2 {
-			bearerToken = splitToken[1]
-		}
+		bearerToken := shared.ExtractBearerToken(r)
 
 		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
 		validAPIToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)

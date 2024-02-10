@@ -11,7 +11,6 @@ import (
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
-	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -126,13 +125,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bearerToken string
-
-	reqAuth := r.Header.Get("Authorization")
-	splitToken := strings.Split(reqAuth, "Bearer ")
-	if len(splitToken) == 2 {
-		bearerToken = splitToken[1]
-	}
+	bearerToken := shared.ExtractBearerToken(r)
 
 	if bearerToken == "" {
 		bearerToken, _ = session.Values["token"].(string)
