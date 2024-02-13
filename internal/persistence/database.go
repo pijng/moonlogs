@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 
 CREATE INDEX IF NOT EXISTS idx_schema_id ON records(schema_id);
+CREATE INDEX IF NOT EXISTS idx_schema_name ON records(schema_name);
 CREATE INDEX IF NOT EXISTS idx_kind ON records(kind);
 CREATE INDEX IF NOT EXISTS idx_group_hash ON records(group_hash);`
 
