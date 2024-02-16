@@ -53,10 +53,10 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, error) {
 	lr, err := s.records.Where(
 		fmt.Sprintf(
-			`(schema_id = ? OR schema_name = ?) AND text LIKE ? AND kind LIKE ? AND %s AND created_at BETWEEN %s ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+			`(schema_id = ? OR schema_name = ?) AND text LIKE ? AND kind LIKE ? AND level LIKE ? AND %s AND created_at BETWEEN %s ORDER BY created_at DESC LIMIT ? OFFSET ?`,
 			qrx.MapLike(record.Query), qrx.Between(from, to),
 		),
-		record.SchemaID, record.SchemaName, qrx.Contains(record.Text), qrx.Contains(record.Kind), limit, offset,
+		record.SchemaID, record.SchemaName, qrx.Contains(record.Text), qrx.Contains(record.Kind), qrx.Contains(record.Level), limit, offset,
 	).All(s.ctx)
 
 	if err != nil {
@@ -88,10 +88,10 @@ func (s *RecordStorage) GetRecordsCountByQuery(record entities.Record, from *tim
 	count, err := s.records.CountWhere(
 		s.ctx,
 		fmt.Sprintf(
-			"schema_name = ? AND kind LIKE ? AND text LIKE ? AND %s AND created_at BETWEEN %s",
+			"schema_name = ? AND kind LIKE ? AND level LIKE ? AND text LIKE ? AND %s AND created_at BETWEEN %s",
 			qrx.MapLike(record.Query), qrx.Between(from, to),
 		),
-		record.SchemaName, qrx.Contains(record.Kind), qrx.Contains(record.Text))
+		record.SchemaName, qrx.Contains(record.Kind), qrx.Contains(record.Level), qrx.Contains(record.Text))
 	if err != nil {
 		return 0, fmt.Errorf("failed querying record: %w", err)
 	}

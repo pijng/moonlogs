@@ -8,3 +8,4 @@ export { NewApiTokenForm } from "./api-token-create";
 export { EditApiTokenForm } from "./api-token-edit";
 export { NewTagForm } from "./tag-create";
 export { EditTagForm } from "./tag-edit";
+export { FilterLevel } from "./filter-level-logs";

@@ -95,7 +95,7 @@ export const Button = ({
   preIcon,
   postIcon,
 }: {
-  text: string;
+  text: string | Store<string>;
   event?: Event<any>;
   variant: ButtonVariant | Store<ButtonVariant>;
   style?: Style;

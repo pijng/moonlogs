@@ -1,6 +1,6 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
-import { Filter, FilterDate } from "@/features";
+import { Filter, FilterDate, FilterLevel } from "@/features";
 import { logsRoute } from "@/routing/shared";
 import { Button, Search } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";
@@ -113,6 +113,35 @@ export const SearchBar = () => {
           size: "small",
           event: timeFilterCleared,
           visible: $timeFiltersApplied,
+        });
+      });
+
+      // Filter by level
+      h("div", () => {
+        spec({ classList: ["flex", "items-center"] });
+
+        const $levelFiltersApplied = logModel.$currentLevel.map(Boolean);
+
+        FilterLevel({
+          applied: $levelFiltersApplied,
+          level: logModel.$currentLevel,
+          levelChanged: logModel.events.levelChanged,
+          resetLevelFilter: logModel.events.resetLevelFilter,
+        });
+
+        const levelFilterCleared = createEvent<MouseEvent>();
+        sample({
+          clock: levelFilterCleared,
+          fn: () => ({}),
+          target: logModel.events.resetLevelFilter,
+        });
+
+        Button({
+          text: "Clear",
+          variant: "light",
+          size: "small",
+          event: levelFilterCleared,
+          visible: $levelFiltersApplied,
         });
       });
     });

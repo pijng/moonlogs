@@ -24,6 +24,7 @@ export const getLogs = ({
   text,
   query,
   kind,
+  level,
   from,
   to,
   page,
@@ -32,13 +33,14 @@ export const getLogs = ({
   text?: string;
   query?: Record<string, string | number | boolean>;
   kind?: string;
+  level?: Level;
   from?: Date;
   to?: Date;
   page?: number;
 }): Promise<LogsResponse> => {
   return post({
     url: `/api/logs/search?from=${from ?? ""}&to=${to ?? ""}&tz=${TIMEZONE}&page=${page ?? 1}`,
-    body: JSON.stringify({ schema_name, text, query, kind }),
+    body: JSON.stringify({ schema_name, text, query, kind, level }),
   });
 };
 

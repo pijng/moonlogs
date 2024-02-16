@@ -1,5 +1,5 @@
 import { Log, getLogs } from "@/shared/api";
-import { getLogGroup } from "@/shared/api/logs";
+import { Level, getLogGroup } from "@/shared/api/logs";
 import { DATEFORMAT_OPTIONS, getLocale } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
@@ -29,6 +29,12 @@ const kindChanged = createEvent<string>();
 export const $currentKind = createStore("").reset(resetFilter);
 $currentKind.on(kindChanged, (_, kind) => kind);
 
+const resetLevelFilter = createEvent();
+
+const levelChanged = createEvent<Level>();
+export const $currentLevel = createStore<Level | string>("").reset(resetLevelFilter);
+$currentLevel.on(levelChanged, (_, level) => level);
+
 const resetTimeFilter = createEvent();
 
 const fromTimeChanged = createEvent<any>();
@@ -56,6 +62,7 @@ const queryLogsFx = createEffect(
     text,
     query,
     kind,
+    level,
     from,
     to,
     page,
@@ -64,6 +71,7 @@ const queryLogsFx = createEffect(
     text?: string;
     query?: string;
     kind?: string;
+    level?: Level;
     from?: Date;
     to?: Date;
     page?: number;
@@ -78,7 +86,16 @@ const queryLogsFx = createEffect(
       return acc;
     }, {});
 
-    return getLogs({ schema_name: schema_name, text: text, query: formattedQuery, kind: kind, from: from, to: to, page: page });
+    return getLogs({
+      schema_name: schema_name,
+      text: text,
+      query: formattedQuery,
+      kind: kind,
+      level: level,
+      from: from,
+      to: to,
+      page: page,
+    });
   },
 );
 
@@ -169,6 +186,8 @@ export const events = {
   queryChanged,
   filterChanged,
   kindChanged,
+  levelChanged,
+  resetLevelFilter,
   resetFilter,
   fromTimeChanged,
   toTimeChanged,
