@@ -7,3 +7,4 @@ export { AuthForm } from "./auth-form";
 export { RegisterAdminForm } from "./register-admin-form";
 export { HeaderWithCreation } from "./header-with-creation";
 export { UserProfile } from "./user-profile";
+export { SchemasList } from "./schemas-list";
