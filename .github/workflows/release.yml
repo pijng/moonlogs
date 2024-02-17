@@ -103,3 +103,23 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  trigger-ruby-client:
+    needs: publish-docker
+    name: Trigger Ruby Client Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Tag Version
+        id: get_tag_version
+        run: echo "::set-output name=tag_version::${GITHUB_REF#refs/tags/v}"
+
+      - name: Trigger Ruby Client Workflow
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.RUBY_SDK_TOKEN }}
+          repository: pijng/moonlogs-ruby
+          event-type: generate-publish-client
+          client-payload: '{"tag_version": "${{ steps.get_tag_version.outputs.tag_version }}"}'
+
