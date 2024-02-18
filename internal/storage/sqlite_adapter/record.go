@@ -70,7 +70,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	}
 
 	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
-	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.Between(from, to)))
+	queryBuilder.WriteString(fmt.Sprintf(" AND created_at %s", qrx.Between(from, to)))
 
 	queryBuilder.WriteString(" ORDER BY created_at DESC LIMIT ? OFFSET ?")
 	queryParams = append(queryParams, limit, offset)
