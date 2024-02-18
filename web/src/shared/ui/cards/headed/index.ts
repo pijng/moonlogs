@@ -9,14 +9,12 @@ export const CardHeaded = ({
   schema,
   content,
   href,
-  withMore,
 }: {
   tags: Store<Array<[string, any]>>;
   kind: Store<string | null>;
   schema: Store<Schema | null>;
   content: () => void;
   href?: Store<string>;
-  withMore?: boolean;
 }) => {
   h("div", () => {
     spec({
@@ -164,14 +162,6 @@ export const CardHeaded = ({
       });
 
       content();
-    });
-
-    h("div", () => {
-      spec({
-        visible: createStore(withMore ?? false),
-        classList: ["text-center", "cursor-default", "pb-1", "dark:text-gray-400"],
-        text: "...",
-      });
     });
   });
 };

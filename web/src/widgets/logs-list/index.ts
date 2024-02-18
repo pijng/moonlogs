@@ -25,7 +25,6 @@ export const LogsList = () => {
         content: () => {
           LogsTable(group.map((g) => g.logs));
         },
-        withMore: true,
       });
     });
   });
