@@ -72,7 +72,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
 	queryBuilder.WriteString(fmt.Sprintf(" AND created_at BETWEEN %s", qrx.Between(from, to)))
 
-	queryBuilder.WriteString(" ORDER BY created_at DESC LIMIT ? OFFSET ?")
+	queryBuilder.WriteString(" ORDER BY id DESC LIMIT ? OFFSET ?")
 	queryParams = append(queryParams, limit, offset)
 
 	lr, err := s.records.Where(queryBuilder.String(), queryParams...).All(s.ctx)
@@ -94,7 +94,7 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 }
 
 func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	lr, err := s.records.Where("schema_name = ? AND group_hash = ? ORDER BY created_at ASC", schemaName, groupHash).All(s.ctx)
+	lr, err := s.records.Where("schema_name = ? AND group_hash = ? ORDER BY id ASC", schemaName, groupHash).All(s.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying record: %w", err)
 	}
