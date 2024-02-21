@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.5.8
+  version: 0.5.9
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -1183,13 +1183,6 @@ components:
       enum:
         - Member
         - Admin
-    SchemaSearch:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
     Meta:
       type: object
       properties:
