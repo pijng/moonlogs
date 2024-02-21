@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.5.9
+  version: 0.5.10
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -100,7 +100,7 @@ paths:
         - in: path
           name: id
           description: ''
-          schema: &ref_1
+          schema:
             type: integer
           required: true
       responses:
@@ -138,7 +138,8 @@ paths:
         - in: path
           name: id
           description: ''
-          schema: *ref_1
+          schema:
+            type: integer
           required: true
       requestBody:
         content:
@@ -213,7 +214,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: &ref_2 []
+      tags: &ref_1 []
       parameters: []
       requestBody:
         content:
@@ -249,17 +250,18 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: *ref_2
+      tags: *ref_1
       parameters:
         - in: query
           name: page
           description: ''
-          schema: &ref_3
+          schema:
             type: integer
         - in: query
           name: limit
           description: ''
-          schema: *ref_3
+          schema:
+            type: integer
       responses:
         '200':
           description: ''
@@ -297,7 +299,8 @@ paths:
         - in: path
           name: id
           description: ''
-          schema: *ref_1
+          schema:
+            type: integer
           required: true
       responses:
         '200':
@@ -334,13 +337,14 @@ paths:
         - in: path
           name: schema_name
           description: ''
-          schema: &ref_4
+          schema:
             type: string
           required: true
         - in: path
           name: hash
           description: ''
-          schema: *ref_4
+          schema:
+            type: string
           required: true
       responses:
         '200':
@@ -379,21 +383,23 @@ paths:
         - in: query
           name: page
           description: ''
-          schema: &ref_5
+          schema:
             type: integer
         - in: query
           name: limit
           description: ''
-          schema: *ref_5
+          schema:
+            type: integer
         - in: query
           name: from
           description: Time in format "YYYY-DD-MMTHH:SS"
-          schema: &ref_6
+          schema:
             type: string
         - in: query
           name: to
           description: Time in format "YYYY-DD-MMTHH:SS"
-          schema: *ref_6
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -431,7 +437,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_7 []
+      tags: &ref_2 []
       parameters: []
       responses:
         '200':
@@ -464,7 +470,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_7
+      tags: *ref_2
       parameters: []
       requestBody:
         content:
@@ -501,12 +507,13 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_8 []
+      tags: &ref_3 []
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_1
+          schema:
+            type: integer
           required: true
       responses:
         '200':
@@ -537,12 +544,13 @@ paths:
     delete:
       description: ''
       operationId: ''
-      tags: *ref_8
+      tags: *ref_3
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_1
+          schema:
+            type: integer
           required: true
       responses:
         '200':
@@ -574,12 +582,13 @@ paths:
     put:
       description: ''
       operationId: ''
-      tags: *ref_8
+      tags: *ref_3
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_1
+          schema:
+            type: integer
           required: true
       requestBody:
         content:
@@ -616,8 +625,8 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_9 []
-      parameters: &ref_10 []
+      tags: &ref_4 []
+      parameters: &ref_5 []
       responses:
         '200':
           description: ''
@@ -646,8 +655,8 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_9
-      parameters: *ref_10
+      tags: *ref_4
+      parameters: *ref_5
       requestBody:
         content:
           application/json:
@@ -701,7 +710,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_11 []
+      tags: &ref_6 []
       parameters: []
       responses:
         '200':
@@ -734,7 +743,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_11
+      tags: *ref_6
       parameters: []
       requestBody:
         content:
@@ -771,12 +780,12 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_12 []
+      tags: &ref_7 []
       parameters:
         - in: path
           name: id
           description: ''
-          schema: &ref_13
+          schema:
             type: integer
           required: true
       responses:
@@ -808,12 +817,13 @@ paths:
     put:
       description: ''
       operationId: ''
-      tags: *ref_12
+      tags: *ref_7
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_13
+          schema:
+            type: integer
           required: true
       requestBody:
         content:
@@ -849,12 +859,13 @@ paths:
     delete:
       description: ''
       operationId: ''
-      tags: *ref_12
+      tags: *ref_7
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_13
+          schema:
+            type: integer
           required: true
       responses:
         '200':
@@ -886,7 +897,7 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_14 []
+      tags: &ref_8 []
       parameters: []
       responses:
         '200':
@@ -919,7 +930,7 @@ paths:
     post:
       description: ''
       operationId: ''
-      tags: *ref_14
+      tags: *ref_8
       parameters: []
       requestBody:
         content:
@@ -956,12 +967,13 @@ paths:
     get:
       description: ''
       operationId: ''
-      tags: &ref_15 []
+      tags: &ref_9 []
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_13
+          schema:
+            type: integer
           required: true
       responses:
         '200':
@@ -992,12 +1004,13 @@ paths:
     put:
       description: ''
       operationId: ''
-      tags: *ref_15
+      tags: *ref_9
       parameters:
         - in: path
           name: id
           description: ''
-          schema: *ref_13
+          schema:
+            type: integer
           required: true
       requestBody:
         content:
@@ -1033,7 +1046,7 @@ paths:
     delete:
       description: ''
       operationId: ''
-      tags: *ref_15
+      tags: *ref_9
       parameters:
         - in: path
           name: id
