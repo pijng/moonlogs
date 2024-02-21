@@ -123,3 +123,25 @@ jobs:
           event-type: generate-publish-client
           client-payload: '{"tag_version": "${{ steps.get_tag_version.outputs.tag_version }}"}'
 
+  trigger-typescript-client:
+    needs: publish-docker
+    name: Trigger Typescript Client Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Tag Version
+        id: get_tag_version
+        run: echo "::set-output name=tag_version::${GITHUB_REF#refs/tags/v}"
+
+      - name: Trigger Typescript Client Workflow
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.TS_SDK_TOKEN }}
+          repository: pijng/moonlogs-ts
+          event-type: generate-publish-client
+          client-payload: '{"tag_version": "${{ steps.get_tag_version.outputs.tag_version }}"}'
+
+
+
