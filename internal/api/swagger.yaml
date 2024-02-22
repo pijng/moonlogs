@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.5.11
+  version: 0.5.12
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -220,7 +220,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Record'
+              $ref: '#/components/schemas/RecordRequest'
       responses:
         '200':
           description: ''
@@ -236,7 +236,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Record'
+                    $ref: '#/components/schemas/RecordResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -279,7 +279,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Record'
+                      $ref: '#/components/schemas/RecordResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -317,7 +317,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Record'
+                    $ref: '#/components/schemas/RecordResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -363,7 +363,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Record'
+                      $ref: '#/components/schemas/RecordResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -404,7 +404,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Record'
+              $ref: '#/components/schemas/RecordRequest'
       responses:
         '200':
           description: ''
@@ -422,7 +422,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Record'
+                      $ref: '#/components/schemas/RecordResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -1121,7 +1121,7 @@ components:
       required:
         - title
         - name
-    Record:
+    RecordResponse:
       type: object
       properties:
         id:
@@ -1150,6 +1150,10 @@ components:
         - schema_name
         - query
         - kind
+        - created_at
+        - group_hash
+        - level
+        - schema_id
     Level:
       type: string
       enum:
@@ -1262,6 +1266,27 @@ components:
       required:
         - id
         - name
+    RecordRequest:
+      type: object
+      properties:
+        text:
+          type: string
+        schema_name:
+          type: string
+        schema_id:
+          type: integer
+        query:
+          type: object
+          properties: {}
+        kind:
+          type: string
+        level:
+          oneOf:
+            - $ref: '#/components/schemas/Level'
+      required:
+        - text
+        - schema_name
+        - query
   securitySchemes:
     http1:
       type: http
