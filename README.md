@@ -198,8 +198,7 @@ Moonlogs provides Software Development Kits (SDKs) to simplify the integration p
 #### Available SDKs
 
 - [Ruby SDK](https://github.com/pijng/moonlogs-ruby)
-
-Feel free to contribute to the SDKs or report issues on their respective GitHub repositories.
+- [Typescript SDK](https://github.com/pijng/moonlogs-ts)
 
 
 ## Considerations
