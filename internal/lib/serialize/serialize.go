@@ -3,23 +3,23 @@ package serialize
 import (
 	"io"
 
-	stdjson "encoding/json"
+	"encoding/json"
 
-	"github.com/goccy/go-json"
+	gojson "github.com/goccy/go-json"
 )
 
-func NewJSONEncoder(w io.Writer) *json.Encoder {
-	return json.NewEncoder(w)
+func NewJSONEncoder(w io.Writer) *gojson.Encoder {
+	return gojson.NewEncoder(w)
 }
 
-func NewJSONDecoder(r io.Reader) *stdjson.Decoder {
-	return stdjson.NewDecoder(r)
+func NewJSONDecoder(r io.Reader) *json.Decoder {
+	return json.NewDecoder(r)
 }
 
 func JSONUnmarshal(data []byte, v any) error {
-	return json.Unmarshal(data, v)
+	return gojson.Unmarshal(data, v)
 }
 
 func JSONMarshal(v any) ([]byte, error) {
-	return json.Marshal(v)
+	return gojson.Marshal(v)
 }
