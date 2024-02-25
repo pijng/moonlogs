@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.6.0
+  version: 0.6.1
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -43,7 +43,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Schema'
+                      $ref: '#/components/schemas/SchemaResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -64,7 +64,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Schema'
+              $ref: '#/components/schemas/SchemaRequest'
       responses:
         '200':
           description: ''
@@ -80,7 +80,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Schema'
+                    $ref: '#/components/schemas/SchemaResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -118,7 +118,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Schema'
+                    $ref: '#/components/schemas/SchemaResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -145,7 +145,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Schema'
+              $ref: '#/components/schemas/SchemaRequest'
       responses:
         '200':
           description: ''
@@ -161,7 +161,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Schema'
+                    $ref: '#/components/schemas/SchemaResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -456,7 +456,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/UserResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -476,7 +476,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         '200':
           description: ''
@@ -492,7 +492,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -530,7 +530,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -594,7 +594,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         '200':
           description: ''
@@ -610,7 +610,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -696,7 +696,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserResponse'
       responses:
         '200':
           description: ''
@@ -704,7 +704,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
       security: []
   /api/api_tokens:
     get:
@@ -1082,7 +1082,7 @@ paths:
         - http1: []
 components:
   schemas:
-    Schema:
+    SchemaResponse:
       type: object
       properties:
         id:
@@ -1163,7 +1163,7 @@ components:
         - Warn
         - Error
         - Fatal
-    User:
+    UserResponse:
       type: object
       properties:
         id:
@@ -1287,6 +1287,59 @@ components:
         - text
         - schema_name
         - query
+    SchemaRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaField'
+        kinds:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaKind'
+        tag_id:
+          type: integer
+        retention_days:
+          type: integer
+      required:
+        - title
+        - name
+        - fields
+        - description
+    UserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        password_digest:
+          type: string
+        role:
+          oneOf:
+            - $ref: '#/components/schemas/Role'
+        tags:
+          type: array
+          items:
+            type: number
+        token:
+          type: string
+        is_revoked:
+          type: boolean
+      required:
+        - name
+        - email
+        - password
+        - role
   securitySchemes:
     http1:
       type: http
