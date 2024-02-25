@@ -31,6 +31,7 @@ export const NewMemberForm = () => {
         value: memberForm.fields.role.$value,
         options: createStore<UserRole[]>(["Member", "Admin"]),
         optionSelected: memberForm.fields.role.changed,
+        withBlank: createStore(false),
       });
     });
 
