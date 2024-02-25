@@ -1,21 +1,21 @@
-package mediators
+package services
 
 import (
 	"fmt"
 	"moonlogs/internal/usecases"
 )
 
-type TagMediator struct {
+type TagService struct {
 	tagUseCase    *usecases.TagUseCase
 	schemaUseCase *usecases.SchemaUseCase
 	userUseCase   *usecases.UserUseCase
 }
 
-func NewTagMediator(tuc *usecases.TagUseCase, suc *usecases.SchemaUseCase, uuc *usecases.UserUseCase) *TagMediator {
-	return &TagMediator{tagUseCase: tuc, schemaUseCase: suc, userUseCase: uuc}
+func NewTagService(tuc *usecases.TagUseCase, suc *usecases.SchemaUseCase, uuc *usecases.UserUseCase) *TagService {
+	return &TagService{tagUseCase: tuc, schemaUseCase: suc, userUseCase: uuc}
 }
 
-func (m *TagMediator) DestroyTagByID(id int) error {
+func (m *TagService) DestroyTagByID(id int) error {
 	err := m.tagUseCase.DeleteTagByID(id)
 	if err != nil {
 		return fmt.Errorf("destroying tag by id: %w", err)

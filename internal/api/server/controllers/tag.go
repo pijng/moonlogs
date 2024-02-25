@@ -6,7 +6,7 @@ import (
 	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
-	"moonlogs/internal/mediators"
+	"moonlogs/internal/services"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
@@ -50,7 +50,7 @@ func DeleteTagByID(w http.ResponseWriter, r *http.Request) {
 	schemaUsecase := usecases.NewSchemaUseCase(schemaStorage)
 	userUsecase := usecases.NewUserUseCase(userStorage)
 
-	tagMediator := mediators.NewTagMediator(tagUsecase, schemaUsecase, userUsecase)
+	tagMediator := services.NewTagService(tagUsecase, schemaUsecase, userUsecase)
 
 	err = tagMediator.DestroyTagByID(id)
 	if err != nil {
