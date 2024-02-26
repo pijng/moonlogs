@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.6.1
+  version: 0.7.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -22,7 +22,7 @@ paths:
     get:
       summary: ''
       description: ''
-      operationId: ''
+      operationId: getSchemas
       tags: []
       parameters: []
       responses:
@@ -57,7 +57,7 @@ paths:
     post:
       summary: ''
       description: ''
-      operationId: ''
+      operationId: createSchema
       tags: &ref_0 []
       parameters: []
       requestBody:
@@ -94,7 +94,7 @@ paths:
   /api/schemas/{id}:
     get:
       description: ''
-      operationId: ''
+      operationId: getSchemaByID
       tags: []
       parameters:
         - in: path
@@ -132,7 +132,7 @@ paths:
     put:
       summary: ''
       description: ''
-      operationId: ''
+      operationId: updateSchemaByID
       tags: *ref_0
       parameters:
         - in: path
@@ -175,7 +175,7 @@ paths:
     delete:
       summary: ''
       description: ''
-      operationId: ''
+      operationId: deleteSchemaByID
       tags: []
       parameters:
         - in: path
@@ -213,7 +213,7 @@ paths:
   /api/logs:
     post:
       description: ''
-      operationId: ''
+      operationId: createLog
       tags: &ref_1 []
       parameters: []
       requestBody:
@@ -249,7 +249,7 @@ paths:
         - http1: []
     get:
       description: ''
-      operationId: ''
+      operationId: getLog
       tags: *ref_1
       parameters:
         - in: query
@@ -293,7 +293,7 @@ paths:
   /api/logs/{id}:
     get:
       description: ''
-      operationId: ''
+      operationId: getLogByID
       tags: []
       parameters:
         - in: path
@@ -331,7 +331,7 @@ paths:
   /api/logs/group/{schema_name}/{hash}:
     get:
       description: ''
-      operationId: ''
+      operationId: getLogsBySchemaAndHash
       tags: []
       parameters:
         - in: path
@@ -377,7 +377,7 @@ paths:
   /api/logs/search:
     post:
       description: ''
-      operationId: ''
+      operationId: searchLogs
       tags: []
       parameters:
         - in: query
@@ -436,7 +436,7 @@ paths:
   /api/users:
     get:
       description: ''
-      operationId: ''
+      operationId: getUsers
       tags: &ref_2 []
       parameters: []
       responses:
@@ -469,7 +469,7 @@ paths:
         - http1: []
     post:
       description: ''
-      operationId: ''
+      operationId: createUser
       tags: *ref_2
       parameters: []
       requestBody:
@@ -506,7 +506,7 @@ paths:
   /api/users/{id}:
     get:
       description: ''
-      operationId: ''
+      operationId: getUserByID
       tags: &ref_3 []
       parameters:
         - in: path
@@ -543,7 +543,7 @@ paths:
         - http1: []
     delete:
       description: ''
-      operationId: ''
+      operationId: deleteUserByID
       tags: *ref_3
       parameters:
         - in: path
@@ -581,7 +581,7 @@ paths:
         - http1: []
     put:
       description: ''
-      operationId: ''
+      operationId: updateUserByID
       tags: *ref_3
       parameters:
         - in: path
@@ -624,7 +624,7 @@ paths:
   /api/session:
     get:
       description: ''
-      operationId: ''
+      operationId: getSession
       tags: &ref_4 []
       parameters: &ref_5 []
       responses:
@@ -654,7 +654,7 @@ paths:
       security: []
     post:
       description: ''
-      operationId: ''
+      operationId: createSession
       tags: *ref_4
       parameters: *ref_5
       requestBody:
@@ -689,14 +689,14 @@ paths:
   /api/setup/register_admin:
     post:
       description: ''
-      operationId: ''
+      operationId: registerAdmin
       tags: []
       parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserResponse'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         '200':
           description: ''
@@ -709,7 +709,7 @@ paths:
   /api/api_tokens:
     get:
       description: ''
-      operationId: ''
+      operationId: getTokens
       tags: &ref_6 []
       parameters: []
       responses:
@@ -729,7 +729,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ApiToken'
+                      $ref: '#/components/schemas/ApiTokenResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -742,14 +742,14 @@ paths:
         - http1: []
     post:
       description: ''
-      operationId: ''
+      operationId: createToken
       tags: *ref_6
       parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiToken'
+              $ref: '#/components/schemas/ApiTokenRequest'
       responses:
         '200':
           description: ''
@@ -765,7 +765,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/ApiToken'
+                    $ref: '#/components/schemas/ApiTokenResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -779,7 +779,7 @@ paths:
   /api/api_tokens/{id}:
     get:
       description: ''
-      operationId: ''
+      operationId: getTokenByID
       tags: &ref_7 []
       parameters:
         - in: path
@@ -803,7 +803,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/ApiToken'
+                    $ref: '#/components/schemas/ApiTokenResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -816,7 +816,7 @@ paths:
         - http1: []
     put:
       description: ''
-      operationId: ''
+      operationId: updateTokenByID
       tags: *ref_7
       parameters:
         - in: path
@@ -829,7 +829,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiToken'
+              $ref: '#/components/schemas/ApiTokenRequest'
       responses:
         '200':
           description: ''
@@ -845,7 +845,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/ApiToken'
+                    $ref: '#/components/schemas/ApiTokenResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -858,7 +858,7 @@ paths:
         - http1: []
     delete:
       description: ''
-      operationId: ''
+      operationId: deleteTokenByID
       tags: *ref_7
       parameters:
         - in: path
@@ -896,7 +896,7 @@ paths:
   /api/tags:
     get:
       description: ''
-      operationId: ''
+      operationId: getTags
       tags: &ref_8 []
       parameters: []
       responses:
@@ -916,7 +916,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Tag'
+                      $ref: '#/components/schemas/TagResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -929,14 +929,14 @@ paths:
         - http1: []
     post:
       description: ''
-      operationId: ''
+      operationId: createTag
       tags: *ref_8
       parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tag'
+              $ref: '#/components/schemas/TagRequest'
       responses:
         '200':
           description: ''
@@ -952,7 +952,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Tag'
+                    $ref: '#/components/schemas/TagResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -966,7 +966,7 @@ paths:
   /api/tags/{id}:
     get:
       description: ''
-      operationId: ''
+      operationId: getTagByID
       tags: &ref_9 []
       parameters:
         - in: path
@@ -990,7 +990,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Tag'
+                    $ref: '#/components/schemas/TagResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -1003,7 +1003,7 @@ paths:
         - http1: []
     put:
       description: ''
-      operationId: ''
+      operationId: updateTagByID
       tags: *ref_9
       parameters:
         - in: path
@@ -1016,7 +1016,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tag'
+              $ref: '#/components/schemas/TagRequest'
       responses:
         '200':
           description: ''
@@ -1032,7 +1032,7 @@ paths:
                   error:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Tag'
+                    $ref: '#/components/schemas/TagResponse'
                   meta:
                     $ref: '#/components/schemas/Meta'
                 required:
@@ -1045,7 +1045,7 @@ paths:
         - http1: []
     delete:
       description: ''
-      operationId: ''
+      operationId: deleteTagByID
       tags: *ref_9
       parameters:
         - in: path
@@ -1230,7 +1230,7 @@ components:
           type: string
       required:
         - token
-    ApiToken:
+    ApiTokenResponse:
       type: object
       properties:
         id:
@@ -1256,7 +1256,7 @@ components:
       required:
         - title
         - name
-    Tag:
+    TagResponse:
       type: object
       properties:
         id:
@@ -1306,6 +1306,8 @@ components:
             $ref: '#/components/schemas/SchemaKind'
         tag_id:
           type: integer
+        tag_name:
+          type: string
         retention_days:
           type: integer
       required:
@@ -1340,6 +1342,20 @@ components:
         - email
         - password
         - role
+    TagRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    ApiTokenRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
   securitySchemes:
     http1:
       type: http

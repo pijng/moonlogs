@@ -33,12 +33,16 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 				continue
 			}
 
+			// Move this to separate module that will determine what operation to do in case
+			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
 			_, err = persistence.DB().ExecContext(ctx, "ANALYZE;")
 			if err != nil {
 				log.Printf("failed optimizing db's query planner statistics: %v", err)
 				continue
 			}
 
+			// Move this to separate module that will determine what operation to do in case
+			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
 			_, err = persistence.DB().ExecContext(ctx, "VACUUM;")
 			if err != nil {
 				log.Printf("failed vacuuming db: %v", err)
