@@ -11,11 +11,12 @@ import (
 )
 
 const (
-	PORT          = 4200
-	READ_TIMEOUT  = 5 * time.Second
-	WRITE_TIMEOUT = 1 * time.Second
-	DB_PATH       = "/etc/moonlogs/database.sqlite"
-	CONFIG_PATH   = "/etc/moonlogs/config.yaml"
+	PORT                  = 4200
+	READ_TIMEOUT          = 5 * time.Second
+	WRITE_TIMEOUT         = 1 * time.Second
+	DB_PATH               = "/etc/moonlogs/database.sqlite"
+	CONFIG_PATH           = "/etc/moonlogs/config.yaml"
+	ASYNC_RECORD_CREATION = false
 
 	DB_SQLITE_ADAPTER = "sqlite"
 )
@@ -23,11 +24,12 @@ const (
 var config *Config
 
 type Config struct {
-	Port         int           `yaml:"port"`
-	DBPath       string        `yaml:"db_path"`
-	DBAdapter    string        `yaml:"db_adapter"`
-	ReadTimeout  time.Duration `yaml:"read_timeout"`
-	WriteTimeout time.Duration `yaml:"write_timeout"`
+	Port                int           `yaml:"port"`
+	DBPath              string        `yaml:"db_path"`
+	DBAdapter           string        `yaml:"db_adapter"`
+	AsyncRecordCreation bool          `yaml:"async_record_creation"`
+	ReadTimeout         time.Duration `yaml:"read_timeout"`
+	WriteTimeout        time.Duration `yaml:"write_timeout"`
 }
 
 func Load() (*Config, error) {
@@ -70,9 +72,10 @@ func writeDefaultConfig(filePath string, flagArgs args) error {
 	defaultConfig := fmt.Sprintf(`port: %v
 db_path: %s
 db_adapter: %s
+async_record_creation: %v
 read_timeout: %s
 write_timeout: %s
-`, flagArgs.Port, flagArgs.DBPath, flagArgs.DBAdapter, flagArgs.ReadTimeout, flagArgs.WriteTimeout)
+`, flagArgs.Port, flagArgs.DBPath, flagArgs.DBAdapter, flagArgs.AsyncRecordCreation, flagArgs.ReadTimeout, flagArgs.WriteTimeout)
 
 	dir := filepath.Dir(filePath)
 
@@ -91,12 +94,13 @@ write_timeout: %s
 }
 
 type args struct {
-	Config       string
-	Port         int
-	DBPath       string
-	DBAdapter    string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	Config              string
+	Port                int
+	DBPath              string
+	DBAdapter           string
+	AsyncRecordCreation bool
+	ReadTimeout         time.Duration
+	WriteTimeout        time.Duration
 }
 
 func processArgs() (args, error) {
@@ -107,6 +111,7 @@ func processArgs() (args, error) {
 	f.IntVar(&a.Port, "port", PORT, "port to run moonlogs on")
 	f.StringVar(&a.DBPath, "db-path", DB_PATH, "db path to connect to")
 	f.StringVar(&a.DBAdapter, "db-adapter", DB_SQLITE_ADAPTER, "db adapter to connect to")
+	f.BoolVar(&a.AsyncRecordCreation, "async-record-creation", ASYNC_RECORD_CREATION, "should record creation be done asynchronously")
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 

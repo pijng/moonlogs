@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.4
+  version: 1.1.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -1078,6 +1078,42 @@ paths:
                   - error
                   - data
                   - meta
+      security:
+        - http1: []
+  /api/logs/async:
+    post:
+      description: ''
+      operationId: createLogAsync
+      tags: []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    type: string
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - meta
+                  - data
+                  - error
+                  - code
       security:
         - http1: []
 components:

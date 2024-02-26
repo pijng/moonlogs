@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"moonlogs/internal/api/server/access"
@@ -19,6 +20,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	AsyncProcessingMessage = "Logs are being queued for asynchronous processing"
+)
+
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	var newRecord entities.Record
 
@@ -28,6 +33,30 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if config.Get().AsyncRecordCreation {
+		go createRecordAsync(newRecord)
+		response.Return(w, true, http.StatusOK, nil, AsyncProcessingMessage, response.Meta{})
+		return
+	}
+
+	createRecord(w, r, newRecord)
+}
+
+func CreateRecordAsync(w http.ResponseWriter, r *http.Request) {
+	var newRecord entities.Record
+
+	err := serialize.NewJSONDecoder(r.Body).Decode(&newRecord)
+	if err != nil {
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+		return
+	}
+
+	go createRecordAsync(newRecord)
+
+	response.Return(w, true, http.StatusOK, nil, AsyncProcessingMessage, response.Meta{})
+}
+
+func createRecord(w http.ResponseWriter, r *http.Request, newRecord entities.Record) {
 	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
 	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByName(newRecord.SchemaName)
 	if err != nil {
@@ -48,6 +77,23 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Return(w, true, http.StatusOK, nil, record, response.Meta{})
+}
+
+func createRecordAsync(newRecord entities.Record) {
+	ctx := context.Background()
+
+	schemaStorage := storage.NewSchemaStorage(ctx, config.Get().DBAdapter)
+	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByName(newRecord.SchemaName)
+	if err != nil {
+		return
+	}
+
+	if schema.ID == 0 {
+		return
+	}
+
+	recordStorage := storage.NewRecordStorage(ctx, config.Get().DBAdapter)
+	_, _ = usecases.NewRecordUseCase(recordStorage).CreateRecord(newRecord, schema.ID)
 }
 
 func GetAllRecords(w http.ResponseWriter, r *http.Request) {
