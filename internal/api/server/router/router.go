@@ -33,6 +33,7 @@ func RegisterRecordRouter(r *mux.Router) {
 
 	recordRouter.HandleFunc("", controllers.GetAllRecords).Methods(http.MethodGet)
 	recordRouter.HandleFunc("", roleMiddleware(controllers.CreateRecord, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
+	recordRouter.HandleFunc("/async", roleMiddleware(controllers.CreateRecordAsync, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
 	recordRouter.HandleFunc("/{id}", controllers.GetRecordByID).Methods(http.MethodGet)
 	recordRouter.HandleFunc("/group/{schemaName}/{hash}", controllers.GetRecordsByGroupHash).Methods(http.MethodGet)
 	recordRouter.HandleFunc("/search", controllers.GetRecordsByQuery).Methods(http.MethodPost)
