@@ -16,7 +16,7 @@ purge() {
 
 upgrade() {
     printf "\033[32m Reloading systemd daemon\033[0m\n"
-    systemctl daemon-reload
+    printf "\033[32m You should restart moonlogs' systemd service manually\033[0m\n"
 }
 
 echo "$@"
