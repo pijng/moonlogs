@@ -12,7 +12,9 @@ require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
+	github.com/grafana/pyroscope-go/godeltaprof v0.1.6 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/klauspost/compress v1.17.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
@@ -28,6 +30,7 @@ require (
 require (
 	github.com/goccy/go-json v0.10.2
 	github.com/gorilla/securecookie v1.1.2 // indirect
+	github.com/grafana/pyroscope-go v1.1.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	golang.org/x/crypto v0.18.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
