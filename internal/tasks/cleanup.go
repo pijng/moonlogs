@@ -43,10 +43,13 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 
 			// Move this to separate module that will determine what operation to do in case
 			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
-			_, err = persistence.DB().ExecContext(ctx, "VACUUM;")
-			if err != nil {
-				log.Printf("failed vacuuming db: %v", err)
-			}
+
+			// Disable VACUUM, consider adding a feature flag to enable it
+
+			// _, err = persistence.DB().ExecContext(ctx, "VACUUM;")
+			// if err != nil {
+			// 	log.Printf("failed vacuuming db: %v", err)
+			// }
 		}
 	}
 }
