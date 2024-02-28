@@ -2,6 +2,7 @@ package sqlite_adapter
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
@@ -13,12 +14,14 @@ import (
 type RecordStorage struct {
 	ctx     context.Context
 	records *qrx.TableQuerier[entities.Record]
+	db      *sql.DB
 }
 
 func NewRecordStorage(ctx context.Context) *RecordStorage {
 	return &RecordStorage{
 		ctx:     ctx,
 		records: qrx.Scan(entities.Record{}).With(persistence.DB()).From("records"),
+		db:      persistence.DB(),
 	}
 }
 
@@ -141,8 +144,33 @@ func (s *RecordStorage) GetAllRecordsCount() (int, error) {
 	return count, nil
 }
 
-func (s *RecordStorage) FindStale(schemaID int, threshold int64) ([]*entities.Record, error) {
-	return s.records.Where("schema_id = ? AND created_at <= ?", schemaID, threshold).All(s.ctx)
+func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, error) {
+	// Count the number of rows before fetching the IDs to efficiently
+	// pre-allocate array of ids for resulting query
+	var rowsCount int
+	countQuery := "SELECT COUNT(*) FROM records WHERE schema_id = ? AND created_at <= ?"
+	err := s.db.QueryRowContext(s.ctx, countQuery, schemaID, threshold).Scan(&rowsCount)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying count of stale records IDs: %w", err)
+	}
+
+	rows, err := s.db.QueryContext(s.ctx, "SELECT id FROM records WHERE schema_id = ? AND created_at <= ?", schemaID, threshold)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying stale records IDs: %w", err)
+	}
+	defer rows.Close()
+
+	ids := make([]int, 0, rowsCount)
+
+	var id int
+	for rows.Next() {
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("failed scanning stale records ID: %w", err)
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }
 
 func (s *RecordStorage) DeleteByIDs(ids []int) error {

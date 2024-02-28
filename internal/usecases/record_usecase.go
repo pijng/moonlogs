@@ -6,7 +6,6 @@ import (
 	"hash/fnv"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
-	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"slices"
 	"strings"
@@ -68,24 +67,15 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 
 	threshold := time.Now().Add(-time.Duration(schema.RetentionDays) * 24 * time.Hour).Unix()
 
-	staleRecords, err := uc.recordStorage.FindStale(schema.ID, threshold)
+	staleRecordIDs, err := uc.recordStorage.FindStaleIDs(schema.ID, threshold)
 	if err != nil {
 		return fmt.Errorf("DeleteStaleRecords: failed to query stale log records: %w", err)
 	}
 
-	var staleRecordIDs []int
-	for _, record := range staleRecords {
-		staleRecordIDs = append(staleRecordIDs, record.ID)
-	}
+	err = uc.recordStorage.DeleteByIDs(staleRecordIDs)
 
-	recordIDsBatches := shared.BatchSlice(staleRecordIDs, 500)
-
-	for _, recordIDs := range recordIDsBatches {
-		err = uc.recordStorage.DeleteByIDs(recordIDs)
-
-		if err != nil {
-			return fmt.Errorf("DeleteStatelecords: failed to delete stale log records: %w", err)
-		}
+	if err != nil {
+		return fmt.Errorf("DeleteStatelecords: failed to delete stale log records: %w", err)
 	}
 
 	return nil
