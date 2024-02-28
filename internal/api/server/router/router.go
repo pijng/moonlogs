@@ -115,7 +115,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 		user, _ := usecases.NewUserUseCase(userStorage).GetUserByToken(bearerToken)
 
 		token, ok := sessionCookie.Values["token"].(string)
-		if !ok || user.ID == 0 || bool(user.IsRevoked) {
+		if !ok || user == nil || user.ID == 0 || bool(user.IsRevoked) {
 			response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 			return
 		}
