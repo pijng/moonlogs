@@ -5,7 +5,6 @@ import (
 	"log"
 	"moonlogs/internal/config"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/persistence"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"time"
@@ -35,11 +34,14 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 
 			// Move this to separate module that will determine what operation to do in case
 			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
-			_, err = persistence.DB().ExecContext(ctx, "ANALYZE;")
-			if err != nil {
-				log.Printf("failed optimizing db's query planner statistics: %v", err)
-				continue
-			}
+
+			// Disable ANALYZE, consider adding a feature flag to enable it
+
+			// _, err = persistence.DB().ExecContext(ctx, "ANALYZE;")
+			// if err != nil {
+			// 	log.Printf("failed optimizing db's query planner statistics: %v", err)
+			// 	continue
+			// }
 
 			// Move this to separate module that will determine what operation to do in case
 			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
