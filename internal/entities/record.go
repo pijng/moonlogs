@@ -14,6 +14,8 @@ type Record struct {
 	SchemaName string     `json:"schema_name,omitempty" sql:"schema_name"`
 	SchemaID   int        `json:"schema_id,omitempty" sql:"schema_id"`
 	Query      JSONMap    `json:"query,omitempty" sql:"query"`
+	Request    JSONMap    `json:"request,omitempty" sql:"request"`
+	Response   JSONMap    `json:"response,omitempty" sql:"response"`
 	Kind       string     `json:"kind,omitempty" sql:"kind"`
 	GroupHash  string     `json:"group_hash,omitempty" sql:"group_hash"`
 	Level      Level      `json:"level,omitempty" sql:"level"`
