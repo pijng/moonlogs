@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"log"
 	"moonlogs/internal/api/server"
 	"moonlogs/internal/config"
@@ -10,6 +11,9 @@ import (
 	"moonlogs/internal/tasks"
 	"time"
 )
+
+//go:embed migrations/*.sql
+var embedMigrations embed.FS
 
 func main() {
 	cfg, err := config.Load()
@@ -29,7 +33,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	runTasks(context.Background())
+	err = tasks.Migrate(persistence.DB(), cfg.DBAdapter, embedMigrations)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	runCleanupTasks(context.Background())
 
 	err = server.ListenAndServe(cfg)
 	if err != nil {
@@ -37,7 +46,7 @@ func main() {
 	}
 }
 
-func runTasks(ctx context.Context) {
+func runCleanupTasks(ctx context.Context) {
 	go tasks.RunRecordsCleanupTask(ctx, 1*time.Hour)
 	go tasks.RunStatementsCleanupTask(ctx, 15*time.Minute)
 }
