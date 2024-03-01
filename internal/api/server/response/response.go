@@ -40,3 +40,10 @@ func Return(w http.ResponseWriter, success bool, code int, err error, data inter
 		response.Error = err.Error()
 	}
 }
+
+func ReturnPlain(w http.ResponseWriter, code int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	_ = serialize.NewJSONEncoder(w).Encode(data)
+}

@@ -36,7 +36,11 @@ export const ShowLogPage = () => {
           schema: $activeSchema,
           kind: logModel.$groupedLogs.map((g) => g.kind),
           content: () => {
-            LogsTable(logModel.$groupedLogs.map((g) => g.logs));
+            LogsTable({
+              logs: logModel.$groupedLogs.map((g) => g.logs),
+              requestClicked: logModel.events.requestURLClicked,
+              responseClicked: logModel.events.responseURLClicked,
+            });
           },
         });
       });

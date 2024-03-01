@@ -23,7 +23,11 @@ export const LogsList = () => {
         schema: $activeSchema,
         href: group.map((g) => `${g.schema_name}/${g.group_hash}`),
         content: () => {
-          LogsTable(group.map((g) => g.logs));
+          LogsTable({
+            logs: group.map((g) => g.logs),
+            requestClicked: logModel.events.requestURLClicked,
+            responseClicked: logModel.events.responseURLClicked,
+          });
         },
       });
     });

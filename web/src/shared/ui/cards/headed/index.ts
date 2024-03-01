@@ -1,6 +1,6 @@
 import { Store, combine, createStore } from "effector";
 import { h, list, spec } from "forest";
-import { Button } from "@/shared/ui";
+import { Button, KBD } from "@/shared/ui";
 import { Schema } from "@/shared/api";
 
 export const CardHeaded = ({
@@ -78,24 +78,7 @@ export const CardHeaded = ({
 
           spec({ visible: $kindTitle.map(Boolean) });
 
-          h("kbd", {
-            classList: [
-              "block",
-              "px-2",
-              "py-1.5",
-              "text-xs",
-              "font-semibold",
-              "text-gray-800",
-              "bg-gray-100",
-              "border",
-              "border-gray-200",
-              "rounded-lg",
-              "dark:bg-gray-600",
-              "dark:text-gray-100",
-              "dark:border-gray-500",
-            ],
-            text: $kindTitle,
-          });
+          KBD({ text: $kindTitle });
         });
 
         list(tags, ({ store: tag }) => {
@@ -104,30 +87,15 @@ export const CardHeaded = ({
               classList: ["min-w-fit"],
             });
 
-            h("kbd", {
-              classList: [
-                "block",
-                "px-2",
-                "py-1.5",
-                "text-xs",
-                "font-semibold",
-                "text-gray-800",
-                "bg-gray-100",
-                "border",
-                "border-gray-200",
-                "rounded-lg",
-                "dark:bg-gray-600",
-                "dark:text-gray-100",
-                "dark:border-gray-500",
-              ],
-              text: combine(tag, localSchema, (tag, schema) => {
-                const [tagKey, tagValue] = tag;
-                const field = schema?.fields.find((f) => f.name === tagKey);
-                if (!field) return `${tagKey}: ${tagValue}`;
+            const text = combine(tag, localSchema, (tag, schema) => {
+              const [tagKey, tagValue] = tag;
+              const field = schema?.fields.find((f) => f.name === tagKey);
+              if (!field) return `${tagKey}: ${tagValue}`;
 
-                return `${field.title}: ${tagValue}`;
-              }),
+              return `${field.title}: ${tagValue}`;
             });
+
+            KBD({ text: text });
           });
         });
       });

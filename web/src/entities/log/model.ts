@@ -170,6 +170,26 @@ export const $logsGroups = $logs.map((logs) => {
   return Object.values(groupedLogs);
 });
 
+const requestURLClicked = createEvent<number>();
+const openRequestURLFx = createEffect((id: number) => {
+  window.open(`/api/logs/${id}/request`);
+});
+
+sample({
+  source: requestURLClicked,
+  target: openRequestURLFx,
+});
+
+const responseURLClicked = createEvent<number>();
+const openResponseURLFx = createEffect((id: number) => {
+  window.open(`/api/logs/${id}/response`);
+});
+
+sample({
+  source: responseURLClicked,
+  target: openResponseURLFx,
+});
+
 sample({
   clock: reset,
   target: [resetFilter, resetSearch, resetPage],
@@ -183,6 +203,8 @@ export const effects = {
 };
 
 export const events = {
+  requestURLClicked,
+  responseURLClicked,
   queryChanged,
   filterChanged,
   kindChanged,

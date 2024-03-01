@@ -31,6 +31,8 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 		"schema_name": record.SchemaName,
 		"schema_id":   schemaID,
 		"query":       record.Query,
+		"request":     record.Request,
+		"response":    record.Response,
 		"kind":        record.Kind,
 		"group_hash":  groupHash,
 		"level":       record.Level,

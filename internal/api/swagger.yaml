@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.2.11
+  version: 1.3.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -294,8 +294,8 @@ paths:
     get:
       description: ''
       operationId: getLogByID
-      tags: []
-      parameters:
+      tags: &ref_10 []
+      parameters: &ref_11
         - in: path
           name: id
           description: ''
@@ -326,7 +326,7 @@ paths:
                   - meta
                   - error
                   - code
-      security:
+      security: &ref_12
         - http1: []
   /api/logs/group/{schema_name}/{hash}:
     get:
@@ -1116,6 +1116,36 @@ paths:
                   - code
       security:
         - http1: []
+  /api/logs/{id}/request:
+    get:
+      description: ''
+      operationId: getLogRequestByID
+      tags: *ref_10
+      parameters: *ref_11
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      security: *ref_12
+  /api/logs/{id}/response:
+    get:
+      description: ''
+      operationId: getLogResponseByID
+      tags: *ref_10
+      parameters: *ref_11
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      security: *ref_12
 components:
   schemas:
     SchemaResponse:
@@ -1171,6 +1201,12 @@ components:
         query:
           type: object
           properties: {}
+        request:
+          type: object
+          properties: {}
+        response:
+          type: object
+          properties: {}
         kind:
           type: string
         created_at:
@@ -1190,6 +1226,8 @@ components:
         - group_hash
         - level
         - schema_id
+        - request
+        - response
     Level:
       type: string
       enum:
@@ -1312,6 +1350,12 @@ components:
         schema_id:
           type: integer
         query:
+          type: object
+          properties: {}
+        request:
+          type: object
+          properties: {}
+        response:
           type: object
           properties: {}
         kind:

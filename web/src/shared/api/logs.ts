@@ -13,6 +13,8 @@ export type Log = {
   kind: string | null;
   schema_id: number;
   query: Record<string, any>;
+  request: Record<string, any>;
+  response: Record<string, any>;
 };
 
 export interface LogsResponse extends BaseResponse {

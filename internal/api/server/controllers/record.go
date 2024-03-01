@@ -156,6 +156,66 @@ func GetRecordByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, record, response.Meta{})
 }
 
+func GetRecordRequestByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		error := fmt.Errorf("`id` path parameter is invalid")
+		response.Return(w, false, http.StatusBadRequest, error, nil, response.Meta{})
+		return
+	}
+
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	record, err := usecases.NewRecordUseCase(recordStorage).GetRecordByID(id)
+	if err != nil {
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+		return
+	}
+
+	if record.ID == 0 {
+		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
+		return
+	}
+
+	if access.IsSchemaForbiddenForUser(record.SchemaName, r) {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
+		return
+	}
+
+	response.ReturnPlain(w, http.StatusOK, record.Request)
+}
+
+func GetRecordResponseByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		error := fmt.Errorf("`id` path parameter is invalid")
+		response.Return(w, false, http.StatusBadRequest, error, nil, response.Meta{})
+		return
+	}
+
+	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
+	record, err := usecases.NewRecordUseCase(recordStorage).GetRecordByID(id)
+	if err != nil {
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+		return
+	}
+
+	if record.ID == 0 {
+		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
+		return
+	}
+
+	if access.IsSchemaForbiddenForUser(record.SchemaName, r) {
+		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
+		return
+	}
+
+	response.ReturnPlain(w, http.StatusOK, record.Response)
+}
+
 func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 	limit, offset, page := pagination.Paginate(r)
 	from, to, err := timerange.Parse(r)

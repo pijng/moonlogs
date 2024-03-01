@@ -1,9 +1,18 @@
 import { h, list, remap, spec } from "forest";
-import { Store } from "effector";
-import { LevelBadge } from "..";
+import { Event, Store, createEvent, sample } from "effector";
+import { KBD, LevelBadge } from "..";
 import { Log } from "@/shared/api";
+import { isObjectPresent } from "@/shared/lib";
 
-export const LogsTable = (logs: Store<Log[]>) => {
+export const LogsTable = ({
+  logs,
+  requestClicked,
+  responseClicked,
+}: {
+  logs: Store<Log[]>;
+  requestClicked: Event<number>;
+  responseClicked: Event<number>;
+}) => {
   h("div", () => {
     spec({
       classList: ["antialiased"],
@@ -57,15 +66,7 @@ export const LogsTable = (logs: Store<Log[]>) => {
           list(logs, ({ store: log }) => {
             h("tr", () => {
               spec({
-                classList: [
-                  "border-t",
-                  "w-full",
-                  "dark:border-gray-700",
-                  "hover:bg-gray-50",
-                  "dark:hover:bg-gray-600",
-                  "text-gray-900",
-                  "dark:text-gray-100",
-                ],
+                classList: ["border-t", "w-full", "dark:border-gray-700", "text-gray-900", "dark:text-gray-100"],
               });
 
               h("td", () => {
@@ -90,6 +91,58 @@ export const LogsTable = (logs: Store<Log[]>) => {
                 });
                 h("div", {
                   text: remap(log, "text"),
+                });
+
+                const $netFieldsPresent = log.map((l) => isObjectPresent(l.request) || isObjectPresent(l.response));
+
+                h("div", () => {
+                  spec({ visible: $netFieldsPresent });
+
+                  h("ul", () => {
+                    spec({
+                      classList: [
+                        "flex",
+                        "flex-wrap",
+                        "gap-3",
+                        "basis-11/12",
+                        "flex-nowrap",
+                        "pt-2",
+                        "overflow-scroll",
+                        "text-sm",
+                        "justify-start",
+                        "font-medium",
+                        "text-center",
+                        "text-gray-500",
+                      ],
+                    });
+
+                    const localRequestClicked = createEvent();
+                    const localResponseClicked = createEvent();
+
+                    sample({
+                      source: log.map((l) => parseInt(l.id)),
+                      clock: localRequestClicked,
+                      target: requestClicked,
+                    });
+
+                    sample({
+                      source: log.map((l) => parseInt(l.id)),
+                      clock: localResponseClicked,
+                      target: responseClicked,
+                    });
+
+                    KBD({
+                      text: "Request",
+                      event: localRequestClicked,
+                      visible: remap(log, "request").map(isObjectPresent),
+                    });
+
+                    KBD({
+                      text: "Response",
+                      event: localResponseClicked,
+                      visible: remap(log, "response").map(isObjectPresent),
+                    });
+                  });
                 });
               });
             });

@@ -35,6 +35,8 @@ func RegisterRecordRouter(r *mux.Router) {
 	recordRouter.HandleFunc("", roleMiddleware(controllers.CreateRecord, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
 	recordRouter.HandleFunc("/async", roleMiddleware(controllers.CreateRecordAsync, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
 	recordRouter.HandleFunc("/{id}", controllers.GetRecordByID).Methods(http.MethodGet)
+	recordRouter.HandleFunc("/{id}/request", controllers.GetRecordRequestByID).Methods(http.MethodGet)
+	recordRouter.HandleFunc("/{id}/response", controllers.GetRecordResponseByID).Methods(http.MethodGet)
 	recordRouter.HandleFunc("/group/{schemaName}/{hash}", controllers.GetRecordsByGroupHash).Methods(http.MethodGet)
 	recordRouter.HandleFunc("/search", controllers.GetRecordsByQuery).Methods(http.MethodPost)
 }
@@ -111,10 +113,14 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		token, ok := sessionCookie.Values["token"].(string)
+		if bearerToken == "" && ok {
+			bearerToken = token
+		}
+
 		userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
 		user, _ := usecases.NewUserUseCase(userStorage).GetUserByToken(bearerToken)
 
-		token, ok := sessionCookie.Values["token"].(string)
 		if !ok || user == nil || user.ID == 0 || bool(user.IsRevoked) {
 			response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 			return

@@ -23,3 +23,4 @@ export { sidebarClosed } from "./sidebar";
 export { Popover } from "./popover";
 export { Label } from "./label";
 export { Multiselect } from "./multiselect";
+export { KBD } from "./kbd";
