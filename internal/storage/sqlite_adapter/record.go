@@ -139,6 +139,9 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 		}
 
 		lr = append(lr, dest)
+	}
+
+	for _, dest := range lr {
 		recordPool.Put(dest)
 	}
 
