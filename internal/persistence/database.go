@@ -79,7 +79,10 @@ func InitDB(dataSourceName string) error {
 		return fmt.Errorf("error creating db dir: %w", err)
 	}
 
-	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400", dataSourceName))
+	db, err := sql.Open("sqlite", fmt.Sprintf(
+		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=normal&_pragma=temp_store=memory&_pragma=mmap_size=30000000000",
+		dataSourceName),
+	)
 	if err != nil {
 		return fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
