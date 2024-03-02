@@ -118,6 +118,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	if err != nil {
 		return make([]*entities.Record, 0), 0, fmt.Errorf("failed querying record: %w", err)
 	}
+	defer rows.Close()
 
 	var totalCount int
 	lr := make([]*entities.Record, 0, limit)
@@ -147,6 +148,7 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 	if err != nil {
 		return nil, fmt.Errorf("failed querying records: %w", err)
 	}
+	defer rows.Close()
 
 	lr := make([]*entities.Record, 0)
 
@@ -176,6 +178,7 @@ func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash strin
 	if err != nil {
 		return nil, fmt.Errorf("failed querying records: %w", err)
 	}
+	defer rows.Close()
 
 	lr := make([]*entities.Record, 0)
 
