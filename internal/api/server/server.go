@@ -42,6 +42,7 @@ func createServer(cfg *config.Config) *http.Server {
 	r := mux.NewRouter()
 	// r.Use(loggingMiddleware)
 	r.Use(corsMiddleware)
+	r.HandleFunc("/debug/pprof/heap", http.DefaultServeMux.ServeHTTP)
 
 	registerRouter(r)
 

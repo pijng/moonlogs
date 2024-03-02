@@ -10,6 +10,8 @@ import (
 	"moonlogs/internal/services"
 	"moonlogs/internal/tasks"
 	"time"
+
+	_ "net/http/pprof"
 )
 
 //go:embed migrations/*.sql
