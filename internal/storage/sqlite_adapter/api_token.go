@@ -2,6 +2,8 @@ package sqlite_adapter
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
@@ -11,28 +13,49 @@ import (
 type ApiTokenStorage struct {
 	ctx    context.Context
 	tokens *qrx.TableQuerier[entities.ApiToken]
+	db     *sql.DB
 }
 
 func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
 	return &ApiTokenStorage{
 		ctx:    ctx,
 		tokens: qrx.Scan(entities.ApiToken{}).With(persistence.DB()).From("api_tokens"),
+		db:     persistence.DB(),
 	}
 }
 
 func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	t, err := s.tokens.Create(s.ctx, map[string]interface{}{
-		"name":         apiToken.Name,
-		"token":        "",
-		"token_digest": apiToken.TokenDigest,
-		"is_revoked":   apiToken.IsRevoked,
-	})
-
+	query := "INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);"
+	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating api token: %w", err)
+		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
 	}
 
-	return t, nil
+	result, err := stmt.ExecContext(s.ctx, apiToken.Name, "", apiToken.TokenDigest, apiToken.IsRevoked)
+	if err != nil {
+		return nil, fmt.Errorf("failed inserting api_token: %w", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving api_token last insert id: %w", err)
+	}
+
+	query = "SELECT * FROM api_tokens WHERE id=? LIMIT 1;"
+	stmt, err = qrx.CachedStmt(s.ctx, s.db, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+	}
+
+	row := stmt.QueryRowContext(s.ctx, id)
+
+	var t entities.ApiToken
+	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
+	if err != nil {
+		return nil, fmt.Errorf("failed scanning api_token: %w", err)
+	}
+
+	return &t, nil
 }
 
 func (s *ApiTokenStorage) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
@@ -58,12 +81,25 @@ func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 }
 
 func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken, error) {
-	t, err := s.tokens.Where("token_digest = ?", digest).First(s.ctx)
+	query := "SELECT * FROM api_tokens WHERE token_digest=? LIMIT 1;"
+	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed querying api token: %w", err)
+		return &entities.ApiToken{}, fmt.Errorf("failed retrieving cached statement: %w", err)
 	}
 
-	return t, nil
+	row := stmt.QueryRowContext(s.ctx, digest)
+
+	var t entities.ApiToken
+	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &entities.ApiToken{}, nil
+	}
+
+	if err != nil {
+		return &entities.ApiToken{}, fmt.Errorf("failed scanning api_token: %w", err)
+	}
+
+	return &t, nil
 }
 
 func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {

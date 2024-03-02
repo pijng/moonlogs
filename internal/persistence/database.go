@@ -25,8 +25,6 @@ CREATE TABLE IF NOT EXISTS records (
 	schema_name TEXT NOT NULL,
 	schema_id INTEGER NOT NULL,
 	query JSON,
-	request JSON,
-	response JSON,
 	kind string,
 	group_hash TEXT NOT NULL,
 	level TEXT NOT NULL
