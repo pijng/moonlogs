@@ -93,7 +93,7 @@ func (uc *RecordUseCase) GetRecordByID(id int) (*entities.Record, error) {
 	return uc.recordStorage.GetRecordByID(id)
 }
 
-func (uc *RecordUseCase) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, error) {
+func (uc *RecordUseCase) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
 	return uc.recordStorage.GetRecordsByQuery(record, from, to, limit, offset)
 }
 

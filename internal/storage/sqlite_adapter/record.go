@@ -70,10 +70,10 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 	return &dest, nil
 }
 
-func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, error) {
+func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
 	var queryBuilder strings.Builder
 
-	queryBuilder.WriteString("SELECT * FROM records WHERE (schema_id = ? OR schema_name = ?)")
+	queryBuilder.WriteString("(schema_id = ? OR schema_name = ?)")
 	queryParams := []interface{}{record.SchemaID, record.SchemaName}
 
 	if record.Text != "" {
@@ -92,33 +92,48 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
 	queryBuilder.WriteString(fmt.Sprintf(" AND created_at BETWEEN %s", qrx.Between(from, to)))
 
-	queryBuilder.WriteString(" ORDER BY id DESC LIMIT ? OFFSET ?;")
+	countBuilder := queryBuilder
+	countParams := queryParams
+
+	queryBuilder.WriteString(" ORDER BY id DESC LIMIT ? OFFSET ?")
 	queryParams = append(queryParams, limit, offset)
 
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, queryBuilder.String())
+	query := fmt.Sprintf(`
+		SELECT
+			(SELECT COUNT(*) FROM records WHERE %s) AS total_count,
+			records.*
+		FROM
+			records
+		WHERE %s`, countBuilder.String(), queryBuilder.String(),
+	)
+
+	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, 0, fmt.Errorf("failed retrieving cached statement: %w", err)
 	}
 
-	rows, err := stmt.QueryContext(s.ctx, queryParams...)
+	totalParams := append(countParams, queryParams...)
+
+	rows, err := stmt.QueryContext(s.ctx, totalParams...)
 	if err != nil {
-		return nil, fmt.Errorf("failed querying record: %w", err)
+		return nil, 0, fmt.Errorf("failed querying record: %w", err)
 	}
 
-	lr := make([]*entities.Record, 0)
+	var totalCount int
+	var lr []*entities.Record
 
 	for rows.Next() {
 		var dest entities.Record
 
-		err := rows.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
+		err := rows.Scan(&totalCount, &dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
 		if err != nil {
-			return nil, fmt.Errorf("failed querying record: %w", err)
+			return nil, 0, fmt.Errorf("failed querying record: %w", err)
 		}
 
 		lr = append(lr, &dest)
 	}
 
-	return lr, nil
+	return lr, totalCount, nil
 }
 
 func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
@@ -270,6 +285,7 @@ func (s *RecordStorage) DeleteByIDs(ids []int) error {
 
 	placeholders, args := qrx.In(ids)
 
+	// TODO: replace with raw SQL
 	_, err := s.records.DeleteAll(s.ctx, fmt.Sprintf("id IN (%s)", strings.Join(placeholders, ",")), args...)
 
 	return err

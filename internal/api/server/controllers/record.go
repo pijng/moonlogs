@@ -240,17 +240,17 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
 	recordUseCase := usecases.NewRecordUseCase(recordStorage)
 
-	records, err := recordUseCase.GetRecordsByQuery(recordsToGet, from, to, limit, offset)
+	records, count, err := recordUseCase.GetRecordsByQuery(recordsToGet, from, to, limit, offset)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
-	count, err := recordUseCase.GetRecordsCountByQuery(recordsToGet, from, to)
-	if err != nil {
-		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
+	// count, err := recordUseCase.GetRecordsCountByQuery(recordsToGet, from, to)
+	// if err != nil {
+	// 	response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+	// 	return
+	// }
 
 	pages := int(math.Ceil(float64(count) / float64(limit)))
 

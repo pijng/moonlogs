@@ -81,7 +81,7 @@ type RecordStorage interface {
 	GetAllRecordsCount() (int, error)
 	GetRecordByID(id int) (*entities.Record, error)
 	GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error)
-	GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, error)
+	GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error)
 	GetRecordsCountByQuery(record entities.Record, from *time.Time, to *time.Time) (int, error)
 }
 
