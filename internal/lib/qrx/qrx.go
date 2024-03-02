@@ -145,7 +145,7 @@ func (tq *TableQuerier[T]) create(ctx context.Context, data map[string]interface
 
 	query := putSemicolon(fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tq.tableName, columnsText, placeholdersText))
 
-	stmt, err := cachedStmt(ctx, tq.db, query)
+	stmt, err := CachedStmt(ctx, tq.db, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed calling create: %w", err)
 	}
@@ -311,7 +311,7 @@ func (sq *StmtQuerier[T]) All(ctx context.Context) ([]*T, error) {
 func (sq *StmtQuerier[T]) all(ctx context.Context) ([]*T, error) {
 	query := putSemicolon(sq.query)
 
-	stmt, err := cachedStmt(ctx, sq.db, query)
+	stmt, err := CachedStmt(ctx, sq.db, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed calling all: %w", err)
 	}
@@ -338,7 +338,7 @@ func (sq *StmtQuerier[T]) all(ctx context.Context) ([]*T, error) {
 	return resultSlice, nil
 }
 
-func cachedStmt(ctx context.Context, db *sql.DB, query string) (*sql.Stmt, error) {
+func CachedStmt(ctx context.Context, db *sql.DB, query string) (*sql.Stmt, error) {
 	if stmtsCache.stmts == nil {
 		stmtsCache.stmts = make(map[string]*sql.Stmt)
 	}
