@@ -8,6 +8,7 @@ import (
 	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -70,6 +71,12 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 	return &dest, nil
 }
 
+var recordPool = sync.Pool{
+	New: func() interface{} {
+		return &entities.Record{}
+	},
+}
+
 func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
 	var queryBuilder strings.Builder
 
@@ -123,14 +130,16 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	var lr []*entities.Record
 
 	for rows.Next() {
-		var dest entities.Record
+		dest := recordPool.Get().(*entities.Record)
 
 		err := rows.Scan(&totalCount, &dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
 		if err != nil {
+			recordPool.Put(dest)
 			return nil, 0, fmt.Errorf("failed querying record: %w", err)
 		}
 
-		lr = append(lr, &dest)
+		lr = append(lr, dest)
+		recordPool.Put(dest)
 	}
 
 	return lr, totalCount, nil
