@@ -26,10 +26,11 @@ func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
 
 func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error) {
 	query := "INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	result, err := stmt.ExecContext(s.ctx, apiToken.Name, "", apiToken.TokenDigest, apiToken.IsRevoked)
 	if err != nil {
@@ -42,10 +43,11 @@ func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.
 	}
 
 	query = "SELECT * FROM api_tokens WHERE id=? LIMIT 1;"
-	stmt, err = qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err = s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	row := stmt.QueryRowContext(s.ctx, id)
 
@@ -82,10 +84,11 @@ func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 
 func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken, error) {
 	query := "SELECT * FROM api_tokens WHERE token_digest=? LIMIT 1;"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return &entities.ApiToken{}, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return &entities.ApiToken{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	row := stmt.QueryRowContext(s.ctx, digest)
 

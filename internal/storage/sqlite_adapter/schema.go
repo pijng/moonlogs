@@ -79,10 +79,11 @@ func (s *SchemaStorage) GetByTagID(id int) ([]*entities.Schema, error) {
 
 func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE name=? LIMIT 1;"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return &entities.Schema{}, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return &entities.Schema{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	row := stmt.QueryRowContext(s.ctx, name)
 

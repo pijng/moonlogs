@@ -27,10 +27,11 @@ func NewRecordStorage(ctx context.Context) *RecordStorage {
 
 func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?);"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	result, err := stmt.ExecContext(s.ctx, record.Text, record.SchemaName, schemaID, record.Query,
 		record.Request, record.Response, record.Kind, groupHash, record.Level, entities.RecordTime{Time: time.Now()})
@@ -54,10 +55,11 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 
 func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 	query := "SELECT * FROM records WHERE id = ? LIMIT 1;"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	row := stmt.QueryRowContext(s.ctx, id)
 
@@ -107,10 +109,11 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 		WHERE %s`, countBuilder.String(), queryBuilder.String(),
 	)
 
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return make([]*entities.Record, 0), 0, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return make([]*entities.Record, 0), 0, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	totalParams := append(countParams, queryParams...)
 
@@ -139,10 +142,11 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 
 func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
 	query := "SELECT * FROM records LIMIT ? OFFSET ?;"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.QueryContext(s.ctx, limit, offset)
 	if err != nil {
@@ -169,10 +173,11 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
 	query := "SELECT * FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY id ASC;"
 
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.QueryContext(s.ctx, schemaName, groupHash)
 	if err != nil {
@@ -218,10 +223,11 @@ func (s *RecordStorage) GetRecordsCountByQuery(record entities.Record, from *tim
 	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
 	queryBuilder.WriteString(fmt.Sprintf(" AND created_at BETWEEN %s;", qrx.Between(from, to)))
 
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, queryBuilder.String())
+	stmt, err := s.db.PrepareContext(s.ctx, queryBuilder.String())
 	if err != nil {
-		return 0, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return 0, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	row := stmt.QueryRowContext(s.ctx, queryParams...)
 
@@ -236,10 +242,11 @@ func (s *RecordStorage) GetRecordsCountByQuery(record entities.Record, from *tim
 
 func (s *RecordStorage) GetAllRecordsCount() (int, error) {
 	query := "SELECT COUNT(*) FROM records;"
-	stmt, err := qrx.CachedStmt(s.ctx, s.db, query)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return 0, fmt.Errorf("failed retrieving cached statement: %w", err)
+		return 0, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
 	row := stmt.QueryRowContext(s.ctx)
 
