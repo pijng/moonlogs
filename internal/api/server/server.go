@@ -8,6 +8,7 @@ import (
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/config"
 	"net/http"
+	"net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -42,7 +43,15 @@ func createServer(cfg *config.Config) *http.Server {
 	r := mux.NewRouter()
 	// r.Use(loggingMiddleware)
 	r.Use(corsMiddleware)
-	r.HandleFunc("/debug/pprof/heap", http.DefaultServeMux.ServeHTTP)
+	r.HandleFunc("/debug/pprof/", pprof.Index)
+	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	r.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	r.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	r.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	r.Handle("/debug/pprof/goroutine", pprof.Handler("goroutine"))
+	r.Handle("/debug/pprof/heap", pprof.Handler("heap"))
+	r.Handle("/debug/pprof/threadcreate", pprof.Handler("threadcreate"))
+	r.Handle("/debug/pprof/block", pprof.Handler("block"))
 
 	registerRouter(r)
 
