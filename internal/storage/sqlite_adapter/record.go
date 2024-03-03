@@ -89,13 +89,19 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 		queryParams = append(queryParams, qrx.Contains(record.Level))
 	}
 
-	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
-	queryBuilder.WriteString(fmt.Sprintf(" AND created_at BETWEEN %s", qrx.Between(from, to)))
+	if len(record.Query) != 0 {
+		queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
+	}
+
+	if from != nil || to != nil {
+		queryBuilder.WriteString(fmt.Sprintf(" AND created_at BETWEEN %s", qrx.Between(from, to)))
+	}
 
 	countBuilder := queryBuilder
 	countParams := queryParams
 
 	queryBuilder.WriteString(" ORDER BY id DESC LIMIT ? OFFSET ?")
+	fmt.Println(queryBuilder.String())
 	queryParams = append(queryParams, limit, offset)
 
 	query := fmt.Sprintf(`
@@ -197,45 +203,6 @@ func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash strin
 	}
 
 	return lr, nil
-}
-
-func (s *RecordStorage) GetRecordsCountByQuery(record entities.Record, from *time.Time, to *time.Time) (int, error) {
-	var queryBuilder strings.Builder
-
-	queryBuilder.WriteString("SELECT COUNT(*) FROM records WHERE (schema_id = ? OR schema_name = ?)")
-	queryParams := []interface{}{record.SchemaID, record.SchemaName}
-
-	if record.Text != "" {
-		queryBuilder.WriteString(" AND text LIKE ?")
-		queryParams = append(queryParams, qrx.Contains(record.Text))
-	}
-	if record.Kind != "" {
-		queryBuilder.WriteString(" AND kind LIKE ?")
-		queryParams = append(queryParams, qrx.Contains(record.Kind))
-	}
-	if record.Level != "" {
-		queryBuilder.WriteString(" AND level LIKE ?")
-		queryParams = append(queryParams, qrx.Contains(record.Level))
-	}
-
-	queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
-	queryBuilder.WriteString(fmt.Sprintf(" AND created_at BETWEEN %s;", qrx.Between(from, to)))
-
-	stmt, err := s.db.PrepareContext(s.ctx, queryBuilder.String())
-	if err != nil {
-		return 0, fmt.Errorf("failed preparing statement: %w", err)
-	}
-	defer stmt.Close()
-
-	row := stmt.QueryRowContext(s.ctx, queryParams...)
-
-	var count int
-	err = row.Scan(&count)
-	if err != nil {
-		return 0, err
-	}
-
-	return count, nil
 }
 
 func (s *RecordStorage) GetAllRecordsCount() (int, error) {

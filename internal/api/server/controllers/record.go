@@ -246,12 +246,6 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// count, err := recordUseCase.GetRecordsCountByQuery(recordsToGet, from, to)
-	// if err != nil {
-	// 	response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-	// 	return
-	// }
-
 	pages := int(math.Ceil(float64(count) / float64(limit)))
 
 	response.Return(w, true, http.StatusOK, nil, records, response.Meta{Page: page, Count: count, Pages: pages})
