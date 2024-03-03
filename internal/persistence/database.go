@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	_ "github.com/glebarez/go-sqlite"
 )
@@ -85,6 +86,10 @@ func InitDB(dataSourceName string) error {
 	if err != nil {
 		return fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
 
 	err = db.Ping()
 	if err != nil {
