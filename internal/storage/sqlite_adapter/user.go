@@ -223,7 +223,7 @@ func (s *UserStorage) GetAllUsers() ([]*entities.User, error) {
 
 		err = rows.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
 		if err != nil {
-			return nil, fmt.Errorf("failed scanning schema: %w", err)
+			return nil, fmt.Errorf("failed scanning user: %w", err)
 		}
 
 		users = append(users, &u)
