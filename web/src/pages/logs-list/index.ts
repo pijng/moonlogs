@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { logsRoute } from "@/routing/shared";
 import { LogsList, SchemaHeader, SearchBar } from "@/widgets";
-import { Pagination } from "@/shared/ui";
+import { Pagination, Spinner } from "@/shared/ui";
 import { logModel } from "@/entities/log";
 
 export const LogsListPage = () => {
@@ -20,13 +20,20 @@ export const LogsListPage = () => {
       });
 
       SearchBar();
-      Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
 
-      LogsList();
+      Spinner({ visible: logModel.effects.queryLogsFx.pending });
 
       h("div", () => {
-        spec({ classList: ["pt-4"] });
+        spec({ visible: logModel.effects.queryLogsFx.pending.map((p) => !p) });
+
         Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+
+        LogsList();
+
+        h("div", () => {
+          spec({ classList: ["pt-4"] });
+          Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+        });
       });
     });
   });

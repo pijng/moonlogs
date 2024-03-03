@@ -24,3 +24,4 @@ export { Popover } from "./popover";
 export { Label } from "./label";
 export { Multiselect } from "./multiselect";
 export { KBD } from "./kbd";
+export { Spinner } from "./spinner";
