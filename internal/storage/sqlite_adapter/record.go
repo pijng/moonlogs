@@ -72,9 +72,15 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 
 func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
 	var queryBuilder strings.Builder
+	queryParams := make([]interface{}, 0)
 
-	queryBuilder.WriteString("(schema_id = ? OR schema_name = ?)")
-	queryParams := []interface{}{record.SchemaID, record.SchemaName}
+	if record.ID != 0 {
+		queryBuilder.WriteString("schema_id = ?")
+		queryParams = append(queryParams, record.SchemaID)
+	} else {
+		queryBuilder.WriteString("schema_name = ?")
+		queryParams = append(queryParams, record.SchemaName)
+	}
 
 	if record.Text != "" {
 		queryBuilder.WriteString(" AND text LIKE ?")
@@ -101,7 +107,6 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	countParams := queryParams
 
 	queryBuilder.WriteString(" ORDER BY id DESC LIMIT ? OFFSET ?")
-	fmt.Println(queryBuilder.String())
 	queryParams = append(queryParams, limit, offset)
 
 	query := fmt.Sprintf(`

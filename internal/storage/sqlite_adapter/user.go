@@ -178,7 +178,6 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(s.ctx, args...)
-	fmt.Println(err)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
