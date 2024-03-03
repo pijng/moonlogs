@@ -12,16 +12,14 @@ import (
 )
 
 type RecordStorage struct {
-	ctx     context.Context
-	records *qrx.TableQuerier[entities.Record]
-	db      *sql.DB
+	ctx context.Context
+	db  *sql.DB
 }
 
 func NewRecordStorage(ctx context.Context) *RecordStorage {
 	return &RecordStorage{
-		ctx:     ctx,
-		records: qrx.Scan(entities.Record{}).With(persistence.DB()).From("records"),
-		db:      persistence.DB(),
+		ctx: ctx,
+		db:  persistence.DB(),
 	}
 }
 
@@ -294,9 +292,15 @@ func (s *RecordStorage) DeleteByIDs(ids []int) error {
 	}
 
 	placeholders, args := qrx.In(ids)
+	query := fmt.Sprintf("DELETE FROM records WHERE id IN (%s);", placeholders)
 
-	// TODO: replace with raw SQL
-	_, err := s.records.DeleteAll(s.ctx, fmt.Sprintf("id IN (%s)", strings.Join(placeholders, ",")), args...)
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(s.ctx, args...)
 
 	return err
 }

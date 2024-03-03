@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"moonlogs/internal/lib/qrx"
 	"os"
 	"path/filepath"
 
@@ -94,7 +93,7 @@ func InitDB(dataSourceName string) error {
 
 	dbInstance = db
 
-	_, err = qrx.With(dbInstance).Exec(context.Background(), schema)
+	_, err = db.ExecContext(context.Background(), schema)
 	if err != nil {
 		return fmt.Errorf("failed to create tables: %w", err)
 	}

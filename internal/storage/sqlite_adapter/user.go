@@ -2,141 +2,253 @@ package sqlite_adapter
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
+	"strings"
 )
 
 type UserStorage struct {
-	ctx   context.Context
-	users *qrx.TableQuerier[entities.User]
+	ctx context.Context
+	db  *sql.DB
 }
 
 func NewUserStorage(ctx context.Context) *UserStorage {
 	return &UserStorage{
-		ctx:   ctx,
-		users: qrx.Scan(entities.User{}).With(persistence.DB()).From("users"),
+		ctx: ctx,
+		db:  persistence.DB(),
 	}
 }
 
 func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
-	u, err := s.users.Create(s.ctx, map[string]interface{}{
-		"email":           user.Email,
-		"password":        "",
-		"password_digest": user.PasswordDigest,
-		"name":            user.Name,
-		"role":            user.Role,
-		"tag_ids":         user.Tags,
-		"token":           "",
-		"is_revoked":      user.IsRevoked,
-	})
-
+	query := "INSERT INTO users (email, password, password_digest, name, role, tag_ids, token, is_revoked) VALUES (?,?,?,?,?,?,?,?);"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating user: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	result, err := stmt.ExecContext(s.ctx, user.Email, "", user.PasswordDigest, user.Name, user.Role, user.Tags, "", user.IsRevoked)
+	if err != nil {
+		return nil, fmt.Errorf("failed inserting user: %w", err)
 	}
 
-	return u, nil
-}
-
-func (r *UserStorage) GetUserByID(id int) (*entities.User, error) {
-	u, err := r.users.Where("id = ?", id).First(r.ctx)
+	id, err := result.LastInsertId()
 	if err != nil {
-		return nil, fmt.Errorf("failed querying user: %w", err)
+		return nil, fmt.Errorf("failed retrieving user last insert id: %w", err)
 	}
 
-	return u, nil
+	return s.GetUserByID(int(id))
 }
 
-func (r *UserStorage) GetUsersByTagID(tagID int) ([]*entities.User, error) {
-	u, err := r.users.Where("tag_ids LIKE ?", qrx.Contains(tagID)).All(r.ctx)
+func (s *UserStorage) GetUserByID(id int) (*entities.User, error) {
+	query := "SELECT * FROM users WHERE id=? LIMIT 1;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed querying user: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(s.ctx, id)
+
+	var u entities.User
+	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
+	if err != nil {
+		return nil, fmt.Errorf("failed scanning user: %w", err)
 	}
 
-	return u, nil
+	return &u, nil
+
 }
 
-func (r *UserStorage) GetUserByEmail(email string) (*entities.User, error) {
-	u, err := r.users.Where("email = ?", email).First(r.ctx)
+func (s *UserStorage) GetUsersByTagID(tagID int) ([]*entities.User, error) {
+	query := "SELECT * FROM users WHERE tag_ids LIKE ? ORDER BY id desc;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed querying user: %w", err)
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(s.ctx, qrx.Contains(tagID))
+	if err != nil {
+		return nil, fmt.Errorf("failed querying users: %w", err)
+	}
+	defer rows.Close()
+
+	users := make([]*entities.User, 0)
+
+	for rows.Next() {
+		var u entities.User
+
+		err = rows.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning user: %w", err)
+		}
+
+		users = append(users, &u)
 	}
 
-	return u, nil
+	return users, nil
 }
 
-func (r *UserStorage) GetUserByToken(token string) (*entities.User, error) {
-	u, err := r.users.Where("token = ?", token).First(r.ctx)
+func (s *UserStorage) GetUserByEmail(email string) (*entities.User, error) {
+	query := "SELECT * FROM users WHERE email=? LIMIT 1;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed querying user: %w", err)
+		return &entities.User{}, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(s.ctx, email)
+
+	var u entities.User
+	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &entities.User{}, nil
 	}
 
-	return u, nil
+	if err != nil {
+		return &entities.User{}, fmt.Errorf("failed scanning user: %w", err)
+	}
+
+	return &u, nil
 }
 
-func (r *UserStorage) DeleteUserByID(id int) error {
-	_, err := r.users.DeleteOne(r.ctx, "id=?", id)
+func (s *UserStorage) GetUserByToken(token string) (*entities.User, error) {
+	query := "SELECT * FROM users WHERE token=? LIMIT 1;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return &entities.User{}, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(s.ctx, token)
+
+	var u entities.User
+	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &entities.User{}, nil
+	}
+
+	if err != nil {
+		return &entities.User{}, fmt.Errorf("failed scanning user: %w", err)
+	}
+
+	return &u, nil
+}
+
+func (s *UserStorage) DeleteUserByID(id int) error {
+	query := "DELETE FROM users WHERE id=?;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(s.ctx, id)
+	if err != nil {
+		return fmt.Errorf("failed deleting user: %w", err)
+	}
 
 	return err
 }
 
-func (r *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
-	data := map[string]interface{}{
-		"email":      user.Email,
-		"name":       user.Name,
-		"role":       user.Role,
-		"tag_ids":    user.Tags,
-		"is_revoked": user.IsRevoked,
-		"token":      user.Token,
-	}
+func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
+	var queryBuilder strings.Builder
+	args := make([]interface{}, 0)
+
+	queryBuilder.WriteString("UPDATE users SET email=?, name=?, role=?, tag_ids=?, is_revoked=?")
+	args = append(args, user.Email, user.Name, user.Role, user.Tags, user.IsRevoked)
 
 	if len(user.PasswordDigest) > 0 {
-		data["password_digest"] = user.PasswordDigest
-		data["token"] = user.Token
+		queryBuilder.WriteString(", password_digest=?, token=?")
+		args = append(args, user.PasswordDigest, user.Token)
 	}
 
-	u, err := r.users.Where("id = ?", id).UpdateOne(r.ctx, data)
+	queryBuilder.WriteString(" WHERE id=?;")
+	args = append(args, id)
+
+	stmt, err := s.db.PrepareContext(s.ctx, queryBuilder.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(s.ctx, args...)
+	fmt.Println(err)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
 
-	return u, nil
+	return s.GetUserByID(id)
 }
 
-func (r *UserStorage) UpdateUserTokenByID(id int, token string) error {
-	_, err := r.users.Where("id = ?", id).UpdateOne(r.ctx, map[string]interface{}{
-		"token": token,
-	})
+func (s *UserStorage) UpdateUserTokenByID(id int, token string) error {
+	query := "UPDATE users SET token=? WHERE id=?;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
 
+	_, err = stmt.ExecContext(s.ctx, token, id)
 	if err != nil {
 		return fmt.Errorf("failed updating user: %w", err)
 	}
 
-	return nil
+	return err
 }
 
-func (r *UserStorage) GetAllUsers() ([]*entities.User, error) {
-	u, err := r.users.All(r.ctx, "")
+func (s *UserStorage) GetAllUsers() ([]*entities.User, error) {
+	query := "SELECT * FROM users ORDER BY id DESC;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(s.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying user: %w", err)
 	}
+	defer rows.Close()
 
-	return u, nil
+	users := make([]*entities.User, 0)
+
+	for rows.Next() {
+		var u entities.User
+
+		err = rows.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning schema: %w", err)
+		}
+
+		users = append(users, &u)
+	}
+
+	return users, nil
 }
 
-func (r *UserStorage) GetSystemUser() (*entities.User, error) {
-	return r.users.Where("role = 'System'").First(r.ctx)
-}
+func (s *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
+	query := "INSERT INTO users (name, email, password, password_digest, role, token, is_revoked) VALUES (?,?,?,?,?,?,?);"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
 
-func (r *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
-	return r.users.Create(r.ctx, map[string]interface{}{
-		"name":            admin.Name,
-		"email":           admin.Email,
-		"password":        "",
-		"password_digest": admin.PasswordDigest,
-		"role":            "Admin",
-		"token":           "",
-		"is_revoked":      admin.IsRevoked,
-	})
+	result, err := stmt.ExecContext(s.ctx, admin.Name, admin.Email, "", admin.PasswordDigest, "Admin", "", admin.IsRevoked)
+	if err != nil {
+		return nil, fmt.Errorf("failed inserting user: %w", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving user last insert id: %w", err)
+	}
+
+	return s.GetUserByID(int(id))
 }

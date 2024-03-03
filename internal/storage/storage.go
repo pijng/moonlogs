@@ -12,7 +12,6 @@ type UserStorage interface {
 	CreateUser(user entities.User) (*entities.User, error)
 	DeleteUserByID(id int) error
 	GetAllUsers() ([]*entities.User, error)
-	GetSystemUser() (*entities.User, error)
 	GetUserByEmail(email string) (*entities.User, error)
 	GetUserByID(id int) (*entities.User, error)
 	GetUsersByTagID(id int) ([]*entities.User, error)

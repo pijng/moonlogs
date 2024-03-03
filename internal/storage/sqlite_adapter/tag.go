@@ -2,69 +2,128 @@ package sqlite_adapter
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
 )
 
 type TagStorage struct {
-	ctx  context.Context
-	tags *qrx.TableQuerier[entities.Tag]
+	ctx context.Context
+	db  *sql.DB
 }
 
 func NewTagStorage(ctx context.Context) *TagStorage {
 	return &TagStorage{
-		ctx:  ctx,
-		tags: qrx.Scan(entities.Tag{}).With(persistence.DB()).From("tags"),
+		ctx: ctx,
+		db:  persistence.DB(),
 	}
 }
 
-func (r *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
-	u, err := r.tags.Create(r.ctx, map[string]interface{}{
-		"name": tag.Name,
-	})
+func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
+	query := "INSERT INTO tags (name) VALUES (?);"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	result, err := stmt.ExecContext(s.ctx, tag.Name)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed creating tag: %w", err)
+		return nil, fmt.Errorf("failed inserting tag: %w", err)
 	}
 
-	return u, nil
-}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving tag last insert id: %w", err)
+	}
 
-func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
-	u, err := s.tags.Where("id = ?", id).First(s.ctx)
+	t, err := s.GetTagByID(int(id))
 	if err != nil {
 		return nil, fmt.Errorf("failed querying tag: %w", err)
 	}
 
-	return u, nil
+	return t, nil
 }
 
-func (r *TagStorage) DeleteTagByID(id int) error {
-	_, err := r.tags.DeleteOne(r.ctx, "id=?", id)
+func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
+	query := "SELECT * FROM tags WHERE id=? LIMIT 1;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(s.ctx, id)
+
+	var t entities.Tag
+	err = row.Scan(&t.ID, &t.Name)
+	if err != nil {
+		return nil, fmt.Errorf("failed scanning tag: %w", err)
+	}
+
+	return &t, nil
+}
+
+func (s *TagStorage) DeleteTagByID(id int) error {
+	query := "DELETE FROM tags WHERE id=?"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(s.ctx, id)
+	if err != nil {
+		return fmt.Errorf("failed deleting tag: %w", err)
+	}
 
 	return err
 }
 
-func (r *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
-	data := map[string]interface{}{
-		"name": tag.Name,
+func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
+	query := "UPDATE tags SET name=? WHERE id=?"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
+	defer stmt.Close()
 
-	u, err := r.tags.Where("id = ?", id).UpdateOne(r.ctx, data)
+	_, err = stmt.ExecContext(s.ctx, tag.Name, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating tag: %w", err)
 	}
 
-	return u, nil
+	return s.GetTagByID(id)
 }
 
-func (r *TagStorage) GetAllTags() ([]*entities.Tag, error) {
-	u, err := r.tags.All(r.ctx, "")
+func (s *TagStorage) GetAllTags() ([]*entities.Tag, error) {
+	query := "SELECT * FROM tags ORDER BY id DESC;"
+	stmt, err := s.db.PrepareContext(s.ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(s.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying tags: %w", err)
 	}
+	defer rows.Close()
 
-	return u, nil
+	tags := make([]*entities.Tag, 0)
+
+	for rows.Next() {
+		var t entities.Tag
+
+		err = rows.Scan(&t.ID, &t.Name)
+		if err != nil {
+			return nil, fmt.Errorf("failed scanning tag: %w", err)
+		}
+
+		tags = append(tags, &t)
+	}
+
+	return tags, nil
 }
