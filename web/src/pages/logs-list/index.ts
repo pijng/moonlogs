@@ -21,14 +21,16 @@ export const LogsListPage = () => {
 
       SearchBar();
 
-      Spinner({ visible: logModel.effects.queryLogsFx.pending });
-
       h("div", () => {
-        spec({ visible: logModel.effects.queryLogsFx.pending.map((p) => !p) });
-
         Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
 
-        LogsList();
+        Spinner({ visible: logModel.effects.queryLogsFx.pending });
+
+        h("div", () => {
+          spec({ visible: logModel.effects.queryLogsFx.pending.map((p) => !p) });
+
+          LogsList();
+        });
 
         h("div", () => {
           spec({ classList: ["pt-4"] });
