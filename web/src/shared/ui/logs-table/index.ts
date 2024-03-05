@@ -89,7 +89,8 @@ export const LogsTable = ({
                 spec({
                   classList: ["px-4", "py-4"],
                 });
-                h("div", {
+                h("pre", {
+                  classList: ["whitespace-pre-wrap"],
                   text: remap(log, "text"),
                 });
 
