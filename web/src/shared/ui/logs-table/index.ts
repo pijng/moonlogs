@@ -89,7 +89,7 @@ export const LogsTable = ({
                 spec({
                   classList: ["px-4", "py-4"],
                 });
-                h("pre", {
+                h("div", {
                   classList: ["whitespace-pre-wrap"],
                   text: remap(log, "text").map((t) => t.replaceAll("\\n", "\n")),
                 });
