@@ -91,7 +91,7 @@ export const LogsTable = ({
                 });
                 h("pre", {
                   classList: ["whitespace-pre-wrap"],
-                  text: remap(log, "text"),
+                  text: remap(log, "text").map((t) => t.replaceAll("\\n", "\n")),
                 });
 
                 const $netFieldsPresent = log.map((l) => isObjectPresent(l.request) || isObjectPresent(l.response));
