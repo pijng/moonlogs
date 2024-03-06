@@ -4,12 +4,13 @@ import { $creationError, events, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
 import { tagModel } from "@/entities/tag";
+import { i18n } from "@/shared/lib/i18n";
 
 export const NewMemberForm = () => {
   h("form", () => {
     Input({
       type: "text",
-      label: "Name",
+      label: i18n("members.form.name"),
       value: memberForm.fields.name.$value,
       inputChanged: memberForm.fields.name.changed,
       errorText: memberForm.fields.name.$errorText,
@@ -17,7 +18,7 @@ export const NewMemberForm = () => {
 
     Input({
       type: "email",
-      label: "Email",
+      label: i18n("members.form.email"),
       value: memberForm.fields.email.$value,
       inputChanged: memberForm.fields.email.changed,
       errorText: memberForm.fields.email.$errorText,
@@ -27,7 +28,7 @@ export const NewMemberForm = () => {
       spec({ classList: ["mb-6"] });
 
       Select({
-        text: "Select a role",
+        text: i18n("members.form.role"),
         value: memberForm.fields.role.$value,
         options: createStore<UserRole[]>(["Member", "Admin"]),
         optionSelected: memberForm.fields.role.changed,
@@ -43,7 +44,8 @@ export const NewMemberForm = () => {
       });
 
       Multiselect({
-        text: "Select tags",
+        text: i18n("members.form.tag.label"),
+        hint: i18n("members.form.tag.hint"),
         options: tagModel.$tags,
         selectedOptions: memberForm.fields.tag_ids.$value,
         optionChecked: events.tagChecked,
@@ -53,7 +55,7 @@ export const NewMemberForm = () => {
 
     Input({
       type: "password",
-      label: "Password",
+      label: i18n("members.form.password"),
       required: true,
       value: memberForm.fields.password.$value,
       inputChanged: memberForm.fields.password.changed,
@@ -62,7 +64,7 @@ export const NewMemberForm = () => {
 
     Input({
       type: "password",
-      label: "Confirm password",
+      label: i18n("members.form.confirm_password"),
       required: true,
       value: memberForm.fields.passwordConfirmation.$value,
       inputChanged: memberForm.fields.passwordConfirmation.changed,
@@ -70,7 +72,7 @@ export const NewMemberForm = () => {
     });
 
     Button({
-      text: "Create",
+      text: i18n("buttons.create"),
       event: memberForm.submit,
       size: "base",
       prevent: true,

@@ -4,6 +4,7 @@ import { h, spec } from "forest";
 import { schemaEditRoute } from "@/routing/shared";
 import { Header } from "@/shared/ui";
 import { EditSchemaForm } from "@/features/schema-edit";
+import { i18n } from "@/shared/lib/i18n";
 
 export const SchemaEditPage = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const SchemaEditPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(schemaEditRoute);
 
-    Header("Edit log group");
+    Header(i18n("log_groups.form.actions.edit"));
 
     h("div", () => {
       spec({

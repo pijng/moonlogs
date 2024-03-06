@@ -4,6 +4,7 @@ import { h, spec } from "forest";
 import { schemaCreateRoute } from "@/routing/shared";
 import { Header } from "@/shared/ui";
 import { NewSchemaForm } from "@/features/schema-create";
+import { i18n } from "@/shared/lib/i18n";
 
 export const SchemaCreatePage = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const SchemaCreatePage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(schemaCreateRoute);
 
-    Header("Create log group");
+    Header(i18n("log_groups.form.actions.create"));
 
     h("div", () => {
       spec({

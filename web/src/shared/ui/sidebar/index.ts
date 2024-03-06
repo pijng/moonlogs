@@ -1,8 +1,9 @@
 import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/routing/shared";
 import { RouteInstance, redirect } from "atomic-router";
-import { createEvent, createStore, sample } from "effector";
+import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
 import { PermissionGate } from "@/shared/lib";
+import { i18n } from "@/shared/lib/i18n";
 
 export const sidebarClosed = createEvent();
 const sidebarTriggered = createEvent<MouseEvent>();
@@ -61,7 +62,7 @@ const SidebarButton = () => {
 
     h("span", {
       classList: ["sr-only"],
-      text: "Open sidebar",
+      text: i18n("components.sidebar.open"),
     });
 
     h("svg", () => {
@@ -128,12 +129,12 @@ export const Sidebar = () => {
           h("span", {
             classList: ["mr-3", "leading-7", "text-2xl"],
             attr: { alt: "Moonlogs logo" },
-            text: "🌘",
+            text: i18n("miscellaneous.logo"),
           });
 
           h("span", {
             classList: ["self-center", "text-xl", "font-semibold", "whitespace-nowrap", "dark:text-white"],
-            text: "Moonlogs",
+            text: i18n("miscellaneous.brand"),
           });
         });
 
@@ -142,20 +143,20 @@ export const Sidebar = () => {
             classList: ["space-y-2", "font-medium"],
           });
 
-          SidebarItem("Profile", profileRoute);
+          SidebarItem(i18n("profile.label"), profileRoute);
 
-          SidebarItem("Log groups", homeRoute);
+          SidebarItem(i18n("log_groups.label"), homeRoute);
 
           PermissionGate("Admin", () => {
-            SidebarItem("Members", membersRoute);
+            SidebarItem(i18n("members.label"), membersRoute);
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem("Tags", tagsRoute);
+            SidebarItem(i18n("tags.label"), tagsRoute);
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem("API tokens", apiTokensRoute);
+            SidebarItem(i18n("api_tokens.label"), apiTokensRoute);
           });
         });
       });
@@ -169,7 +170,7 @@ export const Sidebar = () => {
   });
 };
 
-export const SidebarItem = (text: string, route: RouteInstance<Record<string, any>>) => {
+export const SidebarItem = (text: Store<string> | string, route: RouteInstance<Record<string, any>>) => {
   h("li", () => {
     Link(route, {
       text: text,

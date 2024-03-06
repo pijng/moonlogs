@@ -3,6 +3,7 @@ import { withRoute } from "atomic-router-forest";
 
 import { homeRoute, notFoundRoute } from "@/routing/shared";
 import { Header, Link } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export const NotFoundPage = () => {
   h("div", {
@@ -18,10 +19,11 @@ export const NotFoundPage = () => {
 
         h("div", () => {
           spec({ classList: ["mb-4"] });
-          Header("The requested resource could not be found");
+          Header(i18n("miscellaneous.not_found"));
         });
 
-        Link(homeRoute, "Go to home page");
+        // Duh
+        Link(homeRoute, i18n("miscellaneous.to_home"));
       });
     },
   });

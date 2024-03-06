@@ -1,3 +1,4 @@
+import { i18n } from "@/shared/lib/i18n";
 import { Button, ButtonVariant, ClockIcon, DownIcon, Input } from "@/shared/ui";
 import { Event, Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
@@ -38,7 +39,7 @@ export const FilterDate = ({
     spec({ classList: ["relative"] });
 
     Button({
-      text: "Time",
+      text: i18n("log_groups.filters.time.label"),
       variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
       size: "small",
       event: dropdownTriggered,
@@ -90,7 +91,7 @@ export const FilterDate = ({
             Input({
               type: "datetime-local",
               value: fromTime,
-              label: "From",
+              label: i18n("log_groups.filters.time.from"),
               inputChanged: fromTimeChanged,
             });
           });
@@ -103,7 +104,7 @@ export const FilterDate = ({
             Input({
               type: "datetime-local",
               value: toTime,
-              label: "To",
+              label: i18n("log_groups.filters.time.to"),
               inputChanged: toTimeChanged,
             });
           });

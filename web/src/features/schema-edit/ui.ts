@@ -4,32 +4,33 @@ import { $editError, deleteSchemaClicked, events, schemaForm } from "./model";
 import { trigger } from "@/shared/lib";
 import { createEvent, sample } from "effector";
 import { tagModel } from "@/entities/tag";
+import { i18n } from "@/shared/lib/i18n";
 
 export const EditSchemaForm = () => {
   h("form", () => {
     Input({
       type: "text",
-      label: "Title",
+      label: i18n("log_groups.form.title.label"),
       value: schemaForm.fields.title.$value,
       inputChanged: schemaForm.fields.title.changed,
       errorText: schemaForm.fields.title.$errorText,
-      hint: "Title - used for the human-readable name of the group in the web interface. Group search will also search for groups based on this characteristic",
+      hint: i18n("log_groups.form.title.hint"),
     });
 
     Input({
       type: "text",
-      label: "Description",
+      label: i18n("log_groups.form.description.label"),
       value: schemaForm.fields.description.$value,
       inputChanged: schemaForm.fields.description.changed,
       errorText: schemaForm.fields.description.$errorText,
-      hint: "Description - used for the human-readable description of group details in the web interface. Group search will also search for groups based on this characteristic",
+      hint: i18n("log_groups.form.description.hint"),
     });
 
     h("div", () => {
       spec({ classList: ["mb-6"] });
 
       Select({
-        text: "Select a tag",
+        text: i18n("log_groups.form.tag.label"),
         value: schemaForm.fields.tag_id.$value,
         options: tagModel.$tags,
         optionSelected: events.tagSelected,
@@ -38,23 +39,25 @@ export const EditSchemaForm = () => {
 
     Input({
       type: "number",
-      label: "Retention days",
+      label: i18n("log_groups.form.retention_days.label"),
       value: schemaForm.fields.retention_days.$value,
       inputChanged: schemaForm.fields.retention_days.changed,
       errorText: schemaForm.fields.retention_days.$errorText,
-      hint: "Retention days - the number of days during which logs will be available after their creation. After the specified number of days elapses, the logs will be deleted. To set an infinite lifespan, specify 0 or leave the field empty",
+      hint: i18n("log_groups.form.retention_days.hint"),
     });
 
     h("div", () => {
       spec({ classList: ["relative", "flex", "items-center", "mb-4", "pt-4"] });
 
-      Label({ text: "Group query fields", hint: "Group query fields - a set of fields by which log grouping will occur" });
+      Label({
+        text: i18n("log_groups.form.group_query_fields.label"),
+        hint: i18n("log_groups.form.group_query_fields.hint"),
+      });
 
       h("div", () => {
         spec({ classList: ["ml-1"] });
 
         Button({
-          text: "",
           variant: "default",
           prevent: true,
           style: "round",
@@ -94,26 +97,25 @@ export const EditSchemaForm = () => {
 
           Input({
             type: "text",
-            label: "Title",
+            label: i18n("log_groups.form.group_query_fields.fields.title.label"),
             required: true,
             value: queryField.map((f) => f.title),
             inputChanged: titleChanged,
             errorText: schemaForm.fields.fields.$errorText,
-            hint: "Title - used for the human-readable name of the field in the web interface for log filtering",
+            hint: i18n("log_groups.form.group_query_fields.fields.title.hint"),
           });
 
           Input({
             type: "text",
-            label: "Name",
+            label: i18n("log_groups.form.group_query_fields.fields.name.label"),
             required: true,
             value: queryField.map((f) => f.name),
             inputChanged: nameChanged,
             errorText: schemaForm.fields.fields.$errorText,
-            hint: "Name - used as a textual identifier for the group. Must be specified in Latin, in lowercase, and with underscores as separators",
+            hint: i18n("log_groups.form.group_query_fields.fields.name.hint"),
           });
 
           Button({
-            text: "",
             event: trigger({ source: idx, target: events.removeField }),
             size: "plain",
             prevent: true,
@@ -127,13 +129,15 @@ export const EditSchemaForm = () => {
     h("div", () => {
       spec({ classList: ["relative", "flex", "items-center", "mb-4", "pt-4"] });
 
-      Label({ text: "Kinds", hint: "Kinds - a set of select options by which log grouping will occur" });
+      Label({
+        text: i18n("log_groups.form.kinds.label"),
+        hint: i18n("log_groups.form.kinds.hint"),
+      });
 
       h("div", () => {
         spec({ classList: ["ml-1"] });
 
         Button({
-          text: "",
           variant: "default",
           prevent: true,
           style: "round",
@@ -173,26 +177,25 @@ export const EditSchemaForm = () => {
 
           Input({
             type: "text",
-            label: "Title",
+            label: i18n("log_groups.form.kinds.fields.title.label"),
             required: true,
             value: kind.map((k) => k.title),
             inputChanged: titleChanged,
             errorText: schemaForm.fields.kinds.$errorText,
-            hint: "Title - used for the human-readable name of the kind in the web interface for log filtering",
+            hint: i18n("log_groups.form.kinds.fields.title.hint"),
           });
 
           Input({
             type: "text",
-            label: "Name",
+            label: i18n("log_groups.form.kinds.fields.name.label"),
             required: true,
             value: kind.map((k) => k.name),
             inputChanged: nameChanged,
             errorText: schemaForm.fields.fields.$errorText,
-            hint: "Name - used as a textual identifier for the kind. Must be specified in Latin, in lowercase, and with underscores as separators",
+            hint: i18n("log_groups.form.kinds.fields.name.hint"),
           });
 
           Button({
-            text: "",
             event: trigger({ source: idx, target: events.removeKind }),
             size: "plain",
             prevent: true,
@@ -207,7 +210,7 @@ export const EditSchemaForm = () => {
       spec({ classList: ["flex", "justify-start", "space-x-2", "pt-4"] });
 
       Button({
-        text: "Save",
+        text: i18n("buttons.save"),
         event: schemaForm.submit,
         size: "base",
         prevent: true,
@@ -215,7 +218,7 @@ export const EditSchemaForm = () => {
       });
 
       Button({
-        text: "Delete",
+        text: i18n("buttons.delete"),
         event: deleteSchemaClicked,
         size: "base",
         prevent: true,

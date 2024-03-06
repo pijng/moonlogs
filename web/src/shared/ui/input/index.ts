@@ -18,14 +18,14 @@ export const Input = <T extends DOMProperty>({
 }: {
   value?: Store<T>;
   type: InputType;
-  label: string;
+  label: Store<string> | string;
   required?: boolean;
   inputChanged?: Event<T>;
   visible?: Store<boolean>;
   autofocus?: boolean;
   disabled?: Store<boolean>;
   errorText?: Store<string>;
-  hint?: string;
+  hint?: Store<string> | string;
 }) => {
   h("div", () => {
     spec({

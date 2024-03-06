@@ -4,6 +4,7 @@ import { withRoute } from "atomic-router-forest";
 import { profileRoute } from "@/routing/shared";
 import { Header } from "@/shared/ui";
 import { UserProfile } from "@/widgets";
+import { i18n } from "@/shared/lib/i18n";
 
 export const ProfilePage = () => {
   h("div", {
@@ -15,7 +16,7 @@ export const ProfilePage = () => {
       h("div", () => {
         spec({ classList: ["max-w-3xl"] });
 
-        Header("Profile");
+        Header(i18n("profile.label"));
 
         UserProfile();
       });

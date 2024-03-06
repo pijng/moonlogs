@@ -2,6 +2,7 @@ import { h, list, remap, spec } from "forest";
 import { Event, Store, createEvent, sample } from "effector";
 import { ApiToken } from "@/shared/api";
 import { Button } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<number>) => {
   h("div", () => {
@@ -36,25 +37,25 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Name",
+              text: i18n("tables.api_tokens.name"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3", "w-48", "lg:w-72"],
-              text: "Token",
+              text: i18n("tables.api_tokens.token"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Revoked",
+              text: i18n("tables.api_tokens.revoked"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Actions",
+              text: i18n("tables.api_tokens.actions"),
             });
           });
         });
@@ -115,7 +116,7 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
                 });
 
                 Button({
-                  text: "Edit",
+                  text: i18n("buttons.edit"),
                   event: localEditClicked,
                   variant: "default",
                   size: "extra_small",

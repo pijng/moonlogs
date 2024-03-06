@@ -2,6 +2,7 @@ import { h, list, remap, spec } from "forest";
 import { Event, Store, createEvent, sample } from "effector";
 import { Tag } from "@/shared/api";
 import { Button } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
   h("div", () => {
@@ -36,13 +37,13 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Name",
+              text: i18n("tables.tags.name"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3", "max-w-28", "w-28"],
-              text: "Actions",
+              text: i18n("tables.tags.actions"),
             });
           });
         });
@@ -84,7 +85,7 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
                 });
 
                 Button({
-                  text: "Edit",
+                  text: i18n("buttons.edit"),
                   event: localEditClicked,
                   variant: "default",
                   size: "extra_small",

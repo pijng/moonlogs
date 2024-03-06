@@ -2,7 +2,7 @@ import { Store } from "effector";
 import { h, spec } from "forest";
 import { Popover } from "../popover";
 
-export const Label = ({ text, hint }: { text: string | Store<string>; hint: string }) => {
+export const Label = ({ text, hint }: { text: string | Store<string>; hint: Store<string> | string }) => {
   h("div", () => {
     spec({ classList: ["flex", "items-center"] });
 

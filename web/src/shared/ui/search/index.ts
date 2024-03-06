@@ -1,6 +1,7 @@
 import { Event, Store, createEvent, sample } from "effector";
 import { h, spec } from "forest";
 import { Button } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) => {
   const searchCleared = createEvent();
@@ -18,7 +19,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
     h("label", {
       attr: { for: "table-search" },
       classList: ["sr-only"],
-      text: "Search",
+      text: i18n("components.search.text"),
     });
 
     h("div", () => {
@@ -88,7 +89,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
       });
 
       Button({
-        text: "Clear",
+        text: i18n("buttons.clear"),
         variant: "light",
         size: "small",
         event: searchCleared,

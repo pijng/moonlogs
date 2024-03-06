@@ -11,12 +11,14 @@ export const Multiselect = ({
   text,
   options,
   selectedOptions,
+  hint,
   optionChecked,
   optionUnchecked,
 }: {
-  text: string;
+  text: Store<string> | string;
   options: Store<SelectItem[]>;
   selectedOptions?: Store<number[]>;
+  hint: Store<string>;
   optionChecked: Event<any>;
   optionUnchecked: Event<any>;
 }) => {
@@ -52,8 +54,8 @@ export const Multiselect = ({
     });
 
     h("input", () => {
-      const selectedText = combine(options, localSelectedOptions, (opts, selectedOpts) => {
-        if (!selectedOpts || selectedOpts.length === 0) return "Click to select tags";
+      const selectedText = combine([options, localSelectedOptions, hint], ([opts, selectedOpts, hint]) => {
+        if (!selectedOpts || selectedOpts.length === 0) return hint;
 
         return opts
           .filter((o) => selectedOpts?.includes(o.id))

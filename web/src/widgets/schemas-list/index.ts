@@ -4,6 +4,7 @@ import { $groupedFilteredSchemas, $searchQuery, queryChanged } from "./model";
 import { combine } from "effector";
 import { tagModel } from "@/entities/tag";
 import { SchemaCard } from "@/entities/schema";
+import { i18n } from "@/shared/lib/i18n";
 
 export const SchemasList = () => {
   h("div", () => {
@@ -20,8 +21,8 @@ export const SchemasList = () => {
           spec({ classList: ["mt-2", "mb-9"] });
 
           const tagId = schemaGroups.map((g) => g[0]);
-          const tagName = combine(tagModel.$tags, tagId, (tags, tagId) => {
-            return tags.find((t) => String(t.id) === tagId)?.name || "General";
+          const tagName = combine([tagModel.$tags, tagId, i18n("log_groups.general")], ([tags, tagId, general]) => {
+            return tags.find((t) => String(t.id) === tagId)?.name || general;
           });
 
           Subheader(tagName);

@@ -3,6 +3,7 @@ import { Event, Store, createEvent, sample } from "effector";
 import { KBD, LevelBadge } from "..";
 import { Log } from "@/shared/api";
 import { isObjectPresent } from "@/shared/lib";
+import { i18n } from "@/shared/lib/i18n";
 
 export const LogsTable = ({
   logs,
@@ -45,19 +46,19 @@ export const LogsTable = ({
             h("th", {
               attr: { scope: "col" },
               classList: ["px-4", "py-3", "w-24", "lg:w-48"],
-              text: "Time",
+              text: i18n("tables.log_groups.time"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-4", "py-3", "w-16"],
-              text: "Level",
+              text: i18n("tables.log_groups.level"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-4", "py-3"],
-              text: "Text",
+              text: i18n("tables.log_groups.text"),
             });
           });
         });
@@ -133,13 +134,13 @@ export const LogsTable = ({
                     });
 
                     KBD({
-                      text: "Request",
+                      text: i18n("tables.log_groups.request"),
                       event: localRequestClicked,
                       visible: remap(log, "request").map(isObjectPresent),
                     });
 
                     KBD({
-                      text: "Response",
+                      text: i18n("tables.log_groups.response"),
                       event: localResponseClicked,
                       visible: remap(log, "response").map(isObjectPresent),
                     });

@@ -1,5 +1,6 @@
 import { tagModel } from "@/entities/tag";
 import { userModel } from "@/entities/user";
+import { i18n } from "@/shared/lib/i18n";
 import { Select } from "@/shared/ui";
 import { combine, createStore } from "effector";
 import { h, remap, spec } from "forest";
@@ -18,7 +19,7 @@ export const UserProfile = () => {
       h("div", () => {
         spec({ classList: ["pb-3"] });
 
-        h("p", { text: "Name" });
+        h("p", { text: i18n("profile.name") });
 
         h("p", {
           classList: ["truncate", "tracking-tight", "font-semibold", "text-gray-900", "dark:text-white"],
@@ -29,7 +30,7 @@ export const UserProfile = () => {
       h("div", () => {
         spec({ classList: ["py-3"] });
 
-        h("p", { text: "Email" });
+        h("p", { text: i18n("profile.email") });
 
         h("p", {
           classList: ["truncate", "tracking-tight", "font-semibold", "text-gray-900", "dark:text-white"],
@@ -40,7 +41,7 @@ export const UserProfile = () => {
       h("div", () => {
         spec({ classList: ["py-3"] });
 
-        h("p", { text: "Role" });
+        h("p", { text: i18n("profile.role") });
 
         h("p", {
           classList: ["truncate", "tracking-tight", "font-semibold", "text-gray-900", "dark:text-white"],
@@ -51,7 +52,7 @@ export const UserProfile = () => {
       h("div", () => {
         spec({ classList: ["py-3"] });
 
-        h("p", { text: "Tags" });
+        h("p", { text: i18n("profile.tags") });
 
         const $userTagNames = combine([tagModel.$tags, remap(userModel.$currentAccount, "tag_ids")], ([tags, tagIds]) => {
           const appliedTags = tags
@@ -71,11 +72,23 @@ export const UserProfile = () => {
       h("div", () => {
         spec({ classList: ["py-3", "max-w-5"] });
 
-        h("p", { text: "Theme" });
+        h("p", { text: i18n("profile.language") });
+
+        Select({
+          value: userModel.$currentLocale,
+          options: createStore(["en", "ru"]),
+          optionSelected: userModel.localeChanged,
+          withBlank: createStore(false),
+        });
+      });
+
+      h("div", () => {
+        spec({ classList: ["py-3", "max-w-5"] });
+
+        h("p", { text: i18n("profile.theme") });
 
         Select({
           value: userModel.$currentTheme,
-          text: "",
           options: createStore(["dark", "light"]),
           optionSelected: userModel.themeChanged,
           withBlank: createStore(false),

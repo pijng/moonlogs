@@ -1,6 +1,7 @@
 import { Button, ErrorHint, Input } from "@/shared/ui";
 import { $authError, authForm } from "./model";
 import { h, spec } from "forest";
+import { i18n } from "@/shared/lib/i18n";
 
 export const Auth = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const Auth = () => {
     h("form", () => {
       Input({
         type: "email",
-        label: "Email",
+        label: i18n("auth.email"),
         autofocus: true,
         inputChanged: authForm.fields.email.changed,
         errorText: authForm.fields.email.$errorText,
@@ -19,13 +20,13 @@ export const Auth = () => {
 
       Input({
         type: "password",
-        label: "Password",
+        label: i18n("auth.password"),
         inputChanged: authForm.fields.password.changed,
         errorText: authForm.fields.password.$errorText,
       });
 
       Button({
-        text: "Log in",
+        text: i18n("buttons.log_in"),
         event: authForm.submit,
         size: "base",
         prevent: true,

@@ -100,7 +100,7 @@ sample({
 
 sample({
   clock: appMounted,
-  target: userModel.effects.loadThemeFromStorageFx,
+  target: [userModel.effects.loadThemeFromStorageFx, userModel.effects.loadLocaleFromStorageFx],
 });
 
 export const chainAuthorized = (route: RouteInstance<any>) => {

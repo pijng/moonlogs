@@ -2,6 +2,7 @@ import { hashCode } from "@/shared/lib";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
 import { h, list, node, spec } from "forest";
 import { DownIcon } from "../icons";
+import { i18n } from "@/shared/lib/i18n";
 
 export const Select = ({
   value,
@@ -11,7 +12,7 @@ export const Select = ({
   withBlank,
 }: {
   value: Store<any>;
-  text: string;
+  text?: Store<string> | string;
   options: Store<any[]>;
   optionSelected: Event<any>;
   withBlank?: Store<boolean>;
@@ -55,7 +56,7 @@ export const Select = ({
 
     h("label", {
       classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
-      text: text,
+      text: text ?? createStore(""),
     });
 
     h("div", () => {
@@ -155,7 +156,7 @@ export const Select = ({
             "block",
             "cursor-pointer",
           ],
-          text: "—",
+          text: i18n("miscellaneous.blank_option"),
           visible: withBlank,
           handler: { on: { click: optionSelected.prepend(() => null) } },
         });
