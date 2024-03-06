@@ -4,12 +4,13 @@ import { $editError, deleteUserClicked, events, memberForm } from "./model";
 import { createStore } from "effector";
 import { UserRole } from "@/shared/api/users";
 import { tagModel } from "@/entities/tag";
+import { i18n } from "@/shared/lib/i18n";
 
 export const EditMemberForm = () => {
   h("form", () => {
     Input({
       type: "text",
-      label: "Name",
+      label: i18n("members.form.name"),
       value: memberForm.fields.name.$value,
       inputChanged: memberForm.fields.name.changed,
       errorText: memberForm.fields.name.$errorText,
@@ -17,7 +18,7 @@ export const EditMemberForm = () => {
 
     Input({
       type: "email",
-      label: "Email",
+      label: i18n("members.form.email"),
       value: memberForm.fields.email.$value,
       inputChanged: memberForm.fields.email.changed,
       errorText: memberForm.fields.email.$errorText,
@@ -25,7 +26,7 @@ export const EditMemberForm = () => {
 
     Input({
       type: "checkbox",
-      label: "Revoked",
+      label: i18n("members.form.revoked"),
       value: memberForm.fields.is_revoked.$value,
       inputChanged: memberForm.fields.is_revoked.changed,
       errorText: memberForm.fields.is_revoked.$errorText,
@@ -35,7 +36,7 @@ export const EditMemberForm = () => {
       spec({ classList: ["mb-6"] });
 
       Select({
-        text: "Select a role",
+        text: i18n("members.form.role"),
         value: memberForm.fields.role.$value,
         options: createStore<UserRole[]>(["Member", "Admin"]),
         optionSelected: memberForm.fields.role.changed,
@@ -51,7 +52,8 @@ export const EditMemberForm = () => {
       });
 
       Multiselect({
-        text: "Select tags",
+        text: i18n("members.form.tag.label"),
+        hint: i18n("members.form.tag.hint"),
         options: tagModel.$tags,
         selectedOptions: memberForm.fields.tag_ids.$value,
         optionChecked: events.tagChecked,
@@ -61,7 +63,7 @@ export const EditMemberForm = () => {
 
     Input({
       type: "password",
-      label: "Password",
+      label: i18n("members.form.password"),
       required: true,
       value: memberForm.fields.password.$value,
       inputChanged: memberForm.fields.password.changed,
@@ -71,7 +73,7 @@ export const EditMemberForm = () => {
     Input({
       value: memberForm.fields.passwordConfirmation.$value,
       type: "password",
-      label: "Confirm password",
+      label: i18n("members.form.confirm_password"),
       required: true,
       inputChanged: memberForm.fields.passwordConfirmation.changed,
       errorText: memberForm.fields.passwordConfirmation.$errorText,
@@ -81,7 +83,7 @@ export const EditMemberForm = () => {
       spec({ classList: ["flex", "justify-start", "space-x-2"] });
 
       Button({
-        text: "Save",
+        text: i18n("buttons.save"),
         event: memberForm.submit,
         size: "base",
         prevent: true,
@@ -89,7 +91,7 @@ export const EditMemberForm = () => {
       });
 
       Button({
-        text: "Delete",
+        text: i18n("buttons.delete"),
         event: deleteUserClicked,
         size: "base",
         prevent: true,

@@ -1,6 +1,7 @@
 import { h, list, spec, variant } from "forest";
 import { NextIcon, PreviousIcon } from "../icons";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
+import { i18n } from "@/shared/lib/i18n";
 
 const BASE_CLASSES = [
   "flex",
@@ -150,7 +151,7 @@ const FirstPage = (pages: Store<number>, pageChanged: Event<any>) => {
             attr: { href: "" },
             handler: { on: { click: localPageClicked }, config: { prevent: true } },
             classList: ACTIVE_CLASSES,
-            text: "1",
+            text: i18n("pagination.first_page"),
           });
         },
         not_active: () => {
@@ -158,7 +159,7 @@ const FirstPage = (pages: Store<number>, pageChanged: Event<any>) => {
             attr: { href: "" },
             handler: { on: { click: localPageClicked }, config: { prevent: true } },
             classList: BASE_CLASSES,
-            text: "1",
+            text: i18n("pagination.first_page"),
           });
         },
       },
@@ -264,7 +265,7 @@ const PreviousPages = (pages: Store<number>, pageChanged: Event<any>) => {
 
       h("span", {
         classList: ["sr-only"],
-        text: "Previous",
+        text: i18n("buttons.previous"),
       });
 
       PreviousIcon();
@@ -314,7 +315,7 @@ const NextPage = (pages: Store<number>, pageChanged: Event<any>) => {
 
       h("span", {
         classList: ["sr-only"],
-        text: "Next",
+        text: i18n("buttons.next"),
       });
 
       NextIcon();

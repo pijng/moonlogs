@@ -1,4 +1,5 @@
 import { Level } from "@/shared/api";
+import { i18n } from "@/shared/lib/i18n";
 import { Button, ButtonVariant, DownIcon } from "@/shared/ui";
 import { FireIcon } from "@/shared/ui/icons";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
@@ -40,7 +41,7 @@ export const FilterLevel = ({
     spec({ classList: ["relative"] });
 
     Button({
-      text: combine([createStore("Level"), level], ([defaultLabel, level]) => level || defaultLabel),
+      text: combine([i18n("log_groups.filters.level.label"), , level], ([defaultLabel, level]) => level || defaultLabel),
       variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
       size: "small",
       event: dropdownTriggered,
@@ -104,7 +105,7 @@ export const FilterLevel = ({
               "block",
               "cursor-pointer",
             ],
-            text: "—",
+            text: i18n("miscellaneous.blank_option"),
             handler: { on: { click: resetLevelFilter } },
           });
 

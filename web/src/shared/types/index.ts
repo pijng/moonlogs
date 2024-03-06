@@ -82,15 +82,147 @@ export type Translation = {
         };
       };
     };
-    buttons: {
-      create: string;
-      settings: string;
-      save: string;
+    alerts: {
       delete: string;
+    };
+    filters: {
+      query: {
+        label: string;
+        kind: string;
+      };
+      time: {
+        label: string;
+        from: string;
+        to: string;
+      };
+      level: {
+        label: string;
+      };
+    };
+  };
+  members: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      name: string;
+      email: string;
+      role: string;
+      tag: {
+        label: string;
+        hint: string;
+      };
+      revoked: string;
+      password: string;
+      confirm_password: string;
     };
     alerts: {
       delete: string;
     };
+  };
+  tags: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      name: {
+        label: string;
+        hint: string;
+      };
+    };
+    alerts: {
+      delete: string;
+    };
+  };
+  api_tokens: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      name: {
+        label: string;
+        hint: string;
+      };
+      revoked: string;
+      creation_hint: string;
+    };
+    alerts: {
+      delete: string;
+    };
+  };
+  buttons: {
+    create: string;
+    settings: string;
+    save: string;
+    delete: string;
+    edit: string;
+    open: string;
+    log_in: string;
+    register: string;
+    previous: string;
+    next: string;
+    clear: string;
+  };
+  tables: {
+    log_groups: {
+      time: string;
+      level: string;
+      text: string;
+      request: string;
+      response: string;
+    };
+    members: {
+      email: string;
+      name: string;
+      role: string;
+      revoked: string;
+      actions: string;
+    };
+    tags: {
+      name: string;
+      actions: string;
+    };
+    api_tokens: {
+      name: string;
+      token: string;
+      revoked: string;
+      actions: string;
+    };
+  };
+  auth: {
+    email: string;
+    password: string;
+  };
+  validations: {
+    required: string;
+    invalid_email: string;
+    passwords_dont_match: string;
+  };
+  pagination: {
+    first_page: string;
+  };
+  components: {
+    search: {
+      text: string;
+    };
+    sidebar: {
+      open: string;
+    };
+  };
+  miscellaneous: {
+    loading: string;
+    logo: "🌘";
+    brand: "Moonlogs";
+    blank_option: "—";
+    not_found: string;
+    forbidden: string;
+    to_home: string;
   };
 };
 

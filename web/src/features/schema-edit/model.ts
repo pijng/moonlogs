@@ -3,8 +3,9 @@ import { tagModel } from "@/entities/tag";
 import { homeRoute } from "@/routing/shared";
 import { SchemaField, SchemaKind, SchemaToUpdate, deleteSchema, editSchema } from "@/shared/api";
 import { rules } from "@/shared/lib";
+import { i18n } from "@/shared/lib/i18n";
 import { redirect } from "atomic-router";
-import { createEffect, createEvent, createStore, sample } from "effector";
+import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
 const addField = createEvent<SchemaField>();
@@ -172,10 +173,13 @@ export const deleteSchemaFx = createEffect((id: number) => {
 });
 
 export const deleteSchemaClicked = createEvent<number>();
-const alertDeleteFx = createEffect((id: number): { confirmed: boolean; id: number } => {
-  const confirmed = confirm("Are you sure you want to delete this log group?");
+const alertDeleteFx = attach({
+  source: i18n("log_groups.alerts.delete"),
+  effect(alertText, id: number) {
+    const confirmed = confirm(alertText);
 
-  return confirmed ? { confirmed: true, id: id } : { confirmed: false, id: id };
+    return confirmed ? { confirmed: true, id: id } : { confirmed: false, id: id };
+  },
 });
 
 sample({

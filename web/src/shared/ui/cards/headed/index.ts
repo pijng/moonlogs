@@ -2,6 +2,7 @@ import { Store, combine, createStore } from "effector";
 import { h, list, spec } from "forest";
 import { Button, KBD } from "@/shared/ui";
 import { Schema } from "@/shared/api";
+import { i18n } from "@/shared/lib/i18n";
 
 export const CardHeaded = ({
   tags,
@@ -119,7 +120,7 @@ export const CardHeaded = ({
           spec({
             attr: { href: href || "", target: "_blank" },
           });
-          Button({ text: "Open", variant: "default", size: "extra_small" });
+          Button({ text: i18n("buttons.open"), variant: "default", size: "extra_small" });
         });
       });
     });

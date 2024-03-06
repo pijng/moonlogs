@@ -4,6 +4,7 @@ import { h, spec } from "forest";
 import { apiTokenCreateRoute, apiTokensRoute } from "@/routing/shared";
 import { HeaderWithCreation } from "@/widgets";
 import { ApiTokensList } from "@/widgets";
+import { i18n } from "@/shared/lib/i18n";
 
 export const ApiTokensListPage = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const ApiTokensListPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(apiTokensRoute);
 
-    HeaderWithCreation("API tokens", apiTokenCreateRoute);
+    HeaderWithCreation(i18n("api_tokens.label"), apiTokenCreateRoute);
 
     h("div", () => {
       spec({

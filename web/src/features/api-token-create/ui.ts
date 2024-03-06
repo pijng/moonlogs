@@ -2,6 +2,7 @@ import { Button, ErrorHint, Input } from "@/shared/ui";
 import { h, spec } from "forest";
 import { $creationError, $freshToken, apiTokenForm } from "./model";
 import { createEvent } from "effector";
+import { i18n } from "@/shared/lib/i18n";
 
 export const NewApiTokenForm = () => {
   h("form", () => {
@@ -12,15 +13,15 @@ export const NewApiTokenForm = () => {
 
       Input({
         type: "text",
-        label: "Name",
+        label: i18n("api_tokens.form.name.label"),
         value: apiTokenForm.fields.name.$value,
         inputChanged: apiTokenForm.fields.name.changed,
         errorText: apiTokenForm.fields.name.$errorText,
-        hint: "Name - is used to indicate which service will use this API token. It does not affect the token functionally",
+        hint: i18n("api_tokens.form.name.hint"),
       });
 
       Button({
-        text: "Create",
+        text: i18n("buttons.create"),
         event: apiTokenForm.submit,
         size: "base",
         prevent: true,
@@ -32,8 +33,7 @@ export const NewApiTokenForm = () => {
 
     Input({
       type: "text",
-      label:
-        "Your integration API token has been successfully created. Make sure to save it securely now, as it won't be displayed again for security reasons",
+      label: i18n("api_tokens.form.creation_hint"),
       value: $freshToken,
       visible: $freshToken.map(Boolean),
       inputChanged: createEvent(),

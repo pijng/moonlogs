@@ -3,6 +3,7 @@ import { withRoute } from "atomic-router-forest";
 
 import { forbiddenRoute, homeRoute } from "@/routing/shared";
 import { Header, Link } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export const ForbiddenPage = () => {
   h("div", {
@@ -18,10 +19,10 @@ export const ForbiddenPage = () => {
 
         h("div", () => {
           spec({ classList: ["mb-4"] });
-          Header("You do not have permission to access this resource");
+          Header(i18n("miscellaneous.forbidden"));
         });
 
-        Link(homeRoute, "Go to home page");
+        Link(homeRoute, i18n("miscellaneous.to_home"));
       });
     },
   });

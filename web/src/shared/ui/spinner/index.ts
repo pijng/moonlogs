@@ -1,3 +1,4 @@
+import { i18n } from "@/shared/lib/i18n";
 import { Store } from "effector";
 import { h, spec } from "forest";
 
@@ -29,7 +30,7 @@ export const Spinner = ({ visible }: { visible: Store<boolean> }) => {
 
     h("span", {
       classList: ["sr-only"],
-      text: "Loading...",
+      text: i18n("miscellaneous.loading"),
     });
   });
 };

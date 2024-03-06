@@ -95,7 +95,7 @@ export const Button = ({
   preIcon,
   postIcon,
 }: {
-  text: string | Store<string>;
+  text?: string | Store<string>;
   event?: Event<any>;
   variant: ButtonVariant | Store<ButtonVariant>;
   style?: Style;
@@ -126,7 +126,7 @@ export const Button = ({
     spec({
       handler: { on: { click: event ?? createEvent() }, config: { prevent: prevent } },
       classList: [$classes] as ClassListArray,
-      text: text,
+      text: text ?? createStore(""),
       visible: visible,
     });
 

@@ -25,7 +25,6 @@ export const HeaderWithCreation = (text: string | Store<string>, route: RouteIns
         });
 
         Button({
-          text: "",
           variant: "default",
           style: "round",
           size: "extra_small",

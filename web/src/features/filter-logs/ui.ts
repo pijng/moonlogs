@@ -2,6 +2,7 @@ import { Button, ButtonVariant, DownIcon, Dropdown } from "@/shared/ui";
 import { Event, Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
 import { FilterIcon } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export type FilterItem = {
   name: string;
@@ -52,7 +53,7 @@ export const Filter = ({
     spec({ classList: ["relative"] });
 
     Button({
-      text: "Filter",
+      text: i18n("log_groups.filters.query.label"),
       variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
       size: "small",
       event: dropdownTriggered,

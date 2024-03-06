@@ -2,6 +2,7 @@ import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { Filter, FilterDate, FilterLevel } from "@/features";
 import { logsRoute } from "@/routing/shared";
+import { i18n } from "@/shared/lib/i18n";
 import { Button, Search } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
@@ -76,7 +77,7 @@ export const SearchBar = () => {
         });
 
         Button({
-          text: "Clear",
+          text: i18n("buttons.clear"),
           variant: "light",
           size: "small",
           event: filterCleared,
@@ -108,7 +109,7 @@ export const SearchBar = () => {
         });
 
         Button({
-          text: "Clear",
+          text: i18n("buttons.clear"),
           variant: "light",
           size: "small",
           event: timeFilterCleared,
@@ -137,7 +138,7 @@ export const SearchBar = () => {
         });
 
         Button({
-          text: "Clear",
+          text: i18n("buttons.clear"),
           variant: "light",
           size: "small",
           event: levelFilterCleared,

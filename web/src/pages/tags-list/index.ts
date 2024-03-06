@@ -4,6 +4,7 @@ import { h, spec } from "forest";
 import { tagCreateRoute, tagsRoute } from "@/routing/shared";
 import { HeaderWithCreation } from "@/widgets";
 import { TagsList } from "@/widgets";
+import { i18n } from "@/shared/lib/i18n";
 
 export const TagsListPage = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const TagsListPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(tagsRoute);
 
-    HeaderWithCreation("Tags", tagCreateRoute);
+    HeaderWithCreation(i18n("tags.label"), tagCreateRoute);
 
     h("div", () => {
       spec({ classList: ["pt-3", "max-w-3xl"] });

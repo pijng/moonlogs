@@ -4,6 +4,7 @@ import { h, spec } from "forest";
 import { apiTokenCreateRoute } from "@/routing/shared";
 import { Header } from "@/shared/ui";
 import { NewApiTokenForm } from "@/features";
+import { i18n } from "@/shared/lib/i18n";
 
 export const ApiTokenCreatePage = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const ApiTokenCreatePage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(apiTokenCreateRoute);
 
-    Header("Create API token");
+    Header(i18n("api_tokens.form.actions.create"));
 
     h("div", () => {
       spec({

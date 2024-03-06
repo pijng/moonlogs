@@ -1,21 +1,22 @@
 import { Button, ErrorHint, Input } from "@/shared/ui";
 import { h, spec } from "forest";
 import { $editError, apiTokenForm, deleteApiTokenClicked } from "./model";
+import { i18n } from "@/shared/lib/i18n";
 
 export const EditApiTokenForm = () => {
   h("form", () => {
     Input({
       type: "text",
-      label: "Name",
+      label: i18n("api_tokens.form.name.label"),
       value: apiTokenForm.fields.name.$value,
       inputChanged: apiTokenForm.fields.name.changed,
       errorText: apiTokenForm.fields.name.$errorText,
-      hint: "Name - is used to indicate which service will use this API token. It does not affect the token functionally",
+      hint: i18n("api_tokens.form.name.hint"),
     });
 
     Input({
       type: "checkbox",
-      label: "Revoked",
+      label: i18n("api_tokens.form.revoked"),
       value: apiTokenForm.fields.is_revoked.$value,
       inputChanged: apiTokenForm.fields.is_revoked.changed,
       errorText: apiTokenForm.fields.is_revoked.$errorText,
@@ -25,7 +26,7 @@ export const EditApiTokenForm = () => {
       spec({ classList: ["flex", "justify-start", "space-x-2"] });
 
       Button({
-        text: "Save",
+        text: i18n("buttons.save"),
         event: apiTokenForm.submit,
         size: "base",
         prevent: true,
@@ -33,7 +34,7 @@ export const EditApiTokenForm = () => {
       });
 
       Button({
-        text: "Delete",
+        text: i18n("buttons.delete"),
         event: deleteApiTokenClicked,
         size: "base",
         prevent: true,

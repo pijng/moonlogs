@@ -4,6 +4,7 @@ import { h, spec } from "forest";
 import { memberCreateRoute } from "@/routing/shared";
 import { Header } from "@/shared/ui";
 import { NewMemberForm } from "@/features/user-create";
+import { i18n } from "@/shared/lib/i18n";
 
 export const UserCreatePage = () => {
   h("div", () => {
@@ -11,7 +12,7 @@ export const UserCreatePage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(memberCreateRoute);
 
-    Header("Create member");
+    Header(i18n("members.form.actions.create"));
 
     h("div", () => {
       spec({

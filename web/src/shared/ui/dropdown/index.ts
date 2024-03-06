@@ -2,6 +2,7 @@ import { Event, Store, createEvent, sample } from "effector";
 import { h, list, spec } from "forest";
 import { FloatingInput, Select } from "@/shared/ui";
 import { FilterItem, KindItem } from "@/features";
+import { i18n } from "@/shared/lib/i18n";
 
 export const Dropdown = ({
   items,
@@ -53,7 +54,7 @@ export const Dropdown = ({
           classList: ["block", "px-4", "py-2", "flex-auto", "shrink-0"],
         });
 
-        Select({ value: currentKind, text: "Kind", options: kinds, optionSelected: kindChanged });
+        Select({ value: currentKind, text: i18n("log_groups.filters.query.kind"), options: kinds, optionSelected: kindChanged });
       });
 
       list(items, ({ store: item }) => {

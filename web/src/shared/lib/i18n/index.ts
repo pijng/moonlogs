@@ -3,6 +3,7 @@ import { invokeTemplate } from "./templating";
 import { locales } from "./translations";
 import { Store } from "effector";
 import { $preferredLanguage } from "./locale";
+export { setLanguage } from "./locale";
 
 export const i18n = (path: TranslationPath, vars?: Record<string, any>): Store<string> => {
   const $locale = $preferredLanguage.map((lang) => locales[lang]);

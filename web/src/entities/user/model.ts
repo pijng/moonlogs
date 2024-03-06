@@ -1,5 +1,6 @@
 import { User, getUsers } from "@/shared/api";
 import { getUser } from "@/shared/api/users";
+import { setLanguage } from "@/shared/lib/i18n";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
 const THEME_KEY = "theme";
@@ -66,6 +67,8 @@ const setLocaleToStorageFx = createEffect((locale: string) => {
 });
 
 export const $currentLocale = createStore<string>("en");
+
+// This event for ui (click in profile)
 export const localeChanged = createEvent<string>();
 
 sample({
@@ -77,6 +80,11 @@ sample({
 sample({
   source: loadLocaleFromStorageFx.doneData,
   target: $currentLocale,
+});
+
+sample({
+  source: $currentLocale,
+  target: setLanguage,
 });
 
 export const effects = {

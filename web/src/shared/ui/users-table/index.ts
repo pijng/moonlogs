@@ -2,6 +2,7 @@ import { h, list, remap, spec } from "forest";
 import { Event, Store, createEvent, sample } from "effector";
 import { User } from "@/shared/api";
 import { Button } from "@/shared/ui";
+import { i18n } from "@/shared/lib/i18n";
 
 export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => {
   h("div", () => {
@@ -36,31 +37,31 @@ export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3", "w-48", "lg:w-72"],
-              text: "Email",
+              text: i18n("tables.members.email"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3", "w-48", "lg:w-72"],
-              text: "Name",
+              text: i18n("tables.members.name"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Role",
+              text: i18n("tables.members.role"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Revoked",
+              text: i18n("tables.members.revoked"),
             });
 
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: "Actions",
+              text: i18n("tables.members.actions"),
             });
           });
         });
@@ -130,7 +131,7 @@ export const UsersTable = (users: Store<User[]>, editClicked: Event<number>) => 
                 });
 
                 Button({
-                  text: "Edit",
+                  text: i18n("buttons.edit"),
                   event: localEditClicked,
                   variant: "default",
                   size: "extra_small",

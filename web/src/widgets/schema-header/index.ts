@@ -2,6 +2,7 @@ import { schemaModel } from "@/entities/schema";
 import { router } from "@/routing";
 import { logsRoute, schemaEditRoute } from "@/routing/shared";
 import { PermissionGate } from "@/shared/lib";
+import { i18n } from "@/shared/lib/i18n";
 import { Button, Header } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
@@ -41,7 +42,7 @@ export const SchemaHeader = () => {
         });
 
         Button({
-          text: "Settings",
+          text: i18n("buttons.settings"),
           variant: "default",
           size: "extra_small",
           event: routeOpened,
