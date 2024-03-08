@@ -80,7 +80,7 @@ func InitDB(dataSourceName string) error {
 	}
 
 	db, err := sql.Open("sqlite", fmt.Sprintf(
-		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=268435456&_pragma=busy_timeout(5000)",
+		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=1073741824&_pragma=busy_timeout(5000)&_pragma=cache_size=1000000",
 		dataSourceName),
 	)
 	if err != nil {
