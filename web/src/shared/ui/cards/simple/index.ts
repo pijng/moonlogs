@@ -1,4 +1,4 @@
-import { Link } from "@/routing";
+import { Link } from "@/shared/routing";
 import { RouteInstance, RouteParams } from "atomic-router";
 import { Store } from "effector";
 import { h } from "forest";

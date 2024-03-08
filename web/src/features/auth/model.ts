@@ -1,5 +1,5 @@
 import { userModel } from "@/entities/user";
-import { homeRoute } from "@/routing/shared";
+import { homeRoute } from "@/shared/routing";
 import { postSession } from "@/shared/api";
 import { getSessionFx, tokenReceived } from "@/shared/auth";
 import { rules } from "@/shared/lib";

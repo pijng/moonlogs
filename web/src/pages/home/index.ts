@@ -1,7 +1,7 @@
 import { h } from "forest";
 import { withRoute } from "atomic-router-forest";
 
-import { homeRoute, schemaCreateRoute } from "@/routing/shared";
+import { homeRoute, schemaCreateRoute } from "@/shared/routing";
 import { HeaderWithCreation, SchemasList } from "@/widgets";
 import { i18n } from "@/shared/lib/i18n";
 

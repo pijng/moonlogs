@@ -1,0 +1,22 @@
+import { createRoute } from "atomic-router";
+import { Store } from "effector";
+
+export const loginRoute = createRoute();
+export const registerAdminRoute = createRoute();
+export const forbiddenRoute = createRoute();
+export const notFoundRoute = createRoute();
+export const homeRoute = createRoute();
+export const profileRoute = createRoute();
+export const logsRoute = createRoute<{ schemaName: string | Store<string> }>();
+export const showLogRoute = createRoute<{ schemaName: string; hash: string }>();
+export const membersRoute = createRoute();
+export const memberCreateRoute = createRoute();
+export const memberEditRoute = createRoute<{ id: number }>();
+export const schemaCreateRoute = createRoute();
+export const schemaEditRoute = createRoute<{ id: number }>();
+export const apiTokensRoute = createRoute();
+export const apiTokenCreateRoute = createRoute();
+export const apiTokenEditRoute = createRoute<{ id: number }>();
+export const tagsRoute = createRoute();
+export const tagCreateRoute = createRoute();
+export const tagEditRoute = createRoute<{ id: number }>();

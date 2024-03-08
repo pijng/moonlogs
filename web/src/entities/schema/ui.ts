@@ -1,4 +1,4 @@
-import { logsRoute } from "@/routing/shared";
+import { logsRoute } from "@/shared/routing";
 import { CardLink } from "@/shared/ui";
 import { Store } from "effector";
 

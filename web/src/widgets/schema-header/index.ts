@@ -1,7 +1,6 @@
 import { schemaModel } from "@/entities/schema";
-import { router } from "@/routing";
-import { logsRoute, schemaEditRoute } from "@/routing/shared";
-import { PermissionGate } from "@/shared/lib";
+import { logsRoute, router, schemaEditRoute } from "@/shared/routing";
+import { PermissionGate } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import { Button, Header } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";

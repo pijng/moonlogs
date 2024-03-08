@@ -1,5 +1,5 @@
 import { chainRoute } from "atomic-router";
-import { chainAuthorized, chainRole, homeRoute, tagCreateRoute, tagEditRoute, tagsRoute } from "@/routing/shared";
+import { chainAuthorized, chainRole, homeRoute, tagCreateRoute, tagEditRoute, tagsRoute } from "@/shared/routing";
 import { createEffect } from "effector";
 import { tagModel } from "@/entities/tag";
 

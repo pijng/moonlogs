@@ -1,7 +1,7 @@
 import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
-import { memberEditRoute } from "@/routing/shared";
+import { memberEditRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
 import { EditMemberForm } from "@/features/user-edit";
 import { i18n } from "@/shared/lib/i18n";

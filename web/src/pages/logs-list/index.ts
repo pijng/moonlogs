@@ -1,7 +1,7 @@
 import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
-import { logsRoute } from "@/routing/shared";
+import { logsRoute } from "@/shared/routing";
 import { LogsList, SchemaHeader, SearchBar } from "@/widgets";
 import { Pagination, Spinner } from "@/shared/ui";
 import { logModel } from "@/entities/log";

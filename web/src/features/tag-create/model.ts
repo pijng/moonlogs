@@ -1,4 +1,4 @@
-import { tagsRoute } from "@/routing/shared";
+import { tagsRoute } from "@/shared/routing";
 import { TagToCreate, createTag } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { createEffect, createStore, sample } from "effector";

@@ -1,6 +1,6 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
-import { chainAuthorized, controls, logsRoute, showLogRoute } from "@/routing/shared";
+import { chainAuthorized, controls, logsRoute, showLogRoute } from "@/shared/routing";
 import { chainRoute, querySync } from "atomic-router";
 import { combine, sample } from "effector";
 import { debounce } from "patronum";

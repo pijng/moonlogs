@@ -1,5 +1,5 @@
 import { chainRoute } from "atomic-router";
-import { chainAuthorized, chainRole, memberCreateRoute, memberEditRoute, membersRoute } from "@/routing/shared";
+import { chainAuthorized, chainRole, memberCreateRoute, memberEditRoute, membersRoute } from "@/shared/routing";
 import { userModel } from "@/entities/user";
 import { tagModel } from "@/entities/tag";
 

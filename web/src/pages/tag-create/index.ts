@@ -1,7 +1,7 @@
 import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
-import { tagCreateRoute } from "@/routing/shared";
+import { tagCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
 import { NewTagForm } from "@/features";
 import { i18n } from "@/shared/lib/i18n";

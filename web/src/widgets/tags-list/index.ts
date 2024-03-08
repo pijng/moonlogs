@@ -1,5 +1,5 @@
 import { tagModel } from "@/entities/tag";
-import { tagEditRoute } from "@/routing/shared";
+import { tagEditRoute } from "@/shared/routing";
 import { TagsTable } from "@/shared/ui";
 import { createEvent, sample } from "effector";
 import { h, spec } from "forest";

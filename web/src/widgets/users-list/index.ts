@@ -1,5 +1,5 @@
 import { userModel } from "@/entities/user";
-import { memberEditRoute } from "@/routing/shared";
+import { memberEditRoute } from "@/shared/routing";
 import { UsersTable } from "@/shared/ui";
 import { redirect } from "atomic-router";
 import { createEvent } from "effector";

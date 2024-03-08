@@ -1,4 +1,4 @@
-import { PermissionGate } from "@/shared/lib";
+import { PermissionGate } from "@/shared/ui";
 import { Button, Header, PlusIcon } from "@/shared/ui";
 import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent } from "effector";

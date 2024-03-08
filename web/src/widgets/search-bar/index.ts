@@ -1,7 +1,7 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { Filter, FilterDate, FilterLevel } from "@/features";
-import { logsRoute } from "@/routing/shared";
+import { logsRoute } from "@/shared/routing";
 import { i18n } from "@/shared/lib/i18n";
 import { Button, Search } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";

@@ -1,7 +1,7 @@
 import { h, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
-import { forbiddenRoute, homeRoute } from "@/routing/shared";
+import { forbiddenRoute, homeRoute } from "@/shared/routing";
 import { Header, Link } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 

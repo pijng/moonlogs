@@ -1,7 +1,7 @@
 import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
-import { apiTokenCreateRoute } from "@/routing/shared";
+import { apiTokenCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
 import { NewApiTokenForm } from "@/features";
 import { i18n } from "@/shared/lib/i18n";

@@ -1,5 +1,5 @@
 import { userModel } from "@/entities/user";
-import { membersRoute } from "@/routing/shared";
+import { membersRoute } from "@/shared/routing";
 import { UserToUpdate, editUser } from "@/shared/api";
 import { deleteUser } from "@/shared/api/users";
 import { rules } from "@/shared/lib";

@@ -1,5 +1,5 @@
 import { tagModel } from "@/entities/tag";
-import { tagsRoute } from "@/routing/shared";
+import { tagsRoute } from "@/shared/routing";
 import { TagToUpdate, deleteTag, editTag } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";

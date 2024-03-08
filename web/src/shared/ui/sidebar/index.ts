@@ -1,9 +1,9 @@
-import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/routing/shared";
 import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
-import { PermissionGate } from "@/shared/lib";
+import { PermissionGate } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
+import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
 
 export const sidebarClosed = createEvent();
 const sidebarTriggered = createEvent<MouseEvent>();

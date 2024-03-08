@@ -1,5 +1,5 @@
 import { createEffect, createEvent, createStore, sample } from "effector";
-import { getSession } from "@/shared/api";
+import { User, getSession } from "@/shared/api";
 
 export const tokenReceived = createEvent<string>();
 export const tokenErased = createEvent();
@@ -41,4 +41,20 @@ sample({
   clock: getSessionFx.doneData,
   filter: (sessionResponse) => sessionResponse.success && sessionResponse.data.should_create_initial_admin,
   target: createInitialAdmin,
+});
+
+export const setCurrentAccount = createEvent<User>();
+export const $currentAccount = createStore<User>({
+  id: 0,
+  name: "",
+  email: "",
+  role: "Member",
+  tag_ids: [],
+  token: "",
+  is_revoked: false,
+});
+
+sample({
+  source: setCurrentAccount,
+  target: $currentAccount,
 });

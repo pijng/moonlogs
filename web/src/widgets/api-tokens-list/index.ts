@@ -1,5 +1,5 @@
 import { apiTokenModel } from "@/entities/api-token";
-import { apiTokenEditRoute } from "@/routing/shared";
+import { apiTokenEditRoute } from "@/shared/routing";
 import { ApiTokensTable } from "@/shared/ui";
 import { createEvent, sample } from "effector";
 import { h, spec } from "forest";

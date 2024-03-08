@@ -1,6 +1,6 @@
 import { schemaModel } from "@/entities/schema";
 import { tagModel } from "@/entities/tag";
-import { homeRoute } from "@/routing/shared";
+import { homeRoute } from "@/shared/routing";
 import { SchemaField, SchemaKind, SchemaToUpdate, deleteSchema, editSchema } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";

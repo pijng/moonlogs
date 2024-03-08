@@ -1,5 +1,5 @@
 import { tagModel } from "@/entities/tag";
-import { homeRoute } from "@/routing/shared";
+import { homeRoute } from "@/shared/routing";
 import { SchemaField, SchemaKind, SchemaToCreate, createSchema } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";

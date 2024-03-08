@@ -2,7 +2,7 @@ import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
 import { logModel } from "@/entities/log";
-import { router, showLogRoute } from "@/routing/shared";
+import { router, showLogRoute } from "@/shared/routing";
 import { CardHeaded, LogsTable } from "@/shared/ui";
 import { SchemaHeader } from "@/widgets";
 import { schemaModel } from "@/entities/schema";

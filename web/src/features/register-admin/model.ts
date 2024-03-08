@@ -1,4 +1,4 @@
-import { loginRoute } from "@/routing/shared";
+import { loginRoute } from "@/shared/routing";
 import { registerAdmin } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";

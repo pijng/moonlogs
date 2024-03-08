@@ -1,7 +1,8 @@
 import { chainRoute } from "atomic-router";
-import { apiTokenCreateRoute, apiTokenEditRoute, apiTokensRoute, chainAuthorized, chainRole } from "@/routing/shared";
+
 import { createEffect } from "effector";
 import { apiTokenModel } from "@/entities/api-token";
+import { apiTokenCreateRoute, apiTokenEditRoute, apiTokensRoute, chainAuthorized, chainRole } from "@/shared/routing";
 
 chainRoute({
   route: chainRole("Admin", chainAuthorized(apiTokensRoute)),

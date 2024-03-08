@@ -1,5 +1,5 @@
 import { apiTokenModel } from "@/entities/api-token";
-import { apiTokensRoute } from "@/routing/shared";
+import { apiTokensRoute } from "@/shared/routing";
 import { ApiTokenToUpdate, deleteApiToken, editApiToken } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";

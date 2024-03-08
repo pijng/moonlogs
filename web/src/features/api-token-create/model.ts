@@ -1,4 +1,4 @@
-import { router } from "@/routing";
+import { router } from "@/shared/routing";
 import { ApiTokenToCreate, createApiToken } from "@/shared/api";
 import { rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";

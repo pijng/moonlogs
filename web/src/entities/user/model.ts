@@ -1,5 +1,6 @@
 import { User, getUsers } from "@/shared/api";
 import { getUser } from "@/shared/api/users";
+import { setCurrentAccount } from "@/shared/auth";
 import { setLanguage } from "@/shared/lib/i18n";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
@@ -34,6 +35,11 @@ export const $currentAccount = createStore<User>({
   tag_ids: [],
   token: "",
   is_revoked: false,
+});
+
+sample({
+  source: $currentAccount,
+  target: setCurrentAccount,
 });
 
 const loadThemeFromStorageFx = createEffect(() => {

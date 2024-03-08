@@ -1,5 +1,5 @@
 import { chainRoute } from "atomic-router";
-import { chainAuthorized, profileRoute } from "@/routing/shared";
+import { chainAuthorized, profileRoute } from "@/shared/routing";
 import { tagModel } from "@/entities/tag";
 import { userModel } from "@/entities/user";
 import { createEffect } from "effector";

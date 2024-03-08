@@ -1,6 +1,6 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
-import { router } from "@/routing";
+import { router } from "@/shared/routing";
 import { CardHeaded, LogsTable } from "@/shared/ui";
 import { combine } from "effector";
 import { h, list, spec } from "forest";
