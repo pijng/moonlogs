@@ -33,7 +33,7 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 			}
 
 			// Move this to separate module that will determine what operation to do in case
-			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
+			// there are multiple DBs supported (Sqlite, Postgres, Mongo, ScyllaDB.)
 
 			// Disable ANALYZE, consider adding a feature flag to enable it
 
@@ -44,7 +44,7 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 			// }
 
 			// Move this to separate module that will determine what operation to do in case
-			// there are multiple DBs supported (Sqlite, Mongo, Cassandra.)
+			// there are multiple DBs supported (Sqlite, Postgres, Mongo, ScyllaDB.)
 
 			// Disable VACUUM, consider adding a feature flag to enable it
 
