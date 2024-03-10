@@ -24,31 +24,23 @@ func NewRecordStorage(ctx context.Context) *RecordStorage {
 }
 
 func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
-	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?);"
+	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
 	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	result, err := stmt.ExecContext(s.ctx, record.Text, record.SchemaName, schemaID, record.Query,
+	row := stmt.QueryRowContext(s.ctx, record.Text, record.SchemaName, schemaID, record.Query,
 		record.Request, record.Response, record.Kind, groupHash, record.Level, entities.RecordTime{Time: time.Now()})
 
+	var lr entities.Record
+	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
 	if err != nil {
-		return nil, fmt.Errorf("failed inserting record: %w", err)
+		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, fmt.Errorf("failed retrieving record last insert id: %w", err)
-	}
-
-	lr, err := s.GetRecordByID(int(id))
-	if err != nil {
-		return nil, fmt.Errorf("failed querying record: %w", err)
-	}
-
-	return lr, nil
+	return &lr, nil
 }
 
 func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
