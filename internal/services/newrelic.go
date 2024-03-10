@@ -11,6 +11,7 @@ func StartNewrelic(licenseKey string) (*newrelic.Application, error) {
 		newrelic.ConfigAppName("Moonlogs"),
 		newrelic.ConfigLicense(licenseKey),
 		newrelic.ConfigAppLogForwardingEnabled(true),
+		newrelic.ConfigDistributedTracerEnabled(true),
 	)
 
 	if err != nil {
