@@ -14,6 +14,7 @@ import (
 	"slices"
 
 	"github.com/gorilla/mux"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 func RegisterSchemaRouter(r *mux.Router) {
@@ -93,14 +94,21 @@ func RegisterWebRouter(r *mux.Router) {
 
 func SessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		bearerToken := shared.ExtractBearerToken(r)
+		txn := newrelic.FromContext(r.Context())
+		defer txn.StartSegment("router.SessionMiddleware").End()
 
+		txnExtract := txn.StartSegment("router.SessionMiddleware#ExtractBearerToken")
+		bearerToken := shared.ExtractBearerToken(r)
+		txnExtract.End()
+
+		txnIsTokenValid := txn.StartSegment("router.SessionMiddleware#IsTokenValid")
 		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
 		ok, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
 		}
+		txnIsTokenValid.End()
 
 		if ok {
 			next.ServeHTTP(w, r)
@@ -139,14 +147,21 @@ func SessionMiddleware(next http.Handler) http.Handler {
 
 func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		bearerToken := shared.ExtractBearerToken(r)
+		txn := newrelic.FromContext(r.Context())
+		defer txn.StartSegment("router.roleMiddleware").End()
 
+		txnExtract := txn.StartSegment("router.roleMiddleware#ExtractBearerToken")
+		bearerToken := shared.ExtractBearerToken(r)
+		txnExtract.End()
+
+		txnIsTokenValid := txn.StartSegment("router.roleMiddleware#IsTokenValid")
 		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
 		validAPIToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
 		}
+		txnIsTokenValid.End()
 
 		// allow access by API token for certain actions only
 		if validAPIToken {

@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var cachedSchemas = make(map[string]*entities.Schema)
+
 type SchemaUseCase struct {
 	schemaStorage storage.SchemaStorage
 }
@@ -123,7 +125,19 @@ func (uc *SchemaUseCase) GetSchemaByTagID(tagID int) ([]*entities.Schema, error)
 }
 
 func (uc *SchemaUseCase) GetSchemaByName(name string) (*entities.Schema, error) {
-	return uc.schemaStorage.GetByName(name)
+	schema, ok := cachedSchemas[name]
+	if ok {
+		return schema, nil
+	}
+
+	schema, err := uc.schemaStorage.GetByName(name)
+	if err != nil {
+		return nil, fmt.Errorf("getting schema by name: %w", err)
+	}
+
+	cachedSchemas[schema.Name] = schema
+
+	return schema, nil
 }
 
 func (uc *SchemaUseCase) GetSchemasByTitleOrDescription(title string, description string) ([]*entities.Schema, error) {

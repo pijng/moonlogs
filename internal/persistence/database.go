@@ -75,15 +75,15 @@ func InitDB(dataSourceName string) error {
 	}
 
 	db, err := sql.Open("sqlite", fmt.Sprintf(
-		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout(5000)&_pragma=cache_size=-512000",
+		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout=5000&_pragma=cache_size=-512000",
 		dataSourceName),
 	)
 	if err != nil {
 		return fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
 
-	db.SetMaxOpenConns(200)
-	db.SetMaxIdleConns(50)
+	db.SetMaxOpenConns(1000)
+	db.SetMaxIdleConns(10)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	err = db.Ping()
