@@ -29,21 +29,27 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	txn := newrelic.FromContext(s.ctx)
 	defer txn.StartSegment("storage.sqlite_adapter.CreateRecord").End()
 
+	txnPrepareStatement := txn.StartSegment("storage.sqlite_adapter.CreateRecord#PrepareStatement")
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
 	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
+	txnPrepareStatement.End()
 
+	txnInsert := txn.StartSegment("storage.sqlite_adapter.CreateRecord#Insert")
 	row := stmt.QueryRowContext(s.ctx, record.Text, record.SchemaName, schemaID, record.Query,
 		record.Request, record.Response, record.Kind, groupHash, record.Level, entities.RecordTime{Time: time.Now()})
+	txnInsert.End()
 
+	txnScanRecord := txn.StartSegment("storage.sqlite_adapter.CreateRecord#ScanRecord")
 	var lr entities.Record
 	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
+	txnScanRecord.End()
 
 	return &lr, nil
 }
