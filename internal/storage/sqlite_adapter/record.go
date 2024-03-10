@@ -9,6 +9,8 @@ import (
 	"moonlogs/internal/persistence"
 	"strings"
 	"time"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 type RecordStorage struct {
@@ -24,6 +26,9 @@ func NewRecordStorage(ctx context.Context) *RecordStorage {
 }
 
 func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
+	txn := newrelic.FromContext(s.ctx)
+	defer txn.StartSegment("storage.sqlite_adapter.CreateRecord").End()
+
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
 	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {

@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"hash"
 	"hash/fnv"
@@ -12,6 +13,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 var FNVHasherPool = sync.Pool{
@@ -22,13 +25,17 @@ var FNVHasherPool = sync.Pool{
 
 type RecordUseCase struct {
 	recordStorage storage.RecordStorage
+	ctx           context.Context
 }
 
-func NewRecordUseCase(recordStorage storage.RecordStorage) *RecordUseCase {
-	return &RecordUseCase{recordStorage: recordStorage}
+func NewRecordUseCase(ctx context.Context, recordStorage storage.RecordStorage) *RecordUseCase {
+	return &RecordUseCase{recordStorage: recordStorage, ctx: ctx}
 }
 
 func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*entities.Record, error) {
+	txn := newrelic.FromContext(uc.ctx)
+	defer txn.StartSegment("usecases.CreateRecord").End()
+
 	if len(record.Query) == 0 {
 		return nil, fmt.Errorf("failed creating record: `query` attribute is required")
 	}

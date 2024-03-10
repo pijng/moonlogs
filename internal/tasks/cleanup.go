@@ -16,7 +16,7 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 
 	schemaStorage := storage.NewSchemaStorage(ctx, config.Get().DBAdapter)
 	recordStorage := storage.NewRecordStorage(ctx, config.Get().DBAdapter)
-	recordUseCase := usecases.NewRecordUseCase(recordStorage)
+	recordUseCase := usecases.NewRecordUseCase(ctx, recordStorage)
 
 	for range ticker.C {
 		schemas, err := schemaStorage.GetAllSchemas()

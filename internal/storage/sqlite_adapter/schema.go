@@ -8,6 +8,8 @@ import (
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 type SchemaStorage struct {
@@ -116,6 +118,9 @@ func (s *SchemaStorage) GetByTagID(tagID int) ([]*entities.Schema, error) {
 }
 
 func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
+	txn := newrelic.FromContext(s.ctx)
+	defer txn.StartSegment("storage.sqlite_adapter.GetByName").End()
+
 	query := "SELECT * FROM schemas WHERE name=? LIMIT 1;"
 	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {

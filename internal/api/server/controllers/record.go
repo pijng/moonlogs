@@ -18,6 +18,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 const (
@@ -25,6 +26,9 @@ const (
 )
 
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
+	txn := newrelic.FromContext(r.Context())
+	defer txn.StartSegment("controllers.CreateRecord").End()
+
 	var newRecord entities.Record
 
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newRecord)
@@ -57,6 +61,9 @@ func CreateRecordAsync(w http.ResponseWriter, r *http.Request) {
 }
 
 func createRecord(w http.ResponseWriter, r *http.Request, newRecord entities.Record) {
+	txn := newrelic.FromContext(r.Context())
+	defer txn.StartSegment("controllers.createRecord").End()
+
 	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
 	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByName(newRecord.SchemaName)
 	if err != nil {
@@ -70,7 +77,7 @@ func createRecord(w http.ResponseWriter, r *http.Request, newRecord entities.Rec
 	}
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	record, err := usecases.NewRecordUseCase(recordStorage).CreateRecord(newRecord, schema.ID)
+	record, err := usecases.NewRecordUseCase(r.Context(), recordStorage).CreateRecord(newRecord, schema.ID)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -93,7 +100,7 @@ func createRecordAsync(newRecord entities.Record) {
 	}
 
 	recordStorage := storage.NewRecordStorage(ctx, config.Get().DBAdapter)
-	_, _ = usecases.NewRecordUseCase(recordStorage).CreateRecord(newRecord, schema.ID)
+	_, _ = usecases.NewRecordUseCase(ctx, recordStorage).CreateRecord(newRecord, schema.ID)
 }
 
 func GetAllRecords(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +114,7 @@ func GetAllRecords(w http.ResponseWriter, r *http.Request) {
 	limit, offset, page := pagination.Paginate(r)
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	recordUseCase := usecases.NewRecordUseCase(recordStorage)
+	recordUseCase := usecases.NewRecordUseCase(r.Context(), recordStorage)
 
 	records, err := recordUseCase.GetAllRecords(limit, offset)
 	if err != nil {
@@ -137,7 +144,7 @@ func GetRecordByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	record, err := usecases.NewRecordUseCase(recordStorage).GetRecordByID(id)
+	record, err := usecases.NewRecordUseCase(r.Context(), recordStorage).GetRecordByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -167,7 +174,7 @@ func GetRecordRequestByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	record, err := usecases.NewRecordUseCase(recordStorage).GetRecordByID(id)
+	record, err := usecases.NewRecordUseCase(r.Context(), recordStorage).GetRecordByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -197,7 +204,7 @@ func GetRecordResponseByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	record, err := usecases.NewRecordUseCase(recordStorage).GetRecordByID(id)
+	record, err := usecases.NewRecordUseCase(r.Context(), recordStorage).GetRecordByID(id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -238,7 +245,7 @@ func GetRecordsByQuery(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	recordUseCase := usecases.NewRecordUseCase(recordStorage)
+	recordUseCase := usecases.NewRecordUseCase(r.Context(), recordStorage)
 
 	records, count, err := recordUseCase.GetRecordsByQuery(recordsToGet, from, to, limit, offset)
 	if err != nil {
@@ -269,7 +276,7 @@ func GetRecordsByGroupHash(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recordStorage := storage.NewRecordStorage(r.Context(), config.Get().DBAdapter)
-	records, err := usecases.NewRecordUseCase(recordStorage).GetRecordsByGroupHash(schemaName, groupHash)
+	records, err := usecases.NewRecordUseCase(r.Context(), recordStorage).GetRecordsByGroupHash(schemaName, groupHash)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
