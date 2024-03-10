@@ -14,10 +14,11 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-func ListenAndServe(cfg *config.Config) error {
-	server := createServer(cfg)
+func ListenAndServe(cfg *config.Config, nrapp *newrelic.Application) error {
+	server := createServer(cfg, nrapp)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -38,10 +39,15 @@ func ListenAndServe(cfg *config.Config) error {
 	}
 }
 
-func createServer(cfg *config.Config) *http.Server {
+func createServer(cfg *config.Config, nrapp *newrelic.Application) *http.Server {
 	r := mux.NewRouter()
-	// r.Use(loggingMiddleware)
+
 	r.Use(corsMiddleware)
+
+	if cfg.NewrelicProfiling {
+		r.Use(newrelicMiddleware(nrapp))
+	}
+
 	registerRouter(r)
 
 	return &http.Server{
@@ -81,19 +87,20 @@ func corsMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+func newrelicMiddleware(nrapp *newrelic.Application) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			txn := nrapp.StartTransaction(r.URL.Path)
+			defer txn.End()
 
-// func loggingMiddleware(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		start := time.Now()
+			// Add transaction to request context
+			ctx := newrelic.NewContext(r.Context(), txn)
 
-// 		log.Printf("%s %s\n", r.Method, r.URL.Path)
-
-// 		next.ServeHTTP(w, r)
-
-// 		duration := time.Since(start)
-// 		log.Printf("Completed in %v\n", duration)
-// 	})
-// }
+			// Call the next handler, which can be another middleware in the chain or the final handler
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
 
 func gracefulShutdown(server *http.Server) error {
 	log.Println("shutting down...")

@@ -10,6 +10,8 @@ import (
 	"moonlogs/internal/services"
 	"moonlogs/internal/tasks"
 	"time"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 //go:embed migrations/*.sql
@@ -28,6 +30,14 @@ func main() {
 		}
 	}
 
+	var nrapp *newrelic.Application
+	if cfg.NewrelicProfiling {
+		nrapp, err = services.StartNewrelic(cfg.NewrelicLicense)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	err = persistence.InitDB(cfg.DBPath)
 	if err != nil {
 		log.Fatal(err)
@@ -40,7 +50,7 @@ func main() {
 
 	runCleanupTasks(context.Background())
 
-	err = server.ListenAndServe(cfg)
+	err = server.ListenAndServe(cfg, nrapp)
 	if err != nil {
 		log.Fatal(err)
 	}

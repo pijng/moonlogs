@@ -19,6 +19,8 @@ const (
 	ASYNC_RECORD_CREATION = false
 	PYROSCOPE_PROFILING   = false
 	PYROSCOPE_ADDRESS     = ""
+	NEWRELIC_PROFILING    = false
+	NEWRELIC_LICENSE      = ""
 
 	DB_SQLITE_ADAPTER = "sqlite"
 )
@@ -32,6 +34,8 @@ type Config struct {
 	AsyncRecordCreation bool          `yaml:"async_record_creation"`
 	PyroscopeProfiling  bool          `yaml:"pyroscope_profiling"`
 	PyroscopeAddress    string        `yaml:"pyroscope_address"`
+	NewrelicProfiling   bool          `yaml:"newrelic_profiling"`
+	NewrelicLicense     string        `yaml:"newrelic_license"`
 	ReadTimeout         time.Duration `yaml:"read_timeout"`
 	WriteTimeout        time.Duration `yaml:"write_timeout"`
 }
@@ -79,6 +83,8 @@ db_adapter: %s
 async_record_creation: %v
 pyroscope_profiling: %v
 pyroscope_address: %s
+newrelic_profiling: %v
+newrelic_license: %s
 read_timeout: %s
 write_timeout: %s
 `, flagArgs.Port,
@@ -87,6 +93,8 @@ write_timeout: %s
 		flagArgs.AsyncRecordCreation,
 		flagArgs.PyroscopeProfiling,
 		flagArgs.PyroscopeAddress,
+		flagArgs.NewrelicProfiling,
+		flagArgs.NewrelicLicense,
 		flagArgs.ReadTimeout,
 		flagArgs.WriteTimeout)
 
@@ -114,6 +122,8 @@ type args struct {
 	AsyncRecordCreation bool
 	PyroscopeProfiling  bool
 	PyroscopeAddress    string
+	NewrelicProfiling   bool
+	NewrelicLicense     string
 	ReadTimeout         time.Duration
 	WriteTimeout        time.Duration
 }
@@ -129,6 +139,8 @@ func processArgs() (args, error) {
 	f.BoolVar(&a.AsyncRecordCreation, "async-record-creation", ASYNC_RECORD_CREATION, "should record creation be done asynchronously")
 	f.BoolVar(&a.PyroscopeProfiling, "pyroscope-profiling", PYROSCOPE_PROFILING, "enable pyroscope profiling")
 	f.StringVar(&a.PyroscopeAddress, "pyroscope-address", PYROSCOPE_ADDRESS, "address of pyroscope server")
+	f.BoolVar(&a.NewrelicProfiling, "newrelic-profiling", NEWRELIC_PROFILING, "enable newrelic profiling")
+	f.StringVar(&a.NewrelicLicense, "newrelic-license", NEWRELIC_LICENSE, "license key of newrelic account")
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 
