@@ -82,9 +82,9 @@ func InitDB(dataSourceName string) error {
 		return fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
 
-	// db.SetMaxOpenConns(1)
-	db.SetMaxOpenConns(1000)
-	db.SetMaxIdleConns(100)
+	db.SetMaxOpenConns(1)
+	// db.SetMaxOpenConns(1000)
+	// db.SetMaxIdleConns(100)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	err = db.Ping()
