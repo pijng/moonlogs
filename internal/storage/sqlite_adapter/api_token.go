@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/persistence"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 type ApiTokenStorage struct {
@@ -78,6 +80,9 @@ func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 }
 
 func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken, error) {
+	txn := newrelic.FromContext(s.ctx)
+	defer txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest").End()
+
 	query := "SELECT * FROM api_tokens WHERE token_digest=? LIMIT 1;"
 	stmt, err := s.db.PrepareContext(s.ctx, query)
 	if err != nil {
@@ -85,13 +90,17 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken
 	}
 	defer stmt.Close()
 
+	txnQueryApiToken := txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest#QueryRowContext")
 	row := stmt.QueryRowContext(s.ctx, digest)
+	txnQueryApiToken.End()
 
+	txnScanApiToken := txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest#ScanApiToken")
 	var t entities.ApiToken
 	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
 	if errors.Is(err, sql.ErrNoRows) {
 		return &entities.ApiToken{}, nil
 	}
+	txnScanApiToken.End()
 
 	if err != nil {
 		return &entities.ApiToken{}, fmt.Errorf("failed scanning api_token: %w", err)
