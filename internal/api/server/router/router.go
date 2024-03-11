@@ -104,10 +104,11 @@ func SessionMiddleware(next http.Handler) http.Handler {
 		}
 
 		if sessionCookie != nil {
-			sessionToken := sessionCookie.Values["token"].(string)
-			sessionUserID := sessionCookie.Values["userID"].(int)
 
-			if sessionToken != "" && sessionUserID != 0 {
+			sessionToken, tokenOk := sessionCookie.Values["token"].(string)
+			sessionUserID, userIDOk := sessionCookie.Values["userID"].(int)
+
+			if tokenOk && sessionToken != "" && userIDOk && sessionUserID != 0 {
 				ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
 				next.ServeHTTP(w, r.WithContext(ctx))
 				return
@@ -169,9 +170,9 @@ func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.
 		}
 
 		if sessionCookie != nil {
-			role := sessionCookie.Values["role"].(string)
+			role, ok := sessionCookie.Values["role"].(string)
 
-			if slices.Contains(requiredRoles, entities.Role(role)) {
+			if ok && slices.Contains(requiredRoles, entities.Role(role)) {
 				ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
 				next.ServeHTTP(w, r.WithContext(ctx))
 				return
