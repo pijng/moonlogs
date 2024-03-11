@@ -11,10 +11,15 @@ import (
 	_ "github.com/glebarez/go-sqlite"
 )
 
-var dbInstance *sql.DB
+var dbReadInstance *sql.DB
+var DbWriteInstance *sql.DB
 
 func DB() *sql.DB {
-	return dbInstance
+	return dbReadInstance
+}
+
+func WriteDB() *sql.DB {
+	return DbWriteInstance
 }
 
 var schema = `
@@ -64,7 +69,7 @@ CREATE TABLE IF NOT EXISTS tags (
 `
 
 func InitDB(dataSourceName string) error {
-	if dbInstance != nil {
+	if dbReadInstance != nil && DbWriteInstance != nil {
 		return nil
 	}
 
@@ -74,30 +79,63 @@ func InitDB(dataSourceName string) error {
 		return fmt.Errorf("error creating db dir: %w", err)
 	}
 
-	db, err := sql.Open("sqlite", fmt.Sprintf(
-		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout=5000&_pragma=cache_size=-512000",
-		dataSourceName),
-	)
+	readDB, err := initReadDB(dataSourceName)
 	if err != nil {
-		return fmt.Errorf("failed opening connection to sqlite: %w", err)
+		return fmt.Errorf("initializing read db: %w", err)
 	}
 
-	db.SetMaxOpenConns(1)
-	// db.SetMaxOpenConns(1000)
-	// db.SetMaxIdleConns(100)
-	db.SetConnMaxLifetime(5 * time.Minute)
-
-	err = db.Ping()
+	writeDB, err := initWriteDB(dataSourceName)
 	if err != nil {
-		return fmt.Errorf("failed pinging sqlite: %w", err)
+		return fmt.Errorf("initializing write db: %w", err)
 	}
 
-	dbInstance = db
+	dbReadInstance = readDB
+	DbWriteInstance = writeDB
 
-	_, err = db.ExecContext(context.Background(), schema)
+	_, err = writeDB.ExecContext(context.Background(), schema)
 	if err != nil {
 		return fmt.Errorf("failed to create tables: %w", err)
 	}
 
 	return nil
+}
+
+func initReadDB(dataSourceName string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", fmt.Sprintf(
+		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout=5000&_pragma=cache_size=-512000",
+		dataSourceName),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
+	}
+
+	db.SetMaxIdleConns(100)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("failed pinging sqlite: %w", err)
+	}
+
+	return db, nil
+}
+
+func initWriteDB(dataSourceName string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", fmt.Sprintf(
+		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout=5000&_pragma=cache_size=-512000",
+		dataSourceName),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
+	}
+
+	db.SetMaxOpenConns(1)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("failed pinging sqlite: %w", err)
+	}
+
+	return db, nil
 }
