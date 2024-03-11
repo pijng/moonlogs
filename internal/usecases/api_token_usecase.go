@@ -17,6 +17,8 @@ var sha256HasherPool = sync.Pool{
 	},
 }
 
+var cachedTokens = make(map[string]bool)
+
 type ApiTokenUseCase struct {
 	apiTokenStorage storage.ApiTokenStorage
 }
@@ -53,6 +55,11 @@ func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, erro
 }
 
 func (uc *ApiTokenUseCase) IsTokenValid(token string) (bool, error) {
+	valid, ok := cachedTokens[token]
+	if ok && valid {
+		return true, nil
+	}
+
 	tokenHash, err := hashToken(token)
 	if err != nil {
 		return false, fmt.Errorf("failed hashing token: %w", err)
@@ -68,6 +75,8 @@ func (uc *ApiTokenUseCase) IsTokenValid(token string) (bool, error) {
 	}
 
 	apiTokenExist := apiToken.ID > 0
+
+	cachedTokens[token] = true
 
 	return apiTokenExist, nil
 }

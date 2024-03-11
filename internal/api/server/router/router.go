@@ -104,7 +104,6 @@ func SessionMiddleware(next http.Handler) http.Handler {
 		}
 
 		if sessionCookie != nil {
-
 			sessionToken, tokenOk := sessionCookie.Values["token"].(string)
 			sessionUserID, userIDOk := sessionCookie.Values["userID"].(int)
 
