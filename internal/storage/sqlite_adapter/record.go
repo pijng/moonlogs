@@ -13,6 +13,8 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
+var cachedStatements = make(map[string]*sql.Stmt)
+
 type RecordStorage struct {
 	ctx context.Context
 	db  *sql.DB
@@ -31,11 +33,19 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 
 	txnPrepareStatement := txn.StartSegment("storage.sqlite_adapter.CreateRecord#PrepareStatement")
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
-	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+
+	var stmt *sql.Stmt
+	stmt, ok := cachedStatements[query]
+	if !ok {
+		preparedStmt, err := s.db.Prepare(query)
+		if err != nil {
+			return nil, fmt.Errorf("failed preparing statement: %w", err)
+		}
+
+		cachedStatements[query] = preparedStmt
+		stmt = preparedStmt
 	}
-	defer stmt.Close()
+
 	txnPrepareStatement.End()
 
 	txnInsert := txn.StartSegment("storage.sqlite_adapter.CreateRecord#Insert")
@@ -45,7 +55,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 
 	txnScanRecord := txn.StartSegment("storage.sqlite_adapter.CreateRecord#ScanRecord")
 	var lr entities.Record
-	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
+	err := row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
