@@ -97,6 +97,23 @@ func SessionMiddleware(next http.Handler) http.Handler {
 		txn := newrelic.FromContext(r.Context())
 		defer txn.StartSegment("router.SessionMiddleware").End()
 
+		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
+		if err != nil {
+			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
+			return
+		}
+
+		if sessionCookie != nil {
+			sessionToken := sessionCookie.Values["token"].(string)
+			sessionUserID := sessionCookie.Values["userID"].(int)
+
+			if sessionToken != "" && sessionUserID != 0 {
+				ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+		}
+
 		txnExtract := txn.StartSegment("router.SessionMiddleware#ExtractBearerToken")
 		bearerToken := shared.ExtractBearerToken(r)
 		txnExtract.End()
@@ -112,12 +129,6 @@ func SessionMiddleware(next http.Handler) http.Handler {
 
 		if ok {
 			next.ServeHTTP(w, r)
-			return
-		}
-
-		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
-		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
 			return
 		}
 
@@ -138,6 +149,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			token = user.Token
 			sessionCookie.Values["token"] = token
 			sessionCookie.Values["userID"] = user.ID
+			sessionCookie.Values["role"] = string(user.Role)
 		}
 
 		ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
@@ -149,6 +161,22 @@ func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.
 	return func(w http.ResponseWriter, r *http.Request) {
 		txn := newrelic.FromContext(r.Context())
 		defer txn.StartSegment("router.roleMiddleware").End()
+
+		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
+		if err != nil {
+			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
+			return
+		}
+
+		if sessionCookie != nil {
+			role := sessionCookie.Values["role"].(string)
+
+			if slices.Contains(requiredRoles, entities.Role(role)) {
+				ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+		}
 
 		txnExtract := txn.StartSegment("router.roleMiddleware#ExtractBearerToken")
 		bearerToken := shared.ExtractBearerToken(r)

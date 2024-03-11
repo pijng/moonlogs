@@ -75,6 +75,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	session.Values["token"] = token
 	session.Values["userID"] = user.ID
+	session.Values["role"] = string(user.Role)
 
 	err = session.Save(r, w)
 	if err != nil {
@@ -146,6 +147,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		bearerToken = user.Token
 		session.Values["token"] = bearerToken
 		session.Values["userID"] = user.ID
+		session.Values["role"] = string(user.Role)
 	}
 
 	err = session.Save(r, w)
