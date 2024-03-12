@@ -31,8 +31,12 @@ func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
 	}
 
 	user.ID = nextValue
+	update := bson.M{
+		"id": user.ID, "email": user.Email, "password": "", "password_digest": user.PasswordDigest,
+		"name": user.Name, "role": user.Role, "tag_ids": user.Tags, "token": "", "is_revoked": user.IsRevoked,
+	}
 
-	result, err := s.collection.InsertOne(s.ctx, user)
+	result, err := s.collection.InsertOne(s.ctx, update)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting user: %w", err)
 	}
@@ -112,8 +116,9 @@ func (s *UserStorage) DeleteUserByID(id int) error {
 }
 
 func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
-	update := bson.M{"$set": bson.M{
-		"email": user.Email, "name": user.Name, "role": user.Role, "tag_ids": user.Tags, "is_revoked": user.IsRevoked},
+
+	update := bson.M{
+		"email": user.Email, "name": user.Name, "role": user.Role, "tag_ids": user.Tags, "is_revoked": user.IsRevoked,
 	}
 
 	if len(user.PasswordDigest) > 0 {
@@ -121,7 +126,7 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 		update["token"] = user.Token
 	}
 
-	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)
+	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, bson.M{"$set": update})
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
@@ -134,7 +139,7 @@ func (s *UserStorage) UpdateUserTokenByID(id int, token string) error {
 
 	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)
 	if err != nil {
-		return fmt.Errorf("failed updating user: %w", err)
+		return fmt.Errorf("failed updating user token: %w", err)
 	}
 
 	return err

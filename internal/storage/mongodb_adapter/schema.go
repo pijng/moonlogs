@@ -50,7 +50,7 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
 	update := bson.M{"$set": bson.M{
 		"description": schema.Description, "title": schema.Title, "fields": schema.Fields,
-		"retention_days": schema.RetentionDays, "tag_id": schema.TagID,
+		"kinds": schema.Kinds, "retention_days": schema.RetentionDays, "tag_id": schema.TagID,
 	}}
 
 	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)
