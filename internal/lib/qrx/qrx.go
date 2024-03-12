@@ -42,7 +42,6 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -448,16 +447,9 @@ func MapLike(query map[string]interface{}) string {
 func QueryObject(filter bson.M, query map[string]interface{}) map[string]interface{} {
 	for key, value := range query {
 		dotKey := fmt.Sprintf("query.%s", key)
-
 		vStr := value.(string)
-		i, err := strconv.Atoi(vStr)
 
-		if err != nil {
-			filter[dotKey] = bson.M{"$regex": vStr}
-		} else {
-			filter[dotKey] = i
-		}
-
+		filter[dotKey] = bson.M{"$regex": vStr}
 	}
 
 	return filter

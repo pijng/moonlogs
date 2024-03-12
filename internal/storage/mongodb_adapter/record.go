@@ -37,8 +37,13 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	txn := newrelic.FromContext(s.ctx)
 	defer txn.StartSegment("storage.sqlite_adapter.CreateRecord").End()
 
+	formattedQuery := make(map[string]string)
+	for k, v := range record.Query {
+		formattedQuery[k] = fmt.Sprintf("%v", v)
+	}
+
 	document := bson.M{
-		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": schemaID, "query": record.Query,
+		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": schemaID, "query": formattedQuery,
 		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": groupHash,
 		"level": record.Level, "created_at": entities.RecordTime{Time: time.Now()},
 	}
