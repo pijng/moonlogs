@@ -2,6 +2,7 @@ package mongodb_adapter
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
@@ -39,7 +40,21 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 
 	formattedQuery := make(map[string]string)
 	for k, v := range record.Query {
-		formattedQuery[k] = fmt.Sprintf("%v", v)
+		var vStr string
+
+		switch v := v.(type) {
+		case string:
+			vStr = v
+		default:
+			mv, err := json.Marshal(v)
+			if err != nil {
+				return nil, fmt.Errorf("converting query key to string: %w", err)
+			}
+
+			vStr = string(mv)
+		}
+
+		formattedQuery[k] = vStr
 	}
 
 	document := bson.M{
