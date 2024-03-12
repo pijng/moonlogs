@@ -37,7 +37,7 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 
 			// Disable ANALYZE, consider adding a feature flag to enable it
 
-			// _, err = persistence.DB().ExecContext(ctx, "ANALYZE;")
+			// _, err = persistence.SqliteDB().ExecContext(ctx, "ANALYZE;")
 			// if err != nil {
 			// 	log.Printf("failed optimizing db's query planner statistics: %v", err)
 			// 	continue
@@ -48,7 +48,7 @@ func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
 
 			// Disable VACUUM, consider adding a feature flag to enable it
 
-			// _, err = persistence.DB().ExecContext(ctx, "VACUUM;")
+			// _, err = persistence.SqliteDB().ExecContext(ctx, "VACUUM;")
 			// if err != nil {
 			// 	log.Printf("failed vacuuming db: %v", err)
 			// }

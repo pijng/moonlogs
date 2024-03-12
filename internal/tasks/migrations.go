@@ -1,27 +1,33 @@
 package tasks
 
 import (
-	"database/sql"
 	"embed"
 	"fmt"
+	"moonlogs/internal/persistence"
 
 	"github.com/pressly/goose/v3"
 )
 
-func Migrate(db *sql.DB, dbAdapter string, embedMigrations embed.FS) error {
-	goose.SetBaseFS(embedMigrations)
+func Migrate(dbAdapter string, embedMigrations embed.FS) error {
+	var err error
 
-	var dialect string
 	switch dbAdapter {
+	case persistence.MONGODB_ADAPTER:
 	default:
-		dialect = "sqlite"
+		err = runGooseMigrations(embedMigrations)
 	}
 
-	if err := goose.SetDialect(dialect); err != nil {
+	return err
+}
+
+func runGooseMigrations(embedMigrations embed.FS) error {
+	goose.SetBaseFS(embedMigrations)
+
+	if err := goose.SetDialect(persistence.SQLITE_ADAPTER); err != nil {
 		return fmt.Errorf("failed setting up goose dialect: %w", err)
 	}
 
-	if err := goose.Up(db, "migrations"); err != nil {
+	if err := goose.Up(persistence.SqliteWriteDB(), "migrations"); err != nil {
 		return fmt.Errorf("failed applying migrations: %w", err)
 	}
 

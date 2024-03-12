@@ -38,12 +38,12 @@ func main() {
 		}
 	}
 
-	err = persistence.InitDB(cfg.DBPath)
+	err = persistence.InitDB(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = tasks.Migrate(persistence.DB(), cfg.DBAdapter, embedMigrations)
+	err = tasks.Migrate(cfg.DBAdapter, embedMigrations)
 	if err != nil {
 		log.Fatal(err)
 	}

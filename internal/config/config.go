@@ -135,7 +135,7 @@ func processArgs() (args, error) {
 	f.StringVar(&a.Config, "config", CONFIG_PATH, "path to config")
 	f.IntVar(&a.Port, "port", PORT, "port to run moonlogs on")
 	f.StringVar(&a.DBPath, "db-path", DB_PATH, "db path to connect to")
-	f.StringVar(&a.DBAdapter, "db-adapter", DB_SQLITE_ADAPTER, "db adapter to connect to")
+	f.StringVar(&a.DBAdapter, "db-adapter", DB_SQLITE_ADAPTER, "db adapter to connect to – 'mongodb' or 'sqlite'")
 	f.BoolVar(&a.AsyncRecordCreation, "async-record-creation", ASYNC_RECORD_CREATION, "should record creation be done asynchronously")
 	f.BoolVar(&a.PyroscopeProfiling, "pyroscope-profiling", PYROSCOPE_PROFILING, "enable pyroscope profiling")
 	f.StringVar(&a.PyroscopeAddress, "pyroscope-address", PYROSCOPE_ADDRESS, "address of pyroscope server")

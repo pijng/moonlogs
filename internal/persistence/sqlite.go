@@ -11,17 +11,6 @@ import (
 	_ "github.com/glebarez/go-sqlite"
 )
 
-var dbReadInstance *sql.DB
-var DbWriteInstance *sql.DB
-
-func DB() *sql.DB {
-	return dbReadInstance
-}
-
-func WriteDB() *sql.DB {
-	return DbWriteInstance
-}
-
 var schema = `
 CREATE TABLE IF NOT EXISTS records (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,36 +57,32 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 `
 
-func InitDB(dataSourceName string) error {
-	if dbReadInstance != nil && DbWriteInstance != nil {
-		return nil
-	}
+type ReadDB *sql.DB
+type WriteDB *sql.DB
 
+func initSqliteDB(dataSourceName string) (WriteDB, ReadDB, error) {
 	dir := filepath.Dir(dataSourceName)
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("error creating db dir: %w", err)
+		return nil, nil, fmt.Errorf("error creating db dir: %w", err)
 	}
 
 	readDB, err := initReadDB(dataSourceName)
 	if err != nil {
-		return fmt.Errorf("initializing read db: %w", err)
+		return nil, nil, fmt.Errorf("initializing read db: %w", err)
 	}
 
 	writeDB, err := initWriteDB(dataSourceName)
 	if err != nil {
-		return fmt.Errorf("initializing write db: %w", err)
+		return nil, nil, fmt.Errorf("initializing write db: %w", err)
 	}
-
-	dbReadInstance = readDB
-	DbWriteInstance = writeDB
 
 	_, err = writeDB.ExecContext(context.Background(), schema)
 	if err != nil {
-		return fmt.Errorf("failed to create tables: %w", err)
+		return nil, nil, fmt.Errorf("failed to create tables: %w", err)
 	}
 
-	return nil
+	return writeDB, readDB, nil
 }
 
 func initReadDB(dataSourceName string) (*sql.DB, error) {

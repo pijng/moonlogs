@@ -19,7 +19,7 @@ type UserStorage struct {
 func NewUserStorage(ctx context.Context) *UserStorage {
 	return &UserStorage{
 		ctx: ctx,
-		db:  persistence.DB(),
+		db:  persistence.SqliteReadDB(),
 	}
 }
 

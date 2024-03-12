@@ -7,8 +7,8 @@ import (
 )
 
 type Tag struct {
-	ID   int    `json:"id" sql:"id"`
-	Name string `json:"name" sql:"name"`
+	ID   int    `json:"id" sql:"id" bson:"id"`
+	Name string `json:"name" sql:"name" bson:"name"`
 }
 
 type Tags []int
