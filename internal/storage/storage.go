@@ -3,6 +3,8 @@ package storage
 import (
 	"context"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/persistence"
+	"moonlogs/internal/storage/mongodb_adapter"
 	"moonlogs/internal/storage/sqlite_adapter"
 	"time"
 )
@@ -24,6 +26,8 @@ func NewUserStorage(ctx context.Context, storageType string) UserStorage {
 	var storageInstance UserStorage
 
 	switch storageType {
+	case persistence.MONGODB_ADAPTER:
+		storageInstance = mongodb_adapter.NewUserStorage(ctx)
 	default:
 		storageInstance = sqlite_adapter.NewUserStorage(ctx)
 	}
@@ -43,6 +47,8 @@ func NewTagStorage(ctx context.Context, storageType string) TagStorage {
 	var storageInstance TagStorage
 
 	switch storageType {
+	case persistence.MONGODB_ADAPTER:
+		storageInstance = mongodb_adapter.NewTagStorage(ctx)
 	default:
 		storageInstance = sqlite_adapter.NewTagStorage(ctx)
 	}
@@ -65,6 +71,8 @@ func NewSchemaStorage(ctx context.Context, storageType string) SchemaStorage {
 	var storageInstance SchemaStorage
 
 	switch storageType {
+	case persistence.MONGODB_ADAPTER:
+		storageInstance = mongodb_adapter.NewSchemaStorage(ctx)
 	default:
 		storageInstance = sqlite_adapter.NewSchemaStorage(ctx)
 	}
@@ -87,6 +95,8 @@ func NewRecordStorage(ctx context.Context, storageType string) RecordStorage {
 	var storageInstance RecordStorage
 
 	switch storageType {
+	case persistence.MONGODB_ADAPTER:
+		storageInstance = mongodb_adapter.NewRecordStorage(ctx)
 	default:
 		storageInstance = sqlite_adapter.NewRecordStorage(ctx)
 	}
@@ -107,6 +117,8 @@ func NewApiTokenStorage(ctx context.Context, storageType string) ApiTokenStorage
 	var storageInstance ApiTokenStorage
 
 	switch storageType {
+	case persistence.MONGODB_ADAPTER:
+		storageInstance = mongodb_adapter.NewApiTokenStorage(ctx)
 	default:
 		storageInstance = sqlite_adapter.NewApiTokenStorage(ctx)
 	}

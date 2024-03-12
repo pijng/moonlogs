@@ -7,14 +7,14 @@ import (
 )
 
 type Schema struct {
-	ID            int    `json:"id" sql:"id"`
-	Title         string `json:"title" sql:"title"`
-	Description   string `json:"description" sql:"description"`
-	Name          string `json:"name" sql:"name"`
-	Fields        Fields `json:"fields" sql:"fields"`
-	Kinds         Kinds  `json:"kinds" sql:"kinds"`
-	TagID         int    `json:"tag_id,omitempty" sql:"tag_id"`
-	RetentionDays int64  `json:"retention_days,omitempty" sql:"retention_days"`
+	ID            int    `json:"id" sql:"id" bson:"id"`
+	Title         string `json:"title" sql:"title" bson:"title"`
+	Description   string `json:"description" sql:"description" bson:"description"`
+	Name          string `json:"name" sql:"name" bson:"name"`
+	Fields        Fields `json:"fields" sql:"fields" bson:"fields"`
+	Kinds         Kinds  `json:"kinds" sql:"kinds" bson:"kinds"`
+	TagID         int    `json:"tag_id,omitempty" sql:"tag_id" bson:"tag_id"`
+	RetentionDays int64  `json:"retention_days,omitempty" sql:"retention_days" bson:"retention_days"`
 }
 
 type Field struct {

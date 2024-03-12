@@ -42,9 +42,12 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const (
@@ -384,6 +387,24 @@ func Contains(value any) string {
 	return fmt.Sprintf("%%%s%%", value)
 }
 
+func From(from *time.Time) int {
+	fromPart := LOWEST_TIME
+	if from != nil {
+		fromPart = int(from.Unix())
+	}
+
+	return fromPart
+}
+
+func To(to *time.Time) int {
+	toPart := MAX_TIME
+	if to != nil {
+		toPart = int(to.Unix())
+	}
+
+	return toPart
+}
+
 func Between(from *time.Time, to *time.Time) string {
 	fromPart := LOWEST_TIME
 	if from != nil {
@@ -422,6 +443,24 @@ func MapLike(query map[string]interface{}) string {
 	}
 
 	return strings.Join(placeholders, " AND ")
+}
+
+func QueryObject(filter bson.M, query map[string]interface{}) map[string]interface{} {
+	for key, value := range query {
+		dotKey := fmt.Sprintf("query.%s", key)
+
+		vStr := value.(string)
+		i, err := strconv.Atoi(vStr)
+
+		if err != nil {
+			filter[dotKey] = bson.M{"$regex": vStr}
+		} else {
+			filter[dotKey] = i
+		}
+
+	}
+
+	return filter
 }
 
 func CleanCachedStatements() {

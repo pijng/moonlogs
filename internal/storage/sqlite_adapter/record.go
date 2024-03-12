@@ -24,8 +24,8 @@ type RecordStorage struct {
 func NewRecordStorage(ctx context.Context) *RecordStorage {
 	return &RecordStorage{
 		ctx:     ctx,
-		db:      persistence.DB(),
-		writeDB: persistence.WriteDB(),
+		db:      persistence.SqliteReadDB(),
+		writeDB: persistence.SqliteWriteDB(),
 	}
 }
 

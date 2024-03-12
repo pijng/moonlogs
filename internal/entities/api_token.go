@@ -6,11 +6,11 @@ import (
 )
 
 type ApiToken struct {
-	ID          int       `json:"id" sql:"id"`
-	Token       string    `json:"token" sql:"token"`
-	TokenDigest string    `json:"-" sql:"token_digest"`
-	Name        string    `json:"name" sql:"name"`
-	IsRevoked   BoolAsInt `json:"is_revoked" sql:"is_revoked"`
+	ID          int       `json:"id" sql:"id" bson:"id"`
+	Token       string    `json:"token" sql:"token" bson:"token"`
+	TokenDigest string    `json:"-" sql:"token_digest" bson:"token_digest"`
+	Name        string    `json:"name" sql:"name" bson:"name"`
+	IsRevoked   BoolAsInt `json:"is_revoked" sql:"is_revoked" bson:"is_revoked"`
 }
 
 type BoolAsInt bool

@@ -2,23 +2,27 @@ package entities
 
 import (
 	"database/sql/driver"
+	"encoding/binary"
 	"fmt"
 	"moonlogs/internal/lib/serialize"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
 type Record struct {
-	ID         int        `json:"id" sql:"id"`
-	Text       string     `json:"text" sql:"text"`
-	CreatedAt  RecordTime `json:"created_at" sql:"created_at"`
-	SchemaName string     `json:"schema_name,omitempty" sql:"schema_name"`
-	SchemaID   int        `json:"schema_id,omitempty" sql:"schema_id"`
-	Query      JSONMap    `json:"query,omitempty" sql:"query"`
-	Kind       string     `json:"kind,omitempty" sql:"kind"`
-	GroupHash  string     `json:"group_hash,omitempty" sql:"group_hash"`
-	Level      Level      `json:"level,omitempty" sql:"level"`
-	Request    JSONMap    `json:"request,omitempty" sql:"request"`
-	Response   JSONMap    `json:"response,omitempty" sql:"response"`
+	ID         int        `json:"id" sql:"id" bson:"id"`
+	Text       string     `json:"text" sql:"text" bson:"text"`
+	CreatedAt  RecordTime `json:"created_at" sql:"created_at" bson:"created_at"`
+	SchemaName string     `json:"schema_name,omitempty" sql:"schema_name" bson:"schema_name"`
+	SchemaID   int        `json:"schema_id,omitempty" sql:"schema_id" bson:"schema_id"`
+	Query      JSONMap    `json:"query,omitempty" sql:"query" bson:"query"`
+	Kind       string     `json:"kind,omitempty" sql:"kind" bson:"kind"`
+	GroupHash  string     `json:"group_hash,omitempty" sql:"group_hash" bson:"group_hash"`
+	Level      Level      `json:"level,omitempty" sql:"level" bson:"level"`
+	Request    JSONMap    `json:"request,omitempty" sql:"request" bson:"request"`
+	Response   JSONMap    `json:"response,omitempty" sql:"response" bson:"response"`
 }
 
 type JSONMap map[string]interface{}
@@ -61,6 +65,17 @@ func (t *RecordTime) Scan(value interface{}) error {
 
 func (t RecordTime) Value() (driver.Value, error) {
 	return t.Unix(), nil
+}
+
+func (t RecordTime) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	return bson.MarshalValue(t.Unix())
+}
+
+func (t *RecordTime) UnmarshalBSONValue(bt bsontype.Type, data []byte) error {
+	v := int64(binary.LittleEndian.Uint64(data))
+	t.Time = time.Unix(v, 0)
+
+	return nil
 }
 
 type Level string
