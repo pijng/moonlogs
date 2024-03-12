@@ -48,12 +48,16 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 }
 
 func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
-	update := bson.M{"$set": bson.M{
+	update := bson.M{
 		"description": schema.Description, "title": schema.Title, "fields": schema.Fields,
-		"kinds": schema.Kinds, "retention_days": schema.RetentionDays, "tag_id": schema.TagID,
-	}}
+		"kinds": schema.Kinds, "retention_days": schema.RetentionDays,
+	}
 
-	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)
+	if schema.TagID != 0 {
+		update["tag_id"] = schema.TagID
+	}
+
+	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, bson.M{"$set": update})
 	if err != nil {
 		return nil, fmt.Errorf("failed updating schema: %w", err)
 	}
