@@ -13,20 +13,26 @@ import (
 )
 
 type SchemaStorage struct {
-	ctx context.Context
-	db  *sql.DB
+	ctx     context.Context
+	readDB  *sql.DB
+	writeDB *sql.DB
 }
 
 func NewSchemaStorage(ctx context.Context) *SchemaStorage {
 	return &SchemaStorage{
-		ctx: ctx,
-		db:  persistence.SqliteDB(),
+		ctx:     ctx,
+		readDB:  persistence.SqliteReadDB(),
+		writeDB: persistence.SqliteWriteDB(),
 	}
 }
 
 func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, error) {
-	query := "INSERT INTO schemas (name, description, retention_days, title, fields, kinds, tag_id) VALUES (?,?,?,?,?,?,?);"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		INSERT INTO schemas (name, description, retention_days, title, fields, kinds, tag_id) VALUES (?,?,?,?,?,?,?);
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -53,8 +59,12 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 }
 
 func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
-	query := "UPDATE schemas SET description=?, title=?, fields=?, kinds=?, retention_days=?, tag_id=? WHERE id=?"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		UPDATE schemas SET description=?, title=?, fields=?, kinds=?, retention_days=?, tag_id=? WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -70,7 +80,7 @@ func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entit
 
 func (s *SchemaStorage) GetById(id int) (*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE id=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -89,7 +99,7 @@ func (s *SchemaStorage) GetById(id int) (*entities.Schema, error) {
 
 func (s *SchemaStorage) GetByTagID(tagID int) ([]*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE tag_id=?;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -122,7 +132,7 @@ func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
 	defer txn.StartSegment("storage.sqlite_adapter.GetByName").End()
 
 	query := "SELECT * FROM schemas WHERE name=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return &entities.Schema{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -145,7 +155,7 @@ func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
 
 func (s *SchemaStorage) GetSchemasByTitleOrDescription(title string, description string) ([]*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE title LIKE ? OR description lile ? ORDER BY id desc;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -175,7 +185,7 @@ func (s *SchemaStorage) GetSchemasByTitleOrDescription(title string, description
 
 func (s *SchemaStorage) GetAllSchemas() ([]*entities.Schema, error) {
 	query := "SELECT * FROM schemas ORDER BY id DESC;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -204,8 +214,12 @@ func (s *SchemaStorage) GetAllSchemas() ([]*entities.Schema, error) {
 }
 
 func (s *SchemaStorage) DeleteSchemaByID(id int) error {
-	query := "DELETE FROM schemas WHERE id=?"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		DELETE FROM schemas WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed preparing statement: %w", err)
 	}
