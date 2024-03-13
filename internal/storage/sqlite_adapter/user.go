@@ -251,15 +251,17 @@ func (s *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, e
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "INSERT INTO users (name, email, password, password_digest, role, token, is_revoked) VALUES (?,?,?,?,?,?,?);"
 
 	result, err := tx.ExecContext(s.ctx, query, admin.Name, admin.Email, "", admin.PasswordDigest, "Admin", "", admin.IsRevoked)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting user: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	id, err := result.LastInsertId()

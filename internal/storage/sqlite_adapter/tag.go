@@ -36,14 +36,14 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 		return nil, fmt.Errorf("failed inserting tag: %w", err)
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, fmt.Errorf("failed retrieving tag last insert id: %w", err)
-	}
-
 	err = tx.Commit()
 	if err != nil {
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving tag last insert id: %w", err)
 	}
 
 	t, err := s.GetTagByID(int(id))
