@@ -57,35 +57,13 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 `
 
-type ReadDB *sql.DB
-type WriteDB *sql.DB
-
-func initSqliteDB(dataSourceName string) (WriteDB, ReadDB, error) {
+func initSqliteDB(dataSourceName string) (*sql.DB, error) {
 	dir := filepath.Dir(dataSourceName)
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error creating db dir: %w", err)
+		return nil, fmt.Errorf("error creating db dir: %w", err)
 	}
 
-	readDB, err := initReadDB(dataSourceName)
-	if err != nil {
-		return nil, nil, fmt.Errorf("initializing read db: %w", err)
-	}
-
-	writeDB, err := initWriteDB(dataSourceName)
-	if err != nil {
-		return nil, nil, fmt.Errorf("initializing write db: %w", err)
-	}
-
-	_, err = writeDB.ExecContext(context.Background(), schema)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create tables: %w", err)
-	}
-
-	return writeDB, readDB, nil
-}
-
-func initReadDB(dataSourceName string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", fmt.Sprintf(
 		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout=5000&_pragma=cache_size=-512000",
 		dataSourceName),
@@ -94,6 +72,7 @@ func initReadDB(dataSourceName string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
 
+	db.SetMaxOpenConns(100)
 	db.SetMaxIdleConns(100)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
@@ -102,24 +81,9 @@ func initReadDB(dataSourceName string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed pinging sqlite: %w", err)
 	}
 
-	return db, nil
-}
-
-func initWriteDB(dataSourceName string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite", fmt.Sprintf(
-		"file:%s?cache=shared&_fk=1&_journal_mode=WAL&_pragma=analysis_limit=400&pragma=synchronous=off&_pragma=temp_store=memory&_pragma=mmap_size=536870912&_pragma=busy_timeout=5000&_pragma=cache_size=-512000",
-		dataSourceName),
-	)
+	_, err = db.ExecContext(context.Background(), schema)
 	if err != nil {
-		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
-	}
-
-	db.SetMaxOpenConns(1)
-	db.SetConnMaxLifetime(5 * time.Minute)
-
-	err = db.Ping()
-	if err != nil {
-		return nil, fmt.Errorf("failed pinging sqlite: %w", err)
+		return nil, fmt.Errorf("failed to create tables: %w", err)
 	}
 
 	return db, nil

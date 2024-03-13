@@ -20,7 +20,7 @@ type SchemaStorage struct {
 func NewSchemaStorage(ctx context.Context) *SchemaStorage {
 	return &SchemaStorage{
 		ctx: ctx,
-		db:  persistence.SqliteReadDB(),
+		db:  persistence.SqliteDB(),
 	}
 }
 

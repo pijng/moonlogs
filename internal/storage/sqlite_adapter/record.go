@@ -16,16 +16,14 @@ import (
 var cachedStatements = make(map[string]*sql.Stmt)
 
 type RecordStorage struct {
-	ctx     context.Context
-	db      *sql.DB
-	writeDB *sql.DB
+	ctx context.Context
+	db  *sql.DB
 }
 
 func NewRecordStorage(ctx context.Context) *RecordStorage {
 	return &RecordStorage{
-		ctx:     ctx,
-		db:      persistence.SqliteReadDB(),
-		writeDB: persistence.SqliteWriteDB(),
+		ctx: ctx,
+		db:  persistence.SqliteDB(),
 	}
 }
 
@@ -39,7 +37,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	var stmt *sql.Stmt
 	stmt, ok := cachedStatements[query]
 	if !ok {
-		preparedStmt, err := s.writeDB.Prepare(query)
+		preparedStmt, err := s.db.Prepare(query)
 		if err != nil {
 			return nil, fmt.Errorf("failed preparing statement: %w", err)
 		}

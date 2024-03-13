@@ -12,15 +12,10 @@ const (
 	MONGODB_ADAPTER = "mongodb"
 )
 
-var sqliteReadInstance *sql.DB
-var sqliteWriteInstance *sql.DB
+var sqliteInstance *sql.DB
 
-func SqliteReadDB() *sql.DB {
-	return sqliteReadInstance
-}
-
-func SqliteWriteDB() *sql.DB {
-	return sqliteWriteInstance
+func SqliteDB() *sql.DB {
+	return sqliteInstance
 }
 
 var mongoInstance *mongo.Client
@@ -36,7 +31,7 @@ func InitDB(cfg *config.Config) error {
 	case MONGODB_ADAPTER:
 		mongoInstance, err = initMongoDB(cfg.DBPath)
 	default:
-		sqliteWriteInstance, sqliteReadInstance, err = initSqliteDB(cfg.DBPath)
+		sqliteInstance, err = initSqliteDB(cfg.DBPath)
 	}
 
 	return err

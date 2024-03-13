@@ -16,7 +16,7 @@ type TagStorage struct {
 func NewTagStorage(ctx context.Context) *TagStorage {
 	return &TagStorage{
 		ctx: ctx,
-		db:  persistence.SqliteReadDB(),
+		db:  persistence.SqliteDB(),
 	}
 }
 

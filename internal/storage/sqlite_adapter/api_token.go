@@ -19,7 +19,7 @@ type ApiTokenStorage struct {
 func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
 	return &ApiTokenStorage{
 		ctx: ctx,
-		db:  persistence.SqliteReadDB(),
+		db:  persistence.SqliteDB(),
 	}
 }
 
