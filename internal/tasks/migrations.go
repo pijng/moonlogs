@@ -27,7 +27,7 @@ func runGooseMigrations(embedMigrations embed.FS) error {
 		return fmt.Errorf("failed setting up goose dialect: %w", err)
 	}
 
-	if err := goose.Up(persistence.SqliteDB(), "migrations"); err != nil {
+	if err := goose.Up(persistence.SqliteWriteDB(), "migrations"); err != nil {
 		return fmt.Errorf("failed applying migrations: %w", err)
 	}
 

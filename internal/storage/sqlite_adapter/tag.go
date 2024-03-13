@@ -9,20 +9,26 @@ import (
 )
 
 type TagStorage struct {
-	ctx context.Context
-	db  *sql.DB
+	ctx     context.Context
+	readDB  *sql.DB
+	writeDB *sql.DB
 }
 
 func NewTagStorage(ctx context.Context) *TagStorage {
 	return &TagStorage{
-		ctx: ctx,
-		db:  persistence.SqliteDB(),
+		ctx:     ctx,
+		writeDB: persistence.SqliteWriteDB(),
+		readDB:  persistence.SqliteReadDB(),
 	}
 }
 
 func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
-	query := "INSERT INTO tags (name) VALUES (?);"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		INSERT INTO tags (name) VALUES (?);
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -49,7 +55,7 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 
 func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 	query := "SELECT * FROM tags WHERE id=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -67,8 +73,12 @@ func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 }
 
 func (s *TagStorage) DeleteTagByID(id int) error {
-	query := "DELETE FROM tags WHERE id=?"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		DELETE FROM tags WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -83,8 +93,12 @@ func (s *TagStorage) DeleteTagByID(id int) error {
 }
 
 func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
-	query := "UPDATE tags SET name=? WHERE id=?"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		UPDATE tags SET name=? WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -100,7 +114,7 @@ func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, err
 
 func (s *TagStorage) GetAllTags() ([]*entities.Tag, error) {
 	query := "SELECT * FROM tags ORDER BY id DESC;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}

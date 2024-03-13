@@ -12,20 +12,27 @@ import (
 )
 
 type ApiTokenStorage struct {
-	ctx context.Context
-	db  *sql.DB
+	ctx     context.Context
+	readDB  *sql.DB
+	writeDB *sql.DB
 }
 
 func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
 	return &ApiTokenStorage{
-		ctx: ctx,
-		db:  persistence.SqliteDB(),
+		ctx:     ctx,
+		readDB:  persistence.SqliteReadDB(),
+		writeDB: persistence.SqliteWriteDB(),
 	}
 }
 
 func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	query := "INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);
+		COMMIT;
+	`
+
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -45,8 +52,13 @@ func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.
 }
 
 func (s *ApiTokenStorage) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	query := "UPDATE api_tokens SET name=?, is_revoked=? WHERE id=?"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		UPDATE api_tokens SET name=?, is_revoked=? WHERE id=?;
+		COMMIT:
+	`
+
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -62,7 +74,7 @@ func (s *ApiTokenStorage) UpdateApiTokenByID(id int, apiToken entities.ApiToken)
 
 func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 	query := "SELECT * FROM api_tokens WHERE id=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -84,7 +96,7 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken
 	defer txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest").End()
 
 	query := "SELECT * FROM api_tokens WHERE token_digest=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return &entities.ApiToken{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -111,7 +123,7 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken
 
 func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {
 	query := "SELECT * FROM api_tokens ORDER BY id DESC;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -140,8 +152,12 @@ func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {
 }
 
 func (s *ApiTokenStorage) DeleteApiTokenByID(id int) error {
-	query := "DELETE FROM api_tokens WHERE id=?"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		DELETE FROM api_tokens WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed preparing statement: %w", err)
 	}

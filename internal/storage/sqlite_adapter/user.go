@@ -12,20 +12,26 @@ import (
 )
 
 type UserStorage struct {
-	ctx context.Context
-	db  *sql.DB
+	ctx     context.Context
+	readDB  *sql.DB
+	writeDB *sql.DB
 }
 
 func NewUserStorage(ctx context.Context) *UserStorage {
 	return &UserStorage{
-		ctx: ctx,
-		db:  persistence.SqliteDB(),
+		ctx:     ctx,
+		writeDB: persistence.SqliteWriteDB(),
+		readDB:  persistence.SqliteReadDB(),
 	}
 }
 
 func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
-	query := "INSERT INTO users (email, password, password_digest, name, role, tag_ids, token, is_revoked) VALUES (?,?,?,?,?,?,?,?);"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		INSERT INTO users (email, password, password_digest, name, role, tag_ids, token, is_revoked) VALUES (?,?,?,?,?,?,?,?);
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -46,7 +52,7 @@ func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
 
 func (s *UserStorage) GetUserByID(id int) (*entities.User, error) {
 	query := "SELECT * FROM users WHERE id=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -66,7 +72,7 @@ func (s *UserStorage) GetUserByID(id int) (*entities.User, error) {
 
 func (s *UserStorage) GetUsersByTagID(tagID int) ([]*entities.User, error) {
 	query := "SELECT * FROM users WHERE tag_ids LIKE ? ORDER BY id desc;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -96,7 +102,7 @@ func (s *UserStorage) GetUsersByTagID(tagID int) ([]*entities.User, error) {
 
 func (s *UserStorage) GetUserByEmail(email string) (*entities.User, error) {
 	query := "SELECT * FROM users WHERE email=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return &entities.User{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -119,7 +125,7 @@ func (s *UserStorage) GetUserByEmail(email string) (*entities.User, error) {
 
 func (s *UserStorage) GetUserByToken(token string) (*entities.User, error) {
 	query := "SELECT * FROM users WHERE token=? LIMIT 1;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return &entities.User{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -141,8 +147,12 @@ func (s *UserStorage) GetUserByToken(token string) (*entities.User, error) {
 }
 
 func (s *UserStorage) DeleteUserByID(id int) error {
-	query := "DELETE FROM users WHERE id=?;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		DELETE FROM users WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -160,7 +170,7 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 	var queryBuilder strings.Builder
 	args := make([]interface{}, 0)
 
-	queryBuilder.WriteString("UPDATE users SET email=?, name=?, role=?, tag_ids=?, is_revoked=?")
+	queryBuilder.WriteString("BEGIN IMMEDIATE; UPDATE users SET email=?, name=?, role=?, tag_ids=?, is_revoked=?")
 	args = append(args, user.Email, user.Name, user.Role, user.Tags, user.IsRevoked)
 
 	if len(user.PasswordDigest) > 0 {
@@ -168,10 +178,10 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 		args = append(args, user.PasswordDigest, user.Token)
 	}
 
-	queryBuilder.WriteString(" WHERE id=?;")
+	queryBuilder.WriteString(" WHERE id=?; COMMIT;")
 	args = append(args, id)
 
-	stmt, err := s.db.PrepareContext(s.ctx, queryBuilder.String())
+	stmt, err := s.writeDB.PrepareContext(s.ctx, queryBuilder.String())
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -186,8 +196,12 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 }
 
 func (s *UserStorage) UpdateUserTokenByID(id int, token string) error {
-	query := "UPDATE users SET token=? WHERE id=?;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		UPDATE users SET token=? WHERE id=?;
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -203,7 +217,7 @@ func (s *UserStorage) UpdateUserTokenByID(id int, token string) error {
 
 func (s *UserStorage) GetAllUsers() ([]*entities.User, error) {
 	query := "SELECT * FROM users ORDER BY id DESC;"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -232,8 +246,12 @@ func (s *UserStorage) GetAllUsers() ([]*entities.User, error) {
 }
 
 func (s *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
-	query := "INSERT INTO users (name, email, password, password_digest, role, token, is_revoked) VALUES (?,?,?,?,?,?,?);"
-	stmt, err := s.db.PrepareContext(s.ctx, query)
+	query := `
+		BEGIN IMMEDIATE;
+		INSERT INTO users (name, email, password, password_digest, role, token, is_revoked) VALUES (?,?,?,?,?,?,?);
+		COMMIT;
+	`
+	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
