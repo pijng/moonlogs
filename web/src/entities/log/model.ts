@@ -15,7 +15,6 @@ const queryChanged = createEvent<string>();
 $searchQuery.on(queryChanged, (_, query) => query);
 
 const resetFilter = createEvent();
-
 const filterChanged = createEvent<Record<string, any>>();
 export const $formattedSearchFilter = createStore<string>("{}").reset(resetFilter);
 
@@ -26,18 +25,17 @@ $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
   return JSON.stringify(newFilter);
 });
 
+const resetKindFilter = createEvent();
 const kindChanged = createEvent<string>();
-export const $currentKind = createStore("").reset(resetFilter);
+export const $currentKind = createStore("").reset(resetKindFilter);
 $currentKind.on(kindChanged, (_, kind) => kind);
 
 const resetLevelFilter = createEvent();
-
 const levelChanged = createEvent<Level>();
 export const $currentLevel = createStore<Level | string>("").reset(resetLevelFilter);
 $currentLevel.on(levelChanged, (_, level) => level);
 
 const resetTimeFilter = createEvent();
-
 const fromTimeChanged = createEvent<any>();
 export const $currentFromTime = createStore("").reset(resetTimeFilter);
 $currentFromTime.on(fromTimeChanged, (_, from) => from);
@@ -194,7 +192,7 @@ sample({
 
 sample({
   clock: reset,
-  target: [resetFilter, resetSearch, resetPage],
+  target: [resetFilter, resetKindFilter, resetLevelFilter, resetSearch, resetPage],
 });
 
 export const effects = {

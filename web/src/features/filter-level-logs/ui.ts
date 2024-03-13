@@ -41,7 +41,7 @@ export const FilterLevel = ({
     spec({ classList: ["relative"] });
 
     Button({
-      text: combine([i18n("log_groups.filters.level.label"), , level], ([defaultLabel, level]) => level || defaultLabel),
+      text: combine([i18n("log_groups.filters.level.label"), level], ([defaultLabel, level]) => level || defaultLabel),
       variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
       size: "small",
       event: dropdownTriggered,
