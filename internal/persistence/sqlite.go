@@ -112,7 +112,6 @@ func initReadDB(dataSourceName string) (*sql.DB, error) {
 func initWriteDB(dataSourceName string) (*sql.DB, error) {
 	queryString := buildQueryString("rw")
 
-	fmt.Println(queryString)
 	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, queryString))
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -26,21 +27,21 @@ func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
 }
 
 func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);
-		COMMIT;
-	`
-
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
 
-	result, err := stmt.ExecContext(s.ctx, apiToken.Name, "", apiToken.TokenDigest, apiToken.IsRevoked)
+	query := "INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);"
+
+	result, err := tx.ExecContext(s.ctx, query, apiToken.Name, "", apiToken.TokenDigest, apiToken.IsRevoked)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting api_token: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	id, err := result.LastInsertId()
@@ -52,19 +53,17 @@ func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.
 }
 
 func (s *ApiTokenStorage) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		UPDATE api_tokens SET name=?, is_revoked=? WHERE id=?;
-		COMMIT:
-	`
-
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, apiToken.Name, apiToken.IsRevoked, id)
+	query := "UPDATE api_tokens SET name=?, is_revoked=? WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, apiToken.Name, apiToken.IsRevoked, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating api token: %w", err)
 	}
@@ -152,18 +151,17 @@ func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {
 }
 
 func (s *ApiTokenStorage) DeleteApiTokenByID(id int) error {
-	query := `
-		BEGIN IMMEDIATE;
-		DELETE FROM api_tokens WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return fmt.Errorf("failed preparing statement: %w", err)
+		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, id)
+	query := "DELETE FROM api_tokens WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting api token: %w", err)
 	}

@@ -466,6 +466,14 @@ func CleanCachedStatements() {
 	clear(stmtsCache.stmts)
 }
 
+func BeginImmediate(db *sql.DB) (*sql.Tx, error) {
+	tx, err := db.Begin()
+	if err == nil {
+		_, err = tx.Exec("ROLLBACK; BEGIN IMMEDIATE")
+	}
+	return tx, err
+}
+
 // func scanRow(rows *sql.Rows, dest any) error {
 // 	rv := reflect.ValueOf(dest)
 // 	if rv.Kind() != reflect.Pointer || rv.IsNil() {

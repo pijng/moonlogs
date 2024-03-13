@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/lib/qrx"
 	"moonlogs/internal/persistence"
 )
 
@@ -23,19 +24,14 @@ func NewTagStorage(ctx context.Context) *TagStorage {
 }
 
 func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		INSERT INTO tags (name) VALUES (?);
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
 
-	result, err := stmt.ExecContext(s.ctx, tag.Name)
+	query := "INSERT INTO tags (name) VALUES (?);"
 
+	result, err := tx.ExecContext(s.ctx, query, tag.Name)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting tag: %w", err)
 	}
@@ -43,6 +39,11 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 	id, err := result.LastInsertId()
 	if err != nil {
 		return nil, fmt.Errorf("failed retrieving tag last insert id: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	t, err := s.GetTagByID(int(id))
@@ -73,18 +74,17 @@ func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 }
 
 func (s *TagStorage) DeleteTagByID(id int) error {
-	query := `
-		BEGIN IMMEDIATE;
-		DELETE FROM tags WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return fmt.Errorf("failed preparing statement: %w", err)
+		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, id)
+	query := "DELETE FROM tags WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting tag: %w", err)
 	}
@@ -93,18 +93,17 @@ func (s *TagStorage) DeleteTagByID(id int) error {
 }
 
 func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		UPDATE tags SET name=? WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, tag.Name, id)
+	query := "UPDATE tags SET name=? WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, tag.Name, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating tag: %w", err)
 	}

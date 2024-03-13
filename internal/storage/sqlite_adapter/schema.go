@@ -27,22 +27,23 @@ func NewSchemaStorage(ctx context.Context) *SchemaStorage {
 }
 
 func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		INSERT INTO schemas (name, description, retention_days, title, fields, kinds, tag_id) VALUES (?,?,?,?,?,?,?);
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
 
-	result, err := stmt.ExecContext(s.ctx, schema.Name, schema.Description, schema.RetentionDays, schema.Title,
+	query := "INSERT INTO schemas (name, description, retention_days, title, fields, kinds, tag_id) VALUES (?,?,?,?,?,?,?);"
+
+	result, err := tx.ExecContext(s.ctx, query, schema.Name, schema.Description, schema.RetentionDays, schema.Title,
 		schema.Fields, schema.Kinds, schema.TagID)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting schemas: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	id, err := result.LastInsertId()
@@ -59,18 +60,17 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 }
 
 func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		UPDATE schemas SET description=?, title=?, fields=?, kinds=?, retention_days=?, tag_id=? WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, schema.Description, schema.Title, schema.Fields, schema.Kinds, schema.RetentionDays, schema.TagID, id)
+	query := "UPDATE schemas SET description=?, title=?, fields=?, kinds=?, retention_days=?, tag_id=? WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, schema.Description, schema.Title, schema.Fields, schema.Kinds, schema.RetentionDays, schema.TagID, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating schema: %w", err)
 	}
@@ -214,18 +214,17 @@ func (s *SchemaStorage) GetAllSchemas() ([]*entities.Schema, error) {
 }
 
 func (s *SchemaStorage) DeleteSchemaByID(id int) error {
-	query := `
-		BEGIN IMMEDIATE;
-		DELETE FROM schemas WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return fmt.Errorf("failed preparing statement: %w", err)
+		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, id)
+	query := "DELETE FROM schemas WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting schema: %w", err)
 	}

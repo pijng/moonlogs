@@ -26,20 +26,21 @@ func NewUserStorage(ctx context.Context) *UserStorage {
 }
 
 func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		INSERT INTO users (email, password, password_digest, name, role, tag_ids, token, is_revoked) VALUES (?,?,?,?,?,?,?,?);
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
 
-	result, err := stmt.ExecContext(s.ctx, user.Email, "", user.PasswordDigest, user.Name, user.Role, user.Tags, "", user.IsRevoked)
+	query := "INSERT INTO users (email, password, password_digest, name, role, tag_ids, token, is_revoked) VALUES (?,?,?,?,?,?,?,?);"
+
+	result, err := tx.ExecContext(s.ctx, query, user.Email, "", user.PasswordDigest, user.Name, user.Role, user.Tags, "", user.IsRevoked)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting user: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	id, err := result.LastInsertId()
@@ -147,18 +148,17 @@ func (s *UserStorage) GetUserByToken(token string) (*entities.User, error) {
 }
 
 func (s *UserStorage) DeleteUserByID(id int) error {
-	query := `
-		BEGIN IMMEDIATE;
-		DELETE FROM users WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return fmt.Errorf("failed preparing statement: %w", err)
+		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, id)
+	query := "DELETE FROM users WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting user: %w", err)
 	}
@@ -167,10 +167,18 @@ func (s *UserStorage) DeleteUserByID(id int) error {
 }
 
 func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User, error) {
+	tx, err := qrx.BeginImmediate(s.writeDB)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
+	}
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
+
 	var queryBuilder strings.Builder
 	args := make([]interface{}, 0)
 
-	queryBuilder.WriteString("BEGIN IMMEDIATE; UPDATE users SET email=?, name=?, role=?, tag_ids=?, is_revoked=?")
+	queryBuilder.WriteString("UPDATE users SET email=?, name=?, role=?, tag_ids=?, is_revoked=?")
 	args = append(args, user.Email, user.Name, user.Role, user.Tags, user.IsRevoked)
 
 	if len(user.PasswordDigest) > 0 {
@@ -178,16 +186,10 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 		args = append(args, user.PasswordDigest, user.Token)
 	}
 
-	queryBuilder.WriteString(" WHERE id=?; COMMIT;")
+	queryBuilder.WriteString(" WHERE id=?;")
 	args = append(args, id)
 
-	stmt, err := s.writeDB.PrepareContext(s.ctx, queryBuilder.String())
-	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.ExecContext(s.ctx, args...)
+	_, err = tx.ExecContext(s.ctx, queryBuilder.String(), args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
@@ -196,18 +198,17 @@ func (s *UserStorage) UpdateUserByID(id int, user entities.User) (*entities.User
 }
 
 func (s *UserStorage) UpdateUserTokenByID(id int, token string) error {
-	query := `
-		BEGIN IMMEDIATE;
-		UPDATE users SET token=? WHERE id=?;
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return fmt.Errorf("failed preparing statement: %w", err)
+		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	_, err = stmt.ExecContext(s.ctx, token, id)
+	query := "UPDATE users SET token=? WHERE id=?;"
+
+	_, err = tx.ExecContext(s.ctx, query, token, id)
 	if err != nil {
 		return fmt.Errorf("failed updating user: %w", err)
 	}
@@ -246,18 +247,17 @@ func (s *UserStorage) GetAllUsers() ([]*entities.User, error) {
 }
 
 func (s *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
-	query := `
-		BEGIN IMMEDIATE;
-		INSERT INTO users (name, email, password, password_digest, role, token, is_revoked) VALUES (?,?,?,?,?,?,?);
-		COMMIT;
-	`
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
+	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
-		return nil, fmt.Errorf("failed preparing statement: %w", err)
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer stmt.Close()
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	result, err := stmt.ExecContext(s.ctx, admin.Name, admin.Email, "", admin.PasswordDigest, "Admin", "", admin.IsRevoked)
+	query := "INSERT INTO users (name, email, password, password_digest, role, token, is_revoked) VALUES (?,?,?,?,?,?,?);"
+
+	result, err := tx.ExecContext(s.ctx, query, admin.Name, admin.Email, "", admin.PasswordDigest, "Admin", "", admin.IsRevoked)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting user: %w", err)
 	}

@@ -9,11 +9,7 @@ import (
 	"moonlogs/internal/persistence"
 	"strings"
 	"time"
-
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
-
-var cachedStatements = make(map[string]*sql.Stmt)
 
 type RecordStorage struct {
 	ctx     context.Context
@@ -30,42 +26,24 @@ func NewRecordStorage(ctx context.Context) *RecordStorage {
 }
 
 func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
-	txn := newrelic.FromContext(s.ctx)
-	defer txn.StartSegment("storage.sqlite_adapter.CreateRecord").End()
-
-	txnPrepareStatement := txn.StartSegment("storage.sqlite_adapter.CreateRecord#PrepareStatement")
-	query := `
-		BEGIN IMMEDIATE;
-		INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;
-		COMMIT;
-	`
-
-	var stmt *sql.Stmt
-	stmt, ok := cachedStatements[query]
-	if !ok {
-		preparedStmt, err := s.writeDB.Prepare(query)
-		if err != nil {
-			return nil, fmt.Errorf("failed preparing statement: %w", err)
-		}
-
-		cachedStatements[query] = preparedStmt
-		stmt = preparedStmt
+	tx, err := qrx.BeginImmediate(s.writeDB)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
 
-	txnPrepareStatement.End()
+	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
 
-	txnInsert := txn.StartSegment("storage.sqlite_adapter.CreateRecord#Insert")
-	row := stmt.QueryRowContext(s.ctx, record.Text, record.SchemaName, schemaID, record.Query,
+	row := tx.QueryRowContext(s.ctx, query, record.Text, record.SchemaName, schemaID, record.Query,
 		record.Request, record.Response, record.Kind, groupHash, record.Level, entities.RecordTime{Time: time.Now()})
-	txnInsert.End()
 
-	txnScanRecord := txn.StartSegment("storage.sqlite_adapter.CreateRecord#ScanRecord")
 	var lr entities.Record
-	err := row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
+	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
-	txnScanRecord.End()
 
 	return &lr, nil
 }
@@ -283,20 +261,19 @@ func (s *RecordStorage) DeleteByIDs(ids []int) error {
 	}
 
 	placeholders, args := qrx.In(ids)
-	query := `
-		BEGIN IMMEDIATE;
-		DELETE FROM records WHERE id IN (%s);
-		COMMIT;
-	`
+
+	tx, err := qrx.BeginImmediate(s.writeDB)
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %w", err)
+	}
+	defer func(tx *sql.Tx) {
+		_ = tx.Commit()
+	}(tx)
+
+	query := "DELETE FROM records WHERE id IN (%s);"
 	query = fmt.Sprintf(query, placeholders)
 
-	stmt, err := s.writeDB.PrepareContext(s.ctx, query)
-	if err != nil {
-		return fmt.Errorf("failed preparing statement: %w", err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.ExecContext(s.ctx, args...)
+	_, err = tx.ExecContext(s.ctx, query, args...)
 
 	return err
 }
