@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	_ "github.com/glebarez/go-sqlite"
@@ -89,18 +89,9 @@ func initSqliteDB(dataSourceName string) (WriteDB, ReadDB, error) {
 }
 
 func initReadDB(dataSourceName string) (*sql.DB, error) {
-	params := url.Values{}
-	params.Add("_fk", "1")
-	params.Add("mode", "ro")
-	params.Add("_journal_mode", "wal")
-	params.Add("_pragma=analysis_limit", "400")
-	params.Add("_pragma=synchronous", "normal")
-	params.Add("_pragma=temp_store", "memory")
-	params.Add("_pragma=mmap_size", "536870912")
-	params.Add("_pragma=busy_timeout", "5000")
-	params.Add("_pragma=cache_size", "-512000")
+	queryString := buildQueryString("ro")
 
-	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, params.Encode()))
+	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, queryString))
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
@@ -119,18 +110,10 @@ func initReadDB(dataSourceName string) (*sql.DB, error) {
 }
 
 func initWriteDB(dataSourceName string) (*sql.DB, error) {
-	params := url.Values{}
-	params.Add("_fk", "1")
-	params.Add("mode", "rw")
-	params.Add("_journal_mode", "wal")
-	params.Add("_pragma=analysis_limit", "400")
-	params.Add("_pragma=synchronous", "normal")
-	params.Add("_pragma=temp_store", "memory")
-	params.Add("_pragma=mmap_size", "536870912")
-	params.Add("_pragma=busy_timeout", "5000")
-	params.Add("_pragma=cache_size", "-512000")
+	queryString := buildQueryString("rw")
 
-	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, params.Encode()))
+	fmt.Println(queryString)
+	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, queryString))
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
@@ -145,4 +128,20 @@ func initWriteDB(dataSourceName string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func buildQueryString(mode string) string {
+	var parts []string
+
+	parts = append(parts, "_fk=1")
+	parts = append(parts, fmt.Sprintf("mode=%s", mode))
+	parts = append(parts, "_journal_mode=wal")
+	parts = append(parts, "_pragma=analysis_limit=400")
+	parts = append(parts, "_pragma=synchronous=normal")
+	parts = append(parts, "_pragma=temp_store=memory")
+	parts = append(parts, "_pragma=mmap_size=536870912")
+	parts = append(parts, "_pragma=busy_timeout=5000")
+	parts = append(parts, "_pragma=cache_size=-512000")
+
+	return strings.Join(parts, "&")
 }
