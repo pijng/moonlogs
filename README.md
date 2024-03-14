@@ -75,9 +75,11 @@ services:
     ports:
       - "4200:4200"
     volumes:
-      - moonlogs-data:/etc/moonlogs
+      - moonlogs-config:/etc/moonlogs
+      - moonlogs-data:/var/lib/moonlogs
     command: --port=4200
 volumes:
+  moonlogs-config:
   moonlogs-data:
 ```
 
@@ -134,8 +136,8 @@ If you prefer to use your own bind mount for data storage, you can modify the `v
               - "4200:4200"
             volumes:
               - /etc/moonlogs:/etc/moonlogs
-            command:
-              --port=4200
+              - /var/lib/moonlogs:/var/lib/moonlogs
+            command: --port=4200
         ```
 
 #### With `apt-get` installation
@@ -148,7 +150,7 @@ If you prefer to use your own bind mount for data storage, you can modify the `v
   * Update `port` parameter to your desired port number. For example:
     ```yaml
     port: 5000
-    db_path: /etc/moonlogs/database.sqlite
+    db_path: /var/lib/moonlogs/database.sqlite
     db_adapter: sqlite
     read_timeout: 5s
     write_timeout: 1s

@@ -89,9 +89,7 @@ func initSqliteDB(dataSourceName string) (WriteDB, ReadDB, error) {
 }
 
 func initReadDB(dataSourceName string) (*sql.DB, error) {
-	queryString := buildQueryString("ro")
-
-	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, queryString))
+	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, buildQueryString()))
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
@@ -110,9 +108,7 @@ func initReadDB(dataSourceName string) (*sql.DB, error) {
 }
 
 func initWriteDB(dataSourceName string) (*sql.DB, error) {
-	queryString := buildQueryString("rw")
-
-	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, queryString))
+	db, err := sql.Open("sqlite", fmt.Sprintf("file:%s?%s", dataSourceName, buildQueryString()))
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to sqlite: %w", err)
 	}
@@ -129,11 +125,10 @@ func initWriteDB(dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-func buildQueryString(mode string) string {
+func buildQueryString() string {
 	var parts []string
 
 	parts = append(parts, "_fk=1")
-	parts = append(parts, fmt.Sprintf("mode=%s", mode))
 	parts = append(parts, "_journal_mode=wal")
 	parts = append(parts, "_pragma=analysis_limit=400")
 	parts = append(parts, "_pragma=synchronous=normal")
