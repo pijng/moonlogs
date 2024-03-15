@@ -13,6 +13,10 @@ export const tagForm = createForm<Omit<TagToUpdate, "id">>({
       init: "",
       rules: [rules.required()],
     },
+    view_order: {
+      init: "",
+      rules: [],
+    },
   },
   validateOn: ["submit"],
 });

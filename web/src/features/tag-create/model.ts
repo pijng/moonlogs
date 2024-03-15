@@ -10,6 +10,10 @@ export const tagForm = createForm<TagToCreate>({
       init: "",
       rules: [rules.required()],
     },
+    view_order: {
+      init: "",
+      rules: [],
+    },
   },
   validateOn: ["submit"],
 });

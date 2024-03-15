@@ -139,6 +139,10 @@ export const en: Translation = {
         label: "Name",
         hint: "Name - used for the human-readable name of the tag in the web interface",
       },
+      view_order: {
+        label: "View order",
+        hint: "View order - determines the priority order of the tags. Tags with lower values will be displayed higher in the list of log groups",
+      },
     },
     alerts: {
       delete: "Are you sure you want to delete this tag?",
@@ -181,6 +185,7 @@ export const en: Translation = {
     tags: {
       name: "Name",
       actions: "Actions",
+      view_order: "View order",
     },
     api_tokens: {
       name: "Name",

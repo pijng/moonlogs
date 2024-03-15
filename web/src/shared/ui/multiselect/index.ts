@@ -2,10 +2,10 @@ import { Event, Store, combine, createEvent, createStore, sample } from "effecto
 import { DOMElement, h, list, node, remap, spec } from "forest";
 import { condition } from "patronum";
 
-type SelectItem = {
+interface SelectItem {
   id: any;
   name: string;
-};
+}
 
 export const Multiselect = ({
   text,
