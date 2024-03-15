@@ -109,7 +109,7 @@ export const LogsTable = ({
                         "basis-11/12",
                         "flex-nowrap",
                         "pt-2",
-                        "overflow-scroll",
+                        "overflow-auto",
                         "text-sm",
                         "justify-start",
                         "font-medium",

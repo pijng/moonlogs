@@ -101,7 +101,7 @@ export const Multiselect = ({
         visible: $localVisible,
         classList: [
           "max-h-56",
-          "overflow-scroll",
+          "overflow-auto",
           "left-0",
           "absolute",
           "left-0",
