@@ -58,7 +58,7 @@ export const CardHeaded = ({
             "gap-3",
             "basis-11/12",
             "flex-nowrap",
-            "overflow-scroll",
+            "overflow-auto",
             "text-sm",
             "p-4",
             "justify-start",
