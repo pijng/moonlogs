@@ -3,15 +3,18 @@ import { BaseResponse, del, get, post, put } from "./base";
 export type Tag = {
   id: number;
   name: string;
+  view_order: number;
 };
 
 export type TagToCreate = {
   name: string;
+  view_order: number | string;
 };
 
 export type TagToUpdate = {
   id: number;
   name: string;
+  view_order: number | string;
 };
 
 export interface TagResponse extends BaseResponse {

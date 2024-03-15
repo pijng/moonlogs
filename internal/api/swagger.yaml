@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.5.9
+  version: 1.6.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -1337,9 +1337,12 @@ components:
           type: integer
         name:
           type: string
+        view_order:
+          type: integer
       required:
         - id
         - name
+        - view_order
     RecordRequest:
       type: object
       properties:
@@ -1427,8 +1430,11 @@ components:
       properties:
         name:
           type: string
+        view_order:
+          type: integer
       required:
         - name
+        - view_order
     ApiTokenRequest:
       type: object
       properties:

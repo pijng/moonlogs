@@ -14,12 +14,12 @@ func NewTagUseCase(tagStorage storage.TagStorage) *TagUseCase {
 	return &TagUseCase{tagStorage: tagStorage}
 }
 
-func (uc *TagUseCase) CreateTag(name string) (*entities.Tag, error) {
-	if name == "" {
+func (uc *TagUseCase) CreateTag(tag entities.Tag) (*entities.Tag, error) {
+	if tag.Name == "" {
 		return nil, fmt.Errorf("failed creating tag: `name` attribute is required")
 	}
 
-	return uc.tagStorage.CreateTag(entities.Tag{Name: name})
+	return uc.tagStorage.CreateTag(tag)
 }
 
 func (uc *TagUseCase) GetAllTags() ([]*entities.Tag, error) {

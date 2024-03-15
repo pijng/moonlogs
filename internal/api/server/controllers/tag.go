@@ -25,7 +25,7 @@ func CreateTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tagStorage := storage.NewTagStorage(r.Context(), config.Get().DBAdapter)
-	tag, err := usecases.NewTagUseCase(tagStorage).CreateTag(newTag.Name)
+	tag, err := usecases.NewTagUseCase(tagStorage).CreateTag(newTag)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

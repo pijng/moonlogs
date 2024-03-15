@@ -133,6 +133,10 @@ export type Translation = {
         label: string;
         hint: string;
       };
+      view_order: {
+        label: string;
+        hint: string;
+      };
     };
     alerts: {
       delete: string;
@@ -186,6 +190,7 @@ export type Translation = {
     };
     tags: {
       name: string;
+      view_order: string;
       actions: string;
     };
     api_tokens: {

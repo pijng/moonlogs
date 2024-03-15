@@ -14,6 +14,15 @@ export const NewTagForm = () => {
       hint: i18n("tags.form.name.hint"),
     });
 
+    Input({
+      type: "number",
+      label: i18n("tags.form.view_order.label"),
+      value: tagForm.fields.view_order.$value,
+      inputChanged: tagForm.fields.view_order.changed,
+      errorText: tagForm.fields.view_order.$errorText,
+      hint: i18n("tags.form.view_order.hint"),
+    });
+
     Button({
       text: i18n("buttons.create"),
       event: tagForm.submit,

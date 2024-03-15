@@ -11,7 +11,10 @@ const getTagFx = createEffect((id: number) => {
 
 export const $tags = createStore<Tag[]>([]).on(getTagsFx.doneData, (_, tagsResponse) => tagsResponse.data);
 
-export const $currentTag = createStore<Tag>({ id: 0, name: "" }).on(getTagFx.doneData, (_, tagResponse) => tagResponse.data);
+export const $currentTag = createStore<Tag>({ id: 0, name: "", view_order: 0 }).on(
+  getTagFx.doneData,
+  (_, tagResponse) => tagResponse.data,
+);
 
 export const effects = {
   getTagsFx,

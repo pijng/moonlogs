@@ -29,9 +29,9 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
 
-	query := "INSERT INTO tags (name) VALUES (?);"
+	query := "INSERT INTO tags (name, view_order) VALUES (?, ?);"
 
-	result, err := tx.ExecContext(s.ctx, query, tag.Name)
+	result, err := tx.ExecContext(s.ctx, query, tag.Name, tag.ViewOrder)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting tag: %w", err)
 	}
@@ -65,7 +65,7 @@ func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 	row := stmt.QueryRowContext(s.ctx, id)
 
 	var t entities.Tag
-	err = row.Scan(&t.ID, &t.Name)
+	err = row.Scan(&t.ID, &t.Name, &t.ViewOrder)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning tag: %w", err)
 	}
@@ -101,9 +101,9 @@ func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, err
 		_ = tx.Commit()
 	}(tx)
 
-	query := "UPDATE tags SET name=? WHERE id=?;"
+	query := "UPDATE tags SET name=?, view_order=? WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, tag.Name, id)
+	_, err = tx.ExecContext(s.ctx, query, tag.Name, tag.ViewOrder, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating tag: %w", err)
 	}
@@ -112,7 +112,7 @@ func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, err
 }
 
 func (s *TagStorage) GetAllTags() ([]*entities.Tag, error) {
-	query := "SELECT * FROM tags ORDER BY id DESC;"
+	query := "SELECT * FROM tags ORDER BY view_order ASC, id DESC;"
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -130,7 +130,7 @@ func (s *TagStorage) GetAllTags() ([]*entities.Tag, error) {
 	for rows.Next() {
 		var t entities.Tag
 
-		err = rows.Scan(&t.ID, &t.Name)
+		err = rows.Scan(&t.ID, &t.Name, &t.ViewOrder)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning tag: %w", err)
 		}

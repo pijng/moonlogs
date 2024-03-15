@@ -42,6 +42,12 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
 
             h("th", {
               attr: { scope: "col" },
+              classList: ["px-6", "py-3"],
+              text: i18n("tables.tags.view_order"),
+            });
+
+            h("th", {
+              attr: { scope: "col" },
               classList: ["px-6", "py-3", "max-w-28", "w-28"],
               text: i18n("tables.tags.actions"),
             });
@@ -69,6 +75,15 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
                 });
                 h("div", {
                   text: remap(tag, "name"),
+                });
+              });
+
+              h("td", () => {
+                spec({
+                  classList: ["px-6", "py-4"],
+                });
+                h("div", {
+                  text: remap(tag, "view_order"),
                 });
               });
 

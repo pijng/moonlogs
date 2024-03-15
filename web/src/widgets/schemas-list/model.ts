@@ -1,7 +1,6 @@
 import { schemaModel } from "@/entities/schema";
 import { tagModel } from "@/entities/tag";
 import { Schema } from "@/shared/api";
-import { i18n } from "@/shared/lib/i18n";
 import { combine, createEvent, createStore } from "effector";
 
 export const $searchQuery = createStore("");
@@ -21,13 +20,19 @@ const $filteredSchemas = combine([schemaModel.$schemas, tagModel.$tags, $searchQ
   });
 });
 
-export const $groupedFilteredSchemas = combine([$filteredSchemas, i18n("log_groups.general")], ([schemas, general]) => {
-  return schemas.reduce((acc: Record<string, Schema[]>, schema) => {
-    const tag = schema.tag_id || general;
+const $taggedSchemas = $filteredSchemas.map((schemas) => schemas.filter((s) => Boolean(s.tag_id)));
+export const $generalSchemas = $filteredSchemas.map((schemas) => schemas.filter((s) => !Boolean(s.tag_id)));
 
-    acc[tag] = acc[tag] || [];
-    acc[tag].push(schema);
+export const $groupedTaggedSchemas = $taggedSchemas.map((schemas) => {
+  return schemas.reduce((acc: Record<string, Schema[]>, schema) => {
+    const tagId = schema.tag_id!;
+    acc[tagId] = acc[tagId] || [];
+    acc[tagId].push(schema);
 
     return acc;
   }, {});
+});
+
+export const $sortedTags = tagModel.$tags.map((tags) => {
+  return tags.sort((t1, t2) => t1.view_order - t2.view_order);
 });

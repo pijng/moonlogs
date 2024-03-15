@@ -46,7 +46,7 @@ export const NewMemberForm = () => {
       Multiselect({
         text: i18n("members.form.tag.label"),
         hint: i18n("members.form.tag.hint"),
-        options: tagModel.$tags,
+        options: tagModel.$tags.map((tags) => tags.map((t) => ({ name: t.name, id: t.id }))),
         selectedOptions: memberForm.fields.tag_ids.$value,
         optionChecked: events.tagChecked,
         optionUnchecked: events.tagUnchecked,
