@@ -15,11 +15,11 @@ export const SchemasList = () => {
 
     list($sortedTags, ({ store: tag }) => {
       h("div", () => {
-        spec({ classList: ["mt-2", "mb-9"] });
+        const $tagSchemas = combine(tag, $groupedTaggedSchemas, (t, schemas) => schemas[t.id]);
+
+        spec({ classList: ["mt-2", "mb-9"], visible: $tagSchemas.map((s) => s?.length > 0) });
 
         Subheader(remap(tag, "name"));
-
-        const $tagSchemas = combine(tag, $groupedTaggedSchemas, (t, schemas) => schemas[t.id]);
 
         h("div", () => {
           spec({
@@ -48,7 +48,7 @@ export const SchemasList = () => {
     });
 
     h("div", () => {
-      spec({ classList: ["mt-2", "mb-9"] });
+      spec({ classList: ["mt-2", "mb-9"], visible: $generalSchemas.map((s) => s?.length > 0) });
 
       Subheader(i18n("log_groups.general"));
 

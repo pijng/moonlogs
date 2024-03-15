@@ -67,7 +67,7 @@ func (s *TagStorage) DeleteTagByID(id int) error {
 }
 
 func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
-	update := bson.M{"$set": bson.M{"name": tag.Name}}
+	update := bson.M{"$set": bson.M{"name": tag.Name, "view_order": tag.ViewOrder}}
 
 	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)
 	if err != nil {

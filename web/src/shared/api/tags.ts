@@ -34,11 +34,17 @@ export const getTag = (id: number): Promise<TagResponse> => {
 };
 
 export const createTag = (tag: TagToCreate): Promise<TagResponse> => {
-  return post({ url: "/api/tags", body: JSON.stringify(tag) });
+  const view_order = tag.view_order === "" ? 0 : tag.view_order;
+  const modifiedTag: TagToCreate = { ...tag, view_order: view_order };
+
+  return post({ url: "/api/tags", body: JSON.stringify(modifiedTag) });
 };
 
 export const editTag = (tag: TagToUpdate): Promise<TagResponse> => {
-  return put({ url: `/api/tags/${tag.id}`, body: JSON.stringify(tag) });
+  const view_order = tag.view_order === "" ? 0 : tag.view_order;
+  const modifiedTag: TagToUpdate = { ...tag, view_order: view_order };
+
+  return put({ url: `/api/tags/${tag.id}`, body: JSON.stringify(modifiedTag) });
 };
 
 export const deleteTag = (id: number): Promise<TagResponse> => {
