@@ -102,6 +102,10 @@ func (uc *SchemaUseCase) GetAllSchemas(user *entities.User) ([]*entities.Schema,
 		return nil, fmt.Errorf("failed querying all schemas")
 	}
 
+	if user == nil {
+		return nil, fmt.Errorf("cannot get user for tag check")
+	}
+
 	if len(user.Tags) > 0 {
 		var filteredSchemas []*entities.Schema
 		for _, schema := range schemas {

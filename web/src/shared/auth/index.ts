@@ -39,7 +39,7 @@ export const createInitialAdmin = createEvent();
 
 sample({
   clock: getSessionFx.doneData,
-  filter: (sessionResponse) => sessionResponse.success && sessionResponse.data.should_create_initial_admin,
+  filter: (sessionResponse) => sessionResponse.success && sessionResponse.data?.should_create_initial_admin,
   target: createInitialAdmin,
 });
 

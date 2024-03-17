@@ -53,7 +53,7 @@ export const editUserFx = createEffect((user: UserToUpdate) => {
 
 sample({
   source: userModel.$currentUser,
-  target: memberForm.setInitialForm,
+  target: memberForm.setForm,
 });
 
 sample({

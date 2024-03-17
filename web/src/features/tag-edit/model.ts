@@ -29,7 +29,7 @@ export const editTagFx = createEffect((tag: TagToUpdate) => {
 
 sample({
   source: tagModel.$currentTag,
-  target: tagForm.setInitialForm,
+  target: tagForm.setForm,
 });
 
 sample({

@@ -19,6 +19,10 @@ func (uc *TagUseCase) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 		return nil, fmt.Errorf("failed creating tag: `name` attribute is required")
 	}
 
+	if tag.ViewOrder == 0 {
+		tag.ViewOrder = 1
+	}
+
 	return uc.tagStorage.CreateTag(tag)
 }
 

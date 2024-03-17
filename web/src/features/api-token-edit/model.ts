@@ -29,7 +29,7 @@ export const editApiTokenFx = createEffect((apiToken: ApiTokenToUpdate) => {
 
 sample({
   source: apiTokenModel.$currentApiToken,
-  target: apiTokenForm.setInitialForm,
+  target: apiTokenForm.setForm,
 });
 
 sample({

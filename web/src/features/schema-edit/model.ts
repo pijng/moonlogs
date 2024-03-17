@@ -143,7 +143,7 @@ export const editSchemaFx = createEffect((schema: SchemaToUpdate) => {
 
 sample({
   source: schemaModel.$currentSchema,
-  target: schemaForm.setInitialForm,
+  target: [schemaForm.setForm],
 });
 
 sample({

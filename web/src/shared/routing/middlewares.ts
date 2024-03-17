@@ -23,7 +23,7 @@ export const chainAuthorized = (route: RouteInstance<any>) => {
   sample({
     source: getSessionFx.doneData,
     filter: (sessionResponse) =>
-      (!sessionResponse?.data?.token || !sessionResponse.success) && !sessionResponse.data.should_create_initial_admin,
+      (!sessionResponse?.data?.token || !sessionResponse.success) && !sessionResponse.data?.should_create_initial_admin,
     target: unauthorizedTriggered,
   });
 
