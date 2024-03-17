@@ -110,6 +110,7 @@ export const Select = ({
         classList: [
           "max-h-56",
           "overflow-auto",
+          "dark:scrollbar",
           "left-0",
           "absolute",
           "left-0",

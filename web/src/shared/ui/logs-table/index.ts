@@ -21,7 +21,7 @@ export const LogsTable = ({
 
     h("div", () => {
       spec({
-        classList: ["relative", "overflow-x-auto", "sm:rounded-b-lg"],
+        classList: ["relative", "overflow-x-auto", "dark:scrollbar", "sm:rounded-b-lg"],
       });
 
       h("table", () => {
@@ -110,6 +110,7 @@ export const LogsTable = ({
                         "flex-nowrap",
                         "pt-2",
                         "overflow-auto",
+                        "dark:scrollbar",
                         "text-sm",
                         "justify-start",
                         "font-medium",

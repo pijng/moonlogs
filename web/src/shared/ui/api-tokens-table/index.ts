@@ -12,7 +12,7 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
 
     h("div", () => {
       spec({
-        classList: ["relative", "overflow-x-auto", "sm:rounded-b-lg"],
+        classList: ["relative", "overflow-x-auto", "dark:scrollbar", "sm:rounded-b-lg"],
       });
 
       h("table", () => {

@@ -59,6 +59,7 @@ export const CardHeaded = ({
             "basis-11/12",
             "flex-nowrap",
             "overflow-auto",
+            "dark:scrollbar",
             "text-sm",
             "p-4",
             "justify-start",
