@@ -26,9 +26,9 @@ export const CardLink = <T extends RouteParams>({
       "rounded-lg",
       "shadow",
       "hover:bg-gray-100",
-      "dark:bg-gray-800",
-      "dark:border-gray-700",
-      "dark:hover:bg-gray-700",
+      "dark:bg-raisin-black",
+      "dark:border-shadow-gray",
+      "dark:hover:bg-squid-ink",
     ],
     fn() {
       h("h5", {

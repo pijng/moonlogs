@@ -104,7 +104,7 @@ export const Sidebar = () => {
 
       h("div", () => {
         spec({
-          classList: ["h-full", "px-3", "py-4", "overflow-y-auto", "bg-gray-50", "dark:bg-gray-800"],
+          classList: ["h-full", "px-3", "py-4", "overflow-y-auto", "bg-gray-50", "dark:bg-raisin-black"],
         });
 
         h("a", () => {
@@ -183,8 +183,8 @@ export const SidebarItem = (text: Store<string> | string, route: RouteInstance<R
         "dark:text-white": true,
         "hover:bg-gray-200": true,
         "bg-gray-200": route.$isOpened,
-        "dark:bg-gray-700": route.$isOpened,
-        "dark:hover:bg-gray-700": true,
+        "dark:bg-squid-ink": route.$isOpened,
+        "dark:hover:bg-squid-ink": true,
         group: true,
       },
     });

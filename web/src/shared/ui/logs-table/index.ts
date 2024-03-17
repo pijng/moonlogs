@@ -37,7 +37,7 @@ export const LogsTable = ({
               "uppercase",
               "bg-gray-50",
               "w-full",
-              "dark:bg-gray-700",
+              "dark:bg-squid-ink",
               "dark:text-gray-200",
             ],
           });
@@ -67,7 +67,7 @@ export const LogsTable = ({
           list(logs, ({ store: log }) => {
             h("tr", () => {
               spec({
-                classList: ["border-t", "w-full", "dark:border-gray-700", "text-gray-900", "dark:text-gray-100"],
+                classList: ["border-t", "w-full", "dark:border-shadow-gray", "text-gray-900", "dark:text-gray-100"],
               });
 
               h("td", () => {

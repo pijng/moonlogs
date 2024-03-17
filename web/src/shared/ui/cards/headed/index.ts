@@ -26,8 +26,8 @@ export const CardHeaded = ({
         "border-gray-200",
         "rounded-lg",
         "shadow",
-        "dark:bg-gray-800",
-        "dark:border-gray-700",
+        "dark:bg-raisin-black",
+        "dark:border-shadow-gray",
       ],
     });
 
@@ -38,11 +38,11 @@ export const CardHeaded = ({
           "flex-row",
           "items-center",
           "bg-gray-50",
-          "dark:bg-gray-800",
+          "dark:bg-raisin-black",
           "border-b",
           "border-gray-200",
           "rounded-t-lg",
-          "dark:border-gray-700",
+          "dark:border-shadow-gray",
           "dark:text-gray-400",
         ],
       });
@@ -110,7 +110,7 @@ export const CardHeaded = ({
             "min-w-fit",
             "border-l",
             "border-gray-200",
-            "dark:border-gray-700",
+            "dark:border-shadow-gray",
             "flex",
             "justify-center",
           ],

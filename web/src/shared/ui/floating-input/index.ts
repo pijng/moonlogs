@@ -24,7 +24,7 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
         "border-gray-300",
         "appearance-none",
         "dark:text-white",
-        "dark:border-gray-600",
+        "dark:border-slate-gray",
         "dark:focus:border-blue-500",
         "focus:outline-none",
         "focus:ring-0",

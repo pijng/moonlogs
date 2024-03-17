@@ -20,7 +20,7 @@ export const Popover = ({ text }: { text?: string | Store<string> }) => {
           "transform",
           "-translate-y-1/2",
           "ml-6",
-          "bg-gray-800",
+          "bg-raisin-black",
           "text-white",
           "text-center",
           "px-2",

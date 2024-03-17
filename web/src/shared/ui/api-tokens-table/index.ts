@@ -28,7 +28,7 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
               "uppercase",
               "bg-gray-50",
               "w-full",
-              "dark:bg-gray-700",
+              "dark:bg-squid-ink",
               "dark:text-gray-200",
             ],
           });
@@ -67,9 +67,9 @@ export const ApiTokensTable = (apiTokens: Store<ApiToken[]>, editClicked: Event<
                 classList: {
                   "border-t": true,
                   "w-full": true,
-                  "dark:border-gray-700": true,
+                  "dark:border-shadow-gray": true,
                   "hover:bg-gray-50": true,
-                  "dark:hover:bg-gray-600": true,
+                  "dark:hover:bg-slate-gray": true,
                   "text-gray-900": true,
                   "dark:text-gray-200": true,
                   "opacity-50": apiToken.map((at) => at.is_revoked),

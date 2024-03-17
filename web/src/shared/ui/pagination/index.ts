@@ -16,10 +16,10 @@ const BASE_CLASSES = [
   "border-gray-300",
   "hover:bg-gray-100",
   "hover:text-gray-700",
-  "dark:bg-gray-800",
-  "dark:border-gray-700",
+  "dark:bg-raisin-black",
+  "dark:border-shadow-gray",
   "dark:text-gray-400",
-  "dark:hover:bg-gray-700",
+  "dark:hover:bg-squid-ink",
   "dark:hover:text-white",
 ];
 
@@ -37,8 +37,8 @@ const ACTIVE_CLASSES = [
   "bg-blue-50",
   "hover:bg-blue-100",
   "hover:text-blue-700",
-  "dark:border-gray-700",
-  "dark:bg-gray-700",
+  "dark:border-shadow-gray",
+  "dark:bg-squid-ink",
   "dark:text-white",
 ];
 
@@ -255,10 +255,10 @@ const PreviousPages = (pages: Store<number>, pageChanged: Event<any>) => {
           "rounded-l-lg",
           "hover:bg-gray-100",
           "hover:text-gray-700",
-          "dark:bg-gray-800",
-          "dark:border-gray-700",
+          "dark:bg-raisin-black",
+          "dark:border-shadow-gray",
           "dark:text-gray-400",
-          "dark:hover:bg-gray-700",
+          "dark:hover:bg-squid-ink",
           "dark:hover:text-white",
         ],
       });
@@ -305,10 +305,10 @@ const NextPage = (pages: Store<number>, pageChanged: Event<any>) => {
           "rounded-r-lg",
           "hover:bg-gray-100",
           "hover:text-gray-700",
-          "dark:bg-gray-800",
-          "dark:border-gray-700",
+          "dark:bg-raisin-black",
+          "dark:border-shadow-gray",
           "dark:text-gray-400",
-          "dark:hover:bg-gray-700",
+          "dark:hover:bg-squid-ink",
           "dark:hover:text-white",
         ],
       });

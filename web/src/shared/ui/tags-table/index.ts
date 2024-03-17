@@ -28,7 +28,7 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
               "uppercase",
               "bg-gray-50",
               "w-full",
-              "dark:bg-gray-700",
+              "dark:bg-squid-ink",
               "dark:text-gray-200",
             ],
           });
@@ -61,9 +61,9 @@ export const TagsTable = (tags: Store<Tag[]>, editClicked: Event<number>) => {
                 classList: [
                   "border-t",
                   "w-full",
-                  "dark:border-gray-700",
+                  "dark:border-shadow-gray",
                   "hover:bg-gray-50",
-                  "dark:hover:bg-gray-600",
+                  "dark:hover:bg-slate-gray",
                   "text-gray-900",
                   "dark:text-gray-200",
                 ],

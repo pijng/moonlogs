@@ -16,7 +16,7 @@ export const Application = () => {
         "min-h-screen": true,
         "bg-white": true,
         "text-slate-700": true,
-        "dark:bg-slate-900": true,
+        "dark:bg-eigengrau": true,
         "dark:text-slate-300": true,
         dark: userModel.$currentTheme.map((theme) => theme === "dark"),
       },

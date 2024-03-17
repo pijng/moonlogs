@@ -38,9 +38,9 @@ export const KBD = ({
         border: true,
         "border-gray-200": true,
         "rounded-lg": true,
-        "dark:bg-gray-600": true,
-        "dark:text-gray-100": true,
-        "dark:border-gray-500": true,
+        "dark:bg-slate-gray": true,
+        "dark:text-gray-200": true,
+        "dark:border-none": true,
       },
       text: text,
     });
