@@ -12,8 +12,8 @@ import (
 
 const (
 	PORT                  = 4200
-	READ_TIMEOUT          = 5 * time.Second
-	WRITE_TIMEOUT         = 1 * time.Second
+	READ_TIMEOUT          = 1 * time.Second
+	WRITE_TIMEOUT         = 10 * time.Second
 	DB_PATH               = "/var/lib/moonlogs/database.sqlite"
 	CONFIG_PATH           = "/etc/moonlogs/config.yaml"
 	ASYNC_RECORD_CREATION = false
