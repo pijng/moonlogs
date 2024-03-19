@@ -79,4 +79,4 @@ Navigate to [http://localhost:4200](http://localhost:4200). You should see the m
 
 * Please refer to the [Configuration](/tutorial/configuration) section to understand the configuration options supported by Moonlogs and adjust them to suit your requirements.
 
-* Refer to the guide [Choosing DB adapter](/tutorial/choosing-db-adapter) to better understand which database suits your requirements.
+* Refer to the guide [Choosing DB Adapter](/tutorial/choosing-db-adapter) to better understand which database suits your requirements.

@@ -18,7 +18,7 @@ export default defineConfig({
         items: [
           { text: 'Installation', link: '/tutorial/install' },
           { text: 'Configuration', link: '/tutorial/configuration' },
-          { text: 'Choosing DB adapter', link: '/tutorial/choosing-db-adapter' }
+          { text: 'Choosing DB Adapter', link: '/tutorial/choosing-db-adapter' }
         ]
       }
     ],
