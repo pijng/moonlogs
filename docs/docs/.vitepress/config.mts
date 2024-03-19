@@ -36,5 +36,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/pijng/moonlogs' }
     ]
-  }
+
+  },
+  ignoreDeadLinks: 'localhostLinks'
 })
