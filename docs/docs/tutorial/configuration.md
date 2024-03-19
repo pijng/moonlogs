@@ -7,11 +7,11 @@ Moonlogs uses configuration options to define the underlying behavior. These opt
 | Name                                            | Flag                    | Default value                     |
 |-------------------------------------------------|-------------------------|-----------------------------------|
 |                  [port](#port)                  | --port                  | 4200                              |
-|            [db_adapter](#db_adapter)            | --db-adapter            | sqlite                            |
-|               [db_path](#db_path)               | --db-path               | /var/lib/moonlogs/database.sqlite |
-| [read_timeout](#read_timeout)                   | --read-timeout          | 5s                                |
-| [write_timeout](#write_timeout)                 | --write-timeout         | 1s                                |
-| [async_record_creation](#async_record_creation) | --async-record-creation | false                             |
+|            [db_adapter](#db-adapter)            | --db-adapter            | sqlite                            |
+|               [db_path](#db-path)               | --db-path               | /var/lib/moonlogs/database.sqlite |
+| [read_timeout](#read-timeout)                   | --read-timeout          | 5s                                |
+| [write_timeout](#write-timeout)                 | --write-timeout         | 1s                                |
+| [async_record_creation](#async-record-creation) | --async-record-creation | false                             |
 
 ::: warning
 Configuration options will always use the default value if left unspecified.

@@ -24,8 +24,13 @@ export default defineConfig({
     ],
 
     search: {
-      provider: 'local',
-      options: {}
+      provider: 'algolia',
+      options: {
+        appId: 'YWZIJ9RIQS',
+        apiKey: '9a92c576f2edfbb051ac7d2f933b1e48',
+        indexName: 'moonlogs',
+        insights: true
+      }
     },
 
     footer: {
