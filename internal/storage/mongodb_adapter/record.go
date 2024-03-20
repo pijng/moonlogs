@@ -208,7 +208,7 @@ func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, erro
 	// pre-allocate array of ids for resulting query
 	filter := bson.M{
 		"schema_id":  schemaID,
-		"created_at": bson.M{"$lte": time.Unix(threshold, 0)},
+		"created_at": bson.M{"$lte": threshold},
 	}
 
 	rowsCount, err := s.collection.CountDocuments(s.ctx, filter)
@@ -218,18 +218,18 @@ func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, erro
 
 	ids := make([]int, 0, rowsCount)
 
-	cursor, err := s.collection.Find(s.ctx, filter, options.Find().SetProjection(bson.M{"id": 1}))
+	cursor, err := s.collection.Find(s.ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("querying stale record's ids: %w", err)
 	}
 
 	for cursor.Next(s.ctx) {
-		var id int
-		if err := cursor.Decode(&id); err != nil {
+		var lr entities.Record
+		if err := cursor.Decode(&lr); err != nil {
 			return nil, fmt.Errorf("failed decoding record's id: %w", err)
 		}
 
-		ids = append(ids, id)
+		ids = append(ids, lr.ID)
 	}
 
 	return ids, nil
