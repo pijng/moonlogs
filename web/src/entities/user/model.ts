@@ -1,10 +1,8 @@
-import { User, getUsers } from "@/shared/api";
-import { getUser } from "@/shared/api/users";
+import { User, getUsers, getUser } from "@/shared/api";
 import { setCurrentAccount } from "@/shared/auth";
 import { setLanguage } from "@/shared/lib/i18n";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
-const THEME_KEY = "theme";
 const LOCALE_KEY = "locale";
 
 const getUsersFx = createEffect(() => {
@@ -42,28 +40,6 @@ sample({
   target: setCurrentAccount,
 });
 
-const loadThemeFromStorageFx = createEffect(() => {
-  return localStorage.getItem(THEME_KEY) || "light";
-});
-
-const setThemeToStorageFx = createEffect((theme: string) => {
-  return localStorage.setItem(THEME_KEY, theme);
-});
-
-export const $currentTheme = createStore<string | null>("light");
-export const themeChanged = createEvent<string>();
-
-sample({
-  source: themeChanged,
-  fn: (theme) => theme.toLowerCase(),
-  target: [setThemeToStorageFx, $currentTheme],
-});
-
-sample({
-  source: loadThemeFromStorageFx.doneData,
-  target: $currentTheme,
-});
-
 const loadLocaleFromStorageFx = createEffect(() => {
   return localStorage.getItem(LOCALE_KEY) || "en";
 });
@@ -96,7 +72,6 @@ sample({
 export const effects = {
   getUsersFx,
   getUserFx,
-  loadThemeFromStorageFx,
   loadLocaleFromStorageFx,
 };
 

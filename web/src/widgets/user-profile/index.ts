@@ -1,5 +1,6 @@
 import { tagModel } from "@/entities/tag";
 import { userModel } from "@/entities/user";
+import { $currentTheme, themeChanged } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
 import { Select } from "@/shared/ui";
 import { combine, createStore } from "effector";
@@ -88,9 +89,9 @@ export const UserProfile = () => {
         h("p", { text: i18n("profile.theme") });
 
         Select({
-          value: userModel.$currentTheme,
+          value: $currentTheme,
           options: createStore(["dark", "light"]),
-          optionSelected: userModel.themeChanged,
+          optionSelected: themeChanged,
           withBlank: createStore(false),
         });
       });

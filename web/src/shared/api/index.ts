@@ -13,7 +13,7 @@ export {
 } from "./schemas";
 export { type Tag, type TagToCreate, type TagToUpdate, getTags, getTag, editTag, createTag, deleteTag } from "./tags";
 export { type Log, type Level, getLogs } from "./logs";
-export { type User, type UserToCreate, type UserToUpdate, getUsers, editUser, createUser } from "./users";
+export { type User, type UserToCreate, type UserToUpdate, getUsers, getUser, editUser, createUser } from "./users";
 export {
   type ApiToken,
   type ApiTokenToCreate,

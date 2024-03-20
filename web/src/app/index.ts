@@ -7,6 +7,7 @@ import { linkRouter, onAppMount } from "atomic-router-forest";
 import { createEvent, sample } from "effector";
 import { h, spec } from "forest";
 import { Pages } from "./pages";
+import { loadThemeFromStorageFx } from "@/shared/lib";
 
 export const Application = () => {
   h("body", () => {
@@ -18,7 +19,6 @@ export const Application = () => {
         "text-slate-700": true,
         "dark:bg-eigengrau": true,
         "dark:text-slate-300": true,
-        dark: userModel.$currentTheme.map((theme) => theme === "dark"),
       },
     });
 
@@ -56,7 +56,8 @@ sample({
 
 sample({
   clock: appMounted,
-  target: [userModel.effects.loadThemeFromStorageFx, userModel.effects.loadLocaleFromStorageFx],
+  // TODO: move loadLocale to shared/lib/i18n
+  target: [loadThemeFromStorageFx, userModel.effects.loadLocaleFromStorageFx],
 });
 
 sample({
