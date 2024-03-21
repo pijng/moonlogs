@@ -60,7 +60,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	document := bson.M{
 		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": schemaID, "query": formattedQuery,
 		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": groupHash,
-		"level": record.Level, "created_at": entities.RecordTime{Time: time.Now()},
+		"level": record.Level, "created_at": record.CreatedAt,
 	}
 	result, err := s.collection.InsertOne(s.ctx, document)
 	if err != nil {
@@ -115,7 +115,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(limit))
 	findOptions.SetSkip(int64(offset))
-	findOptions.SetSort(bson.D{{Key: "id", Value: -1}})
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
 	totalCount, err := s.collection.CountDocuments(s.ctx, filter)
 	if err != nil {
@@ -146,7 +146,7 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(limit))
 	findOptions.SetSkip(int64(offset))
-	findOptions.SetSort(bson.D{{Key: "id", Value: -1}})
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
 	cursor, err := s.collection.Find(s.ctx, bson.M{}, findOptions)
 	if err != nil {
@@ -172,7 +172,7 @@ func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash strin
 	filter := bson.M{"schema_name": schemaName, "group_hash": groupHash}
 
 	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{Key: "id", Value: 1}})
+	findOptions.SetSort(bson.D{{Key: "created_at", Value: 1}})
 
 	cursor, err := s.collection.Find(s.ctx, filter, findOptions)
 	if err != nil {

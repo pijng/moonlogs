@@ -50,6 +50,10 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 		record.Level = entities.InfoLevel
 	}
 
+	if record.CreatedAt.Equal(time.Time{}) {
+		record.CreatedAt = entities.RecordTime{Time: time.Now()}
+	}
+
 	bytes, err := serialize.JSONMarshal(record.Query)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating record: %v", err)
