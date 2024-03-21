@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.6.9
+  version: 1.7.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -1093,6 +1093,7 @@ paths:
               $ref: '#/components/schemas/RecordRequest'
       responses:
         '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -1211,6 +1212,7 @@ components:
           type: string
         created_at:
           type: string
+          description: ISO8601 date-time
         group_hash:
           type: string
         level:
@@ -1350,6 +1352,9 @@ components:
           type: string
         schema_name:
           type: string
+        created_at:
+          type: string
+          description: ISO8601 date-time
         schema_id:
           type: integer
         query:

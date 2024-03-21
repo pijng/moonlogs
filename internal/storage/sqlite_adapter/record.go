@@ -37,7 +37,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
 
 	row := tx.QueryRowContext(s.ctx, query, record.Text, record.SchemaName, schemaID, record.Query,
-		record.Request, record.Response, record.Kind, groupHash, record.Level, entities.RecordTime{Time: time.Now()})
+		record.Request, record.Response, record.Kind, groupHash, record.Level, record.CreatedAt)
 
 	var lr entities.Record
 	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
@@ -103,7 +103,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	countBuilder := queryBuilder
 	countParams := queryParams
 
-	queryBuilder.WriteString(" ORDER BY id DESC LIMIT ? OFFSET ?")
+	queryBuilder.WriteString(" ORDER BY created_at DESC LIMIT ? OFFSET ?")
 	queryParams = append(queryParams, limit, offset)
 
 	query := fmt.Sprintf(`
@@ -177,7 +177,7 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 }
 
 func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	query := "SELECT * FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY id ASC;"
+	query := "SELECT * FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY created_at ASC;"
 
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
