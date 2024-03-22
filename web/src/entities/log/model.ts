@@ -27,7 +27,7 @@ $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
 
 const resetKindFilter = createEvent();
 const kindChanged = createEvent<string>();
-export const $currentKind = createStore("").reset(resetKindFilter);
+export const $currentKind = createStore("").reset(resetKindFilter, resetFilter);
 $currentKind.on(kindChanged, (_, kind) => kind);
 
 const resetLevelFilter = createEvent();
@@ -149,7 +149,7 @@ export const $logsGroups = combine([$logs, $preferredLanguage], ([logs, lang]) =
   const groupedLogs = logs.reduce((acc: Record<string, LogsGroup>, log) => {
     const key = JSON.stringify(log.query);
 
-    if (acc[key]?.logs?.length === 5) return acc;
+    // if (acc[key]?.logs?.length === 5) return acc;
 
     const logsGroup: LogsGroup = {
       tags: Object.entries(log.query),
