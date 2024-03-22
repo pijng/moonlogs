@@ -15,9 +15,9 @@ export const SchemasList = () => {
 
     list($sortedTags, ({ store: tag }) => {
       h("div", () => {
-        const $tagSchemas = combine(tag, $groupedTaggedSchemas, (t, schemas) => schemas[t.id]);
+        const $tagSchemas = combine(tag, $groupedTaggedSchemas, (t, schemas) => schemas[t.id] || []);
 
-        spec({ classList: ["mt-2", "mb-9"], visible: $tagSchemas.map((s) => s?.length > 0) });
+        spec({ classList: ["mt-2", "mb-9"], visible: $tagSchemas.map((s) => Boolean(s?.length)) });
 
         Subheader(remap(tag, "name"));
 
