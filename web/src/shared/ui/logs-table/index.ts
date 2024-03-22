@@ -72,7 +72,7 @@ export const LogsTable = ({
 
               h("td", () => {
                 spec({
-                  classList: ["px-4", "py-4"],
+                  classList: ["px-4", "py-4", "align-top"],
                 });
                 h("div", {
                   text: remap(log, "created_at"),
@@ -81,7 +81,7 @@ export const LogsTable = ({
 
               h("td", () => {
                 spec({
-                  classList: ["px-4", "py-4"],
+                  classList: ["px-4", "py-4", "align-top"],
                 });
                 LevelBadge(remap(log, "level"));
               });
