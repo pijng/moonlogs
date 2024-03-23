@@ -39,7 +39,7 @@ Make sure you have [Docker](https://docs.docker.com/engine/install/) and [Docker
 
 :::
 
-1. **Create a Docker Compose file**
+**1. Create a Docker Compose file**
 
 Create a file named `docker-compose.yml` in your desired directory and copy the following content into it:
 
@@ -61,7 +61,7 @@ volumes:
   moonlogs-data:
 ```
 
-2. **Build and run the Docker containers**
+**2. Build and run the Docker containers**
 
 Run the following command in the directory with `docker-compose.yml`:
 
@@ -71,7 +71,7 @@ docker-compose up -d
 
 This will download the moonlogs image and start the moonlogs container in detached mode.
 
-3. **Access moonlogs**
+**3. Access moonlogs**
 
 Navigate to [http://localhost:4200](http://localhost:4200). You should see the moonlogs UI. Follow the instructions for creating the initial administrator there.
 

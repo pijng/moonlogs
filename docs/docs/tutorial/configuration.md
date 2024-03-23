@@ -81,6 +81,10 @@ The `port` parameter specifies the port number on which the Moonlogs service wil
 
 The `db_adapter` parameter determines the type of database adapter or driver used by Moonlogs to interact with the underlying database. It supports two options: `sqlite` for SQLite databases and `mongodb` for MongoDB databases.
 
+:::tip
+To learn more about what DB to choose, please refer to our [Choosing DB Adapter](/tutorial/choosing-db-adapter) page.
+:::
+
 ### db_path
 
 * Type: `string`
