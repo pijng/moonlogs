@@ -9,6 +9,10 @@
 
 Moonlogs is a business-event logging tool with a built-in user-friendly web interface for easy access to events.
 
+## Docs
+
+Visit [moonlogs.pages.dev](https://moonlogs.pages.dev) for documentation and guides about Moonlogs.
+
 ## Quick Features
 
 - Meta-groups of events based on business domains
