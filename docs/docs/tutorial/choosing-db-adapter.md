@@ -9,7 +9,26 @@ Unfortunately, there is no "silver bullet" when it comes to choosing a database.
 At the moment, Moonlogs offers the following options:
 
 * `SQLite` (default)
-* `MongodDB`
+* `MongoDB`
+
+## When to choose SQLite
+
+Choosing SQLite as the database for Moonlogs makes sense if:
+
+* You **plan to handle low to moderate loads**, ranging from 0 to tens of thousands of requests per minute.
+* You **don't have strict latency requirements** and are satisfied with an average response time in the range of `60-90ms` per write.
+* You **don't plan to horizontally scale** the database across one or multiple servers.
+* You **expect** to store fast-paced logs with `retention_days` of a few days.
+* You **don't expect** burst spikes in writes reaching hundreds of thousands of requests per minute (for example, logging mass mailings/notifications/sms).
+
+## When to choose MongoDB
+
+Choosing MongoDB as the database for Moonlogs makes sense if:
+
+* You **plan to handle high loads**, ranging from hundres of thousands to millions of requests per minute.
+* You **have strict latency requirements** and are satisfied with an average response time in the range of `5-15ms` per write.
+* You **plan to horizontally scale** the database across one or multiple servers.
+* You **expect** a high spike in requests, significantly exceeding the average load (for example, logging mass mailings/notifications/sms).
 
 ## Why SQLite as default?
 
@@ -49,22 +68,3 @@ Moonlogs utilizes SQLite's built-in mechanisms for in-memory caching of database
 **Summary**
 
 All of this allows Moonlogs to use SQLite as a balanced yet efficient solution for production environments.
-
-## When to choose SQLite
-
-Choosing SQLite as the database for Moonlogs makes sense if:
-
-* You **plan to handle low to moderate loads**, ranging from 0 to tens of thousands of requests per minute.
-* You **don't have strict latency requirements** and are satisfied with an average response time in the range of `60-90ms` per write.
-* You **don't plan to horizontally scale** the database across one or multiple servers.
-* You **expect** to store fast-paced logs with `retention_days` of a few days.
-* You **don't expect** burst spikes in writes reaching hundreds of thousands of requests per minute (for example, logging mass mailings/notifications/sms).
-
-## When to choose MongoDB
-
-Choosing SQLite as the database for Moonlogs makes sense if:
-
-* You **plan to handle high loads**, ranging from hundres of thousands to millions of requests per minute.
-* You **have strict latency requirements** and are satisfied with an average response time in the range of `5-15ms` per write.
-* You **plan to horizontally scale** the database across one or multiple servers.
-* You **expect** a high spike in requests, significantly exceeding the average load (for example, logging mass mailings/notifications/sms).
