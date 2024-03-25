@@ -4,8 +4,11 @@ layout: home
 
 hero:
   name: "Moonlogs"
-  text: ''
+  text: 'Some crazy shit'
   tagline: 'Business-event logging with ease'
+  image:
+    src: /logo.svg
+    alt: Moonlogs
   actions:
     - theme: brand
       text: Get Started
