@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "Moonlogs"
-  text: 'Some crazy shit'
+  text: ''
   tagline: 'Business-event logging with ease'
   image:
     src: /logo.svg
