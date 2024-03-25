@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Moonlogs",
-  description: "Business-event logging with ease",
+  description: "Business-event logging tool with a built-in user-friendly web interface for easy access to events",
   themeConfig: {
     logo: '/logo.svg',
     // https://vitepress.dev/reference/default-theme-config

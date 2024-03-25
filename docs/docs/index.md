@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Moonlogs"
   text: ''
-  tagline: 'Business-event logging with ease'
+  tagline: 'Business-event logging tool with a built-in user-friendly web interface for easy access to events'
   image:
     src: /logo.svg
     alt: Moonlogs
