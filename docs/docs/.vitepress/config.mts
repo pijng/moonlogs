@@ -5,7 +5,7 @@ export default defineConfig({
   title: "Moonlogs",
   description: "Business-event logging with ease",
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Get Started', link: '/tutorial/install' },
