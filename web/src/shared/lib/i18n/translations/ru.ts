@@ -207,7 +207,6 @@ export const ru: Translation = {
   },
   miscellaneous: {
     loading: "Загрузка...",
-    logo: "🌘",
     brand: "Moonlogs",
     blank_option: "—",
     not_found: "Запрашиваемый ресурс не найден",

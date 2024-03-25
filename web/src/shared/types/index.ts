@@ -222,7 +222,6 @@ export type Translation = {
   };
   miscellaneous: {
     loading: string;
-    logo: "🌘";
     brand: "Moonlogs";
     blank_option: "—";
     not_found: string;

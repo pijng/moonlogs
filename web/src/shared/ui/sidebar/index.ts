@@ -1,7 +1,7 @@
 import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
-import { PermissionGate } from "@/shared/ui";
+import { LogoIcon, PermissionGate } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
 
@@ -126,10 +126,13 @@ export const Sidebar = () => {
             },
           });
 
-          h("span", {
-            classList: ["mr-3", "leading-7", "text-2xl"],
-            attr: { alt: "Moonlogs logo" },
-            text: i18n("miscellaneous.logo"),
+          h("div", () => {
+            spec({
+              classList: ["mr-2", "leading-7", "text-2xl", "w-8"],
+              attr: { alt: "Moonlogs logo" },
+            });
+
+            LogoIcon();
           });
 
           h("span", {

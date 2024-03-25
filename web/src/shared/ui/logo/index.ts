@@ -1,5 +1,6 @@
 import { i18n } from "@/shared/lib/i18n";
 import { h } from "forest";
+import { LogoIcon } from "@/shared/ui";
 
 type Size = "xl" | "2xl" | "3xl";
 
@@ -7,11 +8,7 @@ export const Logo = (size?: Size) => {
   const localSize = size ?? "xl";
 
   h("div", () => {
-    h("span", {
-      classList: ["mr-3", "leading-7", `text-${localSize}`],
-      attr: { alt: "Moonlogs logo" },
-      text: i18n("miscellaneous.logo"),
-    });
+    LogoIcon();
 
     h("span", {
       classList: ["self-center", `text-${localSize}`, "font-semibold", "whitespace-nowrap", "dark:text-white"],

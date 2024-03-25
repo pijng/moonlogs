@@ -9,3 +9,4 @@ export { TrashIcon } from "./trash";
 export { QuestionIcon } from "./question";
 export { ClockIcon } from "./clock";
 export { FireIcon } from "./fire";
+export { LogoIcon } from "./logo";

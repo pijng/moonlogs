@@ -207,7 +207,6 @@ export const en: Translation = {
   },
   miscellaneous: {
     loading: "Loading...",
-    logo: "🌘",
     brand: "Moonlogs",
     blank_option: "—",
     not_found: "The requested resource could not be found",

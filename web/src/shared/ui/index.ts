@@ -5,7 +5,18 @@ export { Dropdown } from "./dropdown";
 export { FloatingInput } from "./floating-input";
 export { Header } from "./header";
 export { Subheader } from "./subheader";
-export { DownIcon, FilterIcon, ClockIcon, PreviousIcon, NextIcon, CrossIcon, PlusIcon, GearIcon, TrashIcon } from "./icons";
+export {
+  DownIcon,
+  FilterIcon,
+  ClockIcon,
+  PreviousIcon,
+  NextIcon,
+  CrossIcon,
+  PlusIcon,
+  GearIcon,
+  TrashIcon,
+  LogoIcon,
+} from "./icons";
 export { Input } from "./input";
 export { Layout, layoutClicked } from "./layout";
 export { Link } from "./link";
