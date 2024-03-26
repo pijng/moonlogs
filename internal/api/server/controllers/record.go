@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 	"moonlogs/internal/api/server/access"
@@ -25,8 +24,6 @@ import (
 const (
 	AsyncProcessingMessage = "Logs are being queued for asynchronous processing"
 )
-
-var InvalidSchemaErr = errors.New("provided schema is not found")
 
 func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	txn := newrelic.FromContext(r.Context())
@@ -75,7 +72,8 @@ func createRecord(w http.ResponseWriter, r *http.Request, newRecord entities.Rec
 	}
 
 	if schema.ID == 0 {
-		response.Return(w, false, http.StatusBadRequest, InvalidSchemaErr, nil, response.Meta{})
+		err = fmt.Errorf("provided schema is not found: %s", newRecord.SchemaName)
+		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
 	}
 
