@@ -1,19 +1,25 @@
 import { FilterItem } from "@/features";
 import { Event, Store } from "effector";
-import { h, spec } from "forest";
+import { h, remap, spec } from "forest";
 
 export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>) => {
   h("div", () => {
     spec({
-      classList: ["relative", "z-0"],
+      classList: ["flex", "flex-col", "z-0"],
     });
 
     h("input", {
-      attr: { type: "text", id: "floating_standard", placeholder: "_", value: item.map((i) => i.value) },
+      attr: {
+        type: "text",
+        id: item.map((i) => `input_${i.key}`),
+        name: item.map((i) => `input_${i.key}`),
+        placeholder: "_",
+        value: remap(item, "value"),
+      },
       handler: { on: { input: inputChanged } },
       classList: [
         "block",
-        "py-2.5",
+        "py-0.5",
         "px-0",
         "w-full",
         "text-sm",
@@ -37,15 +43,14 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
     });
 
     h("label", {
-      attr: { for: "floating_standard" },
+      attr: { for: item.map((i) => `input_${i.key}`) },
       classList: [
-        "absolute",
+        "order-first",
         "text-sm",
         "text-gray-500",
         "dark:text-gray-400",
         "duration-300",
         "transform",
-        "-translate-y-6",
         "scale-75",
         "top-3",
         "-z-10",
@@ -54,11 +59,11 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
         "peer-focus:text-blue-600",
         "peer-focus:dark:text-blue-500",
         "peer-placeholder-shown:scale-100",
-        "peer-placeholder-shown:translate-y-0",
         "peer-focus:scale-75",
-        "peer-focus:-translate-y-6",
+        "peer-placeholder-shown:translate-y-4",
+        "peer-focus:-translate-y-0",
       ],
-      text: item.map((i) => i.name),
+      text: remap(item, "name"),
     });
   });
 };
