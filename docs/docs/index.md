@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /tutorial/install
+      link: /tutorial/what-is-moonlogs
 
 features:
   - icon: 🗄️

@@ -16,9 +16,17 @@ export default defineConfig({
         text: 'Get Started',
         collapsed: false,
         items: [
+          { text: 'What is Moonlogs', link: '/tutorial/what-is-moonlogs' },
           { text: 'Installation', link: '/tutorial/install' },
           { text: 'Configuration', link: '/tutorial/configuration' },
           { text: 'Choosing DB Adapter', link: '/tutorial/choosing-db-adapter' }
+        ]
+      },
+      {
+        text: 'Web UI',
+        collapsed: false,
+        items: [
+          { text: 'Introduction', link: '/web-ui/introduction' },
         ]
       }
     ],
