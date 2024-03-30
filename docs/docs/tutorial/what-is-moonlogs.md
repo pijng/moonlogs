@@ -55,6 +55,14 @@ Moreover, the method of obtaining such information should be as straightforward 
 
 For this very purpose, Moonlogs has been developed — to store, aggregate, and conveniently provide information that reflects the essence of your business processes.
 
+## And so we developed Moonlogs
+
+We developed Moonlogs to address the above problems by providing a centralized tool for storing, aggregating, and presenting information that reflects the details of your business processes.
+
+By offering a user-friendly interface, structured data organization, and real-time insights, Moonlogs enables companies to enhance visibility, streamline knowledge management, adapt to dynamic business environments, facilitate employee onboarding and training, and make informed decisions based on up-to-date information.
+
+However, it's important to note that Moonlogs **is not a replacement** for a knowledge base, system logging, or application performance monitoring (APM). Instead, it complements these existing tools and practices as part of a comprehensive approach to making your application transparent and predictable.
+
 ## Main features
 
 As the result, Moonlogs offers you a set of features to fulfill the desired goal:
