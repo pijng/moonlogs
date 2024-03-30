@@ -49,6 +49,8 @@ Custom logging solutions, while a fairly common approach, require a lot of resou
 
 ## And what task we need to solve?
 
+The goal — is to bring transparency.
+
 This means that at any given moment, employees from various departments should have the ability to promptly access a sufficient amount of clear information that fully describes a specific business process.
 
 Moreover, the method of obtaining such information should be as straightforward as possible, and the information itself should be properly structured and easy to understand, even for non-technical employees.
