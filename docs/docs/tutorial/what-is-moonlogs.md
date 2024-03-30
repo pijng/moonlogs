@@ -55,8 +55,6 @@ This means that at any given moment, employees from various departments should h
 
 Moreover, the method of obtaining such information should be as straightforward as possible, and the information itself should be properly structured and easy to understand, even for non-technical employees.
 
-For this very purpose, Moonlogs has been developed — to store, aggregate, and conveniently provide information that reflects the essence of your business processes.
-
 ## And so we developed Moonlogs
 
 We developed Moonlogs to address the above problems by providing a centralized tool for storing, aggregating, and presenting information that reflects the details of your business processes.
