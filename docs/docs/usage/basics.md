@@ -162,7 +162,7 @@ If you send a duplicate request to create a schema with an existing `name`, then
 After creating the `schema`, you can send your first `event` to this schema. To do this, you need to prepare the `event` payload, which must consist of the following attributes:
 
 * `schema_name`: the textual identifier of the existing schema (`schema.name`)
-* `text`: text of the event that will be shown is web ui
+* `text`: text of the event that will be shown in Web UI
 * `query`: a set of parameters from the schema fields (`schema.fields[]`). This set determines the grouping of events.
 
 For example, the basic request to create an event with simple payload would look like the following:
@@ -172,7 +172,7 @@ curl --location --request POST '<host:port>/api/logs' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <api_token>' \
 --data '{
-    "schema_name": "online_payment",
+    "schema_name": "online_payments",
     "text": "The customer paid $5 for a subscription to the «Basic» tariff",
     "query": {
         "organization_id": 34,
@@ -194,7 +194,7 @@ In response, you should receive something like this:
         "text": "The customer paid $5 for a subscription to the «Basic» tariff",
         "created_at": "2024-03-31T19:16:45+03:00",
         "schema_name": "online_payments",
-        "schema_id": 23,
+        "schema_id": 1,
         "query": {
             "customer_id": "891",
             "organization_id": "34",
