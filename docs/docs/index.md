@@ -13,6 +13,9 @@ hero:
     - theme: brand
       text: Get Started
       link: /tutorial/what-is-moonlogs
+    - theme: alt
+      text: Usage
+      link: /usage/basics
 
 features:
   - icon: 🗄️

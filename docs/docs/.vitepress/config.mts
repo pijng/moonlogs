@@ -9,6 +9,8 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Get Started', link: '/tutorial/install' },
+      { text: 'Usage', link: '/usage/basics' },
+      { text: 'Entities definitions', link: '/definitions/introduction' },
     ],
 
     sidebar: [
@@ -23,10 +25,26 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Usage',
+        collapsed: false,
+        items: [
+          { text: 'Basics', link: '/usage/basics' },
+          { text: 'Ruby on Rails SDK', link: '/usage/ruby-on-rails' },
+          { text: 'Typescript', link: '/usage/typescript' },
+        ]
+      },
+      {
         text: 'Web UI',
         collapsed: false,
         items: [
           { text: 'Introduction', link: '/web-ui/introduction' },
+        ]
+      },
+      {
+        text: 'Entities definitions',
+        collapsed: false,
+        items: [
+          { text: 'Introduction', link: '/definitions/introduction' },
         ]
       }
     ],

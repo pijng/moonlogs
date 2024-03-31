@@ -68,3 +68,9 @@ Moonlogs utilizes SQLite's built-in mechanisms for in-memory caching of database
 **Summary**
 
 All of this allows Moonlogs to use SQLite as a balanced yet efficient solution for production environments.
+
+## What's next?
+
+* Refer to the guide [Basic usage guide](/usage/basics) to learn how to start sending events to Moonlogs.
+
+* Or check out our [Introduction to the Web UI](/web-ui/introduction) section to familiarize yourself with the Moonlogs built-in web-interface

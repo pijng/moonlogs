@@ -2,6 +2,10 @@
 
 Moonlogs is a specialized logging solution designed with a primary focus on capturing business-event logs. It excels at providing insights into business processes, user interactions, and custom events tailored for your applications. It even comes with a built-in web interface for convenient searching of the necessary events.
 
+:::tip
+You can go straight to [Installation guide](/tutorial/install) if you already know why you need Moonlogs.
+:::
+
 ## Motivation
 
 Businesses generate vast amounts of data from various events such as user interactions, transactions, integrations with third-party services, complicated business operations over time and so much more.
