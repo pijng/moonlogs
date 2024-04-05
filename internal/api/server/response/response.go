@@ -32,7 +32,7 @@ func Return(w http.ResponseWriter, success bool, code int, err error, data inter
 		response.Error = err.Error()
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 
 	err = serialize.NewJSONEncoder(w).Encode(response)
@@ -42,7 +42,7 @@ func Return(w http.ResponseWriter, success bool, code int, err error, data inter
 }
 
 func ReturnPlain(w http.ResponseWriter, code int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 
 	_ = serialize.NewJSONEncoder(w).Encode(data)
