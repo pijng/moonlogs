@@ -1,6 +1,6 @@
 import { Log, getLogs } from "@/shared/api";
 import { Level, getLogGroup } from "@/shared/api/logs";
-import { DATEFORMAT_OPTIONS } from "@/shared/lib";
+import { DATEFORMAT_OPTIONS, objectToQueryString, queryStringToObject } from "@/shared/lib";
 import { $preferredLanguage } from "@/shared/lib/i18n/locale";
 import { combine, createEffect, createEvent, createStore, sample } from "effector";
 
@@ -16,13 +16,13 @@ $searchQuery.on(queryChanged, (_, query) => query);
 
 const resetFilter = createEvent();
 const filterChanged = createEvent<Record<string, any>>();
-export const $formattedSearchFilter = createStore<string>("{}").reset(resetFilter);
+export const $formattedSearchFilter = createStore<string>("").reset(resetFilter);
 
 $formattedSearchFilter.on(filterChanged, (formattedFilter, changedFilter) => {
-  const filter = JSON.parse(formattedFilter);
+  const filter = queryStringToObject(formattedFilter);
   const newFilter = { ...filter, ...changedFilter };
 
-  return JSON.stringify(newFilter);
+  return objectToQueryString(newFilter);
 });
 
 const resetKindFilter = createEvent();
@@ -75,7 +75,7 @@ const queryLogsFx = createEffect(
     to?: Date;
     page?: number;
   }) => {
-    const objectQuery = JSON.parse(query || "{}") as Record<string, string>;
+    const objectQuery = queryStringToObject(query);
 
     const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => {
       if (v.trim().length > 0) {

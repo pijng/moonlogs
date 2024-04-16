@@ -6,6 +6,7 @@ import { i18n } from "@/shared/lib/i18n";
 import { Button, Search } from "@/shared/ui";
 import { combine, createEvent, sample } from "effector";
 import { h, spec } from "forest";
+import { queryStringToObject } from "@/shared/lib";
 
 const $currentSchema = combine([logsRoute.$params, schemaModel.$schemas], ([params, schemas]) => {
   const currentSchema = schemas.find((s) => s.name === params.schemaName);
@@ -15,7 +16,7 @@ const $currentSchema = combine([logsRoute.$params, schemaModel.$schemas], ([para
 });
 
 const $currentFilter = combine([$currentSchema, logModel.$formattedSearchFilter], ([schema, searchFilter]) => {
-  const filter = JSON.parse(searchFilter);
+  const filter = queryStringToObject(searchFilter);
   const fields = schema?.fields || [];
 
   return fields.map((f) => {
