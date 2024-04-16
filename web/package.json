@@ -17,7 +17,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "parcel": "^2.9.3",
-    "postcss": "^8.4.28",
+    "postcss": "^8.4.31",
     "prettier": "^3.0.2",
     "process": "^0.11.10",
     "tailwind-scrollbar": "^3.1.0",
