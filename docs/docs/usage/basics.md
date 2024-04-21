@@ -1,6 +1,6 @@
 # Basic usage
 
-In this section you will learn how to start sending events to Moonlogs.
+In this section you will learn how to start sending records (events) to Moonlogs.
 
 ## Prerequisites
 
@@ -20,11 +20,11 @@ Otherwise, you can use the specification described by Swagger if there is no SDK
 
 ## Basic steps
 
-At its core, in order to start submitting events to Moonlogs you need:
+At its core, in order to start submitting records to Moonlogs you need:
 1. Create an API token to access the API
 2. Install the SDK for your language or work with the API directly
 4. Create domain schemas
-5. Send events
+5. Send records
 
 ## 1. Create an API token
 
@@ -67,8 +67,8 @@ You can follow the link of your language for a description of the next steps, or
 
 ## 3. Create domain schemas
 
-Now you need to create a `schema` to which you will send events.
-A `schema` is a kind of container for aggregating events of a specific business scenario or functional block.
+Now you need to create a `schema` to which you will send records.
+A `schema` is a kind of container for aggregating records of a specific business scenario or functional block.
 
 Examples of schemas could include: Online payments, User change history, SMS authentication, Export reports by email, etc.
 
@@ -157,15 +157,15 @@ This means that the schema was successfully created and assigned an ID.
 If you send a duplicate request to create a schema with an existing `name`, then instead of creating a new schema, the existing one will be updated. This simplifies the creation/update of schemas when starting your application.
 :::
 
-## 4. Send events
+## 4. Send records
 
-After creating the `schema`, you can send your first `event` to this schema. To do this, you need to prepare the `event` payload, which must consist of the following attributes:
+After creating the `schema`, you can send your first `record` to this schema. To do this, you need to prepare the `record` payload, which must consist of the following attributes:
 
 * `schema_name`: the textual identifier of the existing schema (`schema.name`)
-* `text`: text of the event that will be shown in Web UI
-* `query`: a set of parameters from the schema fields (`schema.fields[]`). This set determines the grouping of events.
+* `text`: text of the record that will be shown in Web UI
+* `query`: a set of parameters from the schema fields (`schema.fields[]`). This set determines the grouping of records.
 
-For example, the basic request to create an event with simple payload would look like the following:
+For example, the basic request to create an record with simple payload would look like the following:
 
 ```bash
 curl --location --request POST '<host:port>/api/logs' \
@@ -211,11 +211,11 @@ In response, you should receive something like this:
 }
 ```
 
-This means that the event was successfully created and assigned an ID.
+This means that the record was successfully created and assigned an ID.
 
-### Verify the presence of the created event in the web interface
+### Verify the presence of the created record in the web interface
 
-Now you can verify that the event was succesfully created by checking it in Web UI:
+Now you can verify that the record was succesfully created by checking it in Web UI:
 
 1. Click the `Log groups` tab on the left and click on `Online Payments` card:
 
@@ -224,16 +224,16 @@ Now you can verify that the event was succesfully created by checking it in Web 
 </p>
 <hr>
 
-2. Here you can see the event was successfully created with all the data we specified: text and query fields:
+2. Here you can see the record was successfully created with all the data we specified: text and query fields:
 
 <p align="left">
-  <img src="/usage/new_event.png" alt="Newly created event" style=""/>
+  <img src="/usage/new_event.png" alt="Newly created record" style=""/>
 </p>
 <hr>
 
 ### Test the grouping
 
-Now try to send another event with different set of query fields, for example:
+Now try to send another record with different set of query fields, for example:
 
 ```bash
 curl --location --request POST '<host:port>/api/logs' \
@@ -250,17 +250,17 @@ curl --location --request POST '<host:port>/api/logs' \
 }'
 ```
 
-After reloading the page, you will see that the second event was successfully created. But more importantly, it was assigned to a different event group based on its query attributes:
+After reloading the page, you will see that the second record was successfully created. But more importantly, it was assigned to a different record group based on its query attributes:
 
 <p align="left">
-  <img src="/usage/event_grouping.png" alt="Test event grouping" style=""/>
+  <img src="/usage/event_grouping.png" alt="Test record grouping" style=""/>
 </p>
 <hr>
 
-As a result, you have learned how to create events in Moonlogs in the most basic form.
+As a result, you have learned how to create records in Moonlogs in the most basic form.
 
 ## What's next?
 
-* For a more detailed description to schema and event formats, please refer to our [Entities definitions](/definitions/introduction)
+* For a more detailed description to schema and record formats, please refer to our [Entities definitions](/definitions/introduction)
 
 * Check out [Introduction to the Web UI](/web-ui/introduction) section to familiarize yourself with the Moonlogs built-in web-interface
