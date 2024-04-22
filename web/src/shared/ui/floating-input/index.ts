@@ -14,7 +14,7 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
         id: item.map((i) => `input_${i.key}`),
         name: item.map((i) => `input_${i.key}`),
         placeholder: "_",
-        value: remap(item, "value"),
+        value: item.map((i) => decodeURIComponent(i.value)),
       },
       handler: { on: { input: inputChanged } },
       classList: [
