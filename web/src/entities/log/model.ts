@@ -79,7 +79,7 @@ const queryLogsFx = createEffect(
 
     const formattedQuery = Object.entries(objectQuery).reduce((acc, [k, v]) => {
       if (v.trim().length > 0) {
-        return { ...acc, [k]: v };
+        return { ...acc, [k]: decodeURIComponent(v) };
       }
 
       return acc;
