@@ -227,6 +227,7 @@ export type Translation = {
     not_found: string;
     forbidden: string;
     to_home: string;
+    empty_search_result: string;
   };
 };
 

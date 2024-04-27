@@ -1,7 +1,8 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
+import { i18n } from "@/shared/lib/i18n";
 import { router } from "@/shared/routing";
-import { CardHeaded, LogsTable } from "@/shared/ui";
+import { CardHeaded, LogsTable, Subheader } from "@/shared/ui";
 import { combine } from "effector";
 import { h, list, spec } from "forest";
 
@@ -30,6 +31,15 @@ export const LogsList = () => {
           });
         },
       });
+    });
+
+    h("div", () => {
+      spec({
+        visible: logModel.$logsGroups.map((groups) => groups.length === 0),
+        classList: ["absolute", "top-1/2", "inset-1/4", "text-center"],
+      });
+
+      Subheader(i18n("miscellaneous.empty_search_result"));
     });
   });
 };

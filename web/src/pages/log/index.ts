@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { logModel } from "@/entities/log";
 import { router, showLogRoute } from "@/shared/routing";
-import { CardHeaded, LogsTable } from "@/shared/ui";
+import { CardHeaded, LogsTable, Spinner } from "@/shared/ui";
 import { SchemaHeader } from "@/widgets";
 import { schemaModel } from "@/entities/schema";
 import { combine } from "effector";
@@ -14,7 +14,11 @@ export const ShowLogPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(showLogRoute);
 
+    spec({ classList: ["h-full", "relative"] });
+
     SchemaHeader();
+
+    const $logsPresent = logModel.$groupedLogs.map((g) => g.logs.length > 0);
 
     h("div", () => {
       spec({
@@ -24,6 +28,7 @@ export const ShowLogPage = () => {
       h("div", () => {
         spec({
           classList: ["flex", "flex-col", "space-y-6"],
+          visible: $logsPresent,
         });
 
         const $activeSchema = combine([router.$activeRoutes, schemaModel.$schemas], ([activeRoutes, schemas]) => {
@@ -43,6 +48,18 @@ export const ShowLogPage = () => {
             });
           },
         });
+      });
+    });
+
+    h("div", () => {
+      spec({
+        classList: ["absolute", "top-1/2", "left-1/2"],
+      });
+
+      h("div", () => {
+        spec({ classList: ["relative", "right-1/2"] });
+
+        Spinner({ visible: $logsPresent.map((lp) => !lp) });
       });
     });
   });

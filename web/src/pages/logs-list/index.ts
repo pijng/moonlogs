@@ -12,6 +12,8 @@ export const LogsListPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(logsRoute);
 
+    spec({ classList: ["h-full", "relative"] });
+
     SchemaHeader();
 
     h("div", () => {
@@ -24,8 +26,6 @@ export const LogsListPage = () => {
       h("div", () => {
         Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
 
-        Spinner({ visible: logModel.effects.queryLogsFx.pending });
-
         h("div", () => {
           spec({ visible: logModel.effects.queryLogsFx.pending.map((p) => !p) });
 
@@ -36,6 +36,18 @@ export const LogsListPage = () => {
           spec({ classList: ["pt-4"] });
           Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
         });
+      });
+    });
+
+    h("div", () => {
+      spec({
+        classList: ["absolute", "top-1/2", "left-1/2"],
+      });
+
+      h("div", () => {
+        spec({ classList: ["relative", "right-1/2"] });
+
+        Spinner({ visible: logModel.effects.queryLogsFx.pending });
       });
     });
   });
