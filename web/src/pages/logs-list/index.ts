@@ -21,33 +21,38 @@ export const LogsListPage = () => {
         classList: ["pt-3"],
       });
 
+      const $isLoadingLogs = logModel.effects.queryLogsFx.pending;
+
       SearchBar();
 
       h("div", () => {
         Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
 
         h("div", () => {
-          spec({ visible: logModel.effects.queryLogsFx.pending.map((p) => !p) });
+          spec({ visible: $isLoadingLogs.map((p) => !p) });
 
           LogsList();
         });
 
         h("div", () => {
-          spec({ classList: ["pt-4"] });
+          spec({
+            classList: ["pt-4"],
+            visible: $isLoadingLogs.map((l) => !l),
+          });
           Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
         });
       });
-    });
-
-    h("div", () => {
-      spec({
-        classList: ["absolute", "top-1/2", "left-1/2"],
-      });
 
       h("div", () => {
-        spec({ classList: ["relative", "right-1/2"] });
+        spec({
+          classList: ["absolute", "top-1/2", "left-1/2"],
+        });
 
-        Spinner({ visible: logModel.effects.queryLogsFx.pending });
+        h("div", () => {
+          spec({ classList: ["relative", "right-1/2"] });
+
+          Spinner({ visible: $isLoadingLogs });
+        });
       });
     });
   });
