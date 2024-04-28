@@ -14,8 +14,6 @@ export const ShowLogPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(showLogRoute);
 
-    spec({ classList: ["h-full", "relative"] });
-
     SchemaHeader();
 
     const $logsPresent = logModel.$groupedLogs.map((g) => g.logs.length > 0);

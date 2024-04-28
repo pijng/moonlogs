@@ -12,8 +12,6 @@ export const LogsListPage = () => {
     // It is required to call `withRoute` inside `h` call
     withRoute(logsRoute);
 
-    spec({ classList: ["h-full", "relative"] });
-
     SchemaHeader();
 
     h("div", () => {

@@ -26,7 +26,8 @@ export const Layout = ({ content, layoutVisible }: { content: () => void; layout
           "px-4": layoutVisible,
           "sm:p-7": layoutVisible,
           "sm:ml-64": layoutVisible,
-          "h-screen": layoutVisible,
+          "min-h-screen": layoutVisible,
+          relative: layoutVisible,
         },
       });
 
