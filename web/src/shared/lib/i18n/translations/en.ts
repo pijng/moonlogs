@@ -212,6 +212,6 @@ export const en: Translation = {
     not_found: "The requested resource could not be found",
     forbidden: "You do not have permission to access this resource",
     to_home: "Go to Home page",
-    empty_search_result: "The search returned no logs. Please adjust the filters or try again later",
+    empty_search_result: "The search returned no logs. Adjust the filters or try again later",
   },
 };

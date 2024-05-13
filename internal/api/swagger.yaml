@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.7.16
+  version: 1.8.0
 externalDocs:
   description: Find out more about spec
   url: ''
@@ -1147,6 +1147,83 @@ paths:
                 type: object
                 properties: {}
       security: *ref_12
+  /api/logs/{id}/expose:
+    put:
+      description: ''
+      operationId: exposeRecordByID
+      tags: []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: &ref_13
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/RecordResponse'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
+  /api/logs/{id}/cover:
+    put:
+      description: ''
+      operationId: coverRecordByID
+      tags: []
+      parameters:
+        - in: path
+          name: id
+          description: ''
+          schema: *ref_13
+          required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                  code:
+                    type: integer
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/RecordResponse'
+                  meta:
+                    $ref: '#/components/schemas/RecordResponse'
+                required:
+                  - success
+                  - code
+                  - error
+                  - data
+                  - meta
+      security:
+        - http1: []
 components:
   schemas:
     SchemaResponse:
@@ -1218,6 +1295,8 @@ components:
         level:
           oneOf:
             - $ref: '#/components/schemas/Level'
+        is_exposed:
+          type: boolean
       required:
         - id
         - text
@@ -1230,6 +1309,7 @@ components:
         - schema_id
         - request
         - response
+        - is_exposed
     Level:
       type: string
       enum:
@@ -1371,6 +1451,8 @@ components:
         level:
           oneOf:
             - $ref: '#/components/schemas/Level'
+        is_exposed:
+          type: boolean
       required:
         - text
         - schema_name

@@ -21,8 +21,9 @@ type Record struct {
 	Kind       string     `json:"kind,omitempty" sql:"kind" bson:"kind"`
 	GroupHash  string     `json:"group_hash,omitempty" sql:"group_hash" bson:"group_hash"`
 	Level      Level      `json:"level,omitempty" sql:"level" bson:"level"`
-	Request    JSONMap    `json:"request,omitempty" sql:"request" bson:"request"`
-	Response   JSONMap    `json:"response,omitempty" sql:"response" bson:"response"`
+	Request    JSONMap    `json:"request" sql:"request" bson:"request"`
+	Response   JSONMap    `json:"response" sql:"response" bson:"response"`
+	IsExposed  BoolAsInt  `json:"is_exposed" sql:"is_exposed" bson:"is_exposed"`
 }
 
 type JSONMap map[string]interface{}

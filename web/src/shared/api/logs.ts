@@ -15,6 +15,7 @@ export type Log = {
   query: Record<string, any>;
   request: Record<string, any>;
   response: Record<string, any>;
+  is_exposed: boolean;
 };
 
 export interface LogsResponse extends BaseResponse {
