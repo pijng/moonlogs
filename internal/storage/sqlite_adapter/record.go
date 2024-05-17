@@ -34,7 +34,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 		_ = tx.Commit()
 	}(tx)
 
-	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING *;"
+	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response;"
 
 	row := tx.QueryRowContext(s.ctx, query, record.Text, record.SchemaName, schemaID, record.Query,
 		record.Request, record.Response, record.Kind, groupHash, record.Level, record.CreatedAt)
@@ -49,7 +49,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 }
 
 func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
-	query := "SELECT * FROM records WHERE id = ? LIMIT 1;"
+	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records WHERE id = ? LIMIT 1;"
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -109,7 +109,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	query := fmt.Sprintf(`
 		SELECT
 			(SELECT COUNT(*) FROM records WHERE %s) AS total_count,
-			records.*
+			records.id, records.text, records.created_at, records.schema_name, records.schema_id, records.query, records.kind, records.group_hash, records.level, records.request, records.response
 		FROM
 			records
 		WHERE %s`, countBuilder.String(), queryBuilder.String(),
@@ -147,7 +147,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 }
 
 func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
-	query := "SELECT * FROM records LIMIT ? OFFSET ?;"
+	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records LIMIT ? OFFSET ?;"
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -177,7 +177,7 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 }
 
 func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	query := "SELECT * FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY created_at ASC;"
+	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY created_at ASC;"
 
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
