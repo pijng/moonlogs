@@ -21,6 +21,9 @@ import {
   tagCreateRoute,
   tagEditRoute,
   tagsRoute,
+  actionCreateRoute,
+  actionEditRoute,
+  actionsRoute,
 } from "./routes";
 export * from "./routes";
 export * from "./middlewares";
@@ -47,6 +50,9 @@ const ROUTES = [
   { path: "/tags", route: tagsRoute },
   { path: "/tags/create", route: tagCreateRoute },
   { path: "/tags/:id/edit", route: tagEditRoute },
+  { path: "/actions", route: actionsRoute },
+  { path: "/actions/create", route: actionCreateRoute },
+  { path: "/actions/:id/edit", route: actionEditRoute },
 ];
 
 export const controls = createRouterControls();

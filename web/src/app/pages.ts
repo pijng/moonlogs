@@ -1,3 +1,6 @@
+import { ActionCreatePage } from "@/pages/action-create";
+import { ActionEditPage } from "@/pages/action-edit";
+import { ActionsListPage } from "@/pages/actions-list";
 import { ApiTokenCreatePage } from "@/pages/api-token-create";
 import { ApiTokenEditPage } from "@/pages/api-token-edit";
 import { ApiTokensListPage } from "@/pages/api-tokens-list";
@@ -50,6 +53,9 @@ export const Pages = () => {
       TagsListPage();
       TagCreatePage();
       TagEditPage();
+      ActionsListPage();
+      ActionCreatePage();
+      ActionEditPage();
     },
     layoutVisible: $layoutVisible,
   });

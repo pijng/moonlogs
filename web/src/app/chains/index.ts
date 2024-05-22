@@ -5,3 +5,4 @@ export * from "./api-token";
 export * from "./auth";
 export * from "./tag";
 export * from "./profile";
+export * from "./action";

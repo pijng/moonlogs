@@ -1,3 +1,4 @@
+import { actionModel } from "@/entities/action";
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { chainAuthorized, controls, logsRoute, showLogRoute } from "@/shared/routing";
@@ -48,6 +49,14 @@ chainRoute({
   beforeOpen: {
     effect: logModel.effects.getLogGroupFx,
     mapParams: (route) => ({ schema_name: route.params.schemaName, hash: route.params.hash }),
+  },
+});
+
+chainRoute({
+  route: chainAuthorized(showLogRoute),
+  beforeOpen: {
+    effect: actionModel.effects.getActionsFx,
+    mapParams: () => ({}),
   },
 });
 

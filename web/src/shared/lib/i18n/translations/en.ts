@@ -148,6 +148,57 @@ export const en: Translation = {
       delete: "Are you sure you want to delete this tag?",
     },
   },
+  actions: {
+    label: "Custom actions",
+    form: {
+      actions: {
+        create: "Create custom action",
+        edit: "Edit custom action",
+      },
+      name: {
+        label: "Name",
+        hint: "Name - used for the human-readable name of custom action in the web interface",
+      },
+      pattern: {
+        label: "Pattern",
+        hint: "Pattern - a template of a link that will be opened by the user when clicked on an action button. Template variables can be used inside the pattern",
+        variables: "You can use the following variables for pattern",
+      },
+      method: {
+        label: "Method",
+        hint: "Method - the request method when clicking on an action button",
+      },
+      conditions: {
+        label: "Conditions",
+        hint: "Conditions - a list of conditions by which it is determined whether to display the action button in a specific log group",
+        fields: {
+          attribute: {
+            label: "Attribute",
+            hint: "Attribute - the attribute of the log group on which the condition is based",
+          },
+          operation: {
+            label: "Operation",
+            hint: "Operation - the operation that needs to be performed on the attribute",
+          },
+          value: {
+            label: "Value",
+            hint: "Value - the value that is compared to the attribute based on the specified operation",
+          },
+        },
+      },
+      schema_name: {
+        label: "Schema",
+        hint: "Schema - the schema for which the action button needs to be displayed",
+      },
+      disabled: {
+        label: "Disabled",
+        hint: "Disabled - permanently disables the display of the action button regardless of conditions",
+      },
+    },
+    alerts: {
+      delete: "Are you sure you want to delete this custom action?",
+    },
+  },
   api_tokens: {
     label: "API tokens",
     form: {
@@ -191,7 +242,16 @@ export const en: Translation = {
       name: "Name",
       token: "Token",
       revoked: "Revoked",
-      actions: "Actions ",
+      actions: "Actions",
+    },
+    actions: {
+      name: "Name",
+      pattern: "Pattern",
+      method: "Method",
+      conditions: "Conditions",
+      schema_name: "Schema name",
+      disabled: "Disabled",
+      actions: "Actions",
     },
   },
   pagination: {

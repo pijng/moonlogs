@@ -4,7 +4,7 @@ import { h, spec } from "forest";
 import { logModel } from "@/entities/log";
 import { router, showLogRoute } from "@/shared/routing";
 import { CardHeaded, LogsTable, Spinner } from "@/shared/ui";
-import { SchemaHeader } from "@/widgets";
+import { GroupActionsList, SchemaHeader } from "@/widgets";
 import { schemaModel } from "@/entities/schema";
 import { combine } from "effector";
 
@@ -19,9 +19,7 @@ export const ShowLogPage = () => {
     const $logsPresent = logModel.$groupedLogs.map((g) => g.logs.length > 0);
 
     h("div", () => {
-      spec({
-        classList: ["mt-3"],
-      });
+      GroupActionsList();
 
       h("div", () => {
         spec({

@@ -20,3 +20,6 @@ export const apiTokenEditRoute = createRoute<{ id: number }>();
 export const tagsRoute = createRoute();
 export const tagCreateRoute = createRoute();
 export const tagEditRoute = createRoute<{ id: number }>();
+export const actionsRoute = createRoute();
+export const actionCreateRoute = createRoute();
+export const actionEditRoute = createRoute<{ id: number }>();

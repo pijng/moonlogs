@@ -125,3 +125,24 @@ func NewApiTokenStorage(ctx context.Context, storageType string) ApiTokenStorage
 
 	return storageInstance
 }
+
+type ActionStorage interface {
+	CreateAction(action entities.Action) (*entities.Action, error)
+	DeleteActionByID(id int) error
+	GetAllActions() ([]*entities.Action, error)
+	GetActionByID(id int) (*entities.Action, error)
+	UpdateActionByID(id int, action entities.Action) (*entities.Action, error)
+}
+
+func NewActionStorage(ctx context.Context, storageType string) ActionStorage {
+	var storageInstance ActionStorage
+
+	switch storageType {
+	case persistence.MONGODB_ADAPTER:
+		storageInstance = mongodb_adapter.NewActionStorage(ctx)
+	default:
+		storageInstance = sqlite_adapter.NewActionStorage(ctx)
+	}
+
+	return storageInstance
+}
