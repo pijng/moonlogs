@@ -142,6 +142,57 @@ export type Translation = {
       delete: string;
     };
   };
+  actions: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      name: {
+        label: string;
+        hint: string;
+      };
+      pattern: {
+        label: string;
+        hint: string;
+        variables: string;
+      };
+      method: {
+        label: string;
+        hint: string;
+      };
+      conditions: {
+        label: string;
+        hint: string;
+        fields: {
+          attribute: {
+            label: string;
+            hint: string;
+          };
+          operation: {
+            label: string;
+            hint: string;
+          };
+          value: {
+            label: string;
+            hint: string;
+          };
+        };
+      };
+      schema_name: {
+        label: string;
+        hint: string;
+      };
+      disabled: {
+        label: string;
+        hint: string;
+      };
+    };
+    alerts: {
+      delete: string;
+    };
+  };
   api_tokens: {
     label: string;
     form: {
@@ -191,6 +242,15 @@ export type Translation = {
     tags: {
       name: string;
       view_order: string;
+      actions: string;
+    };
+    actions: {
+      name: string;
+      pattern: string;
+      method: string;
+      conditions: string;
+      schema_name: string;
+      disabled: string;
       actions: string;
     };
     api_tokens: {

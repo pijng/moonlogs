@@ -67,6 +67,7 @@ func registerRouter(r *mux.Router) {
 	router.RegisterUserRouter(r)
 	router.RegisterApiTokenRouter(r)
 	router.RegisterTagRouter(r)
+	router.RegisterActionRouter(r)
 	router.RegisterSessionRouter(r)
 	router.RegisterWebRouter(r)
 }

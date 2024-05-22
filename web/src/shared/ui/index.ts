@@ -37,3 +37,5 @@ export { Multiselect } from "./multiselect";
 export { KBD } from "./kbd";
 export { Spinner } from "./spinner";
 export { PermissionGate } from "./permission-gate";
+export { ActionsTable } from "./actions-table";
+export { Text } from "./text";

@@ -65,14 +65,25 @@ func RegisterApiTokenRouter(r *mux.Router) {
 }
 
 func RegisterTagRouter(r *mux.Router) {
-	apiTokenRouter := r.PathPrefix("/api/tags").Subrouter()
-	apiTokenRouter.Use(SessionMiddleware)
+	tagRouter := r.PathPrefix("/api/tags").Subrouter()
+	tagRouter.Use(SessionMiddleware)
 
-	apiTokenRouter.HandleFunc("", controllers.GetAllTags).Methods(http.MethodGet)
-	apiTokenRouter.HandleFunc("", roleMiddleware(controllers.CreateTag, entities.AdminRole)).Methods(http.MethodPost)
-	apiTokenRouter.HandleFunc("/{id}", controllers.GetTagByID).Methods(http.MethodGet)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateTagByID, entities.AdminRole)).Methods(http.MethodPut)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
+	tagRouter.HandleFunc("", controllers.GetAllTags).Methods(http.MethodGet)
+	tagRouter.HandleFunc("", roleMiddleware(controllers.CreateTag, entities.AdminRole)).Methods(http.MethodPost)
+	tagRouter.HandleFunc("/{id}", controllers.GetTagByID).Methods(http.MethodGet)
+	tagRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateTagByID, entities.AdminRole)).Methods(http.MethodPut)
+	tagRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
+}
+
+func RegisterActionRouter(r *mux.Router) {
+	actionRouter := r.PathPrefix("/api/actions").Subrouter()
+	actionRouter.Use(SessionMiddleware)
+
+	actionRouter.HandleFunc("", controllers.GetAllActions).Methods(http.MethodGet)
+	actionRouter.HandleFunc("", roleMiddleware(controllers.CreateAction, entities.AdminRole)).Methods(http.MethodPost)
+	actionRouter.HandleFunc("/{id}", controllers.GetActionByID).Methods(http.MethodGet)
+	actionRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateActionByID, entities.AdminRole)).Methods(http.MethodPut)
+	actionRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteActionByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
 func RegisterSessionRouter(r *mux.Router) {

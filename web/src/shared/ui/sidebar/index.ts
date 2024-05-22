@@ -3,7 +3,7 @@ import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
 import { LogoIcon, PermissionGate } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
-import { Link, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
+import { Link, actionsRoute, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
 
 export const sidebarClosed = createEvent();
 const sidebarTriggered = createEvent<MouseEvent>();
@@ -156,6 +156,10 @@ export const Sidebar = () => {
 
           PermissionGate("Admin", () => {
             SidebarItem(i18n("tags.label"), tagsRoute);
+          });
+
+          PermissionGate("Admin", () => {
+            SidebarItem(i18n("actions.label"), actionsRoute);
           });
 
           PermissionGate("Admin", () => {

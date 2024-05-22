@@ -9,3 +9,6 @@ export { EditApiTokenForm } from "./api-token-edit";
 export { NewTagForm } from "./tag-create";
 export { EditTagForm } from "./tag-edit";
 export { FilterLevel } from "./filter-level-logs";
+export { NewActionForm } from "./action-create";
+export { EditActionForm } from "./action-edit";
+export { LogGroupAction } from "./log-group-action";
