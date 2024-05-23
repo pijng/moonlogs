@@ -9,7 +9,8 @@ export const createLogGroupAction = (action: Store<Action>, logGroup: Store<Log[
       return false;
     }
 
-    return action.conditions.every((condition) => {
+    const conditions = action.conditions ?? [];
+    return conditions.every((condition) => {
       let attrValue: string | null;
       if (condition.attribute in log.query) {
         attrValue = log.query[condition.attribute];
