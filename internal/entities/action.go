@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"moonlogs/internal/lib/serialize"
 	"strings"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
 type Action struct {
@@ -48,6 +51,13 @@ func (fs Conditions) Value() (driver.Value, error) {
 
 	b, err := serialize.JSONMarshal(fs)
 	return string(b), err
+}
+
+func (c Conditions) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	if c == nil {
+		c = make(Conditions, 0)
+	}
+	return bson.MarshalValue([]Condition(c))
 }
 
 type ActionMethod string

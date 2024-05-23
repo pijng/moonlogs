@@ -4,6 +4,9 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"moonlogs/internal/lib/serialize"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
 type Schema struct {
@@ -75,4 +78,18 @@ func (fs Kinds) Value() (driver.Value, error) {
 
 	b, err := serialize.JSONMarshal(fs)
 	return string(b), err
+}
+
+func (fs Fields) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	if fs == nil {
+		fs = make([]Field, 0)
+	}
+	return bson.MarshalValue([]Field(fs))
+}
+
+func (k Kinds) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	if k == nil {
+		k = make([]Kind, 0)
+	}
+	return bson.MarshalValue([]Kind(k))
 }
