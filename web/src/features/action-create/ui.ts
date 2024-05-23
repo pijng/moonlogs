@@ -24,6 +24,7 @@ export const NewActionForm = () => {
 
       Select({
         text: i18n("actions.form.schema_name.label"),
+        hint: i18n("actions.form.schema_name.hint"),
         value: actionForm.fields.schema_id.$value,
         options: schemaModel.$schemas,
         optionSelected: events.schemaSelected,
@@ -58,6 +59,7 @@ export const NewActionForm = () => {
 
         Select({
           text: i18n("actions.form.method.label"),
+          hint: i18n("actions.form.method.hint"),
           value: actionForm.fields.method.$value,
           options: createStore<ActionToCreate["method"][]>(["GET"]),
           optionSelected: events.schemaSelected,
@@ -135,6 +137,7 @@ export const NewActionForm = () => {
 
               Select({
                 text: i18n("actions.form.conditions.fields.attribute.label"),
+                hint: i18n("actions.form.conditions.fields.attribute.hint"),
                 value: remap(conditionField, "attribute"),
                 options: $attributeList,
                 optionSelected: attributeChanged,
@@ -147,6 +150,7 @@ export const NewActionForm = () => {
 
               Select({
                 text: i18n("actions.form.conditions.fields.operation.label"),
+                hint: i18n("actions.form.conditions.fields.operation.hint"),
                 value: remap(conditionField, "operation"),
                 options: createStore<Condition["operation"][]>(["==", "!=", "<", "<=", ">", ">="]),
                 optionSelected: operationChanged,

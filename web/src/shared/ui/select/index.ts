@@ -1,18 +1,20 @@
 import { hashCode } from "@/shared/lib";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
 import { h, list, node, spec } from "forest";
-import { DownIcon } from "../icons";
 import { i18n } from "@/shared/lib/i18n";
+import { Label, DownIcon } from "@/shared/ui";
 
 export const Select = ({
   value,
   text,
+  hint,
   options,
   optionSelected,
   withBlank,
 }: {
   value: Store<any>;
   text?: Store<string> | string;
+  hint?: Store<string> | string;
   options: Store<any[]>;
   optionSelected: Event<any>;
   withBlank?: Store<boolean>;
@@ -54,10 +56,16 @@ export const Select = ({
       classList: ["relative"],
     });
 
-    h("label", {
-      classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
-      text: text ?? createStore(""),
+    h("div", () => {
+      spec({ classList: ["mb-2"] });
+
+      Label({ text: text ?? createStore(""), hint: hint });
     });
+
+    // h("label", {
+    //   classList: ["block", "mb-2", "text-sm", "font-medium", "text-gray-900", "dark:text-white"],
+    //   text: text ?? createStore(""),
+    // });
 
     h("div", () => {
       spec({ classList: ["relative"] });
