@@ -16,9 +16,32 @@ type Action struct {
 	Pattern    string     `json:"pattern" sql:"pattern" bson:"pattern"`
 	Method     string     `json:"method" sql:"method" bson:"method"`
 	Conditions Conditions `json:"conditions" sql:"conditions" bson:"conditions"`
-	SchemaName string     `json:"schema_name" sql:"schema_name" bson:"schema_name"`
-	SchemaID   int        `json:"schema_id,omitempty" sql:"schema_id" bson:"schema_id"`
+	SchemaIDs  SchemaIDs  `json:"schema_ids" sql:"schema_ids" bson:"schema_ids"`
 	Disabled   BoolAsInt  `json:"disabled" sql:"disabled" bson:"disabled"`
+}
+
+type SchemaIDs []int
+
+func (s *SchemaIDs) Scan(value interface{}) error {
+	if value == nil {
+		*s = make(SchemaIDs, 0)
+		return nil
+	}
+
+	switch v := value.(type) {
+	case string:
+		return serialize.JSONUnmarshal([]byte(v), s)
+	case []byte:
+		return serialize.JSONUnmarshal(v, s)
+	default:
+		return fmt.Errorf("unsupported type for SchemaIDs: %T", value)
+	}
+}
+
+func (s SchemaIDs) Value() (driver.Value, error) {
+	b, err := serialize.JSONMarshal(s)
+
+	return string(b), err
 }
 
 type Condition struct {

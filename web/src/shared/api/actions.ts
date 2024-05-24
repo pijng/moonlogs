@@ -6,8 +6,7 @@ export type Action = {
   pattern: string;
   method: "GET";
   conditions: Condition[];
-  schema_name: string;
-  schema_id: number;
+  schema_ids: number[];
   disabled: boolean;
 };
 
@@ -22,7 +21,7 @@ export type ActionToCreate = {
   pattern: string;
   method: "GET";
   conditions: Condition[];
-  schema_id: number;
+  schema_ids: number[];
   disabled: boolean;
 };
 
@@ -32,7 +31,7 @@ export type ActionToUpdate = {
   pattern: string;
   method: "GET";
   conditions: Condition[];
-  schema_id: number;
+  schema_ids: number[];
   disabled: boolean;
 };
 

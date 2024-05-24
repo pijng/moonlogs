@@ -1,10 +1,11 @@
-import { Button, ErrorHint, Input, Label, PlusIcon, Select, Text, TrashIcon } from "@/shared/ui";
+import { Button, ErrorHint, Input, Label, Multiselect, PlusIcon, Select, Text, TrashIcon } from "@/shared/ui";
 import { h, list, remap, spec } from "forest";
-import { $editError, events, actionForm, $currentSchema, deleteActionClicked } from "./model";
+import { $editError, events, actionForm, deleteActionClicked } from "./model";
 import { combine, createEvent, createStore, sample } from "effector";
-import { trigger } from "@/shared/lib";
+import { intersection, trigger } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
 import { ActionToCreate, Condition } from "@/shared/api";
+import { schemaModel } from "@/entities/schema";
 
 export const EditActionForm = () => {
   h("form", () => {
@@ -18,7 +19,26 @@ export const EditActionForm = () => {
       hint: i18n("actions.form.name.hint"),
     });
 
-    const $schemaQueries = $currentSchema.map((s) => s.fields.map((f) => f.name));
+    h("div", () => {
+      spec({ classList: ["mb-6"] });
+
+      Multiselect({
+        text: i18n("actions.form.schema_name.label"),
+        hint: i18n("actions.form.schema_name.hint"),
+        options: schemaModel.$schemas.map((schema) => schema.map((s) => ({ name: s.title, id: s.id }))),
+        selectedOptions: actionForm.fields.schema_ids.$value,
+        optionChecked: events.schemaChecked,
+        optionUnchecked: events.schemaUnchecked,
+      });
+    });
+
+    const $schemaQueries = combine(schemaModel.$schemas, actionForm.fields.schema_ids.$value, (schemas, selectedIds) => {
+      const selectedSchemas = schemas.filter((s) => selectedIds.includes(s.id));
+      const availableFields = selectedSchemas.map((s) => s.fields.map((f) => f.name));
+
+      return intersection(availableFields);
+    });
+
     const $attributeList = combine($schemaQueries, (queries) => queries.concat(["kind", "level"]));
 
     h("div", () => {
@@ -45,7 +65,7 @@ export const EditActionForm = () => {
         text: i18n("actions.form.method.label"),
         value: actionForm.fields.method.$value,
         options: createStore<ActionToCreate["method"][]>(["GET"]),
-        optionSelected: events.schemaSelected,
+        optionSelected: events.methodSelected,
         withBlank: createStore(false),
       });
     });

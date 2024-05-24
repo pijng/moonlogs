@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.8.3
+  version: 1.9.0
 externalDocs:
   description: Find out more about spec
   url: 'https://moonlogs.pages.dev'
@@ -1731,8 +1731,10 @@ components:
             $ref: '#/components/schemas/Condition'
         schema_name:
           type: string
-        schema_id:
-          type: integer
+        schema_ids:
+          type: array
+          items:
+            type: integer
         disabled:
           type: boolean
       required:
@@ -1742,7 +1744,7 @@ components:
         - method
         - conditions
         - schema_name
-        - schema_id
+        - schema_ids
         - disabled
     ActionRequest:
       type: object
@@ -1759,8 +1761,10 @@ components:
             $ref: '#/components/schemas/Condition'
         schema_name:
           type: string
-        schema_id:
-          type: integer
+        schema_ids:
+          type: array
+          items:
+            type: integer
         disabled:
           type: boolean
       required:
@@ -1768,7 +1772,6 @@ components:
         - name
         - pattern
         - method
-        - conditions
         - schema_name
   securitySchemes:
     http1:

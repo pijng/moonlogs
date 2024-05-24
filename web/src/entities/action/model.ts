@@ -17,8 +17,7 @@ export const $currentAction = createStore<Action>({
   pattern: "",
   method: "GET",
   conditions: [],
-  schema_name: "",
-  schema_id: 0,
+  schema_ids: [],
   disabled: false,
 }).on(getActionFx.doneData, (_, actionResponse) => actionResponse.data);
 

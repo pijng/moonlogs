@@ -1,8 +1,8 @@
-import { Button, ErrorHint, Input, Label, PlusIcon, Select, Text, TrashIcon } from "@/shared/ui";
+import { Button, ErrorHint, Input, Label, Multiselect, PlusIcon, Select, Text, TrashIcon } from "@/shared/ui";
 import { h, list, remap, spec } from "forest";
-import { $creationError, events, actionForm, $currentSchema } from "./model";
+import { $creationError, events, actionForm } from "./model";
 import { combine, createEvent, createStore, sample } from "effector";
-import { trigger } from "@/shared/lib";
+import { intersection, trigger } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
 import { schemaModel } from "@/entities/schema";
 import { ActionToCreate, Condition } from "@/shared/api";
@@ -22,19 +22,26 @@ export const NewActionForm = () => {
     h("div", () => {
       spec({ classList: ["mb-6"] });
 
-      Select({
+      Multiselect({
         text: i18n("actions.form.schema_name.label"),
         hint: i18n("actions.form.schema_name.hint"),
-        value: actionForm.fields.schema_id.$value,
-        options: schemaModel.$schemas,
-        optionSelected: events.schemaSelected,
+        options: schemaModel.$schemas.map((schema) => schema.map((s) => ({ name: s.title, id: s.id }))),
+        selectedOptions: actionForm.fields.schema_ids.$value,
+        optionChecked: events.schemaChecked,
+        optionUnchecked: events.schemaUnchecked,
       });
     });
 
     h("div", () => {
-      spec({ visible: actionForm.fields.schema_id.$value.map(Boolean) });
+      spec({ visible: actionForm.fields.schema_ids.$value.map(Boolean) });
 
-      const $schemaQueries = $currentSchema.map((s) => s.fields.map((f) => f.name));
+      const $schemaQueries = combine(schemaModel.$schemas, actionForm.fields.schema_ids.$value, (schemas, selectedIds) => {
+        const selectedSchemas = schemas.filter((s) => selectedIds.includes(s.id));
+        const availableFields = selectedSchemas.map((s) => s.fields.map((f) => f.name));
+
+        return intersection(availableFields);
+      });
+
       const $attributeList = combine($schemaQueries, (queries) => queries.concat(["kind", "level"]));
 
       h("div", () => {
@@ -62,7 +69,7 @@ export const NewActionForm = () => {
           hint: i18n("actions.form.method.hint"),
           value: actionForm.fields.method.$value,
           options: createStore<ActionToCreate["method"][]>(["GET"]),
-          optionSelected: events.schemaSelected,
+          optionSelected: events.methodSelected,
           withBlank: createStore(false),
         });
       });

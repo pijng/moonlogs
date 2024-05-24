@@ -29,10 +29,6 @@ func (uc *ActionUseCase) CreateAction(action entities.Action) (*entities.Action,
 		return nil, fmt.Errorf("failed creating action: `method` field should be one of: %v", entities.AppropriateActionsInfo)
 	}
 
-	if action.SchemaID == 0 {
-		return nil, fmt.Errorf("failed creating action: `schema_id` attribute is required")
-	}
-
 	var formattedConditions entities.Conditions
 
 	for _, condition := range action.Conditions {

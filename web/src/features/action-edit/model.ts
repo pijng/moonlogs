@@ -1,12 +1,11 @@
 import { actionsRoute } from "@/shared/routing";
 import { ActionToCreate, ActionToUpdate, Condition, deleteAction, editAction } from "@/shared/api";
 import { rules } from "@/shared/lib";
-import { attach, combine, createEffect, createEvent, createStore, sample } from "effector";
+import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 import { actionModel } from "@/entities/action";
 import { i18n } from "@/shared/lib/i18n";
 import { redirect } from "atomic-router";
-import { schemaModel } from "@/entities/schema";
 
 const addCondition = createEvent<Condition>();
 const removeCondition = createEvent<number>();
@@ -14,18 +13,9 @@ const conditionAttributeChanged = createEvent<{ attribute: string; idx: number }
 const conditionOperationChanged = createEvent<{ operation: Condition["operation"]; idx: number }>();
 const conditionValueChanged = createEvent<{ value: string; idx: number }>();
 
-const schemaSelected = createEvent<string>();
+const schemaChecked = createEvent<number>();
+const schemaUnchecked = createEvent<number>();
 const methodSelected = createEvent<ActionToCreate["method"]>();
-
-const emptySchema = {
-  id: 0,
-  title: "",
-  description: "",
-  name: "",
-  fields: [],
-  kinds: [],
-  tag_id: null,
-};
 
 export const actionForm = createForm<Omit<ActionToUpdate, "id">>({
   fields: {
@@ -33,9 +23,9 @@ export const actionForm = createForm<Omit<ActionToUpdate, "id">>({
       init: "",
       rules: [rules.required()],
     },
-    schema_id: {
-      init: 0,
-      rules: [rules.required()],
+    schema_ids: {
+      init: [],
+      rules: [],
     },
     pattern: {
       init: "",
@@ -57,8 +47,18 @@ export const actionForm = createForm<Omit<ActionToUpdate, "id">>({
   validateOn: ["submit"],
 });
 
-export const $currentSchema = combine(actionModel.$currentAction, schemaModel.$schemas, (action, schemas) => {
-  return schemas.find((s) => s.id === action.schema_id) || emptySchema;
+sample({
+  source: actionForm.fields.schema_ids.$value,
+  clock: schemaChecked,
+  fn: (schemas, newSchemaID) => [...schemas, newSchemaID],
+  target: actionForm.fields.schema_ids.onChange,
+});
+
+sample({
+  source: actionForm.fields.schema_ids.$value,
+  clock: schemaUnchecked,
+  fn: (schemas, newSchemaID) => schemas.filter((s) => s !== newSchemaID),
+  target: actionForm.fields.schema_ids.onChange,
 });
 
 sample({
@@ -116,7 +116,8 @@ export const events = {
   conditionAttributeChanged,
   conditionOperationChanged,
   conditionValueChanged,
-  schemaSelected,
+  schemaChecked,
+  schemaUnchecked,
   methodSelected,
 };
 

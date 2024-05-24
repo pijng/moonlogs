@@ -29,9 +29,9 @@ func (s *ActionStorage) CreateAction(action entities.Action) (*entities.Action, 
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
 
-	query := "INSERT INTO actions (name, pattern, method, conditions, schema_name, schema_id, disabled) VALUES (?, ?, ?, ?, ?, ?, ?);"
+	query := "INSERT INTO actions (name, pattern, method, conditions, schema_ids, disabled) VALUES (?, ?, ?, ?, ?, ?);"
 
-	result, err := tx.ExecContext(s.ctx, query, action.Name, action.Pattern, action.Method, action.Conditions, action.SchemaName, action.SchemaID, action.Disabled)
+	result, err := tx.ExecContext(s.ctx, query, action.Name, action.Pattern, action.Method, action.Conditions, action.SchemaIDs, action.Disabled)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting action: %w", err)
 	}
@@ -55,7 +55,7 @@ func (s *ActionStorage) CreateAction(action entities.Action) (*entities.Action, 
 }
 
 func (s *ActionStorage) GetActionByID(id int) (*entities.Action, error) {
-	query := "SELECT id, name, pattern, method, conditions, schema_name, schema_id, disabled FROM actions WHERE id=? LIMIT 1;"
+	query := "SELECT id, name, pattern, method, conditions, schema_ids, disabled FROM actions WHERE id=? LIMIT 1;"
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -65,7 +65,7 @@ func (s *ActionStorage) GetActionByID(id int) (*entities.Action, error) {
 	row := stmt.QueryRowContext(s.ctx, id)
 
 	var a entities.Action
-	err = row.Scan(&a.ID, &a.Name, &a.Pattern, &a.Method, &a.Conditions, &a.SchemaName, &a.SchemaID, &a.Disabled)
+	err = row.Scan(&a.ID, &a.Name, &a.Pattern, &a.Method, &a.Conditions, &a.SchemaIDs, &a.Disabled)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning action: %w", err)
 	}
@@ -101,9 +101,9 @@ func (s *ActionStorage) UpdateActionByID(id int, action entities.Action) (*entit
 		_ = tx.Commit()
 	}(tx)
 
-	query := "UPDATE actions SET name=?, pattern=?, method=?, conditions=?, disabled=? WHERE id=?;"
+	query := "UPDATE actions SET name=?, pattern=?, method=?, conditions=?, disabled=?, schema_ids=? WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, action.Name, action.Pattern, action.Method, action.Conditions, action.Disabled, id)
+	_, err = tx.ExecContext(s.ctx, query, action.Name, action.Pattern, action.Method, action.Conditions, action.Disabled, action.SchemaIDs, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating action: %w", err)
 	}
@@ -112,7 +112,7 @@ func (s *ActionStorage) UpdateActionByID(id int, action entities.Action) (*entit
 }
 
 func (s *ActionStorage) GetAllActions() ([]*entities.Action, error) {
-	query := "SELECT id, name, pattern, method, conditions, schema_name, schema_id, disabled FROM actions ORDER BY id DESC;"
+	query := "SELECT id, name, pattern, method, conditions, schema_ids, disabled FROM actions ORDER BY id DESC;"
 	stmt, err := s.readDB.PrepareContext(s.ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -130,7 +130,7 @@ func (s *ActionStorage) GetAllActions() ([]*entities.Action, error) {
 	for rows.Next() {
 		var a entities.Action
 
-		err = rows.Scan(&a.ID, &a.Name, &a.Pattern, &a.Method, &a.Conditions, &a.SchemaName, &a.SchemaID, &a.Disabled)
+		err = rows.Scan(&a.ID, &a.Name, &a.Pattern, &a.Method, &a.Conditions, &a.SchemaIDs, &a.Disabled)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning action: %w", err)
 		}

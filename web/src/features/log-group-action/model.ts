@@ -9,6 +9,10 @@ export const createLogGroupAction = (action: Store<Action>, logGroup: Store<Log[
       return false;
     }
 
+    if (action.schema_ids.length > 0 && !action.schema_ids.includes(log.schema_id)) {
+      return false;
+    }
+
     const conditions = action.conditions ?? [];
     return conditions.every((condition) => {
       let attrValue: string | null;

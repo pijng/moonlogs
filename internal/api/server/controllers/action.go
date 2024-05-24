@@ -24,19 +24,19 @@ func CreateAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByID(newAction.SchemaID)
-	if err != nil {
-		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
+	for _, id := range newAction.SchemaIDs {
+		schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByID(id)
+		if err != nil {
+			response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+			return
+		}
 
-	if schema.ID == 0 {
-		err = fmt.Errorf("provided schema is not found: %s", newAction.SchemaName)
-		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
+		if schema.ID == 0 {
+			err = fmt.Errorf("provided schema is not found by id: %d", id)
+			response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+			return
+		}
 	}
-
-	newAction.SchemaName = schema.Name
 
 	actionStorage := storage.NewActionStorage(r.Context(), config.Get().DBAdapter)
 	action, err := usecases.NewActionUseCase(actionStorage).CreateAction(newAction)

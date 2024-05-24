@@ -73,6 +73,7 @@ func (s *ActionStorage) UpdateActionByID(id int, action entities.Action) (*entit
 		"method":     action.Method,
 		"conditions": action.Conditions,
 		"disabled":   action.Disabled,
+		"schema_ids": action.SchemaIDs,
 	}}
 
 	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)

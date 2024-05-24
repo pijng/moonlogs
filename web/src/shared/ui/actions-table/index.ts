@@ -43,12 +43,6 @@ export const ActionsTable = (actions: Store<Action[]>, editClicked: Event<number
             h("th", {
               attr: { scope: "col" },
               classList: ["px-6", "py-3"],
-              text: i18n("tables.actions.schema_name"),
-            });
-
-            h("th", {
-              attr: { scope: "col" },
-              classList: ["px-6", "py-3"],
               text: i18n("tables.actions.disabled"),
             });
 
@@ -81,15 +75,6 @@ export const ActionsTable = (actions: Store<Action[]>, editClicked: Event<number
                 });
                 h("div", {
                   text: remap(action, "name"),
-                });
-              });
-
-              h("td", () => {
-                spec({
-                  classList: ["px-6", "py-4"],
-                });
-                h("div", {
-                  text: remap(action, "schema_name"),
                 });
               });
 
