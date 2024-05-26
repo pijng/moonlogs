@@ -68,7 +68,10 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 
 	groupHash := fmt.Sprint(hashSum)
 
-	return uc.recordStorage.CreateRecord(record, schemaID, groupHash)
+	record.SchemaID = schemaID
+	record.GroupHash = groupHash
+
+	return uc.recordStorage.CreateRecord(record)
 }
 
 func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {

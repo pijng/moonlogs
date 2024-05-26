@@ -30,7 +30,7 @@ func NewRecordStorage(ctx context.Context, client *mongo.Client) *RecordStorage 
 	}
 }
 
-func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
+func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, error) {
 	nextValue, err := getNextSequenceValue(s.ctx, s.client, "records")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
@@ -59,8 +59,8 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	}
 
 	document := bson.M{
-		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": schemaID, "query": formattedQuery,
-		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": groupHash,
+		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": record.SchemaID, "query": formattedQuery,
+		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": record.GroupHash,
 		"level": record.Level, "created_at": record.CreatedAt,
 	}
 	result, err := s.collection.InsertOne(s.ctx, document)

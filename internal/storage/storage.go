@@ -81,7 +81,7 @@ func NewSchemaStorage(ctx context.Context, storageType string) SchemaStorage {
 }
 
 type RecordStorage interface {
-	CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error)
+	CreateRecord(record entities.Record) (*entities.Record, error)
 	DeleteByIDs(ids []int) error
 	FindStaleIDs(schemaID int, threshold int64) ([]int, error)
 	GetAllRecords(limit int, offset int) ([]*entities.Record, error)
