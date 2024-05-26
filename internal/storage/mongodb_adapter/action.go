@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/persistence"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,18 +13,20 @@ import (
 
 type ActionStorage struct {
 	ctx        context.Context
+	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-func NewActionStorage(ctx context.Context) *ActionStorage {
+func NewActionStorage(ctx context.Context, client *mongo.Client) *ActionStorage {
 	return &ActionStorage{
 		ctx:        ctx,
-		collection: persistence.MongoDB().Database("moonlogs").Collection("actions"),
+		client:     client,
+		collection: client.Database("moonlogs").Collection("actions"),
 	}
 }
 
 func (s *ActionStorage) CreateAction(action entities.Action) (*entities.Action, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "actions")
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "actions")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
@@ -50,7 +51,10 @@ func (s *ActionStorage) GetActionByID(id int) (*entities.Action, error) {
 	var t entities.Action
 
 	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&t)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed querying action by id: %w", err)
 	}
 

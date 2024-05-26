@@ -27,7 +27,7 @@ func NewUserStorage(ctx context.Context, storageType string) UserStorage {
 
 	switch storageType {
 	case persistence.MONGODB_ADAPTER:
-		storageInstance = mongodb_adapter.NewUserStorage(ctx)
+		storageInstance = mongodb_adapter.NewUserStorage(ctx, persistence.MongoDB())
 	default:
 		storageInstance = sqlite_adapter.NewUserStorage(ctx)
 	}
@@ -48,7 +48,7 @@ func NewTagStorage(ctx context.Context, storageType string) TagStorage {
 
 	switch storageType {
 	case persistence.MONGODB_ADAPTER:
-		storageInstance = mongodb_adapter.NewTagStorage(ctx)
+		storageInstance = mongodb_adapter.NewTagStorage(ctx, persistence.MongoDB())
 	default:
 		storageInstance = sqlite_adapter.NewTagStorage(ctx)
 	}
@@ -72,7 +72,7 @@ func NewSchemaStorage(ctx context.Context, storageType string) SchemaStorage {
 
 	switch storageType {
 	case persistence.MONGODB_ADAPTER:
-		storageInstance = mongodb_adapter.NewSchemaStorage(ctx)
+		storageInstance = mongodb_adapter.NewSchemaStorage(ctx, persistence.MongoDB())
 	default:
 		storageInstance = sqlite_adapter.NewSchemaStorage(ctx)
 	}
@@ -96,7 +96,7 @@ func NewRecordStorage(ctx context.Context, storageType string) RecordStorage {
 
 	switch storageType {
 	case persistence.MONGODB_ADAPTER:
-		storageInstance = mongodb_adapter.NewRecordStorage(ctx)
+		storageInstance = mongodb_adapter.NewRecordStorage(ctx, persistence.MongoDB())
 	default:
 		storageInstance = sqlite_adapter.NewRecordStorage(ctx)
 	}
@@ -118,7 +118,7 @@ func NewApiTokenStorage(ctx context.Context, storageType string) ApiTokenStorage
 
 	switch storageType {
 	case persistence.MONGODB_ADAPTER:
-		storageInstance = mongodb_adapter.NewApiTokenStorage(ctx)
+		storageInstance = mongodb_adapter.NewApiTokenStorage(ctx, persistence.MongoDB())
 	default:
 		storageInstance = sqlite_adapter.NewApiTokenStorage(ctx)
 	}
@@ -139,7 +139,7 @@ func NewActionStorage(ctx context.Context, storageType string) ActionStorage {
 
 	switch storageType {
 	case persistence.MONGODB_ADAPTER:
-		storageInstance = mongodb_adapter.NewActionStorage(ctx)
+		storageInstance = mongodb_adapter.NewActionStorage(ctx, persistence.MongoDB())
 	default:
 		storageInstance = sqlite_adapter.NewActionStorage(ctx)
 	}

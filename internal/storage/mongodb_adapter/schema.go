@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/persistence"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,18 +14,20 @@ import (
 
 type SchemaStorage struct {
 	ctx        context.Context
+	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-func NewSchemaStorage(ctx context.Context) *SchemaStorage {
+func NewSchemaStorage(ctx context.Context, client *mongo.Client) *SchemaStorage {
 	return &SchemaStorage{
 		ctx:        ctx,
-		collection: persistence.MongoDB().Database("moonlogs").Collection("schemas"),
+		client:     client,
+		collection: client.Database("moonlogs").Collection("schemas"),
 	}
 }
 
 func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "schemas")
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "schemas")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
@@ -69,7 +70,10 @@ func (s *SchemaStorage) GetById(id int) (*entities.Schema, error) {
 	var sm entities.Schema
 
 	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&sm)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed querying schema by id: %w", err)
 	}
 
