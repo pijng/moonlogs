@@ -1,5 +1,5 @@
 import { schemaModel } from "@/entities/schema";
-import { router, schemaEditRoute, showLogRoute } from "@/shared/routing";
+import { router, schemaEditRoute } from "@/shared/routing";
 import { PermissionGate } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import { Button, Header } from "@/shared/ui";
@@ -17,15 +17,9 @@ export const SchemaHeader = () => {
   const routeOpened = createEvent<number>();
 
   sample({
-    source: [showLogRoute.$params, schemaModel.$schemas] as const,
+    source: $schema,
     clock: routeOpened,
-    fn: ([params, schemas]) => {
-      console.log(params);
-      console.log(schemas);
-      const schemaId = schemas.find((s) => s.name === params.schemaName)?.id;
-
-      return { id: schemaId || 0 };
-    },
+    fn: (schema) => ({ id: schema?.id || 0 }),
     target: schemaEditRoute.open,
   });
 
