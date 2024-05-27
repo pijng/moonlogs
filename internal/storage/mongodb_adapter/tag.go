@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/persistence"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,18 +13,20 @@ import (
 
 type TagStorage struct {
 	ctx        context.Context
+	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-func NewTagStorage(ctx context.Context) *TagStorage {
+func NewTagStorage(ctx context.Context, client *mongo.Client) *TagStorage {
 	return &TagStorage{
 		ctx:        ctx,
-		collection: persistence.MongoDB().Database("moonlogs").Collection("tags"),
+		client:     client,
+		collection: client.Database("moonlogs").Collection("tags"),
 	}
 }
 
 func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "tags")
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "tags")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
@@ -50,7 +51,10 @@ func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 	var t entities.Tag
 
 	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&t)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed querying tag by id: %w", err)
 	}
 

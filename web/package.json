@@ -2,7 +2,7 @@
   "source": "./src/index.html",
   "scripts": {
     "build": "CI=false npx parcel build --dist-dir=./build",
-    "clean": "rm -rf .parcel-cache build",
+    "clean": "rm -rf .parcel-cache build/*",
     "start": "npx http-server ./build -a 0.0.0.0",
     "watch": "npx parcel ./src/index.html",
     "lint": "eslint --ignore-path .gitignore .",

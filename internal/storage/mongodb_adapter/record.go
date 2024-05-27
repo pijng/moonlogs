@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/persistence"
 	"time"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -19,18 +18,20 @@ import (
 
 type RecordStorage struct {
 	ctx        context.Context
+	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-func NewRecordStorage(ctx context.Context) *RecordStorage {
+func NewRecordStorage(ctx context.Context, client *mongo.Client) *RecordStorage {
 	return &RecordStorage{
 		ctx:        ctx,
-		collection: persistence.MongoDB().Database("moonlogs").Collection("records"),
+		client:     client,
+		collection: client.Database("moonlogs").Collection("records"),
 	}
 }
 
-func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "records")
+func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, error) {
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "records")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
@@ -58,8 +59,8 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 	}
 
 	document := bson.M{
-		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": schemaID, "query": formattedQuery,
-		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": groupHash,
+		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": record.SchemaID, "query": formattedQuery,
+		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": record.GroupHash,
 		"level": record.Level, "created_at": record.CreatedAt,
 	}
 	result, err := s.collection.InsertOne(s.ctx, document)
@@ -80,7 +81,10 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 	var lr entities.Record
 
 	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&lr)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed querying record by id: %w", err)
 	}
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/persistence"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,18 +13,20 @@ import (
 
 type UserStorage struct {
 	ctx        context.Context
+	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-func NewUserStorage(ctx context.Context) *UserStorage {
+func NewUserStorage(ctx context.Context, client *mongo.Client) *UserStorage {
 	return &UserStorage{
 		ctx:        ctx,
-		collection: persistence.MongoDB().Database("moonlogs").Collection("users"),
+		client:     client,
+		collection: client.Database("moonlogs").Collection("users"),
 	}
 }
 
 func (s *UserStorage) CreateUser(user entities.User) (*entities.User, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "users")
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "users")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
@@ -54,7 +55,10 @@ func (s *UserStorage) GetUserByID(id int) (*entities.User, error) {
 	var u entities.User
 
 	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&u)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed querying user by id: %w", err)
 	}
 
@@ -170,7 +174,7 @@ func (s *UserStorage) GetAllUsers() ([]*entities.User, error) {
 }
 
 func (s *UserStorage) CreateInitialAdmin(admin entities.User) (*entities.User, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "users")
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "users")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}

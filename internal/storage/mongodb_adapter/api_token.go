@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/persistence"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,18 +13,20 @@ import (
 
 type ApiTokenStorage struct {
 	ctx        context.Context
+	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
+func NewApiTokenStorage(ctx context.Context, client *mongo.Client) *ApiTokenStorage {
 	return &ApiTokenStorage{
 		ctx:        ctx,
-		collection: persistence.MongoDB().Database("moonlogs").Collection("api_tokens"),
+		client:     client,
+		collection: client.Database("moonlogs").Collection("api_tokens"),
 	}
 }
 
 func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, persistence.MongoDB(), "api_tokens")
+	nextValue, err := getNextSequenceValue(s.ctx, s.client, "api_tokens")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
@@ -61,7 +62,10 @@ func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 	var t entities.ApiToken
 
 	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&t)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed querying api token by id: %w", err)
 	}
 
@@ -72,8 +76,11 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken
 	var t entities.ApiToken
 
 	err := s.collection.FindOne(s.ctx, bson.M{"token_digest": digest}).Decode(&t)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
-		return nil, fmt.Errorf("failed querying api token by digest: %w", err)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed querying api token by id: %w", err)
 	}
 
 	return &t, nil

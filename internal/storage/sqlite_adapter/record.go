@@ -25,7 +25,7 @@ func NewRecordStorage(ctx context.Context) *RecordStorage {
 	}
 }
 
-func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, groupHash string) (*entities.Record, error) {
+func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -36,8 +36,8 @@ func (s *RecordStorage) CreateRecord(record entities.Record, schemaID int, group
 
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response;"
 
-	row := tx.QueryRowContext(s.ctx, query, record.Text, record.SchemaName, schemaID, record.Query,
-		record.Request, record.Response, record.Kind, groupHash, record.Level, record.CreatedAt)
+	row := tx.QueryRowContext(s.ctx, query, record.Text, record.SchemaName, record.SchemaID, record.Query,
+		record.Request, record.Response, record.Kind, record.GroupHash, record.Level, record.CreatedAt)
 
 	var lr entities.Record
 	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
