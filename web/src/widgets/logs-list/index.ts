@@ -2,9 +2,10 @@ import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
 import { i18n } from "@/shared/lib/i18n";
 import { router } from "@/shared/routing";
-import { CardHeaded, LogsTable, Subheader } from "@/shared/ui";
+import { Subheader } from "@/shared/ui";
 import { combine } from "effector";
 import { h, list, spec } from "forest";
+import { LogsCard } from "../logs-card";
 
 export const LogsList = () => {
   h("div", () => {
@@ -18,18 +19,10 @@ export const LogsList = () => {
     });
 
     list(logModel.$logsGroups, ({ store: group }) => {
-      CardHeaded({
-        tags: group.map((g) => g.tags),
-        kind: group.map((g) => g.kind),
+      LogsCard({
         schema: $activeSchema,
+        logsGroup: group,
         href: group.map((g) => `${g.schema_name}/${g.group_hash}`),
-        content: () => {
-          LogsTable({
-            logs: group.map((g) => g.logs),
-            requestClicked: logModel.events.requestURLClicked,
-            responseClicked: logModel.events.responseURLClicked,
-          });
-        },
       });
     });
 

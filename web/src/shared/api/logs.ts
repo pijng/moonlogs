@@ -17,6 +17,8 @@ export type Log = {
   response: Record<string, any>;
 };
 
+export type LogsGroup = { tags: Array<[string, any]>; schema_name: string; kind: string | null; group_hash: string; logs: Log[] };
+
 export interface LogsResponse extends BaseResponse {
   data: Log[];
 }

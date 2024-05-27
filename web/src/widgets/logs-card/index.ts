@@ -1,20 +1,17 @@
 import { Store, combine, createStore } from "effector";
-import { h, list, spec } from "forest";
-import { Button, KBD } from "@/shared/ui";
-import { Schema } from "@/shared/api";
+import { h, list, remap, spec } from "forest";
+import { Button, KBD, LogsTable } from "@/shared/ui";
+import { LogsGroup, Schema } from "@/shared/api";
 import { i18n } from "@/shared/lib/i18n";
+import { logModel } from "@/entities/log";
 
-export const CardHeaded = ({
-  tags,
-  kind,
+export const LogsCard = ({
   schema,
-  content,
+  logsGroup,
   href,
 }: {
-  tags: Store<Array<[string, any]>>;
-  kind: Store<string | null>;
   schema: Store<Schema | null>;
-  content: () => void;
+  logsGroup: Store<LogsGroup>;
   href?: Store<string>;
 }) => {
   h("div", () => {
@@ -48,7 +45,7 @@ export const CardHeaded = ({
       });
 
       const localSchema = schema || createStore({});
-      const localKind = kind || createStore(null);
+      const localKind = remap(logsGroup, "kind");
 
       h("ul", () => {
         spec({
@@ -83,7 +80,7 @@ export const CardHeaded = ({
           KBD({ text: $kindTitle });
         });
 
-        list(tags, ({ store: tag }) => {
+        list(remap(logsGroup, "tags"), ({ store: tag }) => {
           h("li", () => {
             spec({
               classList: ["min-w-fit"],
@@ -131,7 +128,11 @@ export const CardHeaded = ({
         attr: { id: "defaultTabContent" },
       });
 
-      content();
+      LogsTable({
+        logs: remap(logsGroup, "logs"),
+        requestClicked: logModel.events.requestURLClicked,
+        responseClicked: logModel.events.responseURLClicked,
+      });
     });
   });
 };

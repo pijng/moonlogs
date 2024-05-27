@@ -23,7 +23,7 @@ export {
   createAction,
   deleteAction,
 } from "./actions";
-export { type Log, type Level, getLogs } from "./logs";
+export { type Log, type Level, type LogsGroup, getLogs } from "./logs";
 export { type User, type UserToCreate, type UserToUpdate, getUsers, getUser, editUser, createUser } from "./users";
 export {
   type ApiToken,

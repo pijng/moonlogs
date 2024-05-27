@@ -1,10 +1,8 @@
 import { Log, getLogs } from "@/shared/api";
-import { Level, getLogGroup } from "@/shared/api/logs";
+import { Level, LogsGroup, getLogGroup } from "@/shared/api/logs";
 import { DATEFORMAT_OPTIONS, objectToQueryString, queryStringToObject } from "@/shared/lib";
 import { $preferredLanguage } from "@/shared/lib/i18n/locale";
 import { combine, createEffect, createEvent, createStore, sample } from "effector";
-
-type LogsGroup = { tags: Array<[string, any]>; schema_name: string; kind: string | null; group_hash: string; logs: Log[] };
 
 const reset = createEffect();
 

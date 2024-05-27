@@ -3,8 +3,8 @@ import { h, spec } from "forest";
 
 import { logModel } from "@/entities/log";
 import { router, showLogRoute } from "@/shared/routing";
-import { CardHeaded, LogsTable, Spinner } from "@/shared/ui";
-import { GroupActionsList, SchemaHeader } from "@/widgets";
+import { Spinner } from "@/shared/ui";
+import { GroupActionsList, LogsCard, SchemaHeader } from "@/widgets";
 import { schemaModel } from "@/entities/schema";
 import { combine } from "effector";
 
@@ -32,17 +32,9 @@ export const ShowLogPage = () => {
           return schemas.find((s) => s.name === schemaName) || null;
         });
 
-        CardHeaded({
-          tags: logModel.$groupedLogs.map((g) => g.tags),
+        LogsCard({
           schema: $activeSchema,
-          kind: logModel.$groupedLogs.map((g) => g.kind),
-          content: () => {
-            LogsTable({
-              logs: logModel.$groupedLogs.map((g) => g.logs),
-              requestClicked: logModel.events.requestURLClicked,
-              responseClicked: logModel.events.responseURLClicked,
-            });
-          },
+          logsGroup: logModel.$groupedLogs,
         });
       });
     });

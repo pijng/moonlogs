@@ -37,6 +37,14 @@ chainRoute({
 });
 
 chainRoute({
+  route: chainAuthorized(logsRoute),
+  beforeOpen: {
+    effect: actionModel.effects.getActionsFx,
+    mapParams: () => ({}),
+  },
+});
+
+chainRoute({
   route: chainAuthorized(showLogRoute),
   beforeOpen: {
     effect: schemaModel.effects.getSchemasFx,

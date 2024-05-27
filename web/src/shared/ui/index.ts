@@ -1,6 +1,6 @@
 export { LevelBadge } from "./badge";
 export { Button, type ButtonVariant } from "./buttons";
-export { CardHeaded, CardLink } from "./cards";
+export { CardLink } from "./cards";
 export { Dropdown } from "./dropdown";
 export { FloatingInput } from "./floating-input";
 export { Header } from "./header";
