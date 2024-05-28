@@ -1,231 +1,118 @@
 package router
 
 import (
-	"context"
 	"moonlogs/internal/api/server/controllers"
-	"moonlogs/internal/api/server/response"
-	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/shared"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
-	"slices"
 
 	"github.com/gorilla/mux"
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-func RegisterSchemaRouter(r *mux.Router) {
-	schemaRouter := r.PathPrefix("/api/schemas").Subrouter()
-	schemaRouter.Use(SessionMiddleware)
-
-	schemaRouter.HandleFunc("", controllers.GetAllSchemas).Methods(http.MethodGet)
-	schemaRouter.HandleFunc("", roleMiddleware(controllers.CreateSchema, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
-	schemaRouter.HandleFunc("/{id}", controllers.GetSchemaByID).Methods(http.MethodGet)
-	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateSchemaByID, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPut)
-	schemaRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteSchemaByID, entities.AdminRole)).Methods(http.MethodDelete)
+type SubRouterConfig struct {
+	R  *mux.Router
+	MW *Middlewares
+	UC *usecases.UseCases
 }
 
-func RegisterRecordRouter(r *mux.Router) {
-	recordRouter := r.PathPrefix("/api/logs").Subrouter()
-	recordRouter.Use(SessionMiddleware)
+func RegisterSchemaRouter(cfg *SubRouterConfig) {
+	schemaRouter := cfg.R.PathPrefix("/api/schemas").Subrouter()
+	schemaRouter.Use(cfg.MW.SessionMiddleware)
 
-	recordRouter.HandleFunc("", controllers.GetAllRecords).Methods(http.MethodGet)
-	recordRouter.HandleFunc("", roleMiddleware(controllers.CreateRecord, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
-	recordRouter.HandleFunc("/async", roleMiddleware(controllers.CreateRecordAsync, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
-	recordRouter.HandleFunc("/{id}", controllers.GetRecordByID).Methods(http.MethodGet)
-	recordRouter.HandleFunc("/{id}/request", controllers.GetRecordRequestByID).Methods(http.MethodGet)
-	recordRouter.HandleFunc("/{id}/response", controllers.GetRecordResponseByID).Methods(http.MethodGet)
-	recordRouter.HandleFunc("/group/{schemaName}/{hash}", controllers.GetRecordsByGroupHash).Methods(http.MethodGet)
-	recordRouter.HandleFunc("/search", controllers.GetRecordsByQuery).Methods(http.MethodPost)
+	schemaController := controllers.NewSchemaController(cfg.UC.SchemaUseCase)
+
+	schemaRouter.HandleFunc("", schemaController.GetAllSchemas).Methods(http.MethodGet)
+	schemaRouter.HandleFunc("", cfg.MW.RoleMiddleware(schemaController.CreateSchema, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
+	schemaRouter.HandleFunc("/{id}", schemaController.GetSchemaByID).Methods(http.MethodGet)
+	schemaRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(schemaController.UpdateSchemaByID, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPut)
+	schemaRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(schemaController.DeleteSchemaByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterUserRouter(r *mux.Router) {
-	userRouter := r.PathPrefix("/api/users").Subrouter()
-	userRouter.Use(SessionMiddleware)
+func RegisterRecordRouter(cfg *SubRouterConfig) {
+	recordRouter := cfg.R.PathPrefix("/api/logs").Subrouter()
+	recordRouter.Use(cfg.MW.SessionMiddleware)
 
-	userRouter.HandleFunc("", controllers.GetAllUsers).Methods(http.MethodGet)
-	userRouter.HandleFunc("", roleMiddleware(controllers.CreateUser, entities.AdminRole)).Methods(http.MethodPost)
-	userRouter.HandleFunc("/{id}", controllers.GetUserByID).Methods(http.MethodGet)
-	userRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateUserByID, entities.AdminRole)).Methods(http.MethodPut)
-	userRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteUserByID, entities.AdminRole)).Methods(http.MethodDelete)
+	recordController := controllers.NewRecordController(cfg.UC.RecordUseCase, cfg.UC.SchemaUseCase)
+
+	recordRouter.HandleFunc("", recordController.GetAllRecords).Methods(http.MethodGet)
+	recordRouter.HandleFunc("", cfg.MW.RoleMiddleware(recordController.CreateRecord, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
+	recordRouter.HandleFunc("/async", cfg.MW.RoleMiddleware(recordController.CreateRecordAsync, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
+	recordRouter.HandleFunc("/{id}", recordController.GetRecordByID).Methods(http.MethodGet)
+	recordRouter.HandleFunc("/{id}/request", recordController.GetRecordRequestByID).Methods(http.MethodGet)
+	recordRouter.HandleFunc("/{id}/response", recordController.GetRecordResponseByID).Methods(http.MethodGet)
+	recordRouter.HandleFunc("/group/{schemaName}/{hash}", recordController.GetRecordsByGroupHash).Methods(http.MethodGet)
+	recordRouter.HandleFunc("/search", recordController.GetRecordsByQuery).Methods(http.MethodPost)
 }
 
-func RegisterApiTokenRouter(r *mux.Router) {
-	apiTokenRouter := r.PathPrefix("/api/api_tokens").Subrouter()
-	apiTokenRouter.Use(SessionMiddleware)
+func RegisterUserRouter(cfg *SubRouterConfig) {
+	userRouter := cfg.R.PathPrefix("/api/users").Subrouter()
+	userRouter.Use(cfg.MW.SessionMiddleware)
 
-	apiTokenRouter.HandleFunc("", roleMiddleware(controllers.GetAllApiTokens, entities.AdminRole)).Methods(http.MethodGet)
-	apiTokenRouter.HandleFunc("", roleMiddleware(controllers.CreateApiToken, entities.AdminRole)).Methods(http.MethodPost)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.GetApiTokenByID, entities.AdminRole)).Methods(http.MethodGet)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateApiTokenByID, entities.AdminRole)).Methods(http.MethodPut)
-	apiTokenRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteApiTokenByID, entities.AdminRole)).Methods(http.MethodDelete)
+	userController := controllers.NewUserController(cfg.UC.UserUseCase)
+
+	userRouter.HandleFunc("", userController.GetAllUsers).Methods(http.MethodGet)
+	userRouter.HandleFunc("", cfg.MW.RoleMiddleware(userController.CreateUser, entities.AdminRole)).Methods(http.MethodPost)
+	userRouter.HandleFunc("/{id}", userController.GetUserByID).Methods(http.MethodGet)
+	userRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(userController.UpdateUserByID, entities.AdminRole)).Methods(http.MethodPut)
+	userRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(userController.DeleteUserByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterTagRouter(r *mux.Router) {
-	tagRouter := r.PathPrefix("/api/tags").Subrouter()
-	tagRouter.Use(SessionMiddleware)
+func RegisterApiTokenRouter(cfg *SubRouterConfig) {
+	apiTokenRouter := cfg.R.PathPrefix("/api/api_tokens").Subrouter()
+	apiTokenRouter.Use(cfg.MW.SessionMiddleware)
 
-	tagRouter.HandleFunc("", controllers.GetAllTags).Methods(http.MethodGet)
-	tagRouter.HandleFunc("", roleMiddleware(controllers.CreateTag, entities.AdminRole)).Methods(http.MethodPost)
-	tagRouter.HandleFunc("/{id}", controllers.GetTagByID).Methods(http.MethodGet)
-	tagRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateTagByID, entities.AdminRole)).Methods(http.MethodPut)
-	tagRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
+	apiTokenController := controllers.NewApiTokenController(cfg.UC.ApiTokenUseCase)
+
+	apiTokenRouter.HandleFunc("", cfg.MW.RoleMiddleware(apiTokenController.GetAllApiTokens, entities.AdminRole)).Methods(http.MethodGet)
+	apiTokenRouter.HandleFunc("", cfg.MW.RoleMiddleware(apiTokenController.CreateApiToken, entities.AdminRole)).Methods(http.MethodPost)
+	apiTokenRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(apiTokenController.GetApiTokenByID, entities.AdminRole)).Methods(http.MethodGet)
+	apiTokenRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(apiTokenController.UpdateApiTokenByID, entities.AdminRole)).Methods(http.MethodPut)
+	apiTokenRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(apiTokenController.DeleteApiTokenByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterActionRouter(r *mux.Router) {
-	actionRouter := r.PathPrefix("/api/actions").Subrouter()
-	actionRouter.Use(SessionMiddleware)
+func RegisterTagRouter(cfg *SubRouterConfig) {
+	tagRouter := cfg.R.PathPrefix("/api/tags").Subrouter()
+	tagRouter.Use(cfg.MW.SessionMiddleware)
 
-	actionRouter.HandleFunc("", controllers.GetAllActions).Methods(http.MethodGet)
-	actionRouter.HandleFunc("", roleMiddleware(controllers.CreateAction, entities.AdminRole)).Methods(http.MethodPost)
-	actionRouter.HandleFunc("/{id}", controllers.GetActionByID).Methods(http.MethodGet)
-	actionRouter.HandleFunc("/{id}", roleMiddleware(controllers.UpdateActionByID, entities.AdminRole)).Methods(http.MethodPut)
-	actionRouter.HandleFunc("/{id}", roleMiddleware(controllers.DeleteActionByID, entities.AdminRole)).Methods(http.MethodDelete)
+	tagController := controllers.NewTagController(cfg.UC.TagUseCase, cfg.UC.UserUseCase, cfg.UC.SchemaUseCase)
+
+	tagRouter.HandleFunc("", tagController.GetAllTags).Methods(http.MethodGet)
+	tagRouter.HandleFunc("", cfg.MW.RoleMiddleware(tagController.CreateTag, entities.AdminRole)).Methods(http.MethodPost)
+	tagRouter.HandleFunc("/{id}", tagController.GetTagByID).Methods(http.MethodGet)
+	tagRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(tagController.UpdateTagByID, entities.AdminRole)).Methods(http.MethodPut)
+	tagRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(tagController.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterSessionRouter(r *mux.Router) {
-	sessionRouter := r.PathPrefix("/api/session").Subrouter()
+func RegisterActionRouter(cfg *SubRouterConfig) {
+	actionRouter := cfg.R.PathPrefix("/api/actions").Subrouter()
+	actionRouter.Use(cfg.MW.SessionMiddleware)
 
-	sessionRouter.HandleFunc("", controllers.Login).Methods(http.MethodPost)
-	sessionRouter.HandleFunc("", controllers.GetSession).Methods(http.MethodGet)
+	actionController := controllers.NewActionController(cfg.UC.ActionUseCase, cfg.UC.SchemaUseCase)
+
+	actionRouter.HandleFunc("", actionController.GetAllActions).Methods(http.MethodGet)
+	actionRouter.HandleFunc("", cfg.MW.RoleMiddleware(actionController.CreateAction, entities.AdminRole)).Methods(http.MethodPost)
+	actionRouter.HandleFunc("/{id}", actionController.GetActionByID).Methods(http.MethodGet)
+	actionRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(actionController.UpdateActionByID, entities.AdminRole)).Methods(http.MethodPut)
+	actionRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(actionController.DeleteActionByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterSetupRouter(r *mux.Router) {
-	setupRouter := r.PathPrefix("/api/setup").Subrouter()
+func RegisterSessionRouter(cfg *SubRouterConfig) {
+	sessionRouter := cfg.R.PathPrefix("/api/session").Subrouter()
 
-	setupRouter.HandleFunc("/register_admin", controllers.CreateInitialAdmin).Methods(http.MethodPost)
+	sessionController := controllers.NewSessionController(cfg.UC.UserUseCase)
+
+	sessionRouter.HandleFunc("", sessionController.Login).Methods(http.MethodPost)
+	sessionRouter.HandleFunc("", sessionController.GetSession).Methods(http.MethodGet)
+}
+
+func RegisterSetupRouter(cfg *SubRouterConfig) {
+	setupRouter := cfg.R.PathPrefix("/api/setup").Subrouter()
+
+	userController := controllers.NewUserController(cfg.UC.UserUseCase)
+
+	setupRouter.HandleFunc("/register_admin", userController.CreateInitialAdmin).Methods(http.MethodPost)
 }
 
 func RegisterWebRouter(r *mux.Router) {
 	r.PathPrefix("/").HandlerFunc(controllers.Web)
-}
-
-func SessionMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		txn := newrelic.FromContext(r.Context())
-		defer txn.StartSegment("router.SessionMiddleware").End()
-
-		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
-		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
-			return
-		}
-
-		if sessionCookie != nil {
-			sessionToken, tokenOk := sessionCookie.Values["token"].(string)
-			sessionUserID, userIDOk := sessionCookie.Values["userID"].(int)
-
-			if tokenOk && sessionToken != "" && userIDOk && sessionUserID != 0 {
-				ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
-				next.ServeHTTP(w, r.WithContext(ctx))
-				return
-			}
-		}
-
-		txnExtract := txn.StartSegment("router.SessionMiddleware#ExtractBearerToken")
-		bearerToken := shared.ExtractBearerToken(r)
-		txnExtract.End()
-
-		txnIsTokenValid := txn.StartSegment("router.SessionMiddleware#IsTokenValid")
-		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-		ok, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
-		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
-			return
-		}
-		txnIsTokenValid.End()
-
-		if ok {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		token, ok := sessionCookie.Values["token"].(string)
-		if bearerToken == "" && ok {
-			bearerToken = token
-		}
-
-		userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-		user, _ := usecases.NewUserUseCase(userStorage).GetUserByToken(bearerToken)
-
-		if !ok || user == nil || user.ID == 0 || bool(user.IsRevoked) {
-			response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
-			return
-		}
-
-		if token == "" {
-			token = user.Token
-			sessionCookie.Values["token"] = token
-			sessionCookie.Values["userID"] = user.ID
-			sessionCookie.Values["role"] = string(user.Role)
-		}
-
-		ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
-func roleMiddleware(next http.HandlerFunc, requiredRoles ...entities.Role) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		txn := newrelic.FromContext(r.Context())
-		defer txn.StartSegment("router.roleMiddleware").End()
-
-		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
-		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
-			return
-		}
-
-		if sessionCookie != nil {
-			role, ok := sessionCookie.Values["role"].(string)
-
-			if ok && slices.Contains(requiredRoles, entities.Role(role)) {
-				ctx := context.WithValue(r.Context(), session.KEY, sessionCookie)
-				next.ServeHTTP(w, r.WithContext(ctx))
-				return
-			}
-		}
-
-		txnExtract := txn.StartSegment("router.roleMiddleware#ExtractBearerToken")
-		bearerToken := shared.ExtractBearerToken(r)
-		txnExtract.End()
-
-		txnIsTokenValid := txn.StartSegment("router.roleMiddleware#IsTokenValid")
-		apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-		validAPIToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).IsTokenValid(bearerToken)
-		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
-			return
-		}
-		txnIsTokenValid.End()
-
-		// allow access by API token for certain actions only
-		if validAPIToken {
-			if !slices.Contains(requiredRoles, entities.TokenRole) {
-				response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
-				return
-			}
-
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-		user, _ := usecases.NewUserUseCase(userStorage).GetUserByToken(bearerToken)
-
-		if user.ID == 0 {
-			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
-			return
-		}
-
-		if !slices.Contains(requiredRoles, user.Role) {
-			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
-			return
-		}
-
-		next(w, r)
-	}
 }

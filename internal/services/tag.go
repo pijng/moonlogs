@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"moonlogs/internal/usecases"
 )
@@ -15,13 +16,13 @@ func NewTagService(tuc *usecases.TagUseCase, suc *usecases.SchemaUseCase, uuc *u
 	return &TagService{tagUseCase: tuc, schemaUseCase: suc, userUseCase: uuc}
 }
 
-func (m *TagService) DestroyTagByID(id int) error {
-	err := m.tagUseCase.DeleteTagByID(id)
+func (m *TagService) DestroyTagByID(ctx context.Context, id int) error {
+	err := m.tagUseCase.DeleteTagByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("destroying tag by id: %w", err)
 	}
 
-	schemas, err := m.schemaUseCase.GetSchemaByTagID(id)
+	schemas, err := m.schemaUseCase.GetSchemaByTagID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("querying schemas by tag_id: %w", err)
 	}
@@ -29,13 +30,13 @@ func (m *TagService) DestroyTagByID(id int) error {
 	for _, schema := range schemas {
 		schema.TagID = 0
 
-		_, err = m.schemaUseCase.UpdateSchemaByID(schema.ID, *schema)
+		_, err = m.schemaUseCase.UpdateSchemaByID(ctx, schema.ID, *schema)
 		if err != nil {
 			return fmt.Errorf("updating schema tag_id: %w", err)
 		}
 	}
 
-	users, err := m.userUseCase.GetUsersByTagID(id)
+	users, err := m.userUseCase.GetUsersByTagID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("querying users by tag_id: %w", err)
 	}
@@ -50,7 +51,7 @@ func (m *TagService) DestroyTagByID(id int) error {
 
 		user.Tags = tagIDS
 
-		_, err = m.userUseCase.UpdateUserByID(user.ID, *user)
+		_, err = m.userUseCase.UpdateUserByID(ctx, user.ID, *user)
 		if err != nil {
 			return fmt.Errorf("updating user tag_id: %w", err)
 		}

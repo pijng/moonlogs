@@ -3,30 +3,25 @@ package tasks
 import (
 	"context"
 	"log"
-	"moonlogs/internal/config"
+	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"time"
 )
 
-func RunRecordsCleanupTask(ctx context.Context, interval time.Duration) {
+func RunRecordsCleanupTask(ctx context.Context, interval time.Duration, uc *usecases.UseCases) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	schemaStorage := storage.NewSchemaStorage(ctx, config.Get().DBAdapter)
-	recordStorage := storage.NewRecordStorage(ctx, config.Get().DBAdapter)
-	recordUseCase := usecases.NewRecordUseCase(ctx, recordStorage)
-
 	for range ticker.C {
-		schemas, err := schemaStorage.GetAllSchemas()
+		schemas, err := uc.SchemaUseCase.GetAllSchemas(ctx, &entities.User{})
 		if err != nil {
 			log.Printf("failed getting log schemas: %v", err)
 			continue
 		}
 
 		for _, schema := range schemas {
-			err = recordUseCase.DeleteStaleRecords(schema)
+			err = uc.RecordUseCase.DeleteStaleRecords(ctx, schema)
 			if err != nil {
 				log.Printf("failed cleaning up stale log records: %v", err)
 				continue

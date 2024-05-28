@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -25,7 +26,7 @@ func NewApiTokenUseCase(apiTokenStorage storage.ApiTokenStorage) *ApiTokenUseCas
 	return &ApiTokenUseCase{apiTokenStorage: apiTokenStorage}
 }
 
-func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, error) {
+func (uc *ApiTokenUseCase) CreateApiToken(ctx context.Context, name string) (*entities.ApiToken, error) {
 	if name == "" {
 		return nil, fmt.Errorf("failed creating api token: `name` attribute is required")
 	}
@@ -40,7 +41,7 @@ func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, erro
 		return nil, fmt.Errorf("failed hashing token: %w", err)
 	}
 
-	apiToken, err := uc.apiTokenStorage.CreateApiToken(entities.ApiToken{Name: name, TokenDigest: tokenHash, IsRevoked: false})
+	apiToken, err := uc.apiTokenStorage.CreateApiToken(ctx, entities.ApiToken{Name: name, TokenDigest: tokenHash, IsRevoked: false})
 	if err != nil {
 		return nil, fmt.Errorf("failed creating api token: %w", err)
 	}
@@ -52,13 +53,13 @@ func (uc *ApiTokenUseCase) CreateApiToken(name string) (*entities.ApiToken, erro
 	return apiToken, nil
 }
 
-func (uc *ApiTokenUseCase) IsTokenValid(token string) (bool, error) {
+func (uc *ApiTokenUseCase) IsTokenValid(ctx context.Context, token string) (bool, error) {
 	tokenHash, err := hashToken(token)
 	if err != nil {
 		return false, fmt.Errorf("failed hashing token: %w", err)
 	}
 
-	apiToken, err := uc.apiTokenStorage.GetApiTokenByDigest(tokenHash)
+	apiToken, err := uc.apiTokenStorage.GetApiTokenByDigest(ctx, tokenHash)
 	if err != nil {
 		return false, fmt.Errorf("failed querying token by digest: %w", err)
 	}
@@ -72,20 +73,20 @@ func (uc *ApiTokenUseCase) IsTokenValid(token string) (bool, error) {
 	return apiTokenExist, nil
 }
 
-func (uc *ApiTokenUseCase) GetAllApiTokens() ([]*entities.ApiToken, error) {
-	return uc.apiTokenStorage.GetAllApiTokens()
+func (uc *ApiTokenUseCase) GetAllApiTokens(ctx context.Context) ([]*entities.ApiToken, error) {
+	return uc.apiTokenStorage.GetAllApiTokens(ctx)
 }
 
-func (uc *ApiTokenUseCase) DeleteApiTokenByID(id int) error {
-	return uc.apiTokenStorage.DeleteApiTokenByID(id)
+func (uc *ApiTokenUseCase) DeleteApiTokenByID(ctx context.Context, id int) error {
+	return uc.apiTokenStorage.DeleteApiTokenByID(ctx, id)
 }
 
-func (uc *ApiTokenUseCase) GetApiTokenByID(id int) (*entities.ApiToken, error) {
-	return uc.apiTokenStorage.GetApiTokenByID(id)
+func (uc *ApiTokenUseCase) GetApiTokenByID(ctx context.Context, id int) (*entities.ApiToken, error) {
+	return uc.apiTokenStorage.GetApiTokenByID(ctx, id)
 }
 
-func (uc *ApiTokenUseCase) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
-	return uc.apiTokenStorage.UpdateApiTokenByID(id, apiToken)
+func (uc *ApiTokenUseCase) UpdateApiTokenByID(ctx context.Context, id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
+	return uc.apiTokenStorage.UpdateApiTokenByID(ctx, id, apiToken)
 }
 
 func hashToken(token string) (string, error) {

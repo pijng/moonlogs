@@ -23,11 +23,7 @@ func TestActionStorage(t *testing.T) {
 		}
 	}()
 
-	actionStorage := &ActionStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("test_moonlogs").Collection("actions"),
-	}
+	actionStorage := NewActionStorage(client.Database("test_moonlogs"))
 
 	t.Run("CreateAction", func(t *testing.T) {
 		action := entities.Action{
@@ -38,7 +34,7 @@ func TestActionStorage(t *testing.T) {
 			SchemaIDs:  entities.SchemaIDs{1, 2, 3},
 			Disabled:   false,
 		}
-		createdAction, err := actionStorage.CreateAction(action)
+		createdAction, err := actionStorage.CreateAction(ctx, action)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdAction)
 		assert.Equal(t, action.Name, createdAction.Name)
@@ -53,10 +49,10 @@ func TestActionStorage(t *testing.T) {
 			SchemaIDs:  entities.SchemaIDs{1, 2, 3},
 			Disabled:   false,
 		}
-		createdAction, err := actionStorage.CreateAction(action)
+		createdAction, err := actionStorage.CreateAction(ctx, action)
 		assert.NoError(t, err)
 
-		fetchedAction, err := actionStorage.GetActionByID(createdAction.ID)
+		fetchedAction, err := actionStorage.GetActionByID(ctx, createdAction.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, fetchedAction)
 		assert.Equal(t, createdAction.Name, fetchedAction.Name)
@@ -71,13 +67,13 @@ func TestActionStorage(t *testing.T) {
 			SchemaIDs:  entities.SchemaIDs{1, 2, 3},
 			Disabled:   false,
 		}
-		createdAction, err := actionStorage.CreateAction(action)
+		createdAction, err := actionStorage.CreateAction(ctx, action)
 		assert.NoError(t, err)
 
-		err = actionStorage.DeleteActionByID(createdAction.ID)
+		err = actionStorage.DeleteActionByID(ctx, createdAction.ID)
 		assert.NoError(t, err)
 
-		deletedAction, err := actionStorage.GetActionByID(createdAction.ID)
+		deletedAction, err := actionStorage.GetActionByID(ctx, createdAction.ID)
 		assert.NoError(t, err)
 		assert.Nil(t, deletedAction)
 	})
@@ -91,7 +87,7 @@ func TestActionStorage(t *testing.T) {
 			SchemaIDs:  entities.SchemaIDs{1, 2, 3},
 			Disabled:   false,
 		}
-		createdAction, err := actionStorage.CreateAction(action)
+		createdAction, err := actionStorage.CreateAction(ctx, action)
 		assert.NoError(t, err)
 
 		updatedData := entities.Action{
@@ -102,7 +98,7 @@ func TestActionStorage(t *testing.T) {
 			SchemaIDs:  entities.SchemaIDs{4, 5, 6},
 			Disabled:   true,
 		}
-		updatedAction, err := actionStorage.UpdateActionByID(createdAction.ID, updatedData)
+		updatedAction, err := actionStorage.UpdateActionByID(ctx, createdAction.ID, updatedData)
 		assert.NoError(t, err)
 		assert.NotNil(t, updatedAction)
 		assert.Equal(t, updatedData.Name, updatedAction.Name)
@@ -110,7 +106,7 @@ func TestActionStorage(t *testing.T) {
 	})
 
 	t.Run("GetAllActions", func(t *testing.T) {
-		actions, err := actionStorage.GetAllActions()
+		actions, err := actionStorage.GetAllActions(ctx)
 		assert.NoError(t, err)
 		assert.True(t, len(actions) > 0)
 	})

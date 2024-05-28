@@ -3,10 +3,8 @@ package controllers
 import (
 	"fmt"
 	"moonlogs/internal/api/server/response"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -14,7 +12,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func CreateApiToken(w http.ResponseWriter, r *http.Request) {
+type ApiTokenController struct {
+	apiTokenUseCase *usecases.ApiTokenUseCase
+}
+
+func NewApiTokenController(apiTokenUseCase *usecases.ApiTokenUseCase) *ApiTokenController {
+	return &ApiTokenController{
+		apiTokenUseCase: apiTokenUseCase,
+	}
+}
+
+func (c *ApiTokenController) CreateApiToken(w http.ResponseWriter, r *http.Request) {
 	var newApiToken entities.ApiToken
 
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newApiToken)
@@ -23,8 +31,7 @@ func CreateApiToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-	apiToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).CreateApiToken(newApiToken.Name)
+	apiToken, err := c.apiTokenUseCase.CreateApiToken(r.Context(), newApiToken.Name)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -33,7 +40,7 @@ func CreateApiToken(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, apiToken, response.Meta{})
 }
 
-func DeleteApiTokenByID(w http.ResponseWriter, r *http.Request) {
+func (c *ApiTokenController) DeleteApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -42,8 +49,7 @@ func DeleteApiTokenByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewApiTokenUseCase(apiTokenStorage).DeleteApiTokenByID(id)
+	err = c.apiTokenUseCase.DeleteApiTokenByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
@@ -52,7 +58,7 @@ func DeleteApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, id, response.Meta{})
 }
 
-func GetApiTokenByID(w http.ResponseWriter, r *http.Request) {
+func (c *ApiTokenController) GetApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -61,8 +67,7 @@ func GetApiTokenByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-	apiToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).GetApiTokenByID(id)
+	apiToken, err := c.apiTokenUseCase.GetApiTokenByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -76,7 +81,7 @@ func GetApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, apiToken, response.Meta{})
 }
 
-func UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
+func (c *ApiTokenController) UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -93,8 +98,7 @@ func UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-	apiToken, err := usecases.NewApiTokenUseCase(apiTokenStorage).UpdateApiTokenByID(id, apiTokenToUpdate)
+	apiToken, err := c.apiTokenUseCase.UpdateApiTokenByID(r.Context(), id, apiTokenToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -108,9 +112,8 @@ func UpdateApiTokenByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, apiToken, response.Meta{})
 }
 
-func GetAllApiTokens(w http.ResponseWriter, r *http.Request) {
-	apiTokenStorage := storage.NewApiTokenStorage(r.Context(), config.Get().DBAdapter)
-	apiTokens, err := usecases.NewApiTokenUseCase(apiTokenStorage).GetAllApiTokens()
+func (c *ApiTokenController) GetAllApiTokens(w http.ResponseWriter, r *http.Request) {
+	apiTokens, err := c.apiTokenUseCase.GetAllApiTokens(r.Context())
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

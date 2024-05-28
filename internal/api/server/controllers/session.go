@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/shared"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 
@@ -31,7 +29,17 @@ type Session struct {
 	Tags                     entities.Tags `json:"tag_ids"`
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+type SessionController struct {
+	userUseCase *usecases.UserUseCase
+}
+
+func NewSessionController(userUseCase *usecases.UserUseCase) *SessionController {
+	return &SessionController{
+		userUseCase: userUseCase,
+	}
+}
+
+func (c *SessionController) Login(w http.ResponseWriter, r *http.Request) {
 	var token string
 	var credentials Credentials
 
@@ -41,10 +49,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	userUsecase := usecases.NewUserUseCase(userStorage)
-
-	user, err := userUsecase.GetUserByEmail(credentials.Email)
+	user, err := c.userUseCase.GetUserByEmail(r.Context(), credentials.Email)
 	if err != nil || user.ID == 0 {
 		response.Return(w, false, http.StatusUnauthorized, err, nil, response.Meta{})
 		return
@@ -84,7 +89,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if token != user.Token {
-		err = userUsecase.UpdateUserTokenByID(user.ID, token)
+		err = c.userUseCase.UpdateUserTokenByID(r.Context(), user.ID, token)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
@@ -104,11 +109,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})
 }
 
-func GetSession(w http.ResponseWriter, r *http.Request) {
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	userUsecase := usecases.NewUserUseCase(userStorage)
+func (c *SessionController) GetSession(w http.ResponseWriter, r *http.Request) {
 
-	shouldCreateInitialAdmin, err := userUsecase.ShouldCreateInitialAdmin()
+	shouldCreateInitialAdmin, err := c.userUseCase.ShouldCreateInitialAdmin(r.Context())
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, fmt.Errorf("failed checking if initial admin is required: %w", err), nil, response.Meta{})
 		return
@@ -132,7 +135,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) {
 		bearerToken, _ = session.Values["token"].(string)
 	}
 
-	user, err := userUsecase.GetUserByToken(bearerToken)
+	user, err := c.userUseCase.GetUserByToken(r.Context(), bearerToken)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

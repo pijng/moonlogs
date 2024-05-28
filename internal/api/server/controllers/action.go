@@ -3,10 +3,8 @@ package controllers
 import (
 	"fmt"
 	"moonlogs/internal/api/server/response"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -14,7 +12,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func CreateAction(w http.ResponseWriter, r *http.Request) {
+type ActionController struct {
+	actionUseCase *usecases.ActionUseCase
+	schemaUseCase *usecases.SchemaUseCase
+}
+
+func NewActionController(actionUseCase *usecases.ActionUseCase, schemaUseCase *usecases.SchemaUseCase) *ActionController {
+	return &ActionController{
+		actionUseCase: actionUseCase,
+		schemaUseCase: schemaUseCase,
+	}
+}
+
+func (c *ActionController) CreateAction(w http.ResponseWriter, r *http.Request) {
 	var newAction entities.Action
 
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newAction)
@@ -23,9 +33,8 @@ func CreateAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
 	for _, id := range newAction.SchemaIDs {
-		schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByID(id)
+		schema, err := c.schemaUseCase.GetSchemaByID(r.Context(), id)
 		if err != nil {
 			response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 			return
@@ -38,8 +47,7 @@ func CreateAction(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	actionStorage := storage.NewActionStorage(r.Context(), config.Get().DBAdapter)
-	action, err := usecases.NewActionUseCase(actionStorage).CreateAction(newAction)
+	action, err := c.actionUseCase.CreateAction(r.Context(), newAction)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -48,7 +56,7 @@ func CreateAction(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, action, response.Meta{})
 }
 
-func DeleteActionByID(w http.ResponseWriter, r *http.Request) {
+func (c *ActionController) DeleteActionByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -57,8 +65,7 @@ func DeleteActionByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actionStorage := storage.NewActionStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewActionUseCase(actionStorage).DeleteActionByID(id)
+	err = c.actionUseCase.DeleteActionByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
@@ -67,7 +74,7 @@ func DeleteActionByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, id, response.Meta{})
 }
 
-func GetActionByID(w http.ResponseWriter, r *http.Request) {
+func (c *ActionController) GetActionByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -76,8 +83,7 @@ func GetActionByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actionStorage := storage.NewActionStorage(r.Context(), config.Get().DBAdapter)
-	action, err := usecases.NewActionUseCase(actionStorage).GetActionByID(id)
+	action, err := c.actionUseCase.GetActionByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -91,7 +97,7 @@ func GetActionByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, action, response.Meta{})
 }
 
-func UpdateActionByID(w http.ResponseWriter, r *http.Request) {
+func (c *ActionController) UpdateActionByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -108,8 +114,7 @@ func UpdateActionByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actionStorage := storage.NewActionStorage(r.Context(), config.Get().DBAdapter)
-	action, err := usecases.NewActionUseCase(actionStorage).UpdateActionByID(id, actionToUpdate)
+	action, err := c.actionUseCase.UpdateActionByID(r.Context(), id, actionToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -123,9 +128,8 @@ func UpdateActionByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, action, response.Meta{})
 }
 
-func GetAllActions(w http.ResponseWriter, r *http.Request) {
-	actionStorage := storage.NewActionStorage(r.Context(), config.Get().DBAdapter)
-	actions, err := usecases.NewActionUseCase(actionStorage).GetAllActions()
+func (c *ActionController) GetAllActions(w http.ResponseWriter, r *http.Request) {
+	actions, err := c.actionUseCase.GetAllActions(r.Context())
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return

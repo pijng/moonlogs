@@ -9,9 +9,8 @@ import (
 	"moonlogs/internal/persistence"
 	"moonlogs/internal/services"
 	"moonlogs/internal/tasks"
+	"moonlogs/internal/usecases"
 	"time"
-
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 //go:embed migrations/*.sql
@@ -30,14 +29,6 @@ func main() {
 		}
 	}
 
-	var nrapp *newrelic.Application
-	if cfg.NewrelicProfiling {
-		nrapp, err = services.StartNewrelic(cfg.NewrelicLicense)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	err = persistence.InitDB(cfg)
 	if err != nil {
 		log.Fatal(err)
@@ -48,16 +39,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	runCleanupTasks(context.Background())
+	storageInstances := persistence.InitStorages(cfg.DBAdapter)
+	usecaseInstances := usecases.InitUsecases(storageInstances)
 
-	err = server.ListenAndServe(cfg, nrapp)
+	runCleanupTasks(context.Background(), usecaseInstances)
+
+	err = server.ListenAndServe(cfg, usecaseInstances)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func runCleanupTasks(ctx context.Context) {
-	go tasks.RunRecordsCleanupTask(ctx, 1*time.Hour)
-	// Not used anymore
-	// go tasks.RunStatementsCleanupTask(ctx, 15*time.Minute)
+func runCleanupTasks(ctx context.Context, uc *usecases.UseCases) {
+	go tasks.RunRecordsCleanupTask(ctx, 1*time.Hour, uc)
 }

@@ -3,9 +3,7 @@ package session
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 
@@ -19,10 +17,15 @@ const (
 	KEY  sessionKey = "moonlogs"
 )
 
-var store *sessions.CookieStore
+type SessionHelper struct {
+	store       *sessions.CookieStore
+	userUseCase *usecases.UserUseCase
+}
 
-func RegisterSessionStore() *sessions.CookieStore {
-	store = sessions.NewCookieStore([]byte("moonlogs"))
+var sessionHelper *SessionHelper
+
+func RegisterSessionStore(userUseCase *usecases.UserUseCase) *SessionHelper {
+	store := sessions.NewCookieStore([]byte("moonlogs"))
 
 	store.Options = &sessions.Options{
 		MaxAge:   86400 * 30,
@@ -31,11 +34,16 @@ func RegisterSessionStore() *sessions.CookieStore {
 		Secure:   true,
 	}
 
-	return store
+	sessionHelper = &SessionHelper{
+		store:       store,
+		userUseCase: userUseCase,
+	}
+
+	return sessionHelper
 }
 
 func GetSessionStore() *sessions.CookieStore {
-	return store
+	return sessionHelper.store
 }
 
 func GenerateAuthToken() (string, error) {
@@ -68,8 +76,7 @@ func GetUserFromContext(r *http.Request) *entities.User {
 		return nil
 	}
 
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	user, err := usecases.NewUserUseCase(userStorage).GetUserByID(userID)
+	user, err := sessionHelper.userUseCase.GetUserByID(r.Context(), userID)
 	if err != nil {
 		return nil
 	}

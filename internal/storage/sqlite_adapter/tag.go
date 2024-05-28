@@ -6,24 +6,21 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/persistence"
 )
 
 type TagStorage struct {
-	ctx     context.Context
 	readDB  *sql.DB
 	writeDB *sql.DB
 }
 
-func NewTagStorage(ctx context.Context) *TagStorage {
+func NewTagStorage(readDB *sql.DB, writeDB *sql.DB) *TagStorage {
 	return &TagStorage{
-		ctx:     ctx,
-		writeDB: persistence.SqliteWriteDB(),
-		readDB:  persistence.SqliteReadDB(),
+		writeDB: readDB,
+		readDB:  writeDB,
 	}
 }
 
-func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
+func (s *TagStorage) CreateTag(ctx context.Context, tag entities.Tag) (*entities.Tag, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -31,7 +28,7 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 
 	query := "INSERT INTO tags (name, view_order) VALUES (?, ?);"
 
-	result, err := tx.ExecContext(s.ctx, query, tag.Name, tag.ViewOrder)
+	result, err := tx.ExecContext(ctx, query, tag.Name, tag.ViewOrder)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting tag: %w", err)
 	}
@@ -46,7 +43,7 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 		return nil, fmt.Errorf("failed retrieving tag last insert id: %w", err)
 	}
 
-	t, err := s.GetTagByID(int(id))
+	t, err := s.GetTagByID(ctx, int(id))
 	if err != nil {
 		return nil, fmt.Errorf("failed querying tag: %w", err)
 	}
@@ -54,15 +51,15 @@ func (s *TagStorage) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 	return t, nil
 }
 
-func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
+func (s *TagStorage) GetTagByID(ctx context.Context, id int) (*entities.Tag, error) {
 	query := "SELECT * FROM tags WHERE id=? LIMIT 1;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(s.ctx, id)
+	row := stmt.QueryRowContext(ctx, id)
 
 	var t entities.Tag
 	err = row.Scan(&t.ID, &t.Name, &t.ViewOrder)
@@ -73,7 +70,7 @@ func (s *TagStorage) GetTagByID(id int) (*entities.Tag, error) {
 	return &t, nil
 }
 
-func (s *TagStorage) DeleteTagByID(id int) error {
+func (s *TagStorage) DeleteTagByID(ctx context.Context, id int) error {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
@@ -84,7 +81,7 @@ func (s *TagStorage) DeleteTagByID(id int) error {
 
 	query := "DELETE FROM tags WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, id)
+	_, err = tx.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting tag: %w", err)
 	}
@@ -92,7 +89,7 @@ func (s *TagStorage) DeleteTagByID(id int) error {
 	return err
 }
 
-func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
+func (s *TagStorage) UpdateTagByID(ctx context.Context, id int, tag entities.Tag) (*entities.Tag, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -103,23 +100,23 @@ func (s *TagStorage) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, err
 
 	query := "UPDATE tags SET name=?, view_order=? WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, tag.Name, tag.ViewOrder, id)
+	_, err = tx.ExecContext(ctx, query, tag.Name, tag.ViewOrder, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating tag: %w", err)
 	}
 
-	return s.GetTagByID(id)
+	return s.GetTagByID(ctx, id)
 }
 
-func (s *TagStorage) GetAllTags() ([]*entities.Tag, error) {
+func (s *TagStorage) GetAllTags(ctx context.Context) ([]*entities.Tag, error) {
 	query := "SELECT * FROM tags ORDER BY view_order ASC, id DESC;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx)
+	rows, err := stmt.QueryContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying tags: %w", err)
 	}

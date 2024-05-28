@@ -24,11 +24,7 @@ func TestRecordStorage(t *testing.T) {
 		}
 	}()
 
-	recordStorage := &RecordStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("test_moonlogs").Collection("records"),
-	}
+	recordStorage := NewRecordStorage(client.Database("test_moonlogs"))
 
 	t.Run("CreateRecord", func(t *testing.T) {
 		record := entities.Record{
@@ -43,7 +39,7 @@ func TestRecordStorage(t *testing.T) {
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
-		createdRecord, err := recordStorage.CreateRecord(record)
+		createdRecord, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdRecord)
 		assert.Equal(t, record.Text, createdRecord.Text)
@@ -62,10 +58,10 @@ func TestRecordStorage(t *testing.T) {
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
-		createdRecord, err := recordStorage.CreateRecord(record)
+		createdRecord, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 
-		fetchedRecord, err := recordStorage.GetRecordByID(createdRecord.ID)
+		fetchedRecord, err := recordStorage.GetRecordByID(ctx, createdRecord.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, fetchedRecord)
 		assert.Equal(t, createdRecord.Text, fetchedRecord.Text)
@@ -84,12 +80,12 @@ func TestRecordStorage(t *testing.T) {
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
-		_, err := recordStorage.CreateRecord(record)
+		_, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 
 		from := time.Now().Add(-time.Hour)
 		to := time.Now()
-		records, totalCount, err := recordStorage.GetRecordsByQuery(record, &from, &to, 10, 0)
+		records, totalCount, err := recordStorage.GetRecordsByQuery(ctx, record, &from, &to, 10, 0)
 		assert.NoError(t, err)
 		assert.True(t, totalCount > 0)
 		assert.NotNil(t, records)
@@ -108,10 +104,10 @@ func TestRecordStorage(t *testing.T) {
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
-		_, err := recordStorage.CreateRecord(record)
+		_, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 
-		records, err := recordStorage.GetAllRecords(10, 0)
+		records, err := recordStorage.GetAllRecords(ctx, 10, 0)
 		assert.NoError(t, err)
 		assert.True(t, len(records) > 0)
 	})
@@ -129,23 +125,23 @@ func TestRecordStorage(t *testing.T) {
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
-		_, err := recordStorage.CreateRecord(record)
+		_, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 
-		records, err := recordStorage.GetRecordsByGroupHash(record.SchemaName, "groupHash")
+		records, err := recordStorage.GetRecordsByGroupHash(ctx, record.SchemaName, "groupHash")
 		assert.NoError(t, err)
 		assert.True(t, len(records) > 0)
 	})
 
 	t.Run("GetAllRecordsCount", func(t *testing.T) {
-		count, err := recordStorage.GetAllRecordsCount()
+		count, err := recordStorage.GetAllRecordsCount(ctx)
 		assert.NoError(t, err)
 		assert.True(t, count > 0)
 	})
 
 	t.Run("FindStaleIDs", func(t *testing.T) {
 		threshold := time.Now().Add(-time.Hour).Unix()
-		ids, err := recordStorage.FindStaleIDs(1, threshold)
+		ids, err := recordStorage.FindStaleIDs(ctx, 1, threshold)
 		assert.NoError(t, err)
 		assert.NotNil(t, ids)
 	})
@@ -163,13 +159,13 @@ func TestRecordStorage(t *testing.T) {
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
-		createdRecord, err := recordStorage.CreateRecord(record)
+		createdRecord, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 
-		err = recordStorage.DeleteByIDs([]int{createdRecord.ID})
+		err = recordStorage.DeleteByIDs(ctx, []int{createdRecord.ID})
 		assert.NoError(t, err)
 
-		deletedRecord, err := recordStorage.GetRecordByID(createdRecord.ID)
+		deletedRecord, err := recordStorage.GetRecordByID(ctx, createdRecord.ID)
 		assert.NoError(t, err)
 		assert.Nil(t, deletedRecord)
 	})

@@ -5,10 +5,8 @@ import (
 	"moonlogs/internal/api/server/access"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -16,7 +14,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func CreateSchema(w http.ResponseWriter, r *http.Request) {
+type SchemaController struct {
+	schemaUseCase *usecases.SchemaUseCase
+}
+
+func NewSchemaController(schemaUseCase *usecases.SchemaUseCase) *SchemaController {
+	return &SchemaController{
+		schemaUseCase: schemaUseCase,
+	}
+}
+
+func (c *SchemaController) CreateSchema(w http.ResponseWriter, r *http.Request) {
 	var newSchema entities.Schema
 
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newSchema)
@@ -25,8 +33,7 @@ func CreateSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	schema, err := usecases.NewSchemaUseCase(schemaStorage).CreateSchema(newSchema)
+	schema, err := c.schemaUseCase.CreateSchema(r.Context(), newSchema)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -35,7 +42,7 @@ func CreateSchema(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, schema, response.Meta{})
 }
 
-func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
+func (c *SchemaController) UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -53,8 +60,7 @@ func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	schema, err := usecases.NewSchemaUseCase(schemaStorage).UpdateSchemaByID(id, schemaToUpdate)
+	schema, err := c.schemaUseCase.UpdateSchemaByID(r.Context(), id, schemaToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -68,11 +74,10 @@ func UpdateSchemaByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, schema, response.Meta{})
 }
 
-func GetAllSchemas(w http.ResponseWriter, r *http.Request) {
+func (c *SchemaController) GetAllSchemas(w http.ResponseWriter, r *http.Request) {
 	user := session.GetUserFromContext(r)
 
-	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	schemas, err := usecases.NewSchemaUseCase(schemaStorage).GetAllSchemas(user)
+	schemas, err := c.schemaUseCase.GetAllSchemas(r.Context(), user)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -81,7 +86,7 @@ func GetAllSchemas(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, schemas, response.Meta{})
 }
 
-func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
+func (c *SchemaController) GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -91,8 +96,7 @@ func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	schema, err := usecases.NewSchemaUseCase(schemaStorage).GetSchemaByID(id)
+	schema, err := c.schemaUseCase.GetSchemaByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -103,7 +107,7 @@ func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if access.IsSchemaForbiddenForUser(schema.Name, r) {
+	if access.IsSchemaForbiddenForUser(c.schemaUseCase, schema.Name, r) {
 		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 		return
 	}
@@ -111,7 +115,7 @@ func GetSchemaByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, schema, response.Meta{})
 }
 
-func DeleteSchemaByID(w http.ResponseWriter, r *http.Request) {
+func (c *SchemaController) DeleteSchemaByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -120,8 +124,7 @@ func DeleteSchemaByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	schemaStorage := storage.NewSchemaStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewSchemaUseCase(schemaStorage).DeleteSchemaByID(id)
+	err = c.schemaUseCase.DeleteSchemaByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return

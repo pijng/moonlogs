@@ -23,15 +23,11 @@ func TestTagStorage(t *testing.T) {
 		}
 	}()
 
-	tagStorage := &TagStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("test_moonlogs").Collection("tags"),
-	}
+	tagStorage := NewTagStorage(client.Database("test_moonlogs"))
 
 	t.Run("CreateTag", func(t *testing.T) {
 		tag := entities.Tag{Name: "TestTag", ViewOrder: 1}
-		createdTag, err := tagStorage.CreateTag(tag)
+		createdTag, err := tagStorage.CreateTag(ctx, tag)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdTag)
 		assert.NotNil(t, createdTag.ID)
@@ -40,10 +36,10 @@ func TestTagStorage(t *testing.T) {
 
 	t.Run("GetTagByID", func(t *testing.T) {
 		tag := entities.Tag{Name: "TestTag2", ViewOrder: 2}
-		createdTag, err := tagStorage.CreateTag(tag)
+		createdTag, err := tagStorage.CreateTag(ctx, tag)
 		assert.NoError(t, err)
 
-		foundTag, err := tagStorage.GetTagByID(createdTag.ID)
+		foundTag, err := tagStorage.GetTagByID(ctx, createdTag.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdTag.ID)
 		assert.Equal(t, "TestTag2", foundTag.Name)
@@ -51,31 +47,31 @@ func TestTagStorage(t *testing.T) {
 
 	t.Run("DeleteTagByID", func(t *testing.T) {
 		tag := entities.Tag{Name: "TestTag3", ViewOrder: 3}
-		createdTag, err := tagStorage.CreateTag(tag)
+		createdTag, err := tagStorage.CreateTag(ctx, tag)
 		assert.NoError(t, err)
 
-		err = tagStorage.DeleteTagByID(createdTag.ID)
+		err = tagStorage.DeleteTagByID(ctx, createdTag.ID)
 		assert.NoError(t, err)
 
-		foundTag, err := tagStorage.GetTagByID(createdTag.ID)
+		foundTag, err := tagStorage.GetTagByID(ctx, createdTag.ID)
 		assert.Nil(t, foundTag)
 		assert.NoError(t, err)
 	})
 
 	t.Run("UpdateTagByID", func(t *testing.T) {
 		tag := entities.Tag{Name: "TestTag4", ViewOrder: 4}
-		createdTag, err := tagStorage.CreateTag(tag)
+		createdTag, err := tagStorage.CreateTag(ctx, tag)
 		assert.NoError(t, err)
 
 		updatedTag := entities.Tag{Name: "UpdatedTestTag4", ViewOrder: 5}
-		updated, err := tagStorage.UpdateTagByID(createdTag.ID, updatedTag)
+		updated, err := tagStorage.UpdateTagByID(ctx, createdTag.ID, updatedTag)
 		assert.NoError(t, err)
 		assert.Equal(t, "UpdatedTestTag4", updated.Name)
 		assert.Equal(t, 5, updated.ViewOrder)
 	})
 
 	t.Run("GetAllTags", func(t *testing.T) {
-		tags, err := tagStorage.GetAllTags()
+		tags, err := tagStorage.GetAllTags(ctx)
 		assert.NoError(t, err)
 		assert.True(t, len(tags) > 0)
 	})

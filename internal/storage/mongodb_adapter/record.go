@@ -9,7 +9,6 @@ import (
 	"moonlogs/internal/lib/qrx"
 	"time"
 
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,27 +16,22 @@ import (
 )
 
 type RecordStorage struct {
-	ctx        context.Context
-	client     *mongo.Client
+	db         *mongo.Database
 	collection *mongo.Collection
 }
 
-func NewRecordStorage(ctx context.Context, client *mongo.Client) *RecordStorage {
+func NewRecordStorage(db *mongo.Database) *RecordStorage {
 	return &RecordStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("moonlogs").Collection("records"),
+		db:         db,
+		collection: db.Collection("records"),
 	}
 }
 
-func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, s.client, "records")
+func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record) (*entities.Record, error) {
+	nextValue, err := getNextSequenceValue(ctx, s.db, "records")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
-
-	txn := newrelic.FromContext(s.ctx)
-	defer txn.StartSegment("storage.sqlite_adapter.CreateRecord").End()
 
 	formattedQuery := make(map[string]string)
 	for k, v := range record.Query {
@@ -63,13 +57,13 @@ func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, 
 		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": record.GroupHash,
 		"level": record.Level, "created_at": record.CreatedAt,
 	}
-	result, err := s.collection.InsertOne(s.ctx, document)
+	result, err := s.collection.InsertOne(ctx, document)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting record: %w", err)
 	}
 
 	var lr entities.Record
-	err = s.collection.FindOne(s.ctx, bson.M{"_id": result.InsertedID}).Decode(&lr)
+	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&lr)
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, fmt.Errorf("failed querying inserted record: %w", err)
 	}
@@ -77,10 +71,10 @@ func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, 
 	return &lr, nil
 }
 
-func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
+func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Record, error) {
 	var lr entities.Record
 
-	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&lr)
+	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&lr)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, nil
@@ -91,7 +85,7 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 	return &lr, nil
 }
 
-func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
+func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
 	filter := bson.M{}
 
 	if record.ID != 0 {
@@ -121,20 +115,20 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	findOptions.SetSkip(int64(offset))
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
-	totalCount, err := s.collection.CountDocuments(s.ctx, filter)
+	totalCount, err := s.collection.CountDocuments(ctx, filter)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed counting records by query: %w", err)
 	}
 
-	cursor, err := s.collection.Find(s.ctx, filter, findOptions)
+	cursor, err := s.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed querying records: %w", err)
 	}
-	defer cursor.Close(s.ctx)
+	defer cursor.Close(ctx)
 
 	records := make([]*entities.Record, 0)
 
-	for cursor.Next(s.ctx) {
+	for cursor.Next(ctx) {
 		var lr entities.Record
 		if err := cursor.Decode(&lr); err != nil {
 			return nil, 0, fmt.Errorf("failed decoding record: %w", err)
@@ -146,21 +140,21 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	return records, int(totalCount), nil
 }
 
-func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
+func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int) ([]*entities.Record, error) {
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(limit))
 	findOptions.SetSkip(int64(offset))
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
-	cursor, err := s.collection.Find(s.ctx, bson.M{}, findOptions)
+	cursor, err := s.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying records: %w", err)
 	}
-	defer cursor.Close(s.ctx)
+	defer cursor.Close(ctx)
 
 	records := make([]*entities.Record, 0)
 
-	for cursor.Next(s.ctx) {
+	for cursor.Next(ctx) {
 		var lr entities.Record
 		if err := cursor.Decode(&lr); err != nil {
 			return nil, fmt.Errorf("failed decoding record: %w", err)
@@ -172,21 +166,21 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 	return records, nil
 }
 
-func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
+func (s *RecordStorage) GetRecordsByGroupHash(ctx context.Context, schemaName string, groupHash string) ([]*entities.Record, error) {
 	filter := bson.M{"schema_name": schemaName, "group_hash": groupHash}
 
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: 1}})
 
-	cursor, err := s.collection.Find(s.ctx, filter, findOptions)
+	cursor, err := s.collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying records: %w", err)
 	}
-	defer cursor.Close(s.ctx)
+	defer cursor.Close(ctx)
 
 	records := make([]*entities.Record, 0)
 
-	for cursor.Next(s.ctx) {
+	for cursor.Next(ctx) {
 		var lr entities.Record
 		if err := cursor.Decode(&lr); err != nil {
 			return nil, fmt.Errorf("failed decoding record: %w", err)
@@ -198,8 +192,8 @@ func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash strin
 	return records, nil
 }
 
-func (s *RecordStorage) GetAllRecordsCount() (int, error) {
-	totalCount, err := s.collection.CountDocuments(s.ctx, bson.M{})
+func (s *RecordStorage) GetAllRecordsCount(ctx context.Context) (int, error) {
+	totalCount, err := s.collection.CountDocuments(ctx, bson.M{})
 	if err != nil {
 		return 0, fmt.Errorf("counting all records: %w", err)
 	}
@@ -207,7 +201,7 @@ func (s *RecordStorage) GetAllRecordsCount() (int, error) {
 	return int(totalCount), nil
 }
 
-func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, error) {
+func (s *RecordStorage) FindStaleIDs(ctx context.Context, schemaID int, threshold int64) ([]int, error) {
 	// Count the number of rows before fetching the IDs to efficiently
 	// pre-allocate array of ids for resulting query
 	filter := bson.M{
@@ -215,19 +209,19 @@ func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, erro
 		"created_at": bson.M{"$lte": threshold},
 	}
 
-	rowsCount, err := s.collection.CountDocuments(s.ctx, filter)
+	rowsCount, err := s.collection.CountDocuments(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("counting stale records: %w", err)
 	}
 
 	ids := make([]int, 0, rowsCount)
 
-	cursor, err := s.collection.Find(s.ctx, filter)
+	cursor, err := s.collection.Find(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("querying stale record's ids: %w", err)
 	}
 
-	for cursor.Next(s.ctx) {
+	for cursor.Next(ctx) {
 		var lr entities.Record
 		if err := cursor.Decode(&lr); err != nil {
 			return nil, fmt.Errorf("failed decoding record's id: %w", err)
@@ -239,13 +233,13 @@ func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, erro
 	return ids, nil
 }
 
-func (s *RecordStorage) DeleteByIDs(ids []int) error {
+func (s *RecordStorage) DeleteByIDs(ctx context.Context, ids []int) error {
 	if len(ids) == 0 {
 		return nil
 	}
 
 	filter := bson.M{"id": bson.M{"$in": ids}}
-	_, err := s.collection.DeleteMany(s.ctx, filter)
+	_, err := s.collection.DeleteMany(ctx, filter)
 
 	return err
 }
