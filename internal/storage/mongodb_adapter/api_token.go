@@ -76,7 +76,7 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(ctx context.Context, digest string
 	err := s.collection.FindOne(ctx, bson.M{"token_digest": digest}).Decode(&t)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			return &entities.ApiToken{}, nil
 		}
 		return nil, fmt.Errorf("failed querying api token by id: %w", err)
 	}
