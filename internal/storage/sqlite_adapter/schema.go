@@ -7,26 +7,21 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/persistence"
-
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 type SchemaStorage struct {
-	ctx     context.Context
 	readDB  *sql.DB
 	writeDB *sql.DB
 }
 
-func NewSchemaStorage(ctx context.Context) *SchemaStorage {
+func NewSchemaStorage(readDB *sql.DB, writeDB *sql.DB) *SchemaStorage {
 	return &SchemaStorage{
-		ctx:     ctx,
-		readDB:  persistence.SqliteReadDB(),
-		writeDB: persistence.SqliteWriteDB(),
+		readDB:  readDB,
+		writeDB: writeDB,
 	}
 }
 
-func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, error) {
+func (s *SchemaStorage) CreateSchema(ctx context.Context, schema entities.Schema) (*entities.Schema, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -34,7 +29,7 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 
 	query := "INSERT INTO schemas (name, description, retention_days, title, fields, kinds, tag_id) VALUES (?,?,?,?,?,?,?);"
 
-	result, err := tx.ExecContext(s.ctx, query, schema.Name, schema.Description, schema.RetentionDays, schema.Title,
+	result, err := tx.ExecContext(ctx, query, schema.Name, schema.Description, schema.RetentionDays, schema.Title,
 		schema.Fields, schema.Kinds, schema.TagID)
 
 	if err != nil {
@@ -51,7 +46,7 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 		return nil, fmt.Errorf("failed retrieving schema last insert id: %w", err)
 	}
 
-	sm, err := s.GetById(int(id))
+	sm, err := s.GetById(ctx, int(id))
 	if err != nil {
 		return nil, fmt.Errorf("failed querying schema: %w", err)
 	}
@@ -59,7 +54,7 @@ func (s *SchemaStorage) CreateSchema(schema entities.Schema) (*entities.Schema, 
 	return sm, nil
 }
 
-func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
+func (s *SchemaStorage) UpdateSchemaByID(ctx context.Context, id int, schema entities.Schema) (*entities.Schema, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -70,23 +65,23 @@ func (s *SchemaStorage) UpdateSchemaByID(id int, schema entities.Schema) (*entit
 
 	query := "UPDATE schemas SET description=?, title=?, fields=?, kinds=?, retention_days=?, tag_id=? WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, schema.Description, schema.Title, schema.Fields, schema.Kinds, schema.RetentionDays, schema.TagID, id)
+	_, err = tx.ExecContext(ctx, query, schema.Description, schema.Title, schema.Fields, schema.Kinds, schema.RetentionDays, schema.TagID, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating schema: %w", err)
 	}
 
-	return s.GetById(id)
+	return s.GetById(ctx, id)
 }
 
-func (s *SchemaStorage) GetById(id int) (*entities.Schema, error) {
+func (s *SchemaStorage) GetById(ctx context.Context, id int) (*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE id=? LIMIT 1;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(s.ctx, id)
+	row := stmt.QueryRowContext(ctx, id)
 
 	var sm entities.Schema
 	err = row.Scan(&sm.ID, &sm.Title, &sm.Description, &sm.Name, &sm.Fields, &sm.Kinds, &sm.TagID, &sm.RetentionDays)
@@ -97,15 +92,15 @@ func (s *SchemaStorage) GetById(id int) (*entities.Schema, error) {
 	return &sm, nil
 }
 
-func (s *SchemaStorage) GetByTagID(tagID int) ([]*entities.Schema, error) {
+func (s *SchemaStorage) GetByTagID(ctx context.Context, tagID int) ([]*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE tag_id=?;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx, tagID)
+	rows, err := stmt.QueryContext(ctx, tagID)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying schemas: %w", err)
 	}
@@ -127,18 +122,15 @@ func (s *SchemaStorage) GetByTagID(tagID int) ([]*entities.Schema, error) {
 	return schemas, nil
 }
 
-func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
-	txn := newrelic.FromContext(s.ctx)
-	defer txn.StartSegment("storage.sqlite_adapter.GetByName").End()
-
+func (s *SchemaStorage) GetByName(ctx context.Context, name string) (*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE name=? LIMIT 1;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return &entities.Schema{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(s.ctx, name)
+	row := stmt.QueryRowContext(ctx, name)
 
 	var sm entities.Schema
 	err = row.Scan(&sm.ID, &sm.Title, &sm.Description, &sm.Name, &sm.Fields, &sm.Kinds, &sm.TagID, &sm.RetentionDays)
@@ -153,15 +145,15 @@ func (s *SchemaStorage) GetByName(name string) (*entities.Schema, error) {
 	return &sm, nil
 }
 
-func (s *SchemaStorage) GetSchemasByTitleOrDescription(title string, description string) ([]*entities.Schema, error) {
+func (s *SchemaStorage) GetSchemasByTitleOrDescription(ctx context.Context, title string, description string) ([]*entities.Schema, error) {
 	query := "SELECT * FROM schemas WHERE title LIKE ? OR description lile ? ORDER BY id desc;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx, qrx.Contains(title), qrx.Contains(description))
+	rows, err := stmt.QueryContext(ctx, qrx.Contains(title), qrx.Contains(description))
 	if err != nil {
 		return nil, fmt.Errorf("failed querying schemas: %w", err)
 	}
@@ -183,15 +175,15 @@ func (s *SchemaStorage) GetSchemasByTitleOrDescription(title string, description
 	return schemas, nil
 }
 
-func (s *SchemaStorage) GetAllSchemas() ([]*entities.Schema, error) {
+func (s *SchemaStorage) GetAllSchemas(ctx context.Context) ([]*entities.Schema, error) {
 	query := "SELECT * FROM schemas ORDER BY id DESC;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx)
+	rows, err := stmt.QueryContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying schemas: %w", err)
 	}
@@ -213,7 +205,7 @@ func (s *SchemaStorage) GetAllSchemas() ([]*entities.Schema, error) {
 	return schemas, nil
 }
 
-func (s *SchemaStorage) DeleteSchemaByID(id int) error {
+func (s *SchemaStorage) DeleteSchemaByID(ctx context.Context, id int) error {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
@@ -224,7 +216,7 @@ func (s *SchemaStorage) DeleteSchemaByID(id int) error {
 
 	query := "DELETE FROM schemas WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, id)
+	_, err = tx.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting schema: %w", err)
 	}

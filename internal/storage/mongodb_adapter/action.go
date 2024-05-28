@@ -12,34 +12,32 @@ import (
 )
 
 type ActionStorage struct {
-	ctx        context.Context
-	client     *mongo.Client
+	db         *mongo.Database
 	collection *mongo.Collection
 }
 
-func NewActionStorage(ctx context.Context, client *mongo.Client) *ActionStorage {
+func NewActionStorage(db *mongo.Database) *ActionStorage {
 	return &ActionStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("moonlogs").Collection("actions"),
+		db:         db,
+		collection: db.Collection("actions"),
 	}
 }
 
-func (s *ActionStorage) CreateAction(action entities.Action) (*entities.Action, error) {
-	nextValue, err := getNextSequenceValue(s.ctx, s.client, "actions")
+func (s *ActionStorage) CreateAction(ctx context.Context, action entities.Action) (*entities.Action, error) {
+	nextValue, err := getNextSequenceValue(ctx, s.db, "actions")
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}
 
 	action.ID = nextValue
 
-	result, err := s.collection.InsertOne(s.ctx, action)
+	result, err := s.collection.InsertOne(ctx, action)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting action: %w", err)
 	}
 
 	var t entities.Action
-	err = s.collection.FindOne(s.ctx, bson.M{"_id": result.InsertedID}).Decode(&t)
+	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&t)
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, fmt.Errorf("failed querying inserted action: %w", err)
 	}
@@ -47,10 +45,10 @@ func (s *ActionStorage) CreateAction(action entities.Action) (*entities.Action, 
 	return &t, nil
 }
 
-func (s *ActionStorage) GetActionByID(id int) (*entities.Action, error) {
+func (s *ActionStorage) GetActionByID(ctx context.Context, id int) (*entities.Action, error) {
 	var t entities.Action
 
-	err := s.collection.FindOne(s.ctx, bson.M{"id": id}).Decode(&t)
+	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&t)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, nil
@@ -61,8 +59,8 @@ func (s *ActionStorage) GetActionByID(id int) (*entities.Action, error) {
 	return &t, nil
 }
 
-func (s *ActionStorage) DeleteActionByID(id int) error {
-	_, err := s.collection.DeleteOne(s.ctx, bson.M{"id": id})
+func (s *ActionStorage) DeleteActionByID(ctx context.Context, id int) error {
+	_, err := s.collection.DeleteOne(ctx, bson.M{"id": id})
 	if err != nil {
 		return fmt.Errorf("failed deleting action: %w", err)
 	}
@@ -70,7 +68,7 @@ func (s *ActionStorage) DeleteActionByID(id int) error {
 	return err
 }
 
-func (s *ActionStorage) UpdateActionByID(id int, action entities.Action) (*entities.Action, error) {
+func (s *ActionStorage) UpdateActionByID(ctx context.Context, id int, action entities.Action) (*entities.Action, error) {
 	update := bson.M{"$set": bson.M{
 		"name":       action.Name,
 		"pattern":    action.Pattern,
@@ -80,27 +78,27 @@ func (s *ActionStorage) UpdateActionByID(id int, action entities.Action) (*entit
 		"schema_ids": action.SchemaIDs,
 	}}
 
-	_, err := s.collection.UpdateOne(s.ctx, bson.M{"id": id}, update)
+	_, err := s.collection.UpdateOne(ctx, bson.M{"id": id}, update)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating action: %w", err)
 	}
 
-	return s.GetActionByID(id)
+	return s.GetActionByID(ctx, id)
 }
 
-func (s *ActionStorage) GetAllActions() ([]*entities.Action, error) {
+func (s *ActionStorage) GetAllActions(ctx context.Context) ([]*entities.Action, error) {
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{Key: "id", Value: -1}})
 
-	cursor, err := s.collection.Find(s.ctx, bson.M{}, findOptions)
+	cursor, err := s.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying actions: %w", err)
 	}
-	defer cursor.Close(s.ctx)
+	defer cursor.Close(ctx)
 
 	actions := make([]*entities.Action, 0)
 
-	for cursor.Next(s.ctx) {
+	for cursor.Next(ctx) {
 		var t entities.Action
 		if err := cursor.Decode(&t); err != nil {
 			return nil, fmt.Errorf("failed decoding action: %w", err)

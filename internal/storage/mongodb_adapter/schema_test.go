@@ -23,11 +23,7 @@ func TestSchemaStorage(t *testing.T) {
 		}
 	}()
 
-	schemaStorage := &SchemaStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("test_moonlogs").Collection("schemas"),
-	}
+	schemaStorage := NewSchemaStorage(client.Database("test_moonlogs"))
 
 	t.Run("CreateSchema", func(t *testing.T) {
 		schema := entities.Schema{
@@ -38,7 +34,7 @@ func TestSchemaStorage(t *testing.T) {
 			RetentionDays: 30,
 			TagID:         1,
 		}
-		createdSchema, err := schemaStorage.CreateSchema(schema)
+		createdSchema, err := schemaStorage.CreateSchema(ctx, schema)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdSchema)
 		assert.Equal(t, schema.Title, createdSchema.Title)
@@ -48,7 +44,7 @@ func TestSchemaStorage(t *testing.T) {
 	})
 
 	t.Run("GetById", func(t *testing.T) {
-		schema, err := schemaStorage.CreateSchema(entities.Schema{
+		schema, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Test Schema 2",
 			Description:   "Another schema for testing",
 			Fields:        entities.Fields{{Title: "Field3", Name: "field3"}, {Title: "Field4", Name: "field4"}},
@@ -58,7 +54,7 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		fetchedSchema, err := schemaStorage.GetById(schema.ID)
+		fetchedSchema, err := schemaStorage.GetById(ctx, schema.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, fetchedSchema)
 		assert.Equal(t, schema.Title, fetchedSchema.Title)
@@ -68,7 +64,7 @@ func TestSchemaStorage(t *testing.T) {
 	})
 
 	t.Run("UpdateSchemaByID", func(t *testing.T) {
-		schema, err := schemaStorage.CreateSchema(entities.Schema{
+		schema, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Test Schema 3",
 			Description:   "Yet another schema for testing",
 			Fields:        entities.Fields{{Title: "Field5", Name: "field5"}, {Title: "Field6", Name: "field6"}},
@@ -80,7 +76,7 @@ func TestSchemaStorage(t *testing.T) {
 
 		schema.Title = "Updated Test Schema 3"
 		schema.Fields = entities.Fields{{Title: "Updated Field5", Name: "updated_field5"}}
-		updatedSchema, err := schemaStorage.UpdateSchemaByID(schema.ID, *schema)
+		updatedSchema, err := schemaStorage.UpdateSchemaByID(ctx, schema.ID, *schema)
 		assert.NoError(t, err)
 		assert.NotNil(t, updatedSchema)
 		assert.Equal(t, "Updated Test Schema 3", updatedSchema.Title)
@@ -90,7 +86,7 @@ func TestSchemaStorage(t *testing.T) {
 	t.Run("GetByTagID", func(t *testing.T) {
 		tagID := 10
 
-		_, err := schemaStorage.CreateSchema(entities.Schema{
+		_, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Test Schema Tag",
 			Description:   "A schema for testing by tag",
 			Fields:        entities.Fields{{Title: "Field7", Name: "field7"}},
@@ -100,7 +96,7 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		_, err = schemaStorage.CreateSchema(entities.Schema{
+		_, err = schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Another Test Schema Tag",
 			Description:   "Another schema for testing by tag",
 			Fields:        entities.Fields{{Title: "Field8", Name: "field8"}},
@@ -110,13 +106,13 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		schemas, err := schemaStorage.GetByTagID(tagID)
+		schemas, err := schemaStorage.GetByTagID(ctx, tagID)
 		assert.NoError(t, err)
 		assert.Len(t, schemas, 2)
 	})
 
 	t.Run("GetByName", func(t *testing.T) {
-		schema, err := schemaStorage.CreateSchema(entities.Schema{
+		schema, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Test Schema by Name",
 			Description:   "A schema for testing by name",
 			Name:          "unique-schema-name",
@@ -126,7 +122,7 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		fetchedSchema, err := schemaStorage.GetByName("unique-schema-name")
+		fetchedSchema, err := schemaStorage.GetByName(ctx, "unique-schema-name")
 		assert.NoError(t, err)
 		assert.NotNil(t, fetchedSchema)
 		assert.Equal(t, schema.Name, fetchedSchema.Name)
@@ -136,7 +132,7 @@ func TestSchemaStorage(t *testing.T) {
 		title := "Partial Title"
 		description := "Partial Description"
 
-		_, err := schemaStorage.CreateSchema(entities.Schema{
+		_, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Some Partial Title",
 			Description:   "Some Partial Description",
 			Fields:        entities.Fields{{Title: "Field10", Name: "field10"}},
@@ -145,13 +141,13 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		schemas, err := schemaStorage.GetSchemasByTitleOrDescription(title, description)
+		schemas, err := schemaStorage.GetSchemasByTitleOrDescription(ctx, title, description)
 		assert.NoError(t, err)
 		assert.Len(t, schemas, 1)
 	})
 
 	t.Run("GetAllSchemas", func(t *testing.T) {
-		_, err := schemaStorage.CreateSchema(entities.Schema{
+		_, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Test Schema for All",
 			Description:   "A schema for testing all",
 			Fields:        entities.Fields{{Title: "Field11", Name: "field11"}},
@@ -160,13 +156,13 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		schemas, err := schemaStorage.GetAllSchemas()
+		schemas, err := schemaStorage.GetAllSchemas(ctx)
 		assert.NoError(t, err)
 		assert.True(t, len(schemas) > 0)
 	})
 
 	t.Run("DeleteSchemaByID", func(t *testing.T) {
-		schema, err := schemaStorage.CreateSchema(entities.Schema{
+		schema, err := schemaStorage.CreateSchema(ctx, entities.Schema{
 			Title:         "Test Schema to Delete",
 			Description:   "Schema to be deleted",
 			Fields:        entities.Fields{{Title: "Field12", Name: "field12"}},
@@ -176,10 +172,10 @@ func TestSchemaStorage(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		err = schemaStorage.DeleteSchemaByID(schema.ID)
+		err = schemaStorage.DeleteSchemaByID(ctx, schema.ID)
 		assert.NoError(t, err)
 
-		deletedSchema, err := schemaStorage.GetById(schema.ID)
+		deletedSchema, err := schemaStorage.GetById(ctx, schema.ID)
 		assert.NoError(t, err)
 		assert.Nil(t, deletedSchema)
 	})

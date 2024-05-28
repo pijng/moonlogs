@@ -23,11 +23,7 @@ func TestApiTokenStorage(t *testing.T) {
 		}
 	}()
 
-	apiTokenStorage := &ApiTokenStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("test_moonlogs").Collection("api_tokens"),
-	}
+	apiTokenStorage := NewApiTokenStorage(client.Database("test_moonlogs"))
 
 	t.Run("CreateApiToken", func(t *testing.T) {
 		apiToken := entities.ApiToken{
@@ -36,7 +32,7 @@ func TestApiTokenStorage(t *testing.T) {
 			Name:        "Test Token",
 			IsRevoked:   false,
 		}
-		createdToken, err := apiTokenStorage.CreateApiToken(apiToken)
+		createdToken, err := apiTokenStorage.CreateApiToken(ctx, apiToken)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdToken)
 		assert.Equal(t, apiToken.Name, createdToken.Name)
@@ -49,10 +45,10 @@ func TestApiTokenStorage(t *testing.T) {
 			Name:        "Test Token By ID",
 			IsRevoked:   false,
 		}
-		createdToken, err := apiTokenStorage.CreateApiToken(apiToken)
+		createdToken, err := apiTokenStorage.CreateApiToken(ctx, apiToken)
 		assert.NoError(t, err)
 
-		fetchedToken, err := apiTokenStorage.GetApiTokenByID(createdToken.ID)
+		fetchedToken, err := apiTokenStorage.GetApiTokenByID(ctx, createdToken.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, fetchedToken)
 		assert.Equal(t, createdToken.Name, fetchedToken.Name)
@@ -65,14 +61,14 @@ func TestApiTokenStorage(t *testing.T) {
 			Name:        "Test Token To Update",
 			IsRevoked:   false,
 		}
-		createdToken, err := apiTokenStorage.CreateApiToken(apiToken)
+		createdToken, err := apiTokenStorage.CreateApiToken(ctx, apiToken)
 		assert.NoError(t, err)
 
 		updatedData := entities.ApiToken{
 			Name:      "Updated Token Name",
 			IsRevoked: true,
 		}
-		updatedToken, err := apiTokenStorage.UpdateApiTokenByID(createdToken.ID, updatedData)
+		updatedToken, err := apiTokenStorage.UpdateApiTokenByID(ctx, createdToken.ID, updatedData)
 		assert.NoError(t, err)
 		assert.NotNil(t, updatedToken)
 		assert.Equal(t, updatedData.Name, updatedToken.Name)
@@ -86,17 +82,17 @@ func TestApiTokenStorage(t *testing.T) {
 			Name:        "Test Token By Digest",
 			IsRevoked:   false,
 		}
-		createdToken, err := apiTokenStorage.CreateApiToken(apiToken)
+		createdToken, err := apiTokenStorage.CreateApiToken(ctx, apiToken)
 		assert.NoError(t, err)
 
-		fetchedToken, err := apiTokenStorage.GetApiTokenByDigest(createdToken.TokenDigest)
+		fetchedToken, err := apiTokenStorage.GetApiTokenByDigest(ctx, createdToken.TokenDigest)
 		assert.NoError(t, err)
 		assert.NotNil(t, fetchedToken)
 		assert.Equal(t, createdToken.Name, fetchedToken.Name)
 	})
 
 	t.Run("GetAllApiTokens", func(t *testing.T) {
-		apiTokens, err := apiTokenStorage.GetAllApiTokens()
+		apiTokens, err := apiTokenStorage.GetAllApiTokens(ctx)
 		assert.NoError(t, err)
 		assert.True(t, len(apiTokens) > 0)
 	})
@@ -108,13 +104,13 @@ func TestApiTokenStorage(t *testing.T) {
 			Name:        "Test Token To Delete",
 			IsRevoked:   false,
 		}
-		createdToken, err := apiTokenStorage.CreateApiToken(apiToken)
+		createdToken, err := apiTokenStorage.CreateApiToken(ctx, apiToken)
 		assert.NoError(t, err)
 
-		err = apiTokenStorage.DeleteApiTokenByID(createdToken.ID)
+		err = apiTokenStorage.DeleteApiTokenByID(ctx, createdToken.ID)
 		assert.NoError(t, err)
 
-		deletedToken, err := apiTokenStorage.GetApiTokenByID(createdToken.ID)
+		deletedToken, err := apiTokenStorage.GetApiTokenByID(ctx, createdToken.ID)
 		assert.NoError(t, err)
 		assert.Nil(t, deletedToken)
 	})

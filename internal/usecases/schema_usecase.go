@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage"
@@ -18,8 +19,8 @@ func NewSchemaUseCase(schemaStorage storage.SchemaStorage) *SchemaUseCase {
 	return &SchemaUseCase{schemaStorage: schemaStorage}
 }
 
-func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema, error) {
-	existingSchema, err := uc.GetSchemaByName(normalizeName(schema.Name))
+func (uc *SchemaUseCase) CreateSchema(ctx context.Context, schema entities.Schema) (*entities.Schema, error) {
+	existingSchema, err := uc.GetSchemaByName(ctx, normalizeName(schema.Name))
 	if err != nil {
 		return nil, fmt.Errorf("failed querying schema by name: %w", err)
 	}
@@ -28,7 +29,7 @@ func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema,
 	if existingSchema.ID != 0 {
 		mergedSchema := mergeSchemaFields(*existingSchema, schema)
 
-		return uc.schemaStorage.UpdateSchemaByID(existingSchema.ID, mergedSchema)
+		return uc.schemaStorage.UpdateSchemaByID(ctx, existingSchema.ID, mergedSchema)
 	}
 
 	if len(schema.Fields) == 0 {
@@ -71,10 +72,10 @@ func (uc *SchemaUseCase) CreateSchema(schema entities.Schema) (*entities.Schema,
 
 	schema.Kinds = formattedKinds
 
-	return uc.schemaStorage.CreateSchema(schema)
+	return uc.schemaStorage.CreateSchema(ctx, schema)
 }
 
-func (uc *SchemaUseCase) UpdateSchemaByID(id int, schema entities.Schema) (*entities.Schema, error) {
+func (uc *SchemaUseCase) UpdateSchemaByID(ctx context.Context, id int, schema entities.Schema) (*entities.Schema, error) {
 	var formattedFields entities.Fields
 
 	for _, field := range schema.Fields {
@@ -93,11 +94,11 @@ func (uc *SchemaUseCase) UpdateSchemaByID(id int, schema entities.Schema) (*enti
 	schema.Name = normalizeName(schema.Name)
 	schema.Fields = formattedFields
 
-	return uc.schemaStorage.UpdateSchemaByID(id, schema)
+	return uc.schemaStorage.UpdateSchemaByID(ctx, id, schema)
 }
 
-func (uc *SchemaUseCase) GetAllSchemas(user *entities.User) ([]*entities.Schema, error) {
-	schemas, err := uc.schemaStorage.GetAllSchemas()
+func (uc *SchemaUseCase) GetAllSchemas(ctx context.Context, user *entities.User) ([]*entities.Schema, error) {
+	schemas, err := uc.schemaStorage.GetAllSchemas(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying all schemas")
 	}
@@ -120,21 +121,21 @@ func (uc *SchemaUseCase) GetAllSchemas(user *entities.User) ([]*entities.Schema,
 	return schemas, nil
 }
 
-func (uc *SchemaUseCase) GetSchemaByID(id int) (*entities.Schema, error) {
-	return uc.schemaStorage.GetById(id)
+func (uc *SchemaUseCase) GetSchemaByID(ctx context.Context, id int) (*entities.Schema, error) {
+	return uc.schemaStorage.GetById(ctx, id)
 }
 
-func (uc *SchemaUseCase) GetSchemaByTagID(tagID int) ([]*entities.Schema, error) {
-	return uc.schemaStorage.GetByTagID(tagID)
+func (uc *SchemaUseCase) GetSchemaByTagID(ctx context.Context, tagID int) ([]*entities.Schema, error) {
+	return uc.schemaStorage.GetByTagID(ctx, tagID)
 }
 
-func (uc *SchemaUseCase) GetSchemaByName(name string) (*entities.Schema, error) {
+func (uc *SchemaUseCase) GetSchemaByName(ctx context.Context, name string) (*entities.Schema, error) {
 	schema, ok := cachedSchemas[name]
 	if ok {
 		return schema, nil
 	}
 
-	schema, err := uc.schemaStorage.GetByName(name)
+	schema, err := uc.schemaStorage.GetByName(ctx, name)
 	if err != nil {
 		return nil, fmt.Errorf("getting schema by name: %w", err)
 	}
@@ -144,12 +145,12 @@ func (uc *SchemaUseCase) GetSchemaByName(name string) (*entities.Schema, error) 
 	return schema, nil
 }
 
-func (uc *SchemaUseCase) GetSchemasByTitleOrDescription(title string, description string) ([]*entities.Schema, error) {
-	return uc.schemaStorage.GetSchemasByTitleOrDescription(title, description)
+func (uc *SchemaUseCase) GetSchemasByTitleOrDescription(ctx context.Context, title string, description string) ([]*entities.Schema, error) {
+	return uc.schemaStorage.GetSchemasByTitleOrDescription(ctx, title, description)
 }
 
-func (uc *SchemaUseCase) DeleteSchemaByID(id int) error {
-	return uc.schemaStorage.DeleteSchemaByID(id)
+func (uc *SchemaUseCase) DeleteSchemaByID(ctx context.Context, id int) error {
+	return uc.schemaStorage.DeleteSchemaByID(ctx, id)
 }
 
 func normalizeName(name string) string {

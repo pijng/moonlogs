@@ -13,8 +13,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 var FNVHasherPool = sync.Pool{
@@ -25,16 +23,13 @@ var FNVHasherPool = sync.Pool{
 
 type RecordUseCase struct {
 	recordStorage storage.RecordStorage
-	ctx           context.Context
 }
 
-func NewRecordUseCase(ctx context.Context, recordStorage storage.RecordStorage) *RecordUseCase {
-	return &RecordUseCase{recordStorage: recordStorage, ctx: ctx}
+func NewRecordUseCase(recordStorage storage.RecordStorage) *RecordUseCase {
+	return &RecordUseCase{recordStorage: recordStorage}
 }
 
-func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*entities.Record, error) {
-	txn := newrelic.FromContext(uc.ctx)
-	defer txn.StartSegment("usecases.CreateRecord").End()
+func (uc *RecordUseCase) CreateRecord(ctx context.Context, record entities.Record, schemaID int) (*entities.Record, error) {
 
 	if len(record.Query) == 0 {
 		return nil, fmt.Errorf("failed creating record: `query` attribute is required")
@@ -71,10 +66,10 @@ func (uc *RecordUseCase) CreateRecord(record entities.Record, schemaID int) (*en
 	record.SchemaID = schemaID
 	record.GroupHash = groupHash
 
-	return uc.recordStorage.CreateRecord(record)
+	return uc.recordStorage.CreateRecord(ctx, record)
 }
 
-func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
+func (uc *RecordUseCase) DeleteStaleRecords(ctx context.Context, schema *entities.Schema) error {
 	// Treat 0 retention days as infinite
 	if schema.RetentionDays == 0 {
 		return nil
@@ -82,7 +77,7 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 
 	threshold := time.Now().Add(-time.Duration(schema.RetentionDays) * 24 * time.Hour).Unix()
 
-	staleRecordIDs, err := uc.recordStorage.FindStaleIDs(schema.ID, threshold)
+	staleRecordIDs, err := uc.recordStorage.FindStaleIDs(ctx, schema.ID, threshold)
 	if err != nil {
 		return fmt.Errorf("DeleteStaleRecords: failed to query stale log records: %w", err)
 	}
@@ -90,7 +85,7 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 	staleRecordIDsBatches := shared.BatchSlice(staleRecordIDs, 950)
 
 	for _, ids := range staleRecordIDsBatches {
-		err = uc.recordStorage.DeleteByIDs(ids)
+		err = uc.recordStorage.DeleteByIDs(ctx, ids)
 
 		if err != nil {
 			return fmt.Errorf("DeleteStateleRecords: failed to delete stale log records: %w", err)
@@ -100,22 +95,22 @@ func (uc *RecordUseCase) DeleteStaleRecords(schema *entities.Schema) error {
 	return nil
 }
 
-func (uc *RecordUseCase) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
-	return uc.recordStorage.GetAllRecords(limit, offset)
+func (uc *RecordUseCase) GetAllRecords(ctx context.Context, limit int, offset int) ([]*entities.Record, error) {
+	return uc.recordStorage.GetAllRecords(ctx, limit, offset)
 }
 
-func (uc *RecordUseCase) GetAllRecordsCount() (int, error) {
-	return uc.recordStorage.GetAllRecordsCount()
+func (uc *RecordUseCase) GetAllRecordsCount(ctx context.Context) (int, error) {
+	return uc.recordStorage.GetAllRecordsCount(ctx)
 }
 
-func (uc *RecordUseCase) GetRecordByID(id int) (*entities.Record, error) {
-	return uc.recordStorage.GetRecordByID(id)
+func (uc *RecordUseCase) GetRecordByID(ctx context.Context, id int) (*entities.Record, error) {
+	return uc.recordStorage.GetRecordByID(ctx, id)
 }
 
-func (uc *RecordUseCase) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
-	return uc.recordStorage.GetRecordsByQuery(record, from, to, limit, offset)
+func (uc *RecordUseCase) GetRecordsByQuery(ctx context.Context, record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
+	return uc.recordStorage.GetRecordsByQuery(ctx, record, from, to, limit, offset)
 }
 
-func (uc *RecordUseCase) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
-	return uc.recordStorage.GetRecordsByGroupHash(schemaName, groupHash)
+func (uc *RecordUseCase) GetRecordsByGroupHash(ctx context.Context, schemaName string, groupHash string) ([]*entities.Record, error) {
+	return uc.recordStorage.GetRecordsByGroupHash(ctx, schemaName, groupHash)
 }

@@ -7,26 +7,21 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/persistence"
-
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 type ApiTokenStorage struct {
-	ctx     context.Context
 	readDB  *sql.DB
 	writeDB *sql.DB
 }
 
-func NewApiTokenStorage(ctx context.Context) *ApiTokenStorage {
+func NewApiTokenStorage(readDB *sql.DB, writeDB *sql.DB) *ApiTokenStorage {
 	return &ApiTokenStorage{
-		ctx:     ctx,
-		readDB:  persistence.SqliteReadDB(),
-		writeDB: persistence.SqliteWriteDB(),
+		readDB:  readDB,
+		writeDB: writeDB,
 	}
 }
 
-func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.ApiToken, error) {
+func (s *ApiTokenStorage) CreateApiToken(ctx context.Context, apiToken entities.ApiToken) (*entities.ApiToken, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -34,7 +29,7 @@ func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.
 
 	query := "INSERT INTO api_tokens (name, token, token_digest, is_revoked) VALUES (?,?,?,?);"
 
-	result, err := tx.ExecContext(s.ctx, query, apiToken.Name, "", apiToken.TokenDigest, apiToken.IsRevoked)
+	result, err := tx.ExecContext(ctx, query, apiToken.Name, "", apiToken.TokenDigest, apiToken.IsRevoked)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting api_token: %w", err)
 	}
@@ -49,10 +44,10 @@ func (s *ApiTokenStorage) CreateApiToken(apiToken entities.ApiToken) (*entities.
 		return nil, fmt.Errorf("failed retrieving api_token last insert id: %w", err)
 	}
 
-	return s.GetApiTokenByID(int(id))
+	return s.GetApiTokenByID(ctx, int(id))
 }
 
-func (s *ApiTokenStorage) UpdateApiTokenByID(id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
+func (s *ApiTokenStorage) UpdateApiTokenByID(ctx context.Context, id int, apiToken entities.ApiToken) (*entities.ApiToken, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -63,23 +58,23 @@ func (s *ApiTokenStorage) UpdateApiTokenByID(id int, apiToken entities.ApiToken)
 
 	query := "UPDATE api_tokens SET name=?, is_revoked=? WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, apiToken.Name, apiToken.IsRevoked, id)
+	_, err = tx.ExecContext(ctx, query, apiToken.Name, apiToken.IsRevoked, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating api token: %w", err)
 	}
 
-	return s.GetApiTokenByID(id)
+	return s.GetApiTokenByID(ctx, id)
 }
 
-func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
+func (s *ApiTokenStorage) GetApiTokenByID(ctx context.Context, id int) (*entities.ApiToken, error) {
 	query := "SELECT * FROM api_tokens WHERE id=? LIMIT 1;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(s.ctx, id)
+	row := stmt.QueryRowContext(ctx, id)
 
 	var t entities.ApiToken
 	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
@@ -90,28 +85,21 @@ func (s *ApiTokenStorage) GetApiTokenByID(id int) (*entities.ApiToken, error) {
 	return &t, nil
 }
 
-func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken, error) {
-	txn := newrelic.FromContext(s.ctx)
-	defer txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest").End()
-
+func (s *ApiTokenStorage) GetApiTokenByDigest(ctx context.Context, digest string) (*entities.ApiToken, error) {
 	query := "SELECT * FROM api_tokens WHERE token_digest=? LIMIT 1;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return &entities.ApiToken{}, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	txnQueryApiToken := txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest#QueryRowContext")
-	row := stmt.QueryRowContext(s.ctx, digest)
-	txnQueryApiToken.End()
+	row := stmt.QueryRowContext(ctx, digest)
 
-	txnScanApiToken := txn.StartSegment("storage.sqlite_adapter.GetApiTokenByDigest#ScanApiToken")
 	var t entities.ApiToken
 	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
 	if errors.Is(err, sql.ErrNoRows) {
 		return &entities.ApiToken{}, nil
 	}
-	txnScanApiToken.End()
 
 	if err != nil {
 		return &entities.ApiToken{}, fmt.Errorf("failed scanning api_token: %w", err)
@@ -120,15 +108,15 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(digest string) (*entities.ApiToken
 	return &t, nil
 }
 
-func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {
+func (s *ApiTokenStorage) GetAllApiTokens(ctx context.Context) ([]*entities.ApiToken, error) {
 	query := "SELECT * FROM api_tokens ORDER BY id DESC;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx)
+	rows, err := stmt.QueryContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying api_tokens: %w", err)
 	}
@@ -150,7 +138,7 @@ func (s *ApiTokenStorage) GetAllApiTokens() ([]*entities.ApiToken, error) {
 	return tokens, nil
 }
 
-func (s *ApiTokenStorage) DeleteApiTokenByID(id int) error {
+func (s *ApiTokenStorage) DeleteApiTokenByID(ctx context.Context, id int) error {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
@@ -161,7 +149,7 @@ func (s *ApiTokenStorage) DeleteApiTokenByID(id int) error {
 
 	query := "DELETE FROM api_tokens WHERE id=?;"
 
-	_, err = tx.ExecContext(s.ctx, query, id)
+	_, err = tx.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting api token: %w", err)
 	}

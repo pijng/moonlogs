@@ -12,8 +12,8 @@ type Sequence struct {
 	Value int    `bson:"value"`
 }
 
-func getNextSequenceValue(ctx context.Context, client *mongo.Client, sequenceName string) (int, error) {
-	sequences := client.Database("moonlogs").Collection("sequences")
+func getNextSequenceValue(ctx context.Context, db *mongo.Database, sequenceName string) (int, error) {
+	sequences := db.Collection("sequences")
 
 	filter := map[string]interface{}{"_id": sequenceName}
 	update := map[string]interface{}{"$inc": map[string]interface{}{"value": 1}}

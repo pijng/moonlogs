@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage"
@@ -15,7 +16,7 @@ func NewActionUseCase(actionStorage storage.ActionStorage) *ActionUseCase {
 	return &ActionUseCase{actionStorage: actionStorage}
 }
 
-func (uc *ActionUseCase) CreateAction(action entities.Action) (*entities.Action, error) {
+func (uc *ActionUseCase) CreateAction(ctx context.Context, action entities.Action) (*entities.Action, error) {
 	if action.Name == "" {
 		return nil, fmt.Errorf("failed creating action: `name` attribute is required")
 	}
@@ -47,21 +48,21 @@ func (uc *ActionUseCase) CreateAction(action entities.Action) (*entities.Action,
 
 	action.Conditions = formattedConditions
 
-	return uc.actionStorage.CreateAction(action)
+	return uc.actionStorage.CreateAction(ctx, action)
 }
 
-func (uc *ActionUseCase) GetAllActions() ([]*entities.Action, error) {
-	return uc.actionStorage.GetAllActions()
+func (uc *ActionUseCase) GetAllActions(ctx context.Context) ([]*entities.Action, error) {
+	return uc.actionStorage.GetAllActions(ctx)
 }
 
-func (uc *ActionUseCase) DeleteActionByID(id int) error {
-	return uc.actionStorage.DeleteActionByID(id)
+func (uc *ActionUseCase) DeleteActionByID(ctx context.Context, id int) error {
+	return uc.actionStorage.DeleteActionByID(ctx, id)
 }
 
-func (uc *ActionUseCase) GetActionByID(id int) (*entities.Action, error) {
-	return uc.actionStorage.GetActionByID(id)
+func (uc *ActionUseCase) GetActionByID(ctx context.Context, id int) (*entities.Action, error) {
+	return uc.actionStorage.GetActionByID(ctx, id)
 }
 
-func (uc *ActionUseCase) UpdateActionByID(id int, action entities.Action) (*entities.Action, error) {
-	return uc.actionStorage.UpdateActionByID(id, action)
+func (uc *ActionUseCase) UpdateActionByID(ctx context.Context, id int, action entities.Action) (*entities.Action, error) {
+	return uc.actionStorage.UpdateActionByID(ctx, id, action)
 }

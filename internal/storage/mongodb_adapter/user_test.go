@@ -23,11 +23,7 @@ func TestUserStorage(t *testing.T) {
 		}
 	}()
 
-	userStorage := &UserStorage{
-		ctx:        ctx,
-		client:     client,
-		collection: client.Database("test_moonlogs").Collection("users"),
-	}
+	userStorage := NewUserStorage(client.Database("test_moonlogs"))
 
 	admin := entities.User{
 		Name:           "Admin",
@@ -45,44 +41,44 @@ func TestUserStorage(t *testing.T) {
 			Role:           "User",
 			IsRevoked:      false,
 		}
-		createdUser, err := userStorage.CreateUser(user)
+		createdUser, err := userStorage.CreateUser(ctx, user)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdUser)
 		assert.Equal(t, "Test User", createdUser.Name)
 	})
 
 	t.Run("GetUserByID", func(t *testing.T) {
-		testUser, err := userStorage.GetUserByEmail("test@example.com")
+		testUser, err := userStorage.GetUserByEmail(ctx, "test@example.com")
 		assert.NoError(t, err)
 		assert.NotNil(t, testUser)
 
-		foundUser, err := userStorage.GetUserByID(testUser.ID)
+		foundUser, err := userStorage.GetUserByID(ctx, testUser.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, foundUser)
 		assert.Equal(t, "Test User", foundUser.Name)
 	})
 
 	t.Run("GetUsersByTagID", func(t *testing.T) {
-		users, err := userStorage.GetUsersByTagID(1)
+		users, err := userStorage.GetUsersByTagID(ctx, 1)
 		assert.NoError(t, err)
 		assert.NotNil(t, users)
 	})
 
 	t.Run("GetUserByEmail", func(t *testing.T) {
-		foundUser, err := userStorage.GetUserByEmail("test@example.com")
+		foundUser, err := userStorage.GetUserByEmail(ctx, "test@example.com")
 		assert.NoError(t, err)
 		assert.NotNil(t, foundUser)
 		assert.Equal(t, "Test User", foundUser.Name)
 	})
 
 	t.Run("GetUserByToken", func(t *testing.T) {
-		foundUser, err := userStorage.GetUserByToken("valid_token")
+		foundUser, err := userStorage.GetUserByToken(ctx, "valid_token")
 		assert.NoError(t, err)
 		assert.NotNil(t, foundUser)
 	})
 
 	t.Run("DeleteUserByID", func(t *testing.T) {
-		err := userStorage.DeleteUserByID(1)
+		err := userStorage.DeleteUserByID(ctx, 1)
 		assert.NoError(t, err)
 	})
 
@@ -94,27 +90,27 @@ func TestUserStorage(t *testing.T) {
 			Role:           "User",
 			IsRevoked:      false,
 		}
-		createdUser, err := userStorage.CreateUser(user)
+		createdUser, err := userStorage.CreateUser(ctx, user)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdUser)
 
 		updatedUser := entities.User{
 			Name: "Updated Test User",
 		}
-		updated, err := userStorage.UpdateUserByID(createdUser.ID, updatedUser)
+		updated, err := userStorage.UpdateUserByID(ctx, createdUser.ID, updatedUser)
 		assert.NoError(t, err)
 		assert.NotNil(t, updated)
 		assert.Equal(t, "Updated Test User", updated.Name)
 	})
 
 	t.Run("GetAllUsers", func(t *testing.T) {
-		users, err := userStorage.GetAllUsers()
+		users, err := userStorage.GetAllUsers(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, users)
 	})
 
 	t.Run("CreateInitialAdmin", func(t *testing.T) {
-		createdAdmin, err := userStorage.CreateInitialAdmin(admin)
+		createdAdmin, err := userStorage.CreateInitialAdmin(ctx, admin)
 		assert.NoError(t, err)
 		assert.NotNil(t, createdAdmin)
 		assert.Equal(t, "Admin", createdAdmin.Name)

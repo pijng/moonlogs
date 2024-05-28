@@ -7,6 +7,7 @@ import (
 	"moonlogs/internal/api/server/router"
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/config"
+	"moonlogs/internal/usecases"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,11 +15,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-func ListenAndServe(cfg *config.Config, nrapp *newrelic.Application) error {
-	server := createServer(cfg, nrapp)
+func ListenAndServe(cfg *config.Config, uc *usecases.UseCases) error {
+	server := createServer(cfg, uc)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -39,16 +39,12 @@ func ListenAndServe(cfg *config.Config, nrapp *newrelic.Application) error {
 	}
 }
 
-func createServer(cfg *config.Config, nrapp *newrelic.Application) *http.Server {
+func createServer(cfg *config.Config, uc *usecases.UseCases) *http.Server {
 	r := mux.NewRouter()
 
 	r.Use(corsMiddleware)
 
-	if cfg.NewrelicProfiling {
-		r.Use(newrelicMiddleware(nrapp))
-	}
-
-	registerRouter(r)
+	registerRouter(r, uc)
 
 	return &http.Server{
 		Addr:         fmt.Sprintf(":%v", cfg.Port),
@@ -58,17 +54,25 @@ func createServer(cfg *config.Config, nrapp *newrelic.Application) *http.Server 
 	}
 }
 
-func registerRouter(r *mux.Router) {
-	session.RegisterSessionStore()
+func registerRouter(r *mux.Router, uc *usecases.UseCases) {
+	session.RegisterSessionStore(uc.UserUseCase)
+	mw := router.InitMiddlewares(uc)
 
-	router.RegisterSetupRouter(r)
-	router.RegisterSchemaRouter(r)
-	router.RegisterRecordRouter(r)
-	router.RegisterUserRouter(r)
-	router.RegisterApiTokenRouter(r)
-	router.RegisterTagRouter(r)
-	router.RegisterActionRouter(r)
-	router.RegisterSessionRouter(r)
+	cfg := &router.SubRouterConfig{
+		R:  r,
+		MW: mw,
+		UC: uc,
+	}
+
+	router.RegisterSetupRouter(cfg)
+	router.RegisterSchemaRouter(cfg)
+	router.RegisterRecordRouter(cfg)
+	router.RegisterUserRouter(cfg)
+	router.RegisterApiTokenRouter(cfg)
+	router.RegisterTagRouter(cfg)
+	router.RegisterActionRouter(cfg)
+	router.RegisterSessionRouter(cfg)
+
 	router.RegisterWebRouter(r)
 }
 
@@ -87,20 +91,6 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
-}
-func newrelicMiddleware(nrapp *newrelic.Application) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			txn := nrapp.StartTransaction(r.URL.Path)
-			defer txn.End()
-
-			// Add transaction to request context
-			ctx := newrelic.NewContext(r.Context(), txn)
-
-			// Call the next handler, which can be another middleware in the chain or the final handler
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
-	}
 }
 
 func gracefulShutdown(server *http.Server) error {

@@ -3,10 +3,8 @@ package controllers
 import (
 	"fmt"
 	"moonlogs/internal/api/server/response"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
-	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"strconv"
@@ -23,7 +21,17 @@ type UserDTO struct {
 	IsRevoked bool          `json:"is_revoked"`
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+type UserController struct {
+	userUseCase *usecases.UserUseCase
+}
+
+func NewUserController(userUseCase *usecases.UserUseCase) *UserController {
+	return &UserController{
+		userUseCase: userUseCase,
+	}
+}
+
+func (c *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var newUser entities.User
 
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newUser)
@@ -32,8 +40,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	user, err := usecases.NewUserUseCase(userStorage).CreateUser(newUser)
+	user, err := c.userUseCase.CreateUser(r.Context(), newUser)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -42,7 +49,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
-func DeleteUserByID(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -51,8 +58,7 @@ func DeleteUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	err = usecases.NewUserUseCase(userStorage).DeleteUserByID(id)
+	err = c.userUseCase.DeleteUserByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
@@ -61,7 +67,7 @@ func DeleteUserByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, id, response.Meta{})
 }
 
-func GetUserByID(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -70,8 +76,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	user, err := usecases.NewUserUseCase(userStorage).GetUserByID(id)
+	user, err := c.userUseCase.GetUserByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -85,7 +90,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
-func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
@@ -102,8 +107,7 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	user, err := usecases.NewUserUseCase(userStorage).UpdateUserByID(id, userToUpdate)
+	user, err := c.userUseCase.UpdateUserByID(r.Context(), id, userToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -117,9 +121,8 @@ func UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 
-func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	users, err := usecases.NewUserUseCase(userStorage).GetAllUsers()
+func (c *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := c.userUseCase.GetAllUsers(r.Context())
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 		return
@@ -128,10 +131,8 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	response.Return(w, true, http.StatusOK, nil, UsersToDTO(users), response.Meta{})
 }
 
-func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
-	userStorage := storage.NewUserStorage(r.Context(), config.Get().DBAdapter)
-	userUserCase := usecases.NewUserUseCase(userStorage)
-	shouldCreateInitialAdmin, err := userUserCase.ShouldCreateInitialAdmin()
+func (c *UserController) CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
+	shouldCreateInitialAdmin, err := c.userUseCase.ShouldCreateInitialAdmin(r.Context())
 
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
@@ -151,7 +152,7 @@ func CreateInitialAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	admin, err := userUserCase.CreateInitialAdmin(newAdmin)
+	admin, err := c.userUseCase.CreateInitialAdmin(r.Context(), newAdmin)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("failed creating initial admin: %w", err), nil, response.Meta{})
 		return

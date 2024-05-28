@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage"
@@ -14,7 +15,7 @@ func NewTagUseCase(tagStorage storage.TagStorage) *TagUseCase {
 	return &TagUseCase{tagStorage: tagStorage}
 }
 
-func (uc *TagUseCase) CreateTag(tag entities.Tag) (*entities.Tag, error) {
+func (uc *TagUseCase) CreateTag(ctx context.Context, tag entities.Tag) (*entities.Tag, error) {
 	if tag.Name == "" {
 		return nil, fmt.Errorf("failed creating tag: `name` attribute is required")
 	}
@@ -23,21 +24,21 @@ func (uc *TagUseCase) CreateTag(tag entities.Tag) (*entities.Tag, error) {
 		tag.ViewOrder = 1
 	}
 
-	return uc.tagStorage.CreateTag(tag)
+	return uc.tagStorage.CreateTag(ctx, tag)
 }
 
-func (uc *TagUseCase) GetAllTags() ([]*entities.Tag, error) {
-	return uc.tagStorage.GetAllTags()
+func (uc *TagUseCase) GetAllTags(ctx context.Context) ([]*entities.Tag, error) {
+	return uc.tagStorage.GetAllTags(ctx)
 }
 
-func (uc *TagUseCase) DeleteTagByID(id int) error {
-	return uc.tagStorage.DeleteTagByID(id)
+func (uc *TagUseCase) DeleteTagByID(ctx context.Context, id int) error {
+	return uc.tagStorage.DeleteTagByID(ctx, id)
 }
 
-func (uc *TagUseCase) GetTagByID(id int) (*entities.Tag, error) {
-	return uc.tagStorage.GetTagByID(id)
+func (uc *TagUseCase) GetTagByID(ctx context.Context, id int) (*entities.Tag, error) {
+	return uc.tagStorage.GetTagByID(ctx, id)
 }
 
-func (uc *TagUseCase) UpdateTagByID(id int, tag entities.Tag) (*entities.Tag, error) {
-	return uc.tagStorage.UpdateTagByID(id, tag)
+func (uc *TagUseCase) UpdateTagByID(ctx context.Context, id int, tag entities.Tag) (*entities.Tag, error) {
+	return uc.tagStorage.UpdateTagByID(ctx, id, tag)
 }

@@ -6,26 +6,23 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
-	"moonlogs/internal/persistence"
 	"strings"
 	"time"
 )
 
 type RecordStorage struct {
-	ctx     context.Context
 	readDB  *sql.DB
 	writeDB *sql.DB
 }
 
-func NewRecordStorage(ctx context.Context) *RecordStorage {
+func NewRecordStorage(readDB *sql.DB, writeDB *sql.DB) *RecordStorage {
 	return &RecordStorage{
-		ctx:     ctx,
-		readDB:  persistence.SqliteReadDB(),
-		writeDB: persistence.SqliteWriteDB(),
+		readDB:  readDB,
+		writeDB: writeDB,
 	}
 }
 
-func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, error) {
+func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record) (*entities.Record, error) {
 	tx, err := qrx.BeginImmediate(s.writeDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -36,7 +33,7 @@ func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, 
 
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response;"
 
-	row := tx.QueryRowContext(s.ctx, query, record.Text, record.SchemaName, record.SchemaID, record.Query,
+	row := tx.QueryRowContext(ctx, query, record.Text, record.SchemaName, record.SchemaID, record.Query,
 		record.Request, record.Response, record.Kind, record.GroupHash, record.Level, record.CreatedAt)
 
 	var lr entities.Record
@@ -48,15 +45,15 @@ func (s *RecordStorage) CreateRecord(record entities.Record) (*entities.Record, 
 	return &lr, nil
 }
 
-func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
+func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Record, error) {
 	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records WHERE id = ? LIMIT 1;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(s.ctx, id)
+	row := stmt.QueryRowContext(ctx, id)
 
 	var dest entities.Record
 	err = row.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
@@ -67,7 +64,7 @@ func (s *RecordStorage) GetRecordByID(id int) (*entities.Record, error) {
 	return &dest, nil
 }
 
-func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
+func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
 	var queryBuilder strings.Builder
 	queryParams := make([]interface{}, 0)
 
@@ -115,7 +112,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 		WHERE %s`, countBuilder.String(), queryBuilder.String(),
 	)
 
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return make([]*entities.Record, 0), 0, fmt.Errorf("failed preparing statement: %w", err)
 	}
@@ -123,7 +120,7 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 
 	totalParams := append(countParams, queryParams...)
 
-	rows, err := stmt.QueryContext(s.ctx, totalParams...)
+	rows, err := stmt.QueryContext(ctx, totalParams...)
 	if err != nil {
 		return make([]*entities.Record, 0), 0, fmt.Errorf("failed querying record: %w", err)
 	}
@@ -146,15 +143,15 @@ func (s *RecordStorage) GetRecordsByQuery(record entities.Record, from *time.Tim
 	return lr, totalCount, nil
 }
 
-func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record, error) {
+func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int) ([]*entities.Record, error) {
 	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records LIMIT ? OFFSET ?;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx, limit, offset)
+	rows, err := stmt.QueryContext(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying records: %w", err)
 	}
@@ -176,16 +173,16 @@ func (s *RecordStorage) GetAllRecords(limit int, offset int) ([]*entities.Record
 	return lr, nil
 }
 
-func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash string) ([]*entities.Record, error) {
+func (s *RecordStorage) GetRecordsByGroupHash(ctx context.Context, schemaName string, groupHash string) ([]*entities.Record, error) {
 	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY created_at ASC;"
 
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(s.ctx, schemaName, groupHash)
+	rows, err := stmt.QueryContext(ctx, schemaName, groupHash)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying records: %w", err)
 	}
@@ -207,15 +204,15 @@ func (s *RecordStorage) GetRecordsByGroupHash(schemaName string, groupHash strin
 	return lr, nil
 }
 
-func (s *RecordStorage) GetAllRecordsCount() (int, error) {
+func (s *RecordStorage) GetAllRecordsCount(ctx context.Context) (int, error) {
 	query := "SELECT COUNT(*) FROM records;"
-	stmt, err := s.readDB.PrepareContext(s.ctx, query)
+	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return 0, fmt.Errorf("failed preparing statement: %w", err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(s.ctx)
+	row := stmt.QueryRowContext(ctx)
 
 	var count int
 	err = row.Scan(&count)
@@ -226,17 +223,17 @@ func (s *RecordStorage) GetAllRecordsCount() (int, error) {
 	return count, nil
 }
 
-func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, error) {
+func (s *RecordStorage) FindStaleIDs(ctx context.Context, schemaID int, threshold int64) ([]int, error) {
 	// Count the number of rows before fetching the IDs to efficiently
 	// pre-allocate array of ids for resulting query
 	var rowsCount int
 	countQuery := "SELECT COUNT(*) FROM records WHERE schema_id = ? AND created_at <= ?"
-	err := s.readDB.QueryRowContext(s.ctx, countQuery, schemaID, threshold).Scan(&rowsCount)
+	err := s.readDB.QueryRowContext(ctx, countQuery, schemaID, threshold).Scan(&rowsCount)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying count of stale records IDs: %w", err)
 	}
 
-	rows, err := s.readDB.QueryContext(s.ctx, "SELECT id FROM records WHERE schema_id = ? AND created_at <= ?", schemaID, threshold)
+	rows, err := s.readDB.QueryContext(ctx, "SELECT id FROM records WHERE schema_id = ? AND created_at <= ?", schemaID, threshold)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying stale records IDs: %w", err)
 	}
@@ -255,7 +252,7 @@ func (s *RecordStorage) FindStaleIDs(schemaID int, threshold int64) ([]int, erro
 	return ids, nil
 }
 
-func (s *RecordStorage) DeleteByIDs(ids []int) error {
+func (s *RecordStorage) DeleteByIDs(ctx context.Context, ids []int) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -273,7 +270,7 @@ func (s *RecordStorage) DeleteByIDs(ids []int) error {
 	query := "DELETE FROM records WHERE id IN (%s);"
 	query = fmt.Sprintf(query, placeholders)
 
-	_, err = tx.ExecContext(s.ctx, query, args...)
+	_, err = tx.ExecContext(ctx, query, args...)
 
 	return err
 }
