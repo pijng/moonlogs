@@ -29,17 +29,17 @@ func main() {
 		}
 	}
 
-	err = persistence.InitDB(cfg)
+	databases, err := persistence.InitDB(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = tasks.Migrate(cfg.DBAdapter, embedMigrations)
+	err = tasks.Migrate(cfg.DBAdapter, databases, embedMigrations)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	storageInstances := persistence.InitStorages(cfg.DBAdapter)
+	storageInstances := persistence.InitStorages(cfg.DBAdapter, databases)
 	usecaseInstances := usecases.InitUsecases(storageInstances)
 
 	runCleanupTasks(context.Background(), usecaseInstances)

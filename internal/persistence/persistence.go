@@ -11,35 +11,42 @@ import (
 )
 
 const (
-	SQLITE_ADAPTER        = "sqlite"
-	MONGODB_ADAPTER       = "mongodb"
+	SQLITE_ADAPTER  = "sqlite"
+	MONGODB_ADAPTER = "mongodb"
+)
+
+const (
 	MONGODB_DATABASE_NAME = "moonlogs"
 )
 
-var sqliteReadInstance *sql.DB
-var sqliteWriteInstance *sql.DB
-
-func SqliteReadDB() *sql.DB {
-	return sqliteReadInstance
+type Databases struct {
+	SqliteReadInstance  *sql.DB
+	SqliteWriteInstance *sql.DB
+	MongoInstance       *mongo.Client
 }
 
-func SqliteWriteDB() *sql.DB {
-	return sqliteWriteInstance
-}
-
-var mongoInstance *mongo.Client
-
-func InitDB(cfg *config.Config) error {
+func InitDB(cfg *config.Config) (*Databases, error) {
+	var databases Databases
 	var err error
 
 	switch cfg.DBAdapter {
 	case MONGODB_ADAPTER:
-		mongoInstance, err = initMongoDB(cfg.DBPath)
+		mongoInstance, err := initMongoDB(cfg.DBPath)
+		if err != nil {
+			return nil, err
+		}
+
+		databases = Databases{MongoInstance: mongoInstance}
 	default:
-		sqliteWriteInstance, sqliteReadInstance, err = initSqliteDB(cfg.DBPath)
+		sqliteWriteInstance, sqliteReadInstance, err := initSqliteDB(cfg.DBPath)
+		if err != nil {
+			return nil, err
+		}
+
+		databases = Databases{SqliteReadInstance: sqliteReadInstance, SqliteWriteInstance: sqliteWriteInstance}
 	}
 
-	return err
+	return &databases, err
 }
 
 type Storages struct {
@@ -51,10 +58,10 @@ type Storages struct {
 	UserStorage     storage.UserStorage
 }
 
-func InitStorages(storageType string) Storages {
+func InitStorages(storageType string, databases *Databases) Storages {
 	switch storageType {
 	case MONGODB_ADAPTER:
-		mongoDB := mongoInstance.Database(MONGODB_DATABASE_NAME)
+		mongoDB := databases.MongoInstance.Database(MONGODB_DATABASE_NAME)
 
 		return Storages{
 			ActionStorage:   mongodb_adapter.NewActionStorage(mongoDB),
@@ -66,12 +73,12 @@ func InitStorages(storageType string) Storages {
 		}
 	default:
 		return Storages{
-			ActionStorage:   sqlite_adapter.NewActionStorage(sqliteReadInstance, sqliteWriteInstance),
-			ApiTokenStorage: sqlite_adapter.NewApiTokenStorage(sqliteReadInstance, sqliteWriteInstance),
-			RecordStorage:   sqlite_adapter.NewRecordStorage(sqliteReadInstance, sqliteWriteInstance),
-			SchemaStorage:   sqlite_adapter.NewSchemaStorage(sqliteReadInstance, sqliteWriteInstance),
-			TagStorage:      sqlite_adapter.NewTagStorage(sqliteReadInstance, sqliteWriteInstance),
-			UserStorage:     sqlite_adapter.NewUserStorage(sqliteReadInstance, sqliteWriteInstance),
+			ActionStorage:   sqlite_adapter.NewActionStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			ApiTokenStorage: sqlite_adapter.NewApiTokenStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			RecordStorage:   sqlite_adapter.NewRecordStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			SchemaStorage:   sqlite_adapter.NewSchemaStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			TagStorage:      sqlite_adapter.NewTagStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			UserStorage:     sqlite_adapter.NewUserStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
 		}
 	}
 }
