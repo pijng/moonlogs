@@ -90,7 +90,7 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	}
 
 	if len(record.Query) != 0 {
-		queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.MapLike(record.Query)))
+		queryBuilder.WriteString(fmt.Sprintf(" AND %s", qrx.QueryMap(record.Query)))
 	}
 
 	if from != nil || to != nil {

@@ -429,8 +429,7 @@ func In[T any](values []T) (string, []any) {
 	return strings.Join(placeholders, ","), args
 }
 
-// MapLike generates a WHERE clause for querying based on a map of conditions.
-func MapLike(query map[string]interface{}) string {
+func QueryMap(query map[string]interface{}) string {
 	if len(query) == 0 {
 		return "1=1"
 	}
@@ -438,7 +437,7 @@ func MapLike(query map[string]interface{}) string {
 	var placeholders []string
 
 	for key, value := range query {
-		placeholders = append(placeholders, fmt.Sprintf("json_extract(query, '$.%s') like '%s'", key, Contains(value)))
+		placeholders = append(placeholders, fmt.Sprintf("json_extract(query, '$.%s') = %s", key, value))
 	}
 
 	return strings.Join(placeholders, " AND ")
@@ -449,7 +448,7 @@ func QueryObject(filter bson.M, query map[string]interface{}) map[string]interfa
 		dotKey := fmt.Sprintf("query.%s", key)
 		vStr := value.(string)
 
-		filter[dotKey] = bson.M{"$regex": vStr}
+		filter[dotKey] = vStr
 	}
 
 	return filter
