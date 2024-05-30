@@ -53,12 +53,13 @@ export const LogsCard = ({
             "flex",
             "flex-wrap",
             "gap-3",
-            "basis-11/12",
+            "basis-full",
             "flex-nowrap",
             "overflow-auto",
             "dark:scrollbar",
             "text-sm",
-            "p-4",
+            "px-4",
+            "py-2",
             "justify-start",
             "font-medium",
             "text-center",
@@ -68,6 +69,10 @@ export const LogsCard = ({
         });
 
         h("li", () => {
+          spec({
+            classList: ["min-w-max"],
+          });
+
           const $kindTitle = combine(localKind, localSchema, (kind, schema) => {
             const schemaKind = schema?.kinds?.find((k) => k.name === kind);
             if (!schemaKind) return null;
@@ -83,7 +88,7 @@ export const LogsCard = ({
         list(remap(logsGroup, "tags"), ({ store: tag }) => {
           h("li", () => {
             spec({
-              classList: ["min-w-fit"],
+              classList: ["min-w-max"],
             });
 
             const text = combine(tag, localSchema, (tag, schema) => {
@@ -102,16 +107,7 @@ export const LogsCard = ({
       h("div", () => {
         spec({
           visible: createStore(Boolean(href)),
-          classList: [
-            "basis-1/12",
-            "p-4",
-            "min-w-fit",
-            "border-l",
-            "border-gray-200",
-            "dark:border-shadow-gray",
-            "flex",
-            "justify-center",
-          ],
+          classList: ["p-2", "min-w-fit", "border-l", "border-gray-200", "dark:border-shadow-gray", "flex", "justify-center"],
         });
 
         h("a", () => {
