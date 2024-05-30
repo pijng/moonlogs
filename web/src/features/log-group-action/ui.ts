@@ -4,7 +4,15 @@ import { Button } from "@/shared/ui";
 import { h, remap, spec } from "forest";
 import { Store, createEffect, createEvent, sample } from "effector";
 
-export const LogGroupAction = ({ action, logGroup }: { action: Store<Action>; logGroup: Store<Log[]> }) => {
+export const LogGroupAction = ({
+  action,
+  logGroup,
+  primary = true,
+}: {
+  action: Store<Action>;
+  logGroup: Store<Log[]>;
+  primary?: boolean;
+}) => {
   const actionModel = createLogGroupAction(action, logGroup);
 
   const actionClicked = createEvent();
@@ -23,7 +31,7 @@ export const LogGroupAction = ({ action, logGroup }: { action: Store<Action>; lo
 
     Button({
       text: remap(action, "name"),
-      variant: "default",
+      variant: primary ? "default" : "alternative",
       prevent: true,
       size: "extra_small",
       event: actionClicked,

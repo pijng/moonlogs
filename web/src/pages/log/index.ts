@@ -19,7 +19,13 @@ export const ShowLogPage = () => {
     const $logsPresent = logModel.$groupedLogs.map((g) => g.logs.length > 0);
 
     h("div", () => {
-      GroupActionsList();
+      h("div", () => {
+        spec({
+          classList: ["inline-flex", "space-x-3", "pt-6", "pb-3"],
+        });
+
+        GroupActionsList({});
+      });
 
       h("div", () => {
         spec({

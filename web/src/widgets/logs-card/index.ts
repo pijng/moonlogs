@@ -4,6 +4,7 @@ import { Button, KBD, LogsTable } from "@/shared/ui";
 import { LogsGroup, Schema } from "@/shared/api";
 import { i18n } from "@/shared/lib/i18n";
 import { logModel } from "@/entities/log";
+import { GroupActionsList } from "../group-actions-list";
 
 export const LogsCard = ({
   schema,
@@ -107,8 +108,10 @@ export const LogsCard = ({
       h("div", () => {
         spec({
           visible: createStore(Boolean(href)),
-          classList: ["p-2", "min-w-fit", "border-l", "border-gray-200", "dark:border-shadow-gray", "flex", "justify-center"],
+          classList: ["p-2", "min-w-fit", "border-l", "border-gray-200", "dark:border-shadow-gray", "inline-flex", "space-x-2"],
         });
+
+        GroupActionsList({ logGroup: remap(logsGroup, "logs"), primary: false });
 
         h("a", () => {
           spec({

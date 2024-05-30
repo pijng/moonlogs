@@ -1,16 +1,14 @@
 import { actionModel } from "@/entities/action";
 import { logModel } from "@/entities/log";
 import { LogGroupAction } from "@/features";
-import { h, list, spec } from "forest";
+import { Log } from "@/shared/api";
+import { Store } from "effector";
+import { list } from "forest";
 
-export const GroupActionsList = () => {
-  h("div", () => {
-    spec({
-      classList: ["inline-flex", "space-x-3", "pt-6", "pb-3"],
-    });
+export const GroupActionsList = ({ logGroup, primary }: { logGroup?: Store<Log[]>; primary?: boolean }) => {
+  const logs = logGroup || logModel.$groupedLogs.map((g) => g.logs);
 
-    list(actionModel.$actions, ({ store: action }) => {
-      LogGroupAction({ action: action, logGroup: logModel.$groupedLogs.map((g) => g.logs) });
-    });
+  list(actionModel.$actions, ({ store: action }) => {
+    LogGroupAction({ action: action, logGroup: logs, primary: primary });
   });
 };
