@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,19 +11,25 @@ import (
 )
 
 func initMongoDB(dataSourceName string) (*mongo.Client, error) {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(dataSourceName))
+	connectCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(connectCtx, options.Client().ApplyURI(dataSourceName))
 	if err != nil {
-		return nil, fmt.Errorf("connecting mongo db: %w", err)
+		return nil, fmt.Errorf("connect to MongoDB: %w", err)
 	}
 
-	err = client.Ping(context.Background(), nil)
+	pingCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = client.Ping(pingCtx, nil)
 	if err != nil {
-		return nil, fmt.Errorf("pinging mongo db: %w", err)
+		return nil, fmt.Errorf("ping MongoDB: %w", err)
 	}
 
 	err = createIndexes(client)
 	if err != nil {
-		return nil, fmt.Errorf("creating indexes: %w", err)
+		return nil, fmt.Errorf("create indexes: %w", err)
 	}
 
 	return client, err

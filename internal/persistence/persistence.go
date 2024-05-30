@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"database/sql"
+	"fmt"
 	"moonlogs/internal/config"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/storage/mongodb_adapter"
@@ -33,14 +34,14 @@ func InitDB(cfg *config.Config) (*Databases, error) {
 	case MONGODB_ADAPTER:
 		mongoInstance, err := initMongoDB(cfg.DBPath)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to connect to MongoDB: %w", err)
 		}
 
 		databases = Databases{MongoInstance: mongoInstance}
 	default:
 		sqliteWriteInstance, sqliteReadInstance, err := initSqliteDB(cfg.DBPath)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to connect to Sqlite: %w", err)
 		}
 
 		databases = Databases{SqliteReadInstance: sqliteReadInstance, SqliteWriteInstance: sqliteWriteInstance}
