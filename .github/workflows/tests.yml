@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - '**'
-    tags:
-      - '**'
   pull_request:
+    branches:
+      - '**'
+  workflow_call:
 
 jobs:
   go-tests:
