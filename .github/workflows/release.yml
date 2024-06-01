@@ -1,41 +1,19 @@
 name: goreleaser
 
 on:
+  workflow_run:
+    workflows: ["Tests"]
+    types:
+      - completed
   push:
-    branches:
-      - '**'
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - '**'
 
 permissions:
   contents: write
 
 jobs:
-  go-tests:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '>=1.21.0'
-
-      - name: Install Dependencies
-        run: go mod download
-
-      - name: Run Tests
-        run: go test -v ./...
-
   build-web:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: go-tests
     runs-on: ubuntu-latest
 
     outputs:
@@ -64,7 +42,6 @@ jobs:
           path: web/build
 
   goreleaser:
-    if: startsWith(github.ref, 'refs/tags/')
     needs: build-web
     runs-on: ubuntu-latest
     steps:
@@ -95,7 +72,6 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURYPUSHTOKEN }}
 
   publish-docker:
-    if: startsWith(github.ref, 'refs/tags/')
     needs: goreleaser
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
@@ -132,7 +108,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   trigger-ruby-client:
-    if: startsWith(github.ref, 'refs/tags/')
     needs: publish-docker
     name: Trigger Ruby Client Workflow
     runs-on: ubuntu-latest
@@ -153,7 +128,6 @@ jobs:
           client-payload: '{"tag_version": "${{ steps.get_tag_version.outputs.tag_version }}"}'
 
   trigger-typescript-client:
-    if: startsWith(github.ref, 'refs/tags/')
     needs: publish-docker
     name: Trigger Typescript Client Workflow
     runs-on: ubuntu-latest
