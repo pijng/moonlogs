@@ -60,6 +60,10 @@ func (s *UserStorage) GetUserByID(ctx context.Context, id int) (*entities.User, 
 
 	var u entities.User
 	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning user: %w", err)
 	}
@@ -111,7 +115,7 @@ func (s *UserStorage) GetUserByEmail(ctx context.Context, email string) (*entiti
 	var u entities.User
 	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
 	if errors.Is(err, sql.ErrNoRows) {
-		return &entities.User{}, nil
+		return nil, nil
 	}
 
 	if err != nil {
@@ -134,7 +138,7 @@ func (s *UserStorage) GetUserByToken(ctx context.Context, token string) (*entiti
 	var u entities.User
 	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
 	if errors.Is(err, sql.ErrNoRows) {
-		return &entities.User{}, nil
+		return nil, nil
 	}
 
 	if err != nil {
@@ -149,9 +153,6 @@ func (s *UserStorage) DeleteUserByID(ctx context.Context, id int) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "DELETE FROM users WHERE id=?;"
 
@@ -160,7 +161,12 @@ func (s *UserStorage) DeleteUserByID(ctx context.Context, id int) error {
 		return fmt.Errorf("failed deleting user: %w", err)
 	}
 
-	return err
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func (s *UserStorage) UpdateUserByID(ctx context.Context, id int, user entities.User) (*entities.User, error) {
@@ -168,9 +174,6 @@ func (s *UserStorage) UpdateUserByID(ctx context.Context, id int, user entities.
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	var queryBuilder strings.Builder
 	args := make([]interface{}, 0)
@@ -191,6 +194,11 @@ func (s *UserStorage) UpdateUserByID(ctx context.Context, id int, user entities.
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
 
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
 	return s.GetUserByID(ctx, id)
 }
 
@@ -199,9 +207,6 @@ func (s *UserStorage) UpdateUserTokenByID(ctx context.Context, id int, token str
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "UPDATE users SET token=? WHERE id=?;"
 
@@ -210,7 +215,12 @@ func (s *UserStorage) UpdateUserTokenByID(ctx context.Context, id int, token str
 		return fmt.Errorf("failed updating user: %w", err)
 	}
 
-	return err
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func (s *UserStorage) GetAllUsers(ctx context.Context) ([]*entities.User, error) {

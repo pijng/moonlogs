@@ -3,6 +3,7 @@ package sqlite_adapter
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
@@ -63,6 +64,10 @@ func (s *ActionStorage) GetActionByID(ctx context.Context, id int) (*entities.Ac
 
 	var a entities.Action
 	err = row.Scan(&a.ID, &a.Name, &a.Pattern, &a.Method, &a.Conditions, &a.SchemaIDs, &a.Disabled)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning action: %w", err)
 	}
@@ -75,15 +80,17 @@ func (s *ActionStorage) DeleteActionByID(ctx context.Context, id int) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "DELETE FROM actions WHERE id=?;"
 
 	_, err = tx.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting action: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return err
@@ -94,15 +101,17 @@ func (s *ActionStorage) UpdateActionByID(ctx context.Context, id int, action ent
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "UPDATE actions SET name=?, pattern=?, method=?, conditions=?, disabled=?, schema_ids=? WHERE id=?;"
 
 	_, err = tx.ExecContext(ctx, query, action.Name, action.Pattern, action.Method, action.Conditions, action.Disabled, action.SchemaIDs, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating action: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return s.GetActionByID(ctx, id)

@@ -59,15 +59,17 @@ func (s *SchemaStorage) UpdateSchemaByID(ctx context.Context, id int, schema ent
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "UPDATE schemas SET description=?, title=?, fields=?, kinds=?, retention_days=?, tag_id=? WHERE id=?;"
 
 	_, err = tx.ExecContext(ctx, query, schema.Description, schema.Title, schema.Fields, schema.Kinds, schema.RetentionDays, schema.TagID, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating schema: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return s.GetById(ctx, id)
@@ -85,6 +87,10 @@ func (s *SchemaStorage) GetById(ctx context.Context, id int) (*entities.Schema, 
 
 	var sm entities.Schema
 	err = row.Scan(&sm.ID, &sm.Title, &sm.Description, &sm.Name, &sm.Fields, &sm.Kinds, &sm.TagID, &sm.RetentionDays)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning schema: %w", err)
 	}
@@ -135,7 +141,7 @@ func (s *SchemaStorage) GetByName(ctx context.Context, name string) (*entities.S
 	var sm entities.Schema
 	err = row.Scan(&sm.ID, &sm.Title, &sm.Description, &sm.Name, &sm.Fields, &sm.Kinds, &sm.TagID, &sm.RetentionDays)
 	if errors.Is(err, sql.ErrNoRows) {
-		return &entities.Schema{}, nil
+		return nil, nil
 	}
 
 	if err != nil {
@@ -146,7 +152,7 @@ func (s *SchemaStorage) GetByName(ctx context.Context, name string) (*entities.S
 }
 
 func (s *SchemaStorage) GetSchemasByTitleOrDescription(ctx context.Context, title string, description string) ([]*entities.Schema, error) {
-	query := "SELECT * FROM schemas WHERE title LIKE ? OR description lile ? ORDER BY id desc;"
+	query := "SELECT * FROM schemas WHERE title LIKE ? OR description like ? ORDER BY id desc;"
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -210,9 +216,6 @@ func (s *SchemaStorage) DeleteSchemaByID(ctx context.Context, id int) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "DELETE FROM schemas WHERE id=?;"
 
@@ -221,5 +224,10 @@ func (s *SchemaStorage) DeleteSchemaByID(ctx context.Context, id int) error {
 		return fmt.Errorf("failed deleting schema: %w", err)
 	}
 
-	return err
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }

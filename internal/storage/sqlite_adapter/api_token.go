@@ -52,15 +52,17 @@ func (s *ApiTokenStorage) UpdateApiTokenByID(ctx context.Context, id int, apiTok
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "UPDATE api_tokens SET name=?, is_revoked=? WHERE id=?;"
 
 	_, err = tx.ExecContext(ctx, query, apiToken.Name, apiToken.IsRevoked, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating api token: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return s.GetApiTokenByID(ctx, id)
@@ -78,6 +80,10 @@ func (s *ApiTokenStorage) GetApiTokenByID(ctx context.Context, id int) (*entitie
 
 	var t entities.ApiToken
 	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning api_token: %w", err)
 	}
@@ -143,15 +149,17 @@ func (s *ApiTokenStorage) DeleteApiTokenByID(ctx context.Context, id int) error 
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "DELETE FROM api_tokens WHERE id=?;"
 
 	_, err = tx.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed deleting api token: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return err

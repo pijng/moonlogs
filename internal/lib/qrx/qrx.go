@@ -437,7 +437,7 @@ func QueryMap(query map[string]interface{}) string {
 	var placeholders []string
 
 	for key, value := range query {
-		placeholders = append(placeholders, fmt.Sprintf("json_extract(query, '$.%s') = %s", key, value))
+		placeholders = append(placeholders, fmt.Sprintf("CAST(json_extract(query, '$.%s') AS TEXT) = '%s'", key, value))
 	}
 
 	return strings.Join(placeholders, " AND ")

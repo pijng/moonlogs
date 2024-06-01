@@ -3,6 +3,7 @@ package sqlite_adapter
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
@@ -27,9 +28,6 @@ func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response;"
 
@@ -40,6 +38,11 @@ func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record
 	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning record: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return &lr, nil
@@ -57,6 +60,10 @@ func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Re
 
 	var dest entities.Record
 	err = row.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
@@ -134,7 +141,7 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 
 		err := rows.Scan(&totalCount, &dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
 		if err != nil {
-			return make([]*entities.Record, 0), 0, fmt.Errorf("failed querying record: %w", err)
+			return make([]*entities.Record, 0), 0, fmt.Errorf("failed scanning record: %w", err)
 		}
 
 		lr = append(lr, &dest)
@@ -229,6 +236,10 @@ func (s *RecordStorage) FindStaleIDs(ctx context.Context, schemaID int, threshol
 	var rowsCount int
 	countQuery := "SELECT COUNT(*) FROM records WHERE schema_id = ? AND created_at <= ?"
 	err := s.readDB.QueryRowContext(ctx, countQuery, schemaID, threshold).Scan(&rowsCount)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed querying count of stale records IDs: %w", err)
 	}
@@ -263,14 +274,19 @@ func (s *RecordStorage) DeleteByIDs(ctx context.Context, ids []int) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "DELETE FROM records WHERE id IN (%s);"
 	query = fmt.Sprintf(query, placeholders)
 
 	_, err = tx.ExecContext(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("failed deleting schema: %w", err)
+	}
 
-	return err
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }

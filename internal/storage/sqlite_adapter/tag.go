@@ -3,6 +3,7 @@ package sqlite_adapter
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
@@ -63,6 +64,9 @@ func (s *TagStorage) GetTagByID(ctx context.Context, id int) (*entities.Tag, err
 
 	var t entities.Tag
 	err = row.Scan(&t.ID, &t.Name, &t.ViewOrder)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning tag: %w", err)
 	}
@@ -75,9 +79,6 @@ func (s *TagStorage) DeleteTagByID(ctx context.Context, id int) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "DELETE FROM tags WHERE id=?;"
 
@@ -86,7 +87,12 @@ func (s *TagStorage) DeleteTagByID(ctx context.Context, id int) error {
 		return fmt.Errorf("failed deleting tag: %w", err)
 	}
 
-	return err
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 func (s *TagStorage) UpdateTagByID(ctx context.Context, id int, tag entities.Tag) (*entities.Tag, error) {
@@ -94,15 +100,17 @@ func (s *TagStorage) UpdateTagByID(ctx context.Context, id int, tag entities.Tag
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Commit()
-	}(tx)
 
 	query := "UPDATE tags SET name=?, view_order=? WHERE id=?;"
 
 	_, err = tx.ExecContext(ctx, query, tag.Name, tag.ViewOrder, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating tag: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return s.GetTagByID(ctx, id)
