@@ -34,6 +34,7 @@ export const Input = <T extends DOMProperty>({
         "mb-6": type !== "datetime-local",
         flex: type === "checkbox",
         "items-center": type === "checkbox",
+        "select-none": type === "checkbox",
       },
       visible: visible,
     });
