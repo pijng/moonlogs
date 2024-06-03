@@ -10,3 +10,4 @@ export { QuestionIcon } from "./question";
 export { ClockIcon } from "./clock";
 export { FireIcon } from "./fire";
 export { LogoIcon } from "./logo";
+export { CaretDownIcon } from "./caret-down";

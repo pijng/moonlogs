@@ -4,14 +4,16 @@ import { Button } from "@/shared/ui";
 import { h, remap, spec } from "forest";
 import { Store, createEffect, createEvent, sample } from "effector";
 
+type Style = "default" | "alternative" | "light";
+
 export const LogGroupAction = ({
   action,
   logGroup,
-  primary = true,
+  style = "default",
 }: {
   action: Store<Action>;
   logGroup: Store<Log[]>;
-  primary?: boolean;
+  style?: Style;
 }) => {
   const actionModel = createLogGroupAction(action, logGroup);
 
@@ -31,7 +33,7 @@ export const LogGroupAction = ({
 
     Button({
       text: remap(action, "name"),
-      variant: primary ? "default" : "alternative",
+      variant: style,
       prevent: true,
       size: "extra_small",
       event: actionClicked,

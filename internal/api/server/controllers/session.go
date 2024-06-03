@@ -141,7 +141,7 @@ func (c *SessionController) GetSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.ID == 0 {
+	if user == nil || user.ID == 0 {
 		response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 		return
 	}

@@ -16,6 +16,7 @@ export {
   GearIcon,
   TrashIcon,
   LogoIcon,
+  CaretDownIcon,
 } from "./icons";
 export { Input } from "./input";
 export { Layout, layoutClicked } from "./layout";
@@ -39,3 +40,4 @@ export { Spinner } from "./spinner";
 export { PermissionGate } from "./permission-gate";
 export { ActionsTable } from "./actions-table";
 export { Text } from "./text";
+export { Popup } from "./popup";

@@ -111,11 +111,26 @@ export const LogsCard = ({
           classList: ["p-2", "min-w-fit", "border-l", "border-gray-200", "dark:border-shadow-gray", "inline-flex", "space-x-2"],
         });
 
-        GroupActionsList({ logGroup: remap(logsGroup, "logs"), primary: false });
+        h("div", () => {
+          spec({
+            classList: ["lg:hidden"],
+          });
+
+          GroupActionsList({ logGroup: remap(logsGroup, "logs"), style: "alternative", collapsed: true });
+        });
+
+        h("div", () => {
+          spec({
+            classList: ["space-x-2", "hidden", "lg:inline-flex"],
+          });
+
+          GroupActionsList({ logGroup: remap(logsGroup, "logs"), style: "alternative" });
+        });
 
         h("a", () => {
           spec({
             attr: { href: href || "", target: "_blank" },
+            visible: createStore(Boolean(href)),
           });
           Button({ text: i18n("buttons.open"), variant: "default", size: "extra_small" });
         });
