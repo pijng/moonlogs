@@ -61,7 +61,7 @@ const SIZES: Record<Size, Record<Style, string[]>> = {
     round: ["p-2", "text-sm"],
   },
   extra_small: {
-    default: ["px-3", "py-2", "text-xs", "rounded-lg"],
+    default: ["px-2", "py-2", "text-xs", "rounded-lg"],
     round: ["p-1.5", "text-xs"],
   },
   plain: {

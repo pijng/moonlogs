@@ -35,7 +35,7 @@ export const LogGroupAction = ({
       text: remap(action, "name"),
       variant: style,
       prevent: true,
-      size: "extra_small",
+      size: style === "default" ? "extra_small" : "small",
       event: actionClicked,
     });
   });

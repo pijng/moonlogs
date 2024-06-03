@@ -1,14 +1,14 @@
 import { Store, createEvent, createStore, sample } from "effector";
-import { h, spec } from "forest";
+import { DOMElement, h, node, spec } from "forest";
 import { Button } from "../buttons";
 
 export const Popup = ({ text, icon, content }: { text?: string | Store<string>; icon?: () => void; content: () => void }) => {
   h("div", () => {
-    spec({ classList: ["relative"] });
+    spec({ classList: ["relative"], attr: { id: "some" } });
 
     const clicked = createEvent();
     const $visible = createStore(false);
-    // const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
+    const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
 
     sample({
       source: $visible,
@@ -17,13 +17,13 @@ export const Popup = ({ text, icon, content }: { text?: string | Store<string>; 
       target: $visible,
     });
 
-    // sample({
-    //   source: $visible,
-    //   clock: outsideClicked,
-    //   filter: (visible, { node, event }) => !node.contains(event.target) && visible,
-    //   fn: () => false,
-    //   target: $visible,
-    // });
+    sample({
+      source: $visible,
+      clock: outsideClicked,
+      filter: (visible, { node, event }) => node.childNodes.length > 1 && !node.contains(event.target) && visible,
+      fn: () => false,
+      target: $visible,
+    });
 
     Button({
       text: text,
@@ -61,10 +61,16 @@ export const Popup = ({ text, icon, content }: { text?: string | Store<string>; 
 
       h("ul", () => {
         spec({
-          classList: ["flex", "flex-col", "flex-wrap", "py-2", "text-sm", "text-gray-700", "dark:text-gray-200"],
+          classList: ["flex", "flex-col", "flex-wrap", "py-2", "px-1", "text-sm", "text-gray-700", "dark:text-gray-200"],
         });
 
         content();
+      });
+    });
+
+    node((node) => {
+      document.addEventListener("click", (event) => {
+        outsideClicked({ node, event });
       });
     });
   });
