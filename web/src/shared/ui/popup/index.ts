@@ -22,6 +22,8 @@ export const Popup = ({ text, icon, content }: { text?: string | Store<string>; 
     target: $visible,
   });
 
+  $visible.watch(console.log);
+
   h("div", () => {
     spec({ classList: ["relative"] });
     Button({

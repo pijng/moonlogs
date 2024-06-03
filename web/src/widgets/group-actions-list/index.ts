@@ -2,7 +2,7 @@ import { actionModel } from "@/entities/action";
 import { logModel } from "@/entities/log";
 import { LogGroupAction } from "@/features";
 import { Log } from "@/shared/api";
-import { CaretDownIcon, Popup } from "@/shared/ui";
+import { Popup } from "@/shared/ui";
 import { Store, createStore } from "effector";
 import { h, list, spec, variant } from "forest";
 
@@ -26,7 +26,7 @@ export const GroupActionsList = ({
     cases: {
       collapsed: () => {
         Popup({
-          icon: CaretDownIcon,
+          text: "•••",
           content: () => {
             list(actionModel.$actions, ({ store: action }) => {
               h("li", () => {
