@@ -17,6 +17,12 @@ export {
   TrashIcon,
   LogoIcon,
   CaretDownIcon,
+  UserIcon,
+  UsersIcon,
+  TagIcon,
+  ForwardStepIcon,
+  LayersIcon,
+  LockOpenIcon,
 } from "./icons";
 export { Input } from "./input";
 export { Layout, layoutClicked } from "./layout";

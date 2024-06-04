@@ -1,7 +1,7 @@
 import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
-import { LogoIcon, PermissionGate } from "@/shared/ui";
+import { ForwardStepIcon, LayersIcon, LockOpenIcon, LogoIcon, PermissionGate, TagIcon, UserIcon, UsersIcon } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import { Link, actionsRoute, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
 
@@ -146,24 +146,24 @@ export const Sidebar = () => {
             classList: ["space-y-2", "font-medium"],
           });
 
-          SidebarItem(i18n("profile.label"), profileRoute);
+          SidebarItem({ text: i18n("profile.label"), route: profileRoute, icon: UserIcon });
 
-          SidebarItem(i18n("log_groups.label"), homeRoute);
+          SidebarItem({ text: i18n("log_groups.label"), route: homeRoute, icon: LayersIcon });
 
           PermissionGate("Admin", () => {
-            SidebarItem(i18n("members.label"), membersRoute);
+            SidebarItem({ text: i18n("members.label"), route: membersRoute, icon: UsersIcon });
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem(i18n("tags.label"), tagsRoute);
+            SidebarItem({ text: i18n("tags.label"), route: tagsRoute, icon: TagIcon });
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem(i18n("actions.label"), actionsRoute);
+            SidebarItem({ text: i18n("actions.label"), route: actionsRoute, icon: ForwardStepIcon });
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem(i18n("api_tokens.label"), apiTokensRoute);
+            SidebarItem({ text: i18n("api_tokens.label"), route: apiTokensRoute, icon: LockOpenIcon });
           });
         });
       });
@@ -177,7 +177,15 @@ export const Sidebar = () => {
   });
 };
 
-export const SidebarItem = (text: Store<string> | string, route: RouteInstance<Record<string, any>>) => {
+export const SidebarItem = ({
+  text,
+  route,
+  icon,
+}: {
+  text: Store<string> | string;
+  route: RouteInstance<Record<string, any>>;
+  icon: () => void;
+}) => {
   h("li", () => {
     Link(route, {
       text: text,
@@ -193,6 +201,13 @@ export const SidebarItem = (text: Store<string> | string, route: RouteInstance<R
         "dark:bg-squid-ink": route.$isOpened,
         "dark:hover:bg-squid-ink": true,
         group: true,
+      },
+      fn: () => {
+        h("div", () => {
+          spec({ classList: ["me-1.5"] });
+
+          icon();
+        });
       },
     });
   });
