@@ -1,5 +1,5 @@
 export { LevelBadge } from "./badge";
-export { Button, type ButtonVariant } from "./buttons";
+export { Button, type ButtonVariant, type ButtonSize } from "./buttons";
 export { CardLink } from "./cards";
 export { Dropdown } from "./dropdown";
 export { FloatingInput } from "./floating-input";

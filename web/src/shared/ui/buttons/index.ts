@@ -1,2 +1,2 @@
 export { NavigationButton } from "./navigation";
-export { Button, type ButtonVariant } from "./simple";
+export { Button, type ButtonVariant, type ButtonSize } from "./simple";

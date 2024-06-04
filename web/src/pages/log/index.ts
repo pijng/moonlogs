@@ -21,7 +21,7 @@ export const ShowLogPage = () => {
     h("div", () => {
       h("div", () => {
         spec({
-          classList: ["inline-flex", "space-x-3", "pt-6", "pb-3"],
+          classList: ["inline-flex", "space-x-2", "pt-6", "pb-3"],
         });
 
         GroupActionsList({});

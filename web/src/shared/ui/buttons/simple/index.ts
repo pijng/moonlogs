@@ -2,7 +2,7 @@ import { Event, Store, createEvent, createStore, is, restore, sample } from "eff
 import { ClassListArray, h, node, spec } from "forest";
 
 export type ButtonVariant = "default" | "alternative" | "light" | "delete" | "delete_icon";
-type Size = "base" | "small" | "extra_small" | "plain";
+export type ButtonSize = "base" | "small" | "extra_small" | "plain";
 type Style = "default" | "round";
 
 const BASE_CLASSES = ["inline-flex", "items-center"];
@@ -51,7 +51,7 @@ const VARIANTS: Record<ButtonVariant, string[]> = {
   light: ["block", "font-medium", "text-gray-900", "hover:text-blue-700", "dark:text-gray-400", "dark:hover:text-white"],
 };
 
-const SIZES: Record<Size, Record<Style, string[]>> = {
+const SIZES: Record<ButtonSize, Record<Style, string[]>> = {
   base: {
     default: ["px-5", "py-2.5", "text-sm", "rounded-lg"],
     round: ["p-2.5", "text-sm"],
@@ -75,7 +75,7 @@ const STYLES: Record<Style, string[]> = {
   default: [""],
 };
 
-const buttonClass = (variant: Store<ButtonVariant>, size: Size, style: Style): Store<string> => {
+const buttonClass = (variant: Store<ButtonVariant>, size: ButtonSize, style: Style): Store<string> => {
   const $currentVariant = variant.map((variant) => VARIANTS[variant]);
   const $sumClasses = $currentVariant.map((variant) =>
     STYLES[style].concat(BASE_CLASSES).concat(variant).concat(SIZES[size][style]),
@@ -99,7 +99,7 @@ export const Button = ({
   event?: Event<any>;
   variant: ButtonVariant | Store<ButtonVariant>;
   style?: Style;
-  size: Size;
+  size: ButtonSize;
   visible?: Store<boolean>;
   prevent?: boolean;
   preIcon?: () => void;
