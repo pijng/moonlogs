@@ -1,4 +1,11 @@
-[![goreleaser](https://github.com/pijng/moonlogs/actions/workflows/release.yml/badge.svg)](https://github.com/pijng/moonlogs/actions/workflows/release.yml)
+
+<div style="display: inline-flex; gap: 0.25rem;>
+
+  [![Tests](https://github.com/pijng/moonlogs/actions/workflows/tests.yml/badge.svg)](https://github.com/pijng/moonlogs/actions/workflows/tests.yml)
+
+  [![goreleaser](https://github.com/pijng/moonlogs/actions/workflows/release.yml/badge.svg)](https://github.com/pijng/moonlogs/actions/workflows/release.yml)
+</div>
+
 
 [![Feature-Sliced Design][shields-fsd-white]](https://feature-sliced.design/)
 
