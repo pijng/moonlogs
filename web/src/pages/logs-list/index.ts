@@ -68,7 +68,13 @@ export const LogsListPage = () => {
             });
           });
 
-          Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+          h("div", () => {
+            spec({
+              visible: $isLoadingLogs.map((l) => !l),
+            });
+
+            Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+          });
         });
       });
     });
