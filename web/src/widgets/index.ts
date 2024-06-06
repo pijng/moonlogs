@@ -10,3 +10,4 @@ export { UserProfile } from "./user-profile";
 export { SchemasList } from "./schemas-list";
 export { GroupActionsList } from "./group-actions-list";
 export { LogsCard } from "./logs-card";
+export { LogsFilter } from "./logs-filter";

@@ -59,7 +59,7 @@ export const Dropdown = ({
       list(items, ({ store: item }) => {
         h("li", () => {
           spec({
-            classList: ["block", "px-4", "py-2", "flex-auto", "shrink-0"],
+            classList: ["block", "px-4", "pt-5", "pb-2", "flex-auto", "shrink-0"],
           });
 
           const inputChanged = createEvent<InputEvent>();

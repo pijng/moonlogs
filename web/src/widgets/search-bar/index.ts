@@ -27,10 +27,6 @@ const $currentFilter = combine([$currentSchema, logModel.$formattedSearchFilter]
 
 export const SearchBar = () => {
   h("div", () => {
-    spec({
-      classList: ["pb-4"],
-    });
-
     h("div", () => {
       spec({
         classList: ["flex", "max-w-2xl", "w-full", "flex-row"],
@@ -47,7 +43,7 @@ export const SearchBar = () => {
 
     h("div", () => {
       spec({
-        classList: ["relative", "flex", "space-x-2"],
+        classList: ["xl:hidden", "relative", "flex", "space-x-2"],
       });
 
       // Filter by query and kind

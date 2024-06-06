@@ -71,7 +71,7 @@ export const ru: Translation = {
     },
     filters: {
       query: {
-        label: "Фильтр",
+        label: "Фильтры",
         kind: "Вид",
       },
       time: {

@@ -5,7 +5,7 @@ export type ButtonVariant = "default" | "alternative" | "light" | "delete" | "de
 export type ButtonSize = "base" | "small" | "extra_small" | "plain";
 type Style = "default" | "round";
 
-const BASE_CLASSES = ["inline-flex", "items-center"];
+const BASE_CLASSES = ["inline-flex", "items-center", "justify-center"];
 
 const VARIANTS: Record<ButtonVariant, string[]> = {
   default: [
@@ -75,11 +75,14 @@ const STYLES: Record<Style, string[]> = {
   default: [""],
 };
 
-const buttonClass = (variant: Store<ButtonVariant>, size: ButtonSize, style: Style): Store<string> => {
+const buttonClass = (variant: Store<ButtonVariant>, size: ButtonSize, style: Style, fullWidth?: boolean): Store<string> => {
   const $currentVariant = variant.map((variant) => VARIANTS[variant]);
-  const $sumClasses = $currentVariant.map((variant) =>
-    STYLES[style].concat(BASE_CLASSES).concat(variant).concat(SIZES[size][style]),
-  );
+  const $sumClasses = $currentVariant.map((variant) => {
+    const classes = STYLES[style].concat(BASE_CLASSES).concat(variant).concat(SIZES[size][style]);
+    if (fullWidth) classes.push("w-full");
+
+    return classes;
+  });
 
   return $sumClasses.map((classes) => classes.join(" "));
 };
@@ -92,6 +95,7 @@ export const Button = ({
   style,
   visible,
   prevent,
+  fullWidth,
   preIcon,
   postIcon,
 }: {
@@ -102,6 +106,7 @@ export const Button = ({
   size: ButtonSize;
   visible?: Store<boolean>;
   prevent?: boolean;
+  fullWidth?: boolean;
   preIcon?: () => void;
   postIcon?: () => void;
 }) => {
@@ -138,7 +143,7 @@ export const Button = ({
 
     sample({
       clock: [touch, $localVariant],
-      source: buttonClass($localVariant, size, localStyle),
+      source: buttonClass($localVariant, size, localStyle, fullWidth),
       target: touchClasses,
     });
 

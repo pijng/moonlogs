@@ -123,7 +123,7 @@ export const Select = ({
           "absolute",
           "left-0",
           "top-18",
-          "w-fit",
+          "w-full",
           "border",
           "border-gray-200",
           "dark:bg-raisin-black",

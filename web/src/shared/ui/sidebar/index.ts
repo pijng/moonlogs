@@ -1,7 +1,7 @@
 import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
-import { ForwardStepIcon, LayersIcon, LockOpenIcon, LogoIcon, PermissionGate, TagIcon, UserIcon, UsersIcon } from "@/shared/ui";
+import { GridPlusIcon, LayersIcon, LockOpenIcon, LogoIcon, PermissionGate, TagIcon, UserIcon, UsersIcon } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import { Link, actionsRoute, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
 
@@ -159,7 +159,7 @@ export const Sidebar = () => {
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem({ text: i18n("actions.label"), route: actionsRoute, icon: ForwardStepIcon });
+            SidebarItem({ text: i18n("actions.label"), route: actionsRoute, icon: GridPlusIcon });
           });
 
           PermissionGate("Admin", () => {

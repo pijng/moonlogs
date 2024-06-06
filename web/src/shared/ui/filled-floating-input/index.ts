@@ -2,7 +2,7 @@ import { FilterItem } from "@/features";
 import { Event, Store } from "effector";
 import { h, remap, spec } from "forest";
 
-export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>) => {
+export const FilledFloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>) => {
   h("div", () => {
     spec({
       classList: ["relative"],
@@ -19,14 +19,16 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
       handler: { on: { input: inputChanged } },
       classList: [
         "block",
-        "py-2.5",
-        "px-0",
+        "rounded-lg",
+        "px-2.5",
+        "pb-2.5",
+        "pt-5",
         "w-full",
         "text-sm",
         "text-gray-900",
-        "bg-transparent",
-        "border-0",
-        "border-b-2",
+        "bg-gray-50",
+        "dark:bg-squid-ink",
+        "border-1",
         "border-gray-300",
         "appearance-none",
         "dark:text-white",
@@ -48,21 +50,20 @@ export const FloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>)
         "dark:text-gray-400",
         "duration-300",
         "transform",
-        "-translate-y-6",
+        "-translate-y-4",
         "scale-75",
-        "top-3",
-        "-z-10",
+        "top-4",
+        "z-10",
         "origin-[0]",
-        "peer-focus:start-0",
+        "start-2.5",
         "peer-focus:text-blue-600",
         "peer-focus:dark:text-blue-500",
         "peer-placeholder-shown:scale-100",
         "peer-placeholder-shown:translate-y-0",
         "peer-focus:scale-75",
-        "peer-focus:-translate-y-6",
+        "peer-focus:-translate-y-4",
         "rtl:peer-focus:translate-x-1/4",
         "rtl:peer-focus:left-auto",
-        "cursor-text",
       ],
       text: remap(item, "name"),
     });

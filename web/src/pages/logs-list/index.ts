@@ -2,7 +2,7 @@ import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
 import { logsRoute } from "@/shared/routing";
-import { LogsList, SchemaHeader, SearchBar } from "@/widgets";
+import { LogsFilter, LogsList, SchemaHeader, SearchBar } from "@/widgets";
 import { Pagination, Spinner } from "@/shared/ui";
 import { logModel } from "@/entities/log";
 
@@ -24,32 +24,51 @@ export const LogsListPage = () => {
       SearchBar();
 
       h("div", () => {
-        Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
+        spec({ classList: ["grid", "grid-cols-5", "gap-x-6", "mt-3"] });
 
         h("div", () => {
-          spec({ visible: $isLoadingLogs.map((p) => !p) });
+          spec({
+            classList: ["col-span-1", "hidden", "xl:block"],
+          });
 
-          LogsList();
+          LogsFilter();
         });
 
         h("div", () => {
           spec({
-            classList: ["pt-4"],
-            visible: $isLoadingLogs.map((l) => !l),
+            classList: ["col-span-5", "xl:col-span-4"],
           });
+
           Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
-        });
-      });
 
-      h("div", () => {
-        spec({
-          classList: ["absolute", "top-1/2", "left-1/2"],
-        });
+          h("div", () => {
+            h("div", () => {
+              spec({ visible: $isLoadingLogs.map((p) => !p) });
 
-        h("div", () => {
-          spec({ classList: ["relative", "right-1/2"] });
+              LogsList();
+            });
 
-          Spinner({ visible: $isLoadingLogs });
+            h("div", () => {
+              spec({
+                classList: ["pt-4"],
+                visible: $isLoadingLogs.map((l) => !l),
+              });
+            });
+          });
+
+          h("div", () => {
+            spec({
+              classList: ["absolute", "top-1/2", "left-1/2"],
+            });
+
+            h("div", () => {
+              spec({ classList: ["relative", "right-1/2"] });
+
+              Spinner({ visible: $isLoadingLogs });
+            });
+          });
+
+          Pagination(logModel.$pages, logModel.$currentPage, logModel.events.pageChanged);
         });
       });
     });

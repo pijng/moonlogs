@@ -19,6 +19,12 @@ export const FilterLevel = ({
   const dropdownTriggered = createEvent<MouseEvent>();
   const $localVisible = createStore(false);
   const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
+  const blankOptionClicked = createEvent<MouseEvent>();
+
+  sample({
+    clock: blankOptionClicked,
+    target: [dropdownTriggered, resetLevelFilter],
+  });
 
   sample({
     source: $localVisible,
@@ -45,6 +51,7 @@ export const FilterLevel = ({
       variant: applied.map<ButtonVariant>((state) => (state ? "default" : "alternative")),
       size: "small",
       event: dropdownTriggered,
+      fullWidth: true,
       preIcon: FireIcon,
       postIcon: DownIcon,
     });
@@ -106,7 +113,7 @@ export const FilterLevel = ({
               "cursor-pointer",
             ],
             text: i18n("miscellaneous.blank_option"),
-            handler: { on: { click: resetLevelFilter } },
+            handler: { on: { click: blankOptionClicked } },
           });
 
           list($levels, ({ store: level }) => {

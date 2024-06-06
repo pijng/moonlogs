@@ -3,6 +3,7 @@ export { Button, type ButtonVariant, type ButtonSize } from "./buttons";
 export { CardLink } from "./cards";
 export { Dropdown } from "./dropdown";
 export { FloatingInput } from "./floating-input";
+export { FilledFloatingInput } from "./filled-floating-input";
 export { Header } from "./header";
 export { Subheader } from "./subheader";
 export {
@@ -23,6 +24,7 @@ export {
   ForwardStepIcon,
   LayersIcon,
   LockOpenIcon,
+  GridPlusIcon,
 } from "./icons";
 export { Input } from "./input";
 export { Layout, layoutClicked } from "./layout";

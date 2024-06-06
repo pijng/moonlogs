@@ -13,6 +13,9 @@ module.exports = {
       maxWidth: {
         5: "5rem",
       },
+      borderWidth: {
+        1: "1px",
+      },
     },
   },
   darkMode: "class",

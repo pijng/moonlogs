@@ -17,3 +17,4 @@ export { TagIcon } from "./tag";
 export { ForwardStepIcon } from "./forward-step";
 export { LayersIcon } from "./layers";
 export { LockOpenIcon } from "./lock-open";
+export { GridPlusIcon } from "./grid-plus";

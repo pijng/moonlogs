@@ -37,12 +37,18 @@ export const LogGroupAction = ({
   h("div", () => {
     spec({ visible: actionModel.$evaluated });
 
-    Button({
-      text: remap(action, "name"),
-      variant: style,
-      prevent: true,
-      size: sizes[style],
-      event: actionClicked,
+    h("a", () => {
+      spec({
+        attr: { href: actionModel.$link },
+      });
+
+      Button({
+        text: remap(action, "name"),
+        variant: style,
+        prevent: true,
+        size: sizes[style],
+        event: actionClicked,
+      });
     });
   });
 };

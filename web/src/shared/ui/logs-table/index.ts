@@ -26,7 +26,7 @@ export const LogsTable = ({
 
       h("table", () => {
         spec({
-          classList: ["min-w-full", "w-max", "text-sm", "text-left", "table-fixed"],
+          classList: ["w-full", "text-sm", "text-left", "table-fixed"],
         });
 
         h("thead", () => {
@@ -51,7 +51,7 @@ export const LogsTable = ({
 
             h("th", {
               attr: { scope: "col" },
-              classList: ["px-4", "py-3", "w-16"],
+              classList: ["px-4", "py-3", "w-24"],
               text: i18n("tables.log_groups.level"),
             });
 
@@ -91,7 +91,7 @@ export const LogsTable = ({
                   classList: ["px-4", "py-4"],
                 });
                 h("div", {
-                  classList: ["whitespace-pre-wrap"],
+                  classList: ["whitespace-pre-wrap", "break-words"],
                   text: remap(log, "text").map((t) => t.replaceAll("\\n", "\n")),
                 });
 
