@@ -1,6 +1,6 @@
 import { h, list, remap, spec } from "forest";
-import { Event, Store, createEvent, sample } from "effector";
-import { KBD, LevelBadge } from "..";
+import { Event, Store, createEffect, createEvent, sample } from "effector";
+import { KBD, LevelBadge, Tooltip } from "..";
 import { Log } from "@/shared/api";
 import { isObjectPresent } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
@@ -88,11 +88,28 @@ export const LogsTable = ({
 
               h("td", () => {
                 spec({
-                  classList: ["px-4", "py-4"],
+                  classList: ["relative", "px-4", "py-4"],
                 });
+
+                const $formattedText = remap(log, "text").map((t) => t.replaceAll("\\n", "\n"));
+                const textClicked = createEvent<MouseEvent>();
+                const copyTextFx = createEffect((clickedText: string) => {
+                  return navigator.clipboard.writeText(clickedText);
+                });
+
+                sample({
+                  source: $formattedText,
+                  clock: textClicked,
+                  filter: () => !Boolean(window.getSelection()?.toString()),
+                  target: copyTextFx,
+                });
+
+                Tooltip({ text: i18n("miscellaneous.copied_to_clipboard"), event: copyTextFx.done });
+
                 h("div", {
-                  classList: ["whitespace-pre-wrap", "break-words"],
-                  text: remap(log, "text").map((t) => t.replaceAll("\\n", "\n")),
+                  classList: ["whitespace-pre-wrap", "break-words", "cursor-pointer"],
+                  text: $formattedText,
+                  handler: { click: textClicked },
                 });
 
                 const $netFieldsPresent = log.map((l) => isObjectPresent(l.request) || isObjectPresent(l.response));

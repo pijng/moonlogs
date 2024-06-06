@@ -49,3 +49,4 @@ export { PermissionGate } from "./permission-gate";
 export { ActionsTable } from "./actions-table";
 export { Text } from "./text";
 export { Popup } from "./popup";
+export { Tooltip } from "./tooltip";

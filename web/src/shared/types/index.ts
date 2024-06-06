@@ -284,6 +284,7 @@ export type Translation = {
     loading: string;
     brand: "Moonlogs";
     blank_option: "—";
+    copied_to_clipboard: string;
     not_found: string;
     forbidden: string;
     to_home: string;

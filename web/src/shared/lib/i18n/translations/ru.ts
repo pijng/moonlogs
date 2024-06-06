@@ -269,6 +269,7 @@ export const ru: Translation = {
     loading: "Загрузка...",
     brand: "Moonlogs",
     blank_option: "—",
+    copied_to_clipboard: "Скопировано!",
     not_found: "Запрашиваемый ресурс не найден",
     forbidden: "У вас нет доступа к этому ресурсу",
     to_home: "Перейти на главную страницу",

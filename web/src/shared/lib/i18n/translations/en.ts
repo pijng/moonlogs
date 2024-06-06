@@ -269,6 +269,7 @@ export const en: Translation = {
     loading: "Loading...",
     brand: "Moonlogs",
     blank_option: "—",
+    copied_to_clipboard: "Copied!",
     not_found: "The requested resource could not be found",
     forbidden: "You do not have permission to access this resource",
     to_home: "Go to Home page",
