@@ -1,16 +1,27 @@
-import { Event, Store, createEffect, createEvent, createStore, sample } from "effector";
+import { Event, Store, attach, createEvent, createStore, is, sample } from "effector";
 import { h } from "forest";
 
-export const Tooltip = ({ text, event, timeout }: { text: Store<string> | string; event: Event<any>; timeout?: number }) => {
+export const Tooltip = ({
+  text,
+  event,
+  timeout,
+}: {
+  text: Store<string> | string;
+  event: Event<any>;
+  timeout?: Store<number> | number;
+}) => {
   const hide = createEvent<any>();
   const $visible = createStore(false)
     .on(event, () => true)
     .on(hide, () => false);
 
-  const scheduleHideFx = createEffect(() => {
-    setTimeout(() => {
-      hide();
-    }, timeout || 1000);
+  const scheduleHideFx = attach({
+    source: is.store(timeout) ? timeout : createStore(timeout),
+    effect: (timeout) => {
+      setTimeout(() => {
+        hide();
+      }, timeout || 500);
+    },
   });
 
   sample({
@@ -24,7 +35,8 @@ export const Tooltip = ({ text, event, timeout }: { text: Store<string> | string
       role: "tooltip",
     },
     classList: [
-      "absolute",
+      "fixed",
+      "left-1/2",
       "top-1/2",
       "z-10",
       "inline-block",

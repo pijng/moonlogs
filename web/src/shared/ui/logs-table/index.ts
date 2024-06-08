@@ -1,6 +1,6 @@
 import { h, list, remap, spec } from "forest";
 import { Event, Store, createEffect, createEvent, sample } from "effector";
-import { KBD, LevelBadge, Tooltip } from "..";
+import { KBD, LevelBadge, triggerTooltip } from "..";
 import { Log } from "@/shared/api";
 import { isObjectPresent } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
@@ -104,7 +104,12 @@ export const LogsTable = ({
                   target: copyTextFx,
                 });
 
-                Tooltip({ text: i18n("miscellaneous.copied_to_clipboard"), event: copyTextFx.done });
+                sample({
+                  source: i18n("miscellaneous.copied_to_clipboard"),
+                  clock: copyTextFx.done,
+                  fn: (text) => ({ text: text }),
+                  target: triggerTooltip,
+                });
 
                 h("div", {
                   classList: ["whitespace-pre-wrap", "break-words", "cursor-pointer"],

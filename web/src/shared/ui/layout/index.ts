@@ -1,5 +1,5 @@
 import { h, spec } from "forest";
-import { Sidebar } from "@/shared/ui";
+import { GeneralTooltip, Sidebar } from "@/shared/ui";
 import { Store, createEvent } from "effector";
 
 export const layoutClicked = createEvent<MouseEvent>();
@@ -10,6 +10,8 @@ export const Layout = ({ content, layoutVisible }: { content: () => void; layout
       classList: ["w-full", "min-h-screen", "bg-white", "text-slate-700", "dark:bg-eigengrau", "dark:text-slate-300"],
       handler: { on: { click: layoutClicked } },
     });
+
+    GeneralTooltip();
 
     h("div", () => {
       spec({
