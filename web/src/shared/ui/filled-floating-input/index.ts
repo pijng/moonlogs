@@ -1,11 +1,24 @@
 import { FilterItem } from "@/features";
-import { Event, Store } from "effector";
+import { Event, Store, createEvent, sample } from "effector";
 import { h, remap, spec } from "forest";
+import { CrossIcon } from "../icons";
 
 export const FilledFloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>) => {
   h("div", () => {
     spec({
       classList: ["relative"],
+    });
+
+    const $value = item.map((i) => decodeURIComponent(i.value));
+    const reset = createEvent<MouseEvent>();
+
+    sample({
+      clock: reset,
+      fn: (event) => {
+        (event.target as HTMLInputElement).value = "";
+        return event;
+      },
+      target: inputChanged,
     });
 
     h("input", {
@@ -14,7 +27,7 @@ export const FilledFloatingInput = (item: Store<FilterItem>, inputChanged: Event
         id: item.map((i) => `input_${i.key}`),
         name: item.map((i) => `input_${i.key}`),
         placeholder: "",
-        value: item.map((i) => decodeURIComponent(i.value)),
+        value: $value,
       },
       handler: { on: { input: inputChanged } },
       classList: [
@@ -52,6 +65,7 @@ export const FilledFloatingInput = (item: Store<FilterItem>, inputChanged: Event
         "transform",
         "-translate-y-4",
         "scale-75",
+        "cursor-text",
         "top-4",
         "z-10",
         "origin-[0]",
@@ -66,6 +80,16 @@ export const FilledFloatingInput = (item: Store<FilterItem>, inputChanged: Event
         "rtl:peer-focus:left-auto",
       ],
       text: remap(item, "name"),
+    });
+
+    h("div", () => {
+      spec({
+        visible: $value.map(Boolean),
+        handler: { on: { click: reset } },
+        classList: ["absolute", "top-1/3", "right-0", "pr-2", "cursor-pointer"],
+      });
+
+      CrossIcon();
     });
   });
 };

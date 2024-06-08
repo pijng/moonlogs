@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 export const CrossIcon = () => {
   h("svg", () => {
     spec({
-      classList: ["w-5", "h-5", "ml-2.5"],
+      classList: ["w-5", "h-5"],
       attr: { xmlhs: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 20 20" },
     });
 
