@@ -1,6 +1,6 @@
 import { h, list, remap, spec } from "forest";
 import { Event, Store, createEffect, createEvent, sample } from "effector";
-import { KBD, LevelBadge, triggerTooltip } from "..";
+import { DiffText, KBD, LevelBadge, triggerTooltip } from "..";
 import { Log } from "@/shared/api";
 import { isObjectPresent } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
@@ -115,6 +115,11 @@ export const LogsTable = ({
                   classList: ["whitespace-pre-wrap", "break-words", "cursor-pointer"],
                   text: $formattedText,
                   handler: { click: textClicked },
+                });
+
+                h("div", () => {
+                  spec({ visible: log.map((l) => Boolean(l.old_value) || Boolean(l.new_value)) });
+                  DiffText({ oldText: log.map((l) => l.old_value), newText: log.map((l) => l.new_value) });
                 });
 
                 const $netFieldsPresent = log.map((l) => isObjectPresent(l.request) || isObjectPresent(l.response));

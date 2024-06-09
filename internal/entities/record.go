@@ -23,6 +23,8 @@ type Record struct {
 	Level      Level      `json:"level,omitempty" sql:"level" bson:"level"`
 	Request    JSONMap    `json:"request,omitempty" sql:"request" bson:"request"`
 	Response   JSONMap    `json:"response,omitempty" sql:"response" bson:"response"`
+	OldValue   Value      `json:"old_value,omitempty" sql:"old_value" bson:"old_value"`
+	NewValue   Value      `json:"new_value,omitempty" sql:"new_value" bson:"new_value"`
 }
 
 type JSONMap map[string]interface{}
@@ -75,6 +77,25 @@ func (t *RecordTime) UnmarshalBSONValue(bt bsontype.Type, data []byte) error {
 	v := int64(binary.LittleEndian.Uint64(data))
 	t.Time = time.Unix(v, 0)
 
+	return nil
+}
+
+type Value string
+
+func (v *Value) Scan(value interface{}) error {
+	if value == nil {
+		*v = ""
+		return nil
+	}
+
+	switch val := value.(type) {
+	case string:
+		*v = Value(val)
+	case []byte:
+		*v = Value(string(val))
+	default:
+		return fmt.Errorf("unsupported scan type for Record.Value: %T", value)
+	}
 	return nil
 }
 

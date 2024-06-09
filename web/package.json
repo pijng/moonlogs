@@ -34,8 +34,10 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "type": "module",
   "dependencies": {
+    "@types/diff": "^5.2.1",
     "atomic-router": "^0.8.0",
     "atomic-router-forest": "^0.1.0",
+    "diff": "^5.2.0",
     "effector": "^22.8.6",
     "effector-forms": "^1.3.4",
     "forest": "^0.21.2",

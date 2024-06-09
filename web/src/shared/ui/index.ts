@@ -51,3 +51,4 @@ export { Text } from "./text";
 export { Popup } from "./popup";
 export { Tooltip } from "./tooltip";
 export { GeneralTooltip, triggerTooltip } from "./general-tooltip";
+export { DiffText } from "./diff-text";

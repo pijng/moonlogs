@@ -55,7 +55,7 @@ func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record
 	document := bson.M{
 		"id": nextValue, "text": record.Text, "schema_name": record.SchemaName, "schema_id": record.SchemaID, "query": formattedQuery,
 		"request": record.Request, "response": record.Response, "kind": record.Kind, "group_hash": record.GroupHash,
-		"level": record.Level, "created_at": record.CreatedAt,
+		"level": record.Level, "created_at": record.CreatedAt, "old_value": record.OldValue, "new_value": record.NewValue,
 	}
 	result, err := s.collection.InsertOne(ctx, document)
 	if err != nil {

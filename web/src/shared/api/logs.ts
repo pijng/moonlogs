@@ -15,6 +15,8 @@ export type Log = {
   query: Record<string, any>;
   request: Record<string, any>;
   response: Record<string, any>;
+  old_value: string;
+  new_value: string;
 };
 
 export type LogsGroup = { tags: Array<[string, any]>; schema_name: string; kind: string | null; group_hash: string; logs: Log[] };

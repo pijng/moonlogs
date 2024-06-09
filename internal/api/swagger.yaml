@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.12.2
+  version: 1.13.0
 externalDocs:
   description: Find out more about spec
   url: 'https://moonlogs.pages.dev'
@@ -1469,6 +1469,10 @@ components:
             - $ref: '#/components/schemas/Level'
         is_exposed:
           type: boolean
+        old_value:
+          type: string
+        new_value:
+          type: string
       required:
         - id
         - text
@@ -1625,6 +1629,10 @@ components:
             - $ref: '#/components/schemas/Level'
         is_exposed:
           type: boolean
+        old_value:
+          type: string
+        new_value:
+          type: string
       required:
         - text
         - schema_name

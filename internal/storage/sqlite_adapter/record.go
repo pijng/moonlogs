@@ -29,13 +29,14 @@ func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
 
-	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response;"
+	query := "INSERT INTO records (text, schema_name, schema_id, query, request, response, kind, group_hash, level, created_at, old_value, new_value) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response, old_value, new_value;"
 
 	row := tx.QueryRowContext(ctx, query, record.Text, record.SchemaName, record.SchemaID, record.Query,
-		record.Request, record.Response, record.Kind, record.GroupHash, record.Level, record.CreatedAt)
+		record.Request, record.Response, record.Kind, record.GroupHash, record.Level, record.CreatedAt,
+		record.OldValue, record.NewValue)
 
 	var lr entities.Record
-	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response)
+	err = row.Scan(&lr.ID, &lr.Text, &lr.CreatedAt, &lr.SchemaName, &lr.SchemaID, &lr.Query, &lr.Kind, &lr.GroupHash, &lr.Level, &lr.Request, &lr.Response, &lr.OldValue, &lr.NewValue)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
@@ -49,7 +50,7 @@ func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record
 }
 
 func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Record, error) {
-	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records WHERE id = ? LIMIT 1;"
+	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response, old_value, new_value FROM records WHERE id = ? LIMIT 1;"
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -59,7 +60,10 @@ func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Re
 	row := stmt.QueryRowContext(ctx, id)
 
 	var dest entities.Record
-	err = row.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
+	err = row.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID,
+		&dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response,
+		&dest.OldValue, &dest.NewValue)
+
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -113,7 +117,7 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	query := fmt.Sprintf(`
 		SELECT
 			(SELECT COUNT(*) FROM records WHERE %s) AS total_count,
-			records.id, records.text, records.created_at, records.schema_name, records.schema_id, records.query, records.kind, records.group_hash, records.level, records.request, records.response
+			records.id, records.text, records.created_at, records.schema_name, records.schema_id, records.query, records.kind, records.group_hash, records.level, records.request, records.response, records.old_value, records.new_value
 		FROM
 			records
 		WHERE %s`, countBuilder.String(), queryBuilder.String(),
@@ -139,7 +143,8 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	for rows.Next() {
 		var dest entities.Record
 
-		err := rows.Scan(&totalCount, &dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
+		err := rows.Scan(&totalCount, &dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query,
+			&dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response, &dest.OldValue, &dest.NewValue)
 		if err != nil {
 			return make([]*entities.Record, 0), 0, fmt.Errorf("failed scanning record: %w", err)
 		}
@@ -151,7 +156,7 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 }
 
 func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int) ([]*entities.Record, error) {
-	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records LIMIT ? OFFSET ?;"
+	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response, old_value, new_value FROM records LIMIT ? OFFSET ?;"
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -169,7 +174,9 @@ func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int
 	for rows.Next() {
 		var dest entities.Record
 
-		err := rows.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
+		err := rows.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID,
+			&dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response,
+			&dest.OldValue, &dest.NewValue)
 		if err != nil {
 			return nil, fmt.Errorf("failed querying record: %w", err)
 		}
@@ -181,7 +188,7 @@ func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int
 }
 
 func (s *RecordStorage) GetRecordsByGroupHash(ctx context.Context, schemaName string, groupHash string) ([]*entities.Record, error) {
-	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY created_at ASC;"
+	query := "SELECT id, text, created_at, schema_name, schema_id, query, kind, group_hash, level, request, response, old_value, new_value FROM records WHERE schema_name = ? AND group_hash = ? ORDER BY created_at ASC;"
 
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
@@ -200,7 +207,8 @@ func (s *RecordStorage) GetRecordsByGroupHash(ctx context.Context, schemaName st
 	for rows.Next() {
 		var dest entities.Record
 
-		err := rows.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response)
+		err := rows.Scan(&dest.ID, &dest.Text, &dest.CreatedAt, &dest.SchemaName, &dest.SchemaID, &dest.Query,
+			&dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response, &dest.OldValue, &dest.NewValue)
 		if err != nil {
 			return nil, fmt.Errorf("failed querying record: %w", err)
 		}
