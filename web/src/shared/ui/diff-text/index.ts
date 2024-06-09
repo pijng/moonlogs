@@ -2,8 +2,8 @@ import { Change, diffWords } from "diff";
 import { Store, createEffect, createEvent, restore, sample } from "effector";
 import { h, list, node, remap } from "forest";
 
-const compareFx = createEffect(({ oldText, newText }: { oldText: string; newText: string }): Change[] => {
-  return diffWords(oldText, newText);
+const compareFx = createEffect(({ oldText, newText }: { oldText: string | undefined; newText: string | undefined }): Change[] => {
+  return diffWords(oldText || "", newText || "");
 });
 
 const triggerDiff = createEvent();
