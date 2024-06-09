@@ -11,3 +11,4 @@ export { SchemasList } from "./schemas-list";
 export { GroupActionsList } from "./group-actions-list";
 export { LogsCard } from "./logs-card";
 export { LogsFilter } from "./logs-filter";
+export { LogsTable } from "./logs-table";

@@ -1,9 +1,9 @@
 import { h, list, remap, spec } from "forest";
 import { Event, Store, createEffect, createEvent, sample } from "effector";
-import { DiffText, KBD, LevelBadge, triggerTooltip } from "..";
 import { Log } from "@/shared/api";
 import { isObjectPresent } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
+import { DiffText, KBD, LevelBadge, triggerTooltip } from "@/shared/ui";
 
 export const LogsTable = ({
   logs,
@@ -119,6 +119,7 @@ export const LogsTable = ({
 
                 h("div", () => {
                   spec({ visible: log.map((l) => Boolean(l.old_value) || Boolean(l.new_value)) });
+
                   DiffText({ oldText: log.map((l) => l.old_value), newText: log.map((l) => l.new_value) });
                 });
 

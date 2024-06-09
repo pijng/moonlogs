@@ -33,7 +33,6 @@ export { Logo } from "./logo";
 export { Pagination } from "./pagination";
 export { Search } from "./search";
 export { Sidebar } from "./sidebar";
-export { LogsTable } from "./logs-table";
 export { Select } from "./select";
 export { ErrorHint } from "./error-hint";
 export { UsersTable } from "./users-table";

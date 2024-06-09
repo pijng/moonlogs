@@ -1,10 +1,11 @@
 import { Store, combine, createStore } from "effector";
 import { h, list, remap, spec } from "forest";
-import { Button, KBD, LogsTable } from "@/shared/ui";
+import { Button, KBD } from "@/shared/ui";
 import { LogsGroup, Schema } from "@/shared/api";
 import { i18n } from "@/shared/lib/i18n";
 import { logModel } from "@/entities/log";
 import { GroupActionsList } from "../group-actions-list";
+import { LogsTable } from "@/widgets/logs-table";
 
 export const LogsCard = ({
   schema,
@@ -142,6 +143,7 @@ export const LogsCard = ({
         attr: { id: "defaultTabContent" },
       });
 
+      // TODO: widget imports another widget. Consider refactoring it as a slot
       LogsTable({
         logs: remap(logsGroup, "logs"),
         requestClicked: logModel.events.requestURLClicked,
