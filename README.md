@@ -4,6 +4,11 @@
   <a href="https://github.com/pijng/moonlogs/actions/workflows/release.yml"><img src="https://github.com/pijng/moonlogs/actions/workflows/release.yml/badge.svg" alt="goreleaser"/></a>
 </p>
 
+<p align="left>
+  <a href="https://github.com/pijng/moonlogs-ruby/actions/workflows/release.yml"><img src="https://github.com/pijng/moonlogs-ruby/actions/workflows/release.yml/badge.svg" alt="Ruby SDK" /></a>
+  <a href="https://github.com/pijng/moonlogs-ts/actions/workflows/release.yml"><img src="https://github.com/pijng/moonlogs-ts/actions/workflows/release.yml/badge.svg" alt="goreleaser"/></a>
+</p>
+
 
 [![Feature-Sliced Design][shields-fsd-white]](https://feature-sliced.design/)
 
