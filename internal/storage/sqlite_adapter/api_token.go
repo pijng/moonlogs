@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 )
 
 type ApiTokenStorage struct {
@@ -103,14 +104,14 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(ctx context.Context, digest string
 
 	var t entities.ApiToken
 	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
-	if errors.Is(err, sql.ErrNoRows) {
-		return &entities.ApiToken{}, nil
-	}
 
 	if err != nil {
-		return &entities.ApiToken{}, fmt.Errorf("failed scanning api_token: %w", err)
-	}
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
 
+		return nil, fmt.Errorf("failed scanning api token: %w", err)
+	}
 	return &t, nil
 }
 

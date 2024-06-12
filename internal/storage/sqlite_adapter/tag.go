@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 )
 
 type TagStorage struct {
@@ -64,10 +65,12 @@ func (s *TagStorage) GetTagByID(ctx context.Context, id int) (*entities.Tag, err
 
 	var t entities.Tag
 	err = row.Scan(&t.ID, &t.Name, &t.ViewOrder)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
+
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed scanning tag: %w", err)
 	}
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -39,7 +40,12 @@ func (s *SchemaStorage) CreateSchema(ctx context.Context, schema entities.Schema
 
 	var sm entities.Schema
 	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&sm)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying inserted schema: %w", err)
 	}
 
@@ -68,10 +74,12 @@ func (s *SchemaStorage) GetById(ctx context.Context, id int) (*entities.Schema, 
 	var sm entities.Schema
 
 	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&sm)
+
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			err = storage.ErrNotFound
 		}
+
 		return nil, fmt.Errorf("failed querying schema by id: %w", err)
 	}
 
@@ -107,7 +115,12 @@ func (s *SchemaStorage) GetByName(ctx context.Context, name string) (*entities.S
 	var sm entities.Schema
 
 	err := s.collection.FindOne(ctx, bson.M{"name": name}).Decode(&sm)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying schema by name: %w", err)
 	}
 

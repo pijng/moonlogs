@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -60,10 +61,12 @@ func (s *ApiTokenStorage) GetApiTokenByID(ctx context.Context, id int) (*entitie
 	var t entities.ApiToken
 
 	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&t)
+
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			err = storage.ErrNotFound
 		}
+
 		return nil, fmt.Errorf("failed querying api token by id: %w", err)
 	}
 
@@ -74,10 +77,12 @@ func (s *ApiTokenStorage) GetApiTokenByDigest(ctx context.Context, digest string
 	var t entities.ApiToken
 
 	err := s.collection.FindOne(ctx, bson.M{"token_digest": digest}).Decode(&t)
+
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return &entities.ApiToken{}, nil
+			err = storage.ErrNotFound
 		}
+
 		return nil, fmt.Errorf("failed querying api token by id: %w", err)
 	}
 

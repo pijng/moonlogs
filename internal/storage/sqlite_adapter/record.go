@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 	"strings"
 	"time"
 )
@@ -64,11 +65,11 @@ func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Re
 		&dest.Query, &dest.Kind, &dest.GroupHash, &dest.Level, &dest.Request, &dest.Response,
 		&dest.OldValue, &dest.NewValue)
 
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
-
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed scanning record: %w", err)
 	}
 
@@ -244,11 +245,12 @@ func (s *RecordStorage) FindStaleIDs(ctx context.Context, schemaID int, threshol
 	var rowsCount int
 	countQuery := "SELECT COUNT(*) FROM records WHERE schema_id = ? AND created_at <= ?"
 	err := s.readDB.QueryRowContext(ctx, countQuery, schemaID, threshold).Scan(&rowsCount)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying count of stale records IDs: %w", err)
 	}
 

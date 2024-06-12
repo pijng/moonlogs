@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 	"strings"
 )
 
@@ -60,11 +61,12 @@ func (s *UserStorage) GetUserByID(ctx context.Context, id int) (*entities.User, 
 
 	var u entities.User
 	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed scanning user: %w", err)
 	}
 
@@ -114,12 +116,13 @@ func (s *UserStorage) GetUserByEmail(ctx context.Context, email string) (*entiti
 
 	var u entities.User
 	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
-		return &entities.User{}, fmt.Errorf("failed scanning user: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
+		return nil, fmt.Errorf("failed scanning user: %w", err)
 	}
 
 	return &u, nil

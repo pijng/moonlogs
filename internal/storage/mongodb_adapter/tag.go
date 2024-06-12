@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,7 +39,12 @@ func (s *TagStorage) CreateTag(ctx context.Context, tag entities.Tag) (*entities
 
 	var t entities.Tag
 	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&t)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying inserted tag: %w", err)
 	}
 
@@ -49,10 +55,12 @@ func (s *TagStorage) GetTagByID(ctx context.Context, id int) (*entities.Tag, err
 	var t entities.Tag
 
 	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&t)
+
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			err = storage.ErrNotFound
 		}
+
 		return nil, fmt.Errorf("failed querying tag by id: %w", err)
 	}
 

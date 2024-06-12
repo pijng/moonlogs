@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 )
 
 type SchemaStorage struct {
@@ -87,11 +88,12 @@ func (s *SchemaStorage) GetById(ctx context.Context, id int) (*entities.Schema, 
 
 	var sm entities.Schema
 	err = row.Scan(&sm.ID, &sm.Title, &sm.Description, &sm.Name, &sm.Fields, &sm.Kinds, &sm.TagID, &sm.RetentionDays)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed scanning schema: %w", err)
 	}
 

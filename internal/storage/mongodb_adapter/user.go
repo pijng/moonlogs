@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -42,7 +43,12 @@ func (s *UserStorage) CreateUser(ctx context.Context, user entities.User) (*enti
 
 	var u entities.User
 	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&u)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying inserted user: %w", err)
 	}
 
@@ -53,10 +59,12 @@ func (s *UserStorage) GetUserByID(ctx context.Context, id int) (*entities.User, 
 	var u entities.User
 
 	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&u)
+
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			err = storage.ErrNotFound
 		}
+
 		return nil, fmt.Errorf("failed querying user by id: %w", err)
 	}
 

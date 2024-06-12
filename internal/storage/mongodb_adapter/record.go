@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -64,7 +65,12 @@ func (s *RecordStorage) CreateRecord(ctx context.Context, record entities.Record
 
 	var lr entities.Record
 	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&lr)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying inserted record: %w", err)
 	}
 
@@ -75,10 +81,12 @@ func (s *RecordStorage) GetRecordByID(ctx context.Context, id int) (*entities.Re
 	var lr entities.Record
 
 	err := s.collection.FindOne(ctx, bson.M{"id": id}).Decode(&lr)
+
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			err = storage.ErrNotFound
 		}
+
 		return nil, fmt.Errorf("failed querying record by id: %w", err)
 	}
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/storage"
 )
 
 type ActionStorage struct {
@@ -64,11 +65,12 @@ func (s *ActionStorage) GetActionByID(ctx context.Context, id int) (*entities.Ac
 
 	var a entities.Action
 	err = row.Scan(&a.ID, &a.Name, &a.Pattern, &a.Method, &a.Conditions, &a.SchemaIDs, &a.Disabled)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed scanning action: %w", err)
 	}
 
