@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 	"testing"
 	"time"
@@ -166,7 +167,7 @@ func TestRecordStorage(t *testing.T) {
 		assert.NoError(t, err)
 
 		deletedRecord, err := recordStorage.GetRecordByID(ctx, createdRecord.ID)
-		assert.NoError(t, err)
+		assert.ErrorIs(t, err, storage.ErrNotFound)
 		assert.Nil(t, deletedRecord)
 	})
 }

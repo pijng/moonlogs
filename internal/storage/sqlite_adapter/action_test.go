@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 	"testing"
 
@@ -74,7 +75,7 @@ func TestActionStorage(t *testing.T) {
 		assert.NoError(t, err)
 
 		deletedAction, err := actionStorage.GetActionByID(ctx, createdAction.ID)
-		assert.NoError(t, err)
+		assert.ErrorIs(t, err, storage.ErrNotFound)
 		assert.Nil(t, deletedAction)
 	})
 

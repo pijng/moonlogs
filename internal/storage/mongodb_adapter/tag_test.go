@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 	"testing"
 
@@ -55,7 +56,7 @@ func TestTagStorage(t *testing.T) {
 
 		foundTag, err := tagStorage.GetTagByID(ctx, createdTag.ID)
 		assert.Nil(t, foundTag)
-		assert.NoError(t, err)
+		assert.ErrorIs(t, err, storage.ErrNotFound)
 	})
 
 	t.Run("UpdateTagByID", func(t *testing.T) {

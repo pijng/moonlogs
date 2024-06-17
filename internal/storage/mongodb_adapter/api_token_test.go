@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 	"testing"
 
@@ -111,7 +112,7 @@ func TestApiTokenStorage(t *testing.T) {
 		assert.NoError(t, err)
 
 		deletedToken, err := apiTokenStorage.GetApiTokenByID(ctx, createdToken.ID)
-		assert.NoError(t, err)
+		assert.ErrorIs(t, err, storage.ErrNotFound)
 		assert.Nil(t, deletedToken)
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 	"testing"
 
@@ -176,7 +177,7 @@ func TestSchemaStorage(t *testing.T) {
 		assert.NoError(t, err)
 
 		deletedSchema, err := schemaStorage.GetById(ctx, schema.ID)
-		assert.NoError(t, err)
+		assert.ErrorIs(t, err, storage.ErrNotFound)
 		assert.Nil(t, deletedSchema)
 	})
 }
