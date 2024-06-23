@@ -50,7 +50,7 @@ func (c *SessionController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := c.userUseCase.GetUserByEmail(r.Context(), credentials.Email)
-	if err != nil || user.ID == 0 {
+	if err != nil {
 		response.Return(w, false, http.StatusUnauthorized, err, nil, response.Meta{})
 		return
 	}
@@ -141,7 +141,7 @@ func (c *SessionController) GetSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user == nil || user.ID == 0 {
+	if user == nil {
 		response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 		return
 	}

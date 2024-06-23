@@ -102,11 +102,6 @@ func (c *SchemaController) GetSchemaByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if schema.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
 	if access.IsSchemaForbiddenForUser(c.schemaUseCase, schema.Name, r) {
 		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 		return

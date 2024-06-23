@@ -82,11 +82,6 @@ func (c *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
 	response.Return(w, true, http.StatusOK, nil, UserToDTO(user), response.Meta{})
 }
 

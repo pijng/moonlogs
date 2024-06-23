@@ -74,12 +74,6 @@ func (c *RecordController) createRecord(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	if schema.ID == 0 {
-		err = fmt.Errorf("provided schema is not found: %s", newRecord.SchemaName)
-		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
-
 	record, err := c.recordUseCase.CreateRecord(r.Context(), newRecord, schema.ID)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
@@ -94,10 +88,6 @@ func (c *RecordController) createRecordAsync(newRecord entities.Record) {
 
 	schema, err := c.schemaUseCase.GetSchemaByName(ctx, newRecord.SchemaName)
 	if err != nil {
-		return
-	}
-
-	if schema.ID == 0 {
 		return
 	}
 
@@ -147,11 +137,6 @@ func (c *RecordController) GetRecordByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if record.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
 	if access.IsSchemaForbiddenForUser(c.schemaUseCase, record.SchemaName, r) {
 		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 		return
@@ -176,11 +161,6 @@ func (c *RecordController) GetRecordRequestByID(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if record.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
 	if access.IsSchemaForbiddenForUser(c.schemaUseCase, record.SchemaName, r) {
 		response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
 		return
@@ -202,11 +182,6 @@ func (c *RecordController) GetRecordResponseByID(w http.ResponseWriter, r *http.
 	record, err := c.recordUseCase.GetRecordByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
-
-	if record.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 
@@ -260,8 +235,8 @@ func (c *RecordController) GetRecordsByGroupHash(w http.ResponseWriter, r *http.
 		return
 	}
 
-	schema, err := c.schemaUseCase.GetSchemaByName(r.Context(), schemaName)
-	if err != nil || schema.ID == 0 {
+	_, err := c.schemaUseCase.GetSchemaByName(r.Context(), schemaName)
+	if err != nil {
 		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}

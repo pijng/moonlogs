@@ -80,11 +80,6 @@ func (tc *TagController) GetTagByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if tag.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
 	response.Return(w, true, http.StatusOK, nil, tag, response.Meta{})
 }
 

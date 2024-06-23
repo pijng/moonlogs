@@ -34,17 +34,12 @@ func (c *ActionController) CreateAction(w http.ResponseWriter, r *http.Request) 
 	}
 
 	for _, id := range newAction.SchemaIDs {
-		schema, err := c.schemaUseCase.GetSchemaByID(r.Context(), id)
+		_, err := c.schemaUseCase.GetSchemaByID(r.Context(), id)
 		if err != nil {
 			response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
 			return
 		}
 
-		if schema.ID == 0 {
-			err = fmt.Errorf("provided schema is not found by id: %d", id)
-			response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-			return
-		}
 	}
 
 	action, err := c.actionUseCase.CreateAction(r.Context(), newAction)
@@ -86,11 +81,6 @@ func (c *ActionController) GetActionByID(w http.ResponseWriter, r *http.Request)
 	action, err := c.actionUseCase.GetActionByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
-
-	if action.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
 		return
 	}
 

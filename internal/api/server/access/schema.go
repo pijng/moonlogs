@@ -14,7 +14,7 @@ func IsSchemaForbiddenForUser(schemaUseCase *usecases.SchemaUseCase, schemaName 
 	}
 
 	schema, err := schemaUseCase.GetSchemaByName(r.Context(), schemaName)
-	if err != nil || schema.ID == 0 {
+	if err != nil {
 		return true
 	}
 

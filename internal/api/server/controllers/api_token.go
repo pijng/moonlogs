@@ -73,11 +73,6 @@ func (c *ApiTokenController) GetApiTokenByID(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if apiToken.ID == 0 {
-		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
-		return
-	}
-
 	response.Return(w, true, http.StatusOK, nil, apiToken, response.Meta{})
 }
 

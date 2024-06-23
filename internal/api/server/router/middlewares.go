@@ -25,7 +25,6 @@ func InitMiddlewares(uc *usecases.UseCases) *Middlewares {
 
 func (mw *Middlewares) SessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
 		if err != nil {
 			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
@@ -63,7 +62,7 @@ func (mw *Middlewares) SessionMiddleware(next http.Handler) http.Handler {
 
 		user, _ := mw.userUseCase.GetUserByToken(r.Context(), bearerToken)
 
-		if !ok || user == nil || user.ID == 0 || bool(user.IsRevoked) {
+		if !ok || user == nil || bool(user.IsRevoked) {
 			response.Return(w, false, http.StatusUnauthorized, nil, nil, response.Meta{})
 			return
 		}
@@ -118,11 +117,6 @@ func (mw *Middlewares) RoleMiddleware(next http.HandlerFunc, requiredRoles ...en
 		}
 
 		user, _ := mw.userUseCase.GetUserByToken(r.Context(), bearerToken)
-
-		if user.ID == 0 {
-			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
-			return
-		}
 
 		if !slices.Contains(requiredRoles, user.Role) {
 			response.Return(w, false, http.StatusForbidden, nil, nil, response.Meta{})
