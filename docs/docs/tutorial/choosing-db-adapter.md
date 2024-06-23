@@ -55,13 +55,21 @@ Moonlogs creates two separate connection pools to SQLite:
 
 `WAL` allows SQLite to perform insertions into the database through a separate journal controlled by SQLite itself. This avoids blocking read or write operations to the database file for `COMMIT`, enabling more concurrent transactions.
 
-**3. Usage of synchronous=NORMAL pragma**
+**3. Usage of IMMEDIATE transactions**
+
+By default, SQLite starts transactions in `DEFERRED` mode, meaning they are considered read-only initially. They are upgraded to a write transaction that requires a database lock in-flight, when query containing a write/update/delete statement is issued.
+
+However, there's a catch. When a transaction is upgraded after it has started, SQLite immediately returns an `SQLITE_BUSY` error if the database is already locked by another connection.
+
+To ensure seamless operations, Moonlogs utilizes `BEGIN IMMEDIATE` transactions. This approach ensures that if the database is locked when the transaction starts, SQLite respects the busy_timeout setting, preventing disruptions and ensures that transactions can proceed smoothly once the lock is released, maintaining the integrity and flow of operations.
+
+**4. Usage of synchronous=NORMAL pragma**
 
 By default, SQLite uses `FULL` synchronization when writing data to the database. This means SQLite will wait for the OS to confirm that the data has been successfully written.
 
 The `NORMAL` setting for synchronous in SQLite means that the database engine will write data to disk at critical moments but not with every transaction commit, which can improve performance compared to `FULL` synchronization. Paired with `WAL` mode, this ensures that transactions are ACID-compliant and data integrity is maintained.
 
-**4. In-Memory Caching**
+**5. In-Memory Caching**
 
 Moonlogs utilizes SQLite's built-in mechanisms for in-memory caching of database pages with `cache_size` pragma and instructs SQLite to store temporary data in memory rather than on disk with `temp_store=memory`. This further reduces the frequency of disk I/O operations.
 
