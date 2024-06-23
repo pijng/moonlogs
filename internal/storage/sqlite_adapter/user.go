@@ -140,12 +140,13 @@ func (s *UserStorage) GetUserByToken(ctx context.Context, token string) (*entiti
 
 	var u entities.User
 	err = row.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.PasswordDigest, &u.Role, &u.Tags, &u.Token, &u.IsRevoked)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
-		return &entities.User{}, fmt.Errorf("failed scanning user: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
+		return nil, fmt.Errorf("failed scanning user: %w", err)
 	}
 
 	return &u, nil

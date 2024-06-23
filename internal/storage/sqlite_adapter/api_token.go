@@ -81,11 +81,12 @@ func (s *ApiTokenStorage) GetApiTokenByID(ctx context.Context, id int) (*entitie
 
 	var t entities.ApiToken
 	err = row.Scan(&t.ID, &t.Token, &t.TokenDigest, &t.Name, &t.IsRevoked)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed scanning api_token: %w", err)
 	}
 

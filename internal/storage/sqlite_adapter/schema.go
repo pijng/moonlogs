@@ -142,12 +142,13 @@ func (s *SchemaStorage) GetByName(ctx context.Context, name string) (*entities.S
 
 	var sm entities.Schema
 	err = row.Scan(&sm.ID, &sm.Title, &sm.Description, &sm.Name, &sm.Fields, &sm.Kinds, &sm.TagID, &sm.RetentionDays)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
 
 	if err != nil {
-		return &entities.Schema{}, fmt.Errorf("failed scanning schema: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			err = storage.ErrNotFound
+		}
+
+		return nil, fmt.Errorf("failed scanning schema: %w", err)
 	}
 
 	return &sm, nil
