@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"moonlogs/internal/entities"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 
 	"github.com/stretchr/testify/assert"
@@ -91,6 +92,10 @@ func TestUserStorage(t *testing.T) {
 		foundUser, err := userStorage.GetUserByToken(ctx, token)
 		assert.NoError(t, err)
 		assert.NotNil(t, foundUser)
+
+		foundUser, err = userStorage.GetUserByToken(ctx, "")
+		assert.Error(t, err, storage.ErrNotFound)
+		assert.Nil(t, foundUser)
 	})
 
 	t.Run("DeleteUserByID", func(t *testing.T) {

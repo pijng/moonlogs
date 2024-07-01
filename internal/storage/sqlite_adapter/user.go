@@ -129,6 +129,10 @@ func (s *UserStorage) GetUserByEmail(ctx context.Context, email string) (*entiti
 }
 
 func (s *UserStorage) GetUserByToken(ctx context.Context, token string) (*entities.User, error) {
+	if token == "" {
+		return nil, storage.ErrNotFound
+	}
+
 	query := "SELECT * FROM users WHERE token=? LIMIT 1;"
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
