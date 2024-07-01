@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/shared"
+	"moonlogs/internal/storage"
 	"moonlogs/internal/usecases"
 	"net/http"
 
@@ -137,6 +139,11 @@ func (c *SessionController) GetSession(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.userUseCase.GetUserByToken(r.Context(), bearerToken)
 	if err != nil {
+		if errors.Is(err, storage.ErrNotFound) {
+			response.Return(w, false, http.StatusUnauthorized, err, nil, response.Meta{})
+			return
+		}
+
 		response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 		return
 	}

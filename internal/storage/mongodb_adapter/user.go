@@ -98,7 +98,11 @@ func (s *UserStorage) GetUserByEmail(ctx context.Context, email string) (*entiti
 	var u entities.User
 
 	err := s.collection.FindOne(ctx, bson.M{"email": email}).Decode(&u)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying user by email: %w", err)
 	}
 
@@ -106,10 +110,18 @@ func (s *UserStorage) GetUserByEmail(ctx context.Context, email string) (*entiti
 }
 
 func (s *UserStorage) GetUserByToken(ctx context.Context, token string) (*entities.User, error) {
+	if token == "" {
+		return nil, storage.ErrNotFound
+	}
+
 	var u entities.User
 
 	err := s.collection.FindOne(ctx, bson.M{"token": token}).Decode(&u)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying user by token: %w", err)
 	}
 
@@ -197,7 +209,11 @@ func (s *UserStorage) CreateInitialAdmin(ctx context.Context, admin entities.Use
 
 	var u entities.User
 	err = s.collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&u)
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = storage.ErrNotFound
+		}
+
 		return nil, fmt.Errorf("failed querying inserted admin: %w", err)
 	}
 

@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/shared"
@@ -29,11 +30,11 @@ func NewUserUseCase(userStorage storage.UserStorage) *UserUseCase {
 
 func (uc *UserUseCase) CreateUser(ctx context.Context, user entities.User) (*entities.User, error) {
 	userWithIdenticalEmail, err := uc.userStorage.GetUserByEmail(ctx, user.Email)
-	if err != nil {
+	if err != nil && !errors.Is(err, storage.ErrNotFound) {
 		return nil, fmt.Errorf("failed getting user: %w", err)
 	}
 
-	if userWithIdenticalEmail.ID != 0 {
+	if userWithIdenticalEmail != nil {
 		return nil, fmt.Errorf("user with email %s already exists", user.Email)
 	}
 
