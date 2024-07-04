@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage"
@@ -19,7 +20,7 @@ func NewSchemaUseCase(schemaStorage storage.SchemaStorage) *SchemaUseCase {
 
 func (uc *SchemaUseCase) CreateSchema(ctx context.Context, schema entities.Schema) (*entities.Schema, error) {
 	existingSchema, err := uc.GetSchemaByName(ctx, normalizeName(schema.Name))
-	if err != nil {
+	if err != nil && !errors.Is(err, storage.ErrNotFound) {
 		return nil, fmt.Errorf("failed querying schema by name: %w", err)
 	}
 
