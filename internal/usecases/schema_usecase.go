@@ -25,7 +25,7 @@ func (uc *SchemaUseCase) CreateSchema(ctx context.Context, schema entities.Schem
 	}
 
 	// update relevant fields if schema by the given name already exists
-	if existingSchema.ID != 0 {
+	if existingSchema != nil {
 		mergedSchema := mergeSchemaFields(*existingSchema, schema)
 
 		return uc.schemaStorage.UpdateSchemaByID(ctx, existingSchema.ID, mergedSchema)
