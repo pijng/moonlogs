@@ -2,8 +2,8 @@ import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
 import { tagCreateRoute, tagsRoute } from "@/shared/routing";
-import { HeaderWithCreation } from "@/widgets";
-import { TagsList } from "@/widgets";
+import { HeaderWithCreation } from "@/widgets/header-with-creation";
+import { TagsList } from "@/widgets/tags-list";
 import { i18n } from "@/shared/lib/i18n";
 
 export const TagsListPage = () => {

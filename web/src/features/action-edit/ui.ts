@@ -2,8 +2,7 @@ import { Button, ErrorHint, Input, Label, Multiselect, PlusIcon, Select, Text, T
 import { h, list, remap, spec } from "forest";
 import { $editError, events, actionForm, deleteActionClicked } from "./model";
 import { combine, createEvent, createStore, sample } from "effector";
-import { intersection, trigger } from "@/shared/lib";
-import { i18n } from "@/shared/lib/i18n";
+import { intersection, trigger, i18n } from "@/shared/lib";
 import { ActionToCreate, Condition } from "@/shared/api";
 import { schemaModel } from "@/entities/schema";
 

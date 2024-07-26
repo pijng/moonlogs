@@ -1,5 +1,12 @@
 import { UserRole } from "@/shared/api/users";
-import { $currentAccount, $isAuthorized, getSessionFx, obtainSession, tokenReceived, unauthorizedTriggered } from "@/shared/auth";
+import {
+  $currentAccount,
+  $isAuthorized,
+  getSessionFx,
+  obtainSession,
+  tokenReceived,
+  unauthorizedTriggered,
+} from "@/shared/session";
 import { RouteInstance, RouteParamsAndQuery, chainRoute, redirect } from "atomic-router";
 import { createEvent, sample } from "effector";
 import { condition } from "patronum";

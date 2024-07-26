@@ -1,6 +1,6 @@
 import "./chains";
 import { userModel } from "@/entities/user";
-import { notFoundTriggered, obtainSession } from "@/shared/auth";
+import { notFoundTriggered, obtainSession } from "@/shared/session";
 import { Link, history, router } from "@/shared/routing";
 import { sidebarClosed } from "@/shared/ui";
 import { linkRouter, onAppMount } from "atomic-router-forest";

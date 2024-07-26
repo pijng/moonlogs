@@ -3,7 +3,7 @@ import { withRoute } from "atomic-router-forest";
 
 import { profileRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { UserProfile } from "@/widgets";
+import { UserProfile } from "@/widgets/user-profile";
 import { i18n } from "@/shared/lib/i18n";
 
 export const ProfilePage = () => {

@@ -1,4 +1,4 @@
-import { Translation } from "@/shared/types";
+import { Translation } from "./types";
 
 export const ru: Translation = {
   profile: {

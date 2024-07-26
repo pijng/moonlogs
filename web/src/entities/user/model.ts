@@ -1,6 +1,6 @@
 import { User, getUsers, getUser } from "@/shared/api";
-import { setCurrentAccount } from "@/shared/auth";
-import { setLanguage } from "@/shared/lib/i18n";
+import { setCurrentAccount } from "@/shared/session";
+import { setLanguage } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
 const LOCALE_KEY = "locale";

@@ -1,5 +1,5 @@
 import { attach, createEffect } from "effector";
-import { $token, notAllowedTriggered, notFoundTriggered, unauthorizedTriggered } from "@/shared/auth";
+import { $token, notAllowedTriggered, notFoundTriggered, unauthorizedTriggered } from "@/shared/session";
 
 export type FetchMethods = "GET" | "POST" | "PUT" | "DELETE";
 export type BaseResponse = {

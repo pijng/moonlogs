@@ -1,7 +1,7 @@
 import { Log, getLogs } from "@/shared/api";
-import { Level, LogsGroup, getLogGroup } from "@/shared/api/logs";
+import { Level, LogsGroup, getLogGroup } from "@/shared/api";
 import { DATEFORMAT_OPTIONS, objectToQueryString, queryStringToObject } from "@/shared/lib";
-import { $preferredLanguage } from "@/shared/lib/i18n/locale";
+import { $preferredLanguage } from "@/shared/lib";
 import { combine, createEffect, createEvent, createStore, sample } from "effector";
 
 const reset = createEffect();

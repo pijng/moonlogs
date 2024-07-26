@@ -1,7 +1,7 @@
 import { Button, ErrorHint, Input } from "@/shared/ui";
 import { $registrationError, registerAdminForm } from "./model";
 import { h, spec } from "forest";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 
 export const RegisterAdmin = () => {
   h("div", () => {

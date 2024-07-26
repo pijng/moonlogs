@@ -1,7 +1,7 @@
 import { Button, ErrorHint, Input } from "@/shared/ui";
 import { h } from "forest";
 import { $creationError, tagForm } from "./model";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 
 export const NewTagForm = () => {
   h("form", () => {

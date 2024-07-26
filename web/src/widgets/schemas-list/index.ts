@@ -3,7 +3,7 @@ import { h, list, remap, spec } from "forest";
 import { $generalSchemas, $groupedTaggedSchemas, $searchQuery, $sortedTags, queryChanged } from "./model";
 import { combine } from "effector";
 import { SchemaCard } from "@/entities/schema";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 
 export const SchemasList = () => {
   h("div", () => {

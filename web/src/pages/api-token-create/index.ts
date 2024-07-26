@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { apiTokenCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { NewApiTokenForm } from "@/features";
+import { NewApiTokenForm } from "@/features/api-token-create";
 import { i18n } from "@/shared/lib/i18n";
 
 export const ApiTokenCreatePage = () => {

@@ -8,6 +8,7 @@ export { Header } from "./header";
 export { Subheader } from "./subheader";
 export {
   DownIcon,
+  FireIcon,
   FilterIcon,
   ClockIcon,
   PreviousIcon,

@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { memberCreateRoute, membersRoute } from "@/shared/routing";
 import { UsersList } from "@/widgets/users-list";
-import { HeaderWithCreation } from "@/widgets";
+import { HeaderWithCreation } from "@/widgets/header-with-creation";
 import { i18n } from "@/shared/lib/i18n";
 
 export const UsersListPage = () => {

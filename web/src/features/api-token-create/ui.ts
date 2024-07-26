@@ -2,7 +2,7 @@ import { Button, ErrorHint, Input } from "@/shared/ui";
 import { h, spec } from "forest";
 import { $creationError, $freshToken, apiTokenForm } from "./model";
 import { createEvent } from "effector";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 
 export const NewApiTokenForm = () => {
   h("form", () => {

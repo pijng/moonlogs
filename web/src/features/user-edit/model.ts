@@ -1,9 +1,8 @@
 import { userModel } from "@/entities/user";
 import { membersRoute } from "@/shared/routing";
 import { UserToUpdate, editUser } from "@/shared/api";
-import { deleteUser } from "@/shared/api/users";
-import { rules } from "@/shared/lib";
-import { i18n } from "@/shared/lib/i18n";
+import { deleteUser } from "@/shared/api";
+import { rules, i18n } from "@/shared/lib";
 import { redirect } from "atomic-router";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";

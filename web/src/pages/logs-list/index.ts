@@ -2,7 +2,10 @@ import { withRoute } from "atomic-router-forest";
 import { h, spec } from "forest";
 
 import { logsRoute } from "@/shared/routing";
-import { LogsFilter, LogsList, SchemaHeader, SearchBar } from "@/widgets";
+import { LogsFilter } from "@/widgets/logs-filter";
+import { LogsList } from "@/widgets/logs-list";
+import { SchemaHeader } from "@/widgets/schema-header";
+import { SearchBar } from "@/widgets/search-bar";
 import { Pagination, Spinner } from "@/shared/ui";
 import { logModel } from "@/entities/log";
 

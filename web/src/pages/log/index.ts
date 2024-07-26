@@ -4,7 +4,9 @@ import { h, spec } from "forest";
 import { logModel } from "@/entities/log";
 import { router, showLogRoute } from "@/shared/routing";
 import { Spinner } from "@/shared/ui";
-import { GroupActionsList, LogsCard, SchemaHeader } from "@/widgets";
+import { GroupActionsList } from "@/widgets/group-actions-list";
+import { SchemaHeader } from "@/widgets/schema-header";
+import { LogsCard } from "@/widgets/logs-card";
 import { schemaModel } from "@/entities/schema";
 import { combine } from "effector";
 

@@ -1,10 +1,9 @@
 import { actionsRoute } from "@/shared/routing";
 import { ActionToCreate, ActionToUpdate, Condition, deleteAction, editAction } from "@/shared/api";
-import { rules } from "@/shared/lib";
+import { rules, i18n } from "@/shared/lib";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 import { actionModel } from "@/entities/action";
-import { i18n } from "@/shared/lib/i18n";
 import { redirect } from "atomic-router";
 
 const addCondition = createEvent<Condition>();

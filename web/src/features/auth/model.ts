@@ -1,7 +1,7 @@
 import { userModel } from "@/entities/user";
 import { homeRoute } from "@/shared/routing";
 import { postSession } from "@/shared/api";
-import { getSessionFx, tokenReceived } from "@/shared/auth";
+import { getSessionFx, tokenReceived } from "@/shared/session";
 import { rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
