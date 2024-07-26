@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/tests.yml
   build-web:
     runs-on: ubuntu-latest
-    needs: [tests]
+    needs: [steiger-lint, tests]
     outputs:
       web-build: ${{ steps.build.outputs.web-build }}
 
