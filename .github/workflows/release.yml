@@ -9,6 +9,8 @@ permissions:
   contents: write
 
 jobs:
+  steiger-lint:
+    uses: ./.github/workflows/steiger-lint.yml
   tests:
     uses: ./.github/workflows/tests.yml
   build-web:
