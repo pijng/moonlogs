@@ -1,5 +1,6 @@
 
 <p align="left">
+  <a href="https://github.com/pijng/moonlogs/actions/workflows/steiger-lint.yml"><img src="https://github.com/pijng/moonlogs/actions/workflows/steiger-lint.yml/badge.svg" alt="Lint Steiger FSD" /></a>
   <a href="https://github.com/pijng/moonlogs/actions/workflows/tests.yml"><img src="https://github.com/pijng/moonlogs/actions/workflows/tests.yml/badge.svg" alt="Tests" /></a>
   <a href="https://github.com/pijng/moonlogs/actions/workflows/release.yml"><img src="https://github.com/pijng/moonlogs/actions/workflows/release.yml/badge.svg" alt="goreleaser"/></a>
 </p>
