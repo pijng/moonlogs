@@ -1,4 +1,4 @@
-import { Auth } from "@/features";
+import { Auth } from "@/features/auth";
 import { Logo } from "@/shared/ui";
 
 export const AuthForm = () => {

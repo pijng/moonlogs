@@ -1,6 +1,6 @@
 import { actionModel } from "@/entities/action";
 import { logModel } from "@/entities/log";
-import { LogGroupAction } from "@/features";
+import { LogGroupAction } from "@/features/log-group-action";
 import { Log } from "@/shared/api";
 import { Popup } from "@/shared/ui";
 import { Store, createStore } from "effector";

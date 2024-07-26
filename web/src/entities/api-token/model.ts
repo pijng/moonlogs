@@ -1,4 +1,4 @@
-import { ApiToken, getApiToken, getApiTokens } from "@/shared/api/api-tokens";
+import { ApiToken, getApiToken, getApiTokens } from "@/shared/api";
 import { createEffect, createStore } from "effector";
 
 const getApiTokensFx = createEffect(() => {

@@ -291,5 +291,3 @@ export type Translation = {
     empty_search_result: string;
   };
 };
-
-export type TranslationPath = Join<PathsToStringProps<Translation>>;

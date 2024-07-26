@@ -2,7 +2,7 @@ import { h, spec } from "forest";
 import { withRoute } from "atomic-router-forest";
 
 import { registerAdminRoute } from "@/shared/routing";
-import { RegisterAdminForm } from "@/widgets";
+import { RegisterAdminForm } from "@/widgets/register-admin-form";
 
 export const RegisterAdminPage = () => {
   h("div", {

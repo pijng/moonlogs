@@ -2,7 +2,8 @@ import { h } from "forest";
 import { withRoute } from "atomic-router-forest";
 
 import { homeRoute, schemaCreateRoute } from "@/shared/routing";
-import { HeaderWithCreation, SchemasList } from "@/widgets";
+import { HeaderWithCreation } from "@/widgets/header-with-creation";
+import { SchemasList } from "@/widgets/schemas-list";
 import { i18n } from "@/shared/lib/i18n";
 
 export const HomePage = () => {

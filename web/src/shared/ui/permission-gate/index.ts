@@ -1,5 +1,5 @@
 import { UserRole } from "@/shared/api/users";
-import { $currentAccount } from "@/shared/auth";
+import { $currentAccount } from "@/shared/session";
 import { combine, createStore } from "effector";
 import { variant } from "forest";
 

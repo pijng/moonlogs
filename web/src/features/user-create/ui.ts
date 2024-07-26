@@ -2,9 +2,9 @@ import { Button, ErrorHint, Input, Multiselect, Select } from "@/shared/ui";
 import { h, spec } from "forest";
 import { $creationError, events, memberForm } from "./model";
 import { createStore } from "effector";
-import { UserRole } from "@/shared/api/users";
+import { UserRole } from "@/shared/api";
 import { tagModel } from "@/entities/tag";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 
 export const NewMemberForm = () => {
   h("form", () => {

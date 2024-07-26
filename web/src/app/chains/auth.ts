@@ -1,5 +1,11 @@
 import { forbiddenRoute, homeRoute, loginRoute, notFoundRoute, registerAdminRoute } from "@/shared/routing";
-import { $isAuthorized, createInitialAdmin, notAllowedTriggered, notFoundTriggered, unauthorizedTriggered } from "@/shared/auth";
+import {
+  $isAuthorized,
+  createInitialAdmin,
+  notAllowedTriggered,
+  notFoundTriggered,
+  unauthorizedTriggered,
+} from "@/shared/session";
 import { redirect } from "atomic-router";
 import { sample } from "effector";
 

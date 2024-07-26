@@ -1,9 +1,12 @@
-import { TranslationPath } from "@/shared/types";
 import { invokeTemplate } from "./templating";
 import { locales } from "./translations";
 import { Store } from "effector";
 import { $preferredLanguage } from "./locale";
-export { setLanguage } from "./locale";
+import { Join, PathsToStringProps, Translation } from "./translations/types";
+
+export { setLanguage, $preferredLanguage } from "./locale";
+
+type TranslationPath = Join<PathsToStringProps<Translation>>;
 
 export const i18n = (path: TranslationPath, vars?: Record<string, any>): Store<string> => {
   const $locale = $preferredLanguage.map((lang) => locales[lang]);

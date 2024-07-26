@@ -1,10 +1,9 @@
 import { Button, ErrorHint, Input, Label, PlusIcon, Select, TrashIcon } from "@/shared/ui";
 import { h, list, spec } from "forest";
 import { $editError, deleteSchemaClicked, events, schemaForm } from "./model";
-import { trigger } from "@/shared/lib";
+import { trigger, i18n } from "@/shared/lib";
 import { createEvent, sample } from "effector";
 import { tagModel } from "@/entities/tag";
-import { i18n } from "@/shared/lib/i18n";
 
 export const EditSchemaForm = () => {
   h("form", () => {

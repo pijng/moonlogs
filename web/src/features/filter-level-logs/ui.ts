@@ -1,7 +1,6 @@
 import { Level } from "@/shared/api";
-import { i18n } from "@/shared/lib/i18n";
-import { Button, ButtonVariant, DownIcon } from "@/shared/ui";
-import { FireIcon } from "@/shared/ui/icons";
+import { i18n } from "@/shared/lib";
+import { Button, ButtonVariant, DownIcon, FireIcon } from "@/shared/ui";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, list, node, spec } from "forest";
 

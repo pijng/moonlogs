@@ -1,8 +1,7 @@
 import { tagModel } from "@/entities/tag";
 import { tagsRoute } from "@/shared/routing";
 import { TagToUpdate, deleteTag, editTag } from "@/shared/api";
-import { rules } from "@/shared/lib";
-import { i18n } from "@/shared/lib/i18n";
+import { rules, i18n } from "@/shared/lib";
 import { redirect } from "atomic-router";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";

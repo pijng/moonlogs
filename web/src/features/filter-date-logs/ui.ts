@@ -1,4 +1,4 @@
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 import { Button, ButtonVariant, ClockIcon, DownIcon, Input } from "@/shared/ui";
 import { Event, Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";

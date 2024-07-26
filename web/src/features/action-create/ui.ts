@@ -3,7 +3,7 @@ import { h, list, remap, spec } from "forest";
 import { $creationError, events, actionForm } from "./model";
 import { combine, createEvent, createStore, sample } from "effector";
 import { intersection, trigger } from "@/shared/lib";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 import { schemaModel } from "@/entities/schema";
 import { ActionToCreate, Condition } from "@/shared/api";
 

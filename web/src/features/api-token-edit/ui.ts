@@ -1,7 +1,7 @@
 import { Button, ErrorHint, Input } from "@/shared/ui";
 import { h, spec } from "forest";
 import { $editError, apiTokenForm, deleteApiTokenClicked } from "./model";
-import { i18n } from "@/shared/lib/i18n";
+import { i18n } from "@/shared/lib";
 
 export const EditApiTokenForm = () => {
   h("form", () => {
