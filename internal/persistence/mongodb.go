@@ -36,16 +36,20 @@ func initMongoDB(dataSourceName string) (*mongo.Client, error) {
 }
 
 func createIndexes(client *mongo.Client) error {
-	collection := client.Database("moonlogs").Collection("records")
+	collection := client.Database(MONGODB_DATABASE_NAME).Collection("records")
 
-	indexModel := mongo.IndexModel{
-		Keys:    bson.D{{Key: "schema_name", Value: 1}},
-		Options: options.Index().SetUnique(false),
-	}
+	indexNames := []string{"schema_name", "id"}
 
-	_, err := collection.Indexes().CreateOne(context.Background(), indexModel)
-	if err != nil {
-		return fmt.Errorf("index `schema_name` on `records` collection: %w", err)
+	for _, name := range indexNames {
+		indexModel := mongo.IndexModel{
+			Keys:    bson.D{{Key: name, Value: 1}},
+			Options: options.Index().SetUnique(false),
+		}
+
+		_, err := collection.Indexes().CreateOne(context.Background(), indexModel)
+		if err != nil {
+			return fmt.Errorf("creating index `%s` on `records` collection: %w", name, err)
+		}
 	}
 
 	return nil
