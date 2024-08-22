@@ -17,8 +17,6 @@ const (
 	DB_PATH               = "/var/lib/moonlogs/database.sqlite"
 	CONFIG_PATH           = "/etc/moonlogs/config.yaml"
 	ASYNC_RECORD_CREATION = false
-	PYROSCOPE_PROFILING   = false
-	PYROSCOPE_ADDRESS     = ""
 
 	DB_SQLITE_ADAPTER = "sqlite"
 )
@@ -30,8 +28,6 @@ type Config struct {
 	DBPath              string        `yaml:"db_path"`
 	DBAdapter           string        `yaml:"db_adapter"`
 	AsyncRecordCreation bool          `yaml:"async_record_creation"`
-	PyroscopeProfiling  bool          `yaml:"pyroscope_profiling"`
-	PyroscopeAddress    string        `yaml:"pyroscope_address"`
 	ReadTimeout         time.Duration `yaml:"read_timeout"`
 	WriteTimeout        time.Duration `yaml:"write_timeout"`
 }
@@ -77,16 +73,12 @@ func writeDefaultConfig(filePath string, flagArgs args) error {
 db_path: %s
 db_adapter: %s
 async_record_creation: %v
-pyroscope_profiling: %v
-pyroscope_address: %s
 read_timeout: %s
 write_timeout: %s
 `, flagArgs.Port,
 		flagArgs.DBPath,
 		flagArgs.DBAdapter,
 		flagArgs.AsyncRecordCreation,
-		flagArgs.PyroscopeProfiling,
-		flagArgs.PyroscopeAddress,
 		flagArgs.ReadTimeout,
 		flagArgs.WriteTimeout)
 
@@ -112,8 +104,6 @@ type args struct {
 	DBPath              string
 	DBAdapter           string
 	AsyncRecordCreation bool
-	PyroscopeProfiling  bool
-	PyroscopeAddress    string
 	ReadTimeout         time.Duration
 	WriteTimeout        time.Duration
 }
@@ -127,8 +117,6 @@ func processArgs() (args, error) {
 	f.StringVar(&a.DBPath, "db-path", DB_PATH, "db path to connect to")
 	f.StringVar(&a.DBAdapter, "db-adapter", DB_SQLITE_ADAPTER, "db adapter to connect to – 'mongodb' or 'sqlite'")
 	f.BoolVar(&a.AsyncRecordCreation, "async-record-creation", ASYNC_RECORD_CREATION, "should record creation be done asynchronously")
-	f.BoolVar(&a.PyroscopeProfiling, "pyroscope-profiling", PYROSCOPE_PROFILING, "enable pyroscope profiling")
-	f.StringVar(&a.PyroscopeAddress, "pyroscope-address", PYROSCOPE_ADDRESS, "address of pyroscope server")
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 
