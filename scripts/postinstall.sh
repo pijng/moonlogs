@@ -29,7 +29,7 @@ EOF
   systemctl enable "${SERVICE_NAME}.service"
   systemctl start "${SERVICE_NAME}.service"
 
-  echo "Service installed and started successfully."
+  echo "Moonlogs service installed and started successfully."
 else
-  echo "Systemd not available. Please manually set up your service."
+  echo "Systemd not available. Please manually set up moonlogs service."
 fi
