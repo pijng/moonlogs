@@ -111,8 +111,8 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	if record.Level != "" {
 		filter["level"] = record.Level
 	}
-	if record.GroupHash != "" {
-		filter["group_hash"] = record.GroupHash
+	if len(record.Query) != 0 {
+		filter = qrx.QueryObject(filter, record.Query)
 	}
 	if from != nil || to != nil {
 		filter["created_at"] = bson.M{"$gte": qrx.From(from), "$lte": qrx.To(to)}
