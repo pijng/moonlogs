@@ -36,7 +36,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -55,7 +54,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -77,7 +75,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -101,7 +98,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -122,7 +118,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "groupHash",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -156,7 +151,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
