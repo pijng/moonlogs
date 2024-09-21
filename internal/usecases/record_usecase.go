@@ -89,15 +89,6 @@ func (uc *RecordUseCase) GetRecordByID(ctx context.Context, id int) (*entities.R
 }
 
 func (uc *RecordUseCase) GetRecordsByQuery(ctx context.Context, record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error) {
-	if len(record.Query) > 0 {
-		groupHash, err := shared.HashQuery(record.Query)
-		if err != nil {
-			return nil, 0, fmt.Errorf("failed calculating record query hash: %w", err)
-		}
-
-		record.GroupHash = groupHash
-	}
-
 	return uc.recordStorage.GetRecordsByQuery(ctx, record, from, to, limit, offset)
 }
 
