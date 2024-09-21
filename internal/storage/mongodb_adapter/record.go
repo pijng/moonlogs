@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/qrx"
+	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"time"
 
@@ -112,7 +113,12 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 		filter["level"] = record.Level
 	}
 	if len(record.Query) != 0 {
-		filter = qrx.QueryObject(filter, record.Query)
+		groupHash, err := shared.HashQuery(record.Query)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed calculating record query hash: %w", err)
+		}
+
+		filter["group_hash"] = groupHash
 	}
 	if from != nil || to != nil {
 		filter["created_at"] = bson.M{"$gte": qrx.From(from), "$lte": qrx.To(to)}
