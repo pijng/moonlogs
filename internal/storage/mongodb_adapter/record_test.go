@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/testutil"
 	"testing"
@@ -36,7 +37,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -55,7 +55,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -77,10 +76,12 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
+		groupHash, _ := shared.HashQuery(record.Query)
+		record.GroupHash = groupHash
+
 		_, err := recordStorage.CreateRecord(ctx, record)
 		assert.NoError(t, err)
 
@@ -101,7 +102,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}
@@ -156,7 +156,6 @@ func TestRecordStorage(t *testing.T) {
 			Request:    entities.JSONMap{"req": "data"},
 			Response:   entities.JSONMap{"res": "data"},
 			Kind:       "Test Kind",
-			GroupHash:  "Test Group",
 			Level:      entities.InfoLevel,
 			CreatedAt:  entities.RecordTime{Time: time.Now()},
 		}

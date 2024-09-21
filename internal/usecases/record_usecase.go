@@ -3,23 +3,13 @@ package usecases
 import (
 	"context"
 	"fmt"
-	"hash"
-	"hash/fnv"
 	"moonlogs/internal/entities"
-	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 )
-
-var FNVHasherPool = sync.Pool{
-	New: func() interface{} {
-		return fnv.New64a()
-	},
-}
 
 type RecordUseCase struct {
 	recordStorage storage.RecordStorage
@@ -49,19 +39,10 @@ func (uc *RecordUseCase) CreateRecord(ctx context.Context, record entities.Recor
 		record.CreatedAt = entities.RecordTime{Time: time.Now()}
 	}
 
-	bytes, err := serialize.JSONMarshal(record.Query)
+	groupHash, err := shared.HashQuery(record.Query)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating record: %v", err)
+		return nil, fmt.Errorf("failed calculating record query hash: %w", err)
 	}
-
-	FNV64Hasher := FNVHasherPool.Get().(hash.Hash64)
-	defer FNVHasherPool.Put(FNV64Hasher)
-
-	FNV64Hasher.Write(bytes)
-	hashSum := FNV64Hasher.Sum64()
-	FNV64Hasher.Reset()
-
-	groupHash := fmt.Sprint(hashSum)
 
 	record.SchemaID = schemaID
 	record.GroupHash = groupHash

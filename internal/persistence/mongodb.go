@@ -38,7 +38,7 @@ func initMongoDB(dataSourceName string) (*mongo.Client, error) {
 func createIndexes(client *mongo.Client) error {
 	collection := client.Database(MONGODB_DATABASE_NAME).Collection("records")
 
-	indexNames := []string{"schema_name", "id"}
+	indexNames := []string{"schema_name", "id", "group_hash"}
 
 	for _, name := range indexNames {
 		indexModel := mongo.IndexModel{

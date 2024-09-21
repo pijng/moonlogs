@@ -34,14 +34,14 @@ func InitDB(cfg *config.Config) (*Databases, error) {
 	case MONGODB_ADAPTER:
 		mongoInstance, err := initMongoDB(cfg.DBPath)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to connect to MongoDB: %w", err)
+			return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
 		}
 
 		databases = Databases{MongoInstance: mongoInstance}
 	default:
 		sqliteWriteInstance, sqliteReadInstance, err := initSqliteDB(cfg.DBPath)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to connect to Sqlite: %w", err)
+			return nil, fmt.Errorf("failed to connect to Sqlite: %w", err)
 		}
 
 		databases = Databases{SqliteReadInstance: sqliteReadInstance, SqliteWriteInstance: sqliteWriteInstance}
