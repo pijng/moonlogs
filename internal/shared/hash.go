@@ -5,6 +5,7 @@ import (
 	"hash"
 	"hash/fnv"
 	"moonlogs/internal/lib/serialize"
+	"strconv"
 	"sync"
 )
 
@@ -15,7 +16,23 @@ var fnvHasherPool = sync.Pool{
 }
 
 func HashQuery[T ~map[string]interface{}](query T) (string, error) {
-	bytes, err := serialize.JSONMarshal(query)
+	formattedQuery := make(T)
+
+	for k, value := range query {
+		switch v := value.(type) {
+		case string:
+			vInt, err := strconv.Atoi(v)
+			if err != nil {
+				formattedQuery[k] = v
+				continue
+			}
+			formattedQuery[k] = vInt
+		default:
+			formattedQuery[k] = v
+		}
+	}
+
+	bytes, err := serialize.JSONMarshal(formattedQuery)
 	if err != nil {
 		return "", fmt.Errorf("failed creating record: %v", err)
 	}
