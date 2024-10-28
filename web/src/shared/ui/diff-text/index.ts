@@ -4,13 +4,15 @@ import { Store, createEffect, createEvent, restore, sample } from "effector";
 import { h, list, node, remap, spec } from "forest";
 import { triggerTooltip } from "../general-tooltip";
 
-const compareFx = createEffect(({ oldText, newText }: { oldText: string | undefined; newText: string | undefined }): Change[] => {
-  return diffWords(oldText || "", newText || "");
-});
-
-const triggerDiff = createEvent();
-
 export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText: Store<string> }) => {
+  const compareFx = createEffect(
+    ({ oldText, newText }: { oldText: string | undefined; newText: string | undefined }): Change[] => {
+      return diffWords(oldText || "", newText || "");
+    },
+  );
+
+  const triggerDiff = createEvent();
+
   const diffFx = sample({
     source: [oldText, newText],
     clock: triggerDiff,
@@ -35,7 +37,7 @@ export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText
   });
 
   h("div", () => {
-    spec({ classList: ["grid", "grid-cols-2", "mt-3"] });
+    spec({ classList: ["grid", "grid-cols-2"] });
 
     h("div", () => {
       spec({
@@ -90,9 +92,8 @@ export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText
         });
       });
     });
-  });
-
-  node(() => {
-    triggerDiff();
+    node(() => {
+      triggerDiff();
+    });
   });
 };

@@ -12,24 +12,30 @@ import (
 )
 
 type Record struct {
-	ID         int        `json:"id" sql:"id" bson:"id"`
-	Text       string     `json:"text" sql:"text" bson:"text"`
-	CreatedAt  RecordTime `json:"created_at" sql:"created_at" bson:"created_at"`
-	SchemaName string     `json:"schema_name,omitempty" sql:"schema_name" bson:"schema_name"`
-	SchemaID   int        `json:"schema_id,omitempty" sql:"schema_id" bson:"schema_id"`
-	Query      JSONMap    `json:"query,omitempty" sql:"query" bson:"query"`
-	Kind       string     `json:"kind,omitempty" sql:"kind" bson:"kind"`
-	GroupHash  string     `json:"group_hash,omitempty" sql:"group_hash" bson:"group_hash"`
-	Level      Level      `json:"level,omitempty" sql:"level" bson:"level"`
-	Request    JSONMap    `json:"request,omitempty" sql:"request" bson:"request"`
-	Response   JSONMap    `json:"response,omitempty" sql:"response" bson:"response"`
-	OldValue   Value      `json:"old_value,omitempty" sql:"old_value" bson:"old_value"`
-	NewValue   Value      `json:"new_value,omitempty" sql:"new_value" bson:"new_value"`
+	ID         int              `json:"id" sql:"id" bson:"id"`
+	Text       string           `json:"text" sql:"text" bson:"text"`
+	CreatedAt  RecordTime       `json:"created_at" sql:"created_at" bson:"created_at"`
+	SchemaName string           `json:"schema_name,omitempty" sql:"schema_name" bson:"schema_name"`
+	SchemaID   int              `json:"schema_id,omitempty" sql:"schema_id" bson:"schema_id"`
+	Query      JSONMap[any]     `json:"query,omitempty" sql:"query" bson:"query"`
+	Kind       string           `json:"kind,omitempty" sql:"kind" bson:"kind"`
+	GroupHash  string           `json:"group_hash,omitempty" sql:"group_hash" bson:"group_hash"`
+	Level      Level            `json:"level,omitempty" sql:"level" bson:"level"`
+	Request    JSONMap[any]     `json:"request,omitempty" sql:"request" bson:"request"`
+	Response   JSONMap[any]     `json:"response,omitempty" sql:"response" bson:"response"`
+	OldValue   Value            `json:"old_value,omitempty" sql:"old_value" bson:"old_value"`
+	NewValue   Value            `json:"new_value,omitempty" sql:"new_value" bson:"new_value"`
+	Changes    JSONMap[Changes] `json:"changes,omitempty" sql:"changes" bson:"changes"`
 }
 
-type JSONMap map[string]interface{}
+type Changes struct {
+	OldValue any `json:"old_value"`
+	NewValue any `json:"new_value"`
+}
 
-func (jm *JSONMap) Scan(value interface{}) error {
+type JSONMap[T any] map[string]T
+
+func (jm *JSONMap[T]) Scan(value interface{}) error {
 	if value == nil {
 		return nil
 	}
@@ -44,9 +50,9 @@ func (jm *JSONMap) Scan(value interface{}) error {
 	}
 }
 
-func (jm JSONMap) Value() (driver.Value, error) {
+func (jm JSONMap[T]) Value() (driver.Value, error) {
 	if jm == nil {
-		jm = make(JSONMap)
+		jm = make(JSONMap[T])
 	}
 
 	b, err := serialize.JSONMarshal(jm)

@@ -3,6 +3,13 @@ import { BaseResponse, get, post } from "./base";
 
 export type Level = "Trace" | "Debug" | "Info" | "Warn" | "Error" | "Fatal";
 
+export type LogChanges = {
+  [key: string]: {
+    old_value: any;
+    new_value: any;
+  };
+};
+
 export type Log = {
   id: string;
   text: string;
@@ -17,6 +24,7 @@ export type Log = {
   response: Record<string, any>;
   old_value: string;
   new_value: string;
+  changes: LogChanges;
 };
 
 export type LogsGroup = { tags: Array<[string, any]>; schema_name: string; kind: string | null; group_hash: string; logs: Log[] };

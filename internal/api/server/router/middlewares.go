@@ -27,7 +27,7 @@ func (mw *Middlewares) SessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
 		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
 		}
 
@@ -46,7 +46,7 @@ func (mw *Middlewares) SessionMiddleware(next http.Handler) http.Handler {
 
 		ok, err := mw.apiTokenUseCase.IsTokenValid(r.Context(), bearerToken)
 		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
 		}
 
@@ -83,7 +83,7 @@ func (mw *Middlewares) RoleMiddleware(next http.HandlerFunc, requiredRoles ...en
 	return func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, err := session.GetSessionStore().Get(r, session.NAME)
 		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
 		}
 
@@ -101,7 +101,7 @@ func (mw *Middlewares) RoleMiddleware(next http.HandlerFunc, requiredRoles ...en
 
 		validAPIToken, err := mw.apiTokenUseCase.IsTokenValid(r.Context(), bearerToken)
 		if err != nil {
-			response.Return(w, false, http.StatusInternalServerError, nil, nil, response.Meta{})
+			response.Return(w, false, http.StatusInternalServerError, err, nil, response.Meta{})
 			return
 		}
 

@@ -118,7 +118,41 @@ export const LogsTable = ({
                 });
 
                 h("div", () => {
-                  spec({ visible: log.map((l) => Boolean(l.old_value) || Boolean(l.new_value)) });
+                  spec({ visible: log.map((l) => isObjectPresent(l.changes)) });
+
+                  const $changesList = log.map((l) => {
+                    const changesValues = l.changes || {};
+                    const changesContainer: { name: string; old_value: any; new_value: any }[] = [];
+
+                    for (const [name, changes] of Object.entries(changesValues)) {
+                      changesContainer.push({ name: name, old_value: changes.old_value, new_value: changes.new_value });
+                    }
+
+                    return changesContainer;
+                  });
+
+                  list($changesList, ({ store: changes }) => {
+                    h("div", () => {
+                      spec({ classList: ["mt-3"] });
+
+                      h("div", {
+                        classList: ["whitespace-pre-wrap", "break-words"],
+                        text: changes.map((c) => `{${c.name}}`),
+                      });
+
+                      DiffText({
+                        oldText: remap(changes, "old_value"),
+                        newText: remap(changes, "new_value"),
+                      });
+                    });
+                  });
+                });
+
+                h("div", () => {
+                  spec({
+                    visible: log.map((l) => Boolean(l.old_value) || Boolean(l.new_value)),
+                    classList: ["mt-3"],
+                  });
 
                   DiffText({ oldText: log.map((l) => l.old_value), newText: log.map((l) => l.new_value) });
                 });
