@@ -4,39 +4,41 @@ import { Store, createEffect, createEvent, restore, sample } from "effector";
 import { h, list, node, remap, spec } from "forest";
 import { triggerTooltip } from "../general-tooltip";
 
+type ComparePayload = { oldText: string | undefined; newText: string | undefined };
+
 export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText: Store<string> }) => {
-  const compareFx = createEffect(
-    ({ oldText, newText }: { oldText: string | undefined; newText: string | undefined }): Change[] => {
-      return diffWords(oldText || "", newText || "");
-    },
-  );
-
-  const triggerDiff = createEvent();
-
-  const diffFx = sample({
-    source: [oldText, newText],
-    clock: triggerDiff,
-    fn: ([oldText, newText]) => ({ oldText, newText }),
-    target: compareFx,
-  });
-
-  const $before = restore(diffFx, []).map((parts) => parts.filter((p) => !p.added));
-  const $after = restore(diffFx, []).map((parts) => parts.filter((p) => !p.removed));
-
-  const beforeClicked = createEvent<MouseEvent>();
-  const afterClicked = createEvent<MouseEvent>();
-  const copyTextFx = createEffect((clickedText: string) => {
-    return navigator.clipboard.writeText(clickedText);
-  });
-
-  sample({
-    source: i18n("miscellaneous.copied_to_clipboard"),
-    clock: copyTextFx.done,
-    fn: (text) => ({ text: text }),
-    target: triggerTooltip,
-  });
-
   h("div", () => {
+    const compareFx = createEffect(({ oldText, newText }: ComparePayload): Change[] => {
+      return diffWords(JSON.stringify(oldText), JSON.stringify(newText));
+    });
+
+    const triggerDiff = createEvent();
+
+    const diffFx = sample({
+      source: [oldText, newText],
+      clock: triggerDiff,
+      fn: ([oldText, newText]) => ({ oldText, newText }),
+      target: compareFx,
+    });
+
+    const $before = restore(diffFx, []).map((parts) => parts.filter((p) => !p.added));
+    $before.watch((b) => console.log(`BEFORE: ${b.map((p) => p.value).join("")}`));
+    const $after = restore(diffFx, []).map((parts) => parts.filter((p) => !p.removed));
+    $after.watch((b) => console.log(`AFTER: ${b.map((p) => p.value).join("")}`));
+
+    const beforeClicked = createEvent<MouseEvent>();
+    const afterClicked = createEvent<MouseEvent>();
+    const copyTextFx = createEffect((clickedText: string) => {
+      return navigator.clipboard.writeText(clickedText);
+    });
+
+    sample({
+      source: i18n("miscellaneous.copied_to_clipboard"),
+      clock: copyTextFx.done,
+      fn: (text) => ({ text: text }),
+      target: triggerTooltip,
+    });
+
     spec({ classList: ["grid", "grid-cols-2"] });
 
     h("div", () => {
