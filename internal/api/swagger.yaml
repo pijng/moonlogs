@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.13.12
+  version: 1.14.0
 externalDocs:
   description: Find out more about spec
   url: 'https://moonlogs.pages.dev'
@@ -1473,6 +1473,9 @@ components:
           type: string
         new_value:
           type: string
+        changes:
+          type: object
+          properties: {}
       required:
         - id
         - text
@@ -1633,6 +1636,9 @@ components:
           type: string
         new_value:
           type: string
+        changes:
+          type: object
+          properties: {}
       required:
         - text
         - schema_name
