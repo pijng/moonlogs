@@ -22,9 +22,7 @@ export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText
     });
 
     const $before = restore(diffFx, []).map((parts) => parts.filter((p) => !p.added));
-    $before.watch((b) => console.log(`BEFORE: ${b.map((p) => p.value).join("")}`));
     const $after = restore(diffFx, []).map((parts) => parts.filter((p) => !p.removed));
-    $after.watch((b) => console.log(`AFTER: ${b.map((p) => p.value).join("")}`));
 
     const beforeClicked = createEvent<MouseEvent>();
     const afterClicked = createEvent<MouseEvent>();
