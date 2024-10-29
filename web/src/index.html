@@ -6,7 +6,7 @@
   <link href="./index.css" rel="stylesheet">
   <title>Moonlogs</title>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener("load", () => {
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.querySelector('html')?.classList?.add('dark')
       } else {
