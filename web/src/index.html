@@ -6,11 +6,13 @@
   <link href="./index.css" rel="stylesheet">
   <title>Moonlogs</title>
   <script>
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.querySelector('html')?.classList?.add('dark')
-    } else {
-      document.querySelector('html')?.classList?.remove('dark')
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.querySelector('html')?.classList?.add('dark')
+      } else {
+        document.querySelector('html')?.classList?.remove('dark')
+      }
+    })
   </script>
 </head>
 

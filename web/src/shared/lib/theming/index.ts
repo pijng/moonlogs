@@ -8,12 +8,14 @@ export const $currentTheme = createStore<Theme>("light");
 export const themeChanged = createEvent<Theme>();
 
 export const loadThemeFromStorageFx = createEffect(() => {
-  const theme: Theme = (localStorage.getItem(THEME_KEY) || "light") as Theme;
+  const theme: Theme | null = localStorage.getItem(THEME_KEY) as Theme;
 
   return theme;
 });
 
 const setThemeToStorageFx = createEffect((theme: Theme) => {
+  if (!theme) return;
+
   return localStorage.setItem(THEME_KEY, theme);
 });
 
