@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"moonlogs/internal/entities"
+	"moonlogs/internal/shared"
 	"moonlogs/internal/storage"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -49,6 +50,12 @@ func (s *SchemaStorage) CreateSchema(ctx context.Context, schema entities.Schema
 		return nil, fmt.Errorf("failed querying inserted schema: %w", err)
 	}
 
+	indexNames := make([]string, 0)
+	for _, field := range schema.Fields {
+		indexNames = append(indexNames, fmt.Sprintf("query.%s", field.Name))
+	}
+	_ = shared.CreateIndexes(s.collection, indexNames)
+
 	return &sm, nil
 }
 
@@ -66,6 +73,12 @@ func (s *SchemaStorage) UpdateSchemaByID(ctx context.Context, id int, schema ent
 	if err != nil {
 		return nil, fmt.Errorf("failed updating schema: %w", err)
 	}
+
+	indexNames := make([]string, 0)
+	for _, field := range schema.Fields {
+		indexNames = append(indexNames, fmt.Sprintf("query.%s", field.Name))
+	}
+	_ = shared.CreateIndexes(s.collection, indexNames)
 
 	return s.GetById(ctx, id)
 }
