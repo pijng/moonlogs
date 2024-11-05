@@ -54,7 +54,7 @@ func (s *SchemaStorage) CreateSchema(ctx context.Context, schema entities.Schema
 	for _, field := range schema.Fields {
 		indexNames = append(indexNames, fmt.Sprintf("query.%s", field.Name))
 	}
-	_ = shared.CreateIndexes(s.collection, indexNames)
+	_ = shared.CreateIndexes(s.db.Collection("records"), indexNames)
 
 	return &sm, nil
 }
@@ -78,7 +78,7 @@ func (s *SchemaStorage) UpdateSchemaByID(ctx context.Context, id int, schema ent
 	for _, field := range schema.Fields {
 		indexNames = append(indexNames, fmt.Sprintf("query.%s", field.Name))
 	}
-	_ = shared.CreateIndexes(s.collection, indexNames)
+	_ = shared.CreateIndexes(s.db.Collection("records"), indexNames)
 
 	return s.GetById(ctx, id)
 }
