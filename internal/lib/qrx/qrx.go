@@ -389,7 +389,7 @@ func Contains(value any) string {
 func From(from *time.Time) int {
 	fromPart := LOWEST_TIME
 	if from != nil {
-		fromPart = int(from.Unix())
+		fromPart = int(from.UnixMilli())
 	}
 
 	return fromPart
@@ -398,7 +398,7 @@ func From(from *time.Time) int {
 func To(to *time.Time) int {
 	toPart := MAX_TIME
 	if to != nil {
-		toPart = int(to.Unix())
+		toPart = int(to.UnixMilli())
 	}
 
 	return toPart
@@ -407,12 +407,12 @@ func To(to *time.Time) int {
 func Between(from *time.Time, to *time.Time) string {
 	fromPart := LOWEST_TIME
 	if from != nil {
-		fromPart = int(from.Unix())
+		fromPart = int(from.UnixMilli())
 	}
 
 	toPart := MAX_TIME
 	if to != nil {
-		toPart = int(to.Unix())
+		toPart = int(to.UnixMilli())
 	}
 
 	return fmt.Sprintf("%d and %d", fromPart, toPart)

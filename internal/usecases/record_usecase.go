@@ -56,7 +56,7 @@ func (uc *RecordUseCase) DeleteStaleRecords(ctx context.Context, schema *entitie
 		return nil
 	}
 
-	threshold := time.Now().Add(-time.Duration(schema.RetentionDays) * 24 * time.Hour).Unix()
+	threshold := time.Now().Add(-time.Duration(schema.RetentionDays) * 24 * time.Hour).UnixMilli()
 
 	staleRecordIDs, err := uc.recordStorage.FindStaleIDs(ctx, schema.ID, threshold)
 	if err != nil {

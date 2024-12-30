@@ -63,6 +63,14 @@ type RecordTime struct {
 	time.Time
 }
 
+func unixToTime(unix int64) time.Time {
+	if unix > 1e10 {
+		return time.UnixMilli(unix)
+	}
+
+	return time.Unix(unix, 0)
+}
+
 func (t RecordTime) MarshalJSON() ([]byte, error) {
 	formattedTime := t.Format("2006-01-02T15:04:05.000Z07:00")
 	return serialize.JSONMarshal(formattedTime)
@@ -70,23 +78,23 @@ func (t RecordTime) MarshalJSON() ([]byte, error) {
 
 func (t *RecordTime) Scan(value interface{}) error {
 	if v, ok := value.(int64); ok {
-		t.Time = time.Unix(v, 0)
+		t.Time = unixToTime(v)
 	}
 
 	return nil
 }
 
 func (t RecordTime) Value() (driver.Value, error) {
-	return t.Unix(), nil
+	return t.UnixMilli(), nil
 }
 
 func (t RecordTime) MarshalBSONValue() (bsontype.Type, []byte, error) {
-	return bson.MarshalValue(t.Unix())
+	return bson.MarshalValue(t.UnixMilli())
 }
 
 func (t *RecordTime) UnmarshalBSONValue(bt bsontype.Type, data []byte) error {
 	v := int64(binary.LittleEndian.Uint64(data))
-	t.Time = time.Unix(v, 0)
+	t.Time = unixToTime(v)
 
 	return nil
 }
