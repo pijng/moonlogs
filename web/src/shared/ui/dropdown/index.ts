@@ -1,8 +1,8 @@
 import { Event, Store, createEvent, sample } from "effector";
 import { h, list, spec } from "forest";
 import { FloatingInput, Select } from "@/shared/ui";
-import { FilterItem, KindItem } from "@/features/filter-logs";
 import { i18n } from "@/shared/lib/i18n";
+import { FilterItem, KindItem } from "../types";
 
 export const Dropdown = ({
   items,
