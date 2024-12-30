@@ -45,7 +45,7 @@ export const LogsTable = ({
           h("tr", () => {
             h("th", {
               attr: { scope: "col" },
-              classList: ["px-4", "py-3", "w-24", "lg:w-48"],
+              classList: ["px-4", "py-3", "w-32", "lg:w-52"],
               text: i18n("tables.log_groups.time"),
             });
 

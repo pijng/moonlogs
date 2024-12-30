@@ -1,18 +1,7 @@
-import { Button, ButtonVariant, DownIcon, Dropdown, FilterIcon } from "@/shared/ui";
+import { Button, ButtonVariant, DownIcon, Dropdown, FilterIcon, FilterItem, KindItem } from "@/shared/ui";
 import { Event, Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
 import { i18n } from "@/shared/lib";
-
-export type FilterItem = {
-  name: string;
-  key: string;
-  value: string;
-};
-
-export type KindItem = {
-  name: string;
-  title: string;
-};
 
 export const Filter = ({
   filterItems,

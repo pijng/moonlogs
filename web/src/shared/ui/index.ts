@@ -52,3 +52,4 @@ export { Popup } from "./popup";
 export { Tooltip } from "./tooltip";
 export { GeneralTooltip, triggerTooltip } from "./general-tooltip";
 export { DiffText } from "./diff-text";
+export { type FilterItem, type KindItem } from "./types";

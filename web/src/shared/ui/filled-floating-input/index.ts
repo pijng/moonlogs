@@ -1,7 +1,7 @@
-import { FilterItem } from "@/features";
 import { Event, Store, createEvent, sample } from "effector";
 import { h, remap, spec } from "forest";
 import { CrossIcon } from "../icons";
+import { FilterItem } from "../types";
 
 export const FilledFloatingInput = (item: Store<FilterItem>, inputChanged: Event<any>) => {
   h("div", () => {

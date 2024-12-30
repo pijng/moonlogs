@@ -1,4 +1,4 @@
-export { DATEFORMAT_OPTIONS, TIMEZONE } from "./dates";
+export { DATEFORMAT_OPTIONS, TIMEZONE, setDateLanguage, $intl } from "./dates";
 export { rules } from "./forms";
 export { trigger } from "./trigger";
 export { hashCode } from "./hash";

@@ -1,6 +1,6 @@
 import { User, getUsers, getUser } from "@/shared/api";
 import { setCurrentAccount } from "@/shared/session";
-import { setLanguage } from "@/shared/lib";
+import { setDateLanguage, setLanguage } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
 const LOCALE_KEY = "locale";
@@ -67,6 +67,11 @@ sample({
 sample({
   source: $currentLocale,
   target: setLanguage,
+});
+
+sample({
+  source: loadLocaleFromStorageFx.doneData,
+  target: setDateLanguage,
 });
 
 export const effects = {
