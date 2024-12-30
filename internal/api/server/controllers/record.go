@@ -44,8 +44,6 @@ func (c *RecordController) CreateRecord(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Println(newRecord)
-
 	if config.Get().AsyncRecordCreation {
 		go c.createRecordAsync(newRecord)
 		response.Return(w, true, http.StatusOK, nil, AsyncProcessingMessage, response.Meta{})
