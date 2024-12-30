@@ -147,7 +147,7 @@ func TestRecordStorage(t *testing.T) {
 	})
 
 	t.Run("FindStaleIDs", func(t *testing.T) {
-		threshold := time.Now().Add(-time.Hour).Unix()
+		threshold := time.Now().Add(-time.Hour).UnixMilli()
 		ids, err := recordStorage.FindStaleIDs(ctx, 1, threshold)
 		assert.NoError(t, err)
 		assert.NotNil(t, ids)
