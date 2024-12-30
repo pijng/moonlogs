@@ -1,4 +1,4 @@
-import { FilterItem } from "@/features";
+import { FilterItem } from "@/features/filter-logs";
 import { Event, Store, createEvent, sample } from "effector";
 import { h, remap, spec } from "forest";
 import { CrossIcon } from "../icons";

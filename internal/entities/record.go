@@ -63,6 +63,11 @@ type RecordTime struct {
 	time.Time
 }
 
+func (t RecordTime) MarshalJSON() ([]byte, error) {
+	formattedTime := t.Format("2006-01-02T15:04:05.000Z07:00")
+	return serialize.JSONMarshal(formattedTime)
+}
+
 func (t *RecordTime) Scan(value interface{}) error {
 	if v, ok := value.(int64); ok {
 		t.Time = time.Unix(v, 0)

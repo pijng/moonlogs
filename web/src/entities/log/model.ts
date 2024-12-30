@@ -1,7 +1,6 @@
 import { Log, getLogs } from "@/shared/api";
 import { Level, LogsGroup, getLogGroup } from "@/shared/api";
-import { DATEFORMAT_OPTIONS, objectToQueryString, queryStringToObject } from "@/shared/lib";
-import { $preferredLanguage } from "@/shared/lib";
+import { $intl, objectToQueryString, queryStringToObject } from "@/shared/lib";
 import { combine, createEffect, createEvent, createStore, sample } from "effector";
 
 const reset = createEffect();
@@ -118,13 +117,12 @@ export const $groupedLogs = createStore<LogsGroup>({
 });
 
 sample({
-  source: $preferredLanguage,
+  source: $intl,
   clock: getLogGroupFx.doneData,
-  fn: (lang, logsResponse) => {
+  fn: (intl, logsResponse) => {
     // Extract to separate reducer
     const logs = logsResponse.data;
 
-    const intl = Intl.DateTimeFormat(lang, DATEFORMAT_OPTIONS);
     const logsGroup: LogsGroup = {
       kind: logs[0].kind,
       tags: Object.entries(logs[0]?.query),
@@ -142,8 +140,7 @@ sample({
   target: $groupedLogs,
 });
 
-export const $logsGroups = combine([$logs, $preferredLanguage], ([logs, lang]) => {
-  const intl = Intl.DateTimeFormat(lang, DATEFORMAT_OPTIONS);
+export const $logsGroups = combine([$logs, $intl], ([logs, intl]) => {
   const groupedLogs = logs.reduce((acc: Record<string, LogsGroup>, log) => {
     const key = JSON.stringify(log.query);
 
