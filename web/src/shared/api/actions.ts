@@ -12,9 +12,12 @@ export type Action = {
 
 export type Condition = {
   attribute: string;
-  operation: "==" | "!=" | ">" | ">=" | "<" | "<=";
+  operation: "==" | "!=" | ">" | ">=" | "<" | "<=" | "EXISTS" | "EMPTY";
   value: string;
 };
+
+export const operations: Condition["operation"][] = ["==", "!=", ">", ">=", "<", "<=", "EXISTS", "EMPTY"];
+export const nonCmpOperations: Condition["operation"][] = ["EXISTS", "EMPTY"];
 
 export type ActionToCreate = {
   name: string;

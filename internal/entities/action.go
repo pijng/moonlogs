@@ -94,3 +94,29 @@ var AppropriateActions = []string{
 }
 
 var AppropriateActionsInfo = strings.Join(AppropriateActions, ", ")
+
+type ConditionOperation string
+
+const (
+	EQ     ConditionOperation = "=="
+	NE     ConditionOperation = "!="
+	LT     ConditionOperation = "<"
+	LTE    ConditionOperation = "<="
+	GT     ConditionOperation = ">"
+	GTE    ConditionOperation = ">="
+	EXISTS ConditionOperation = "EXISTS"
+	EMPTY  ConditionOperation = "EMPTY"
+)
+
+var AppropriateOperations = []string{
+	string(EQ),
+	string(NE),
+	string(LT),
+	string(LTE),
+	string(GT),
+	string(GTE),
+	string(EXISTS),
+	string(EMPTY),
+}
+
+var AppropriateOperationsInfo = strings.Join(AppropriateOperations, ", ")

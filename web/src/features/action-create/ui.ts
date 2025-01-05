@@ -2,10 +2,9 @@ import { Button, ErrorHint, Input, Label, Multiselect, PlusIcon, Select, Text, T
 import { h, list, remap, spec } from "forest";
 import { $creationError, events, actionForm } from "./model";
 import { combine, createEvent, createStore, sample } from "effector";
-import { intersection, trigger } from "@/shared/lib";
-import { i18n } from "@/shared/lib";
+import { intersection, trigger, i18n } from "@/shared/lib";
 import { schemaModel } from "@/entities/schema";
-import { ActionToCreate, Condition } from "@/shared/api";
+import { ActionToCreate, Condition, nonCmpOperations, operations } from "@/shared/api";
 
 export const NewActionForm = () => {
   h("form", () => {
@@ -135,7 +134,9 @@ export const NewActionForm = () => {
             spec({
               classList: ["grid", "gap-3", "place-items-stretch"],
               style: {
-                gridTemplateColumns: "14fr 1fr 14fr 1fr",
+                gridTemplateColumns: conditionField.map((f) => {
+                  return nonCmpOperations.includes(f.operation) ? "14fr 1fr 1fr" : "14fr 1fr 14fr 1fr";
+                }),
               },
             });
 
@@ -159,7 +160,7 @@ export const NewActionForm = () => {
                 text: i18n("actions.form.conditions.fields.operation.label"),
                 hint: i18n("actions.form.conditions.fields.operation.hint"),
                 value: remap(conditionField, "operation"),
-                options: createStore<Condition["operation"][]>(["==", "!=", "<", "<=", ">", ">="]),
+                options: createStore<Condition["operation"][]>(operations),
                 optionSelected: operationChanged,
                 withBlank: createStore(false),
               });
@@ -171,6 +172,7 @@ export const NewActionForm = () => {
               required: true,
               value: remap(conditionField, "value"),
               inputChanged: valueChanged,
+              visible: conditionField.map((f) => !nonCmpOperations.includes(f.operation)),
               errorText: actionForm.fields.conditions.$errorText,
               hint: i18n("actions.form.conditions.fields.value.hint"),
             });
