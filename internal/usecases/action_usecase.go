@@ -35,8 +35,13 @@ func (uc *ActionUseCase) CreateAction(ctx context.Context, action entities.Actio
 	for _, condition := range action.Conditions {
 		var formattedCondition entities.Condition
 
-		if condition.Attribute == "" || condition.Operation == "" || condition.Value == "" {
+		if condition.Attribute == "" || condition.Operation == "" || (condition.Value == "" && !slices.Contains([]string{"EXISTS", "EMPTY"}, condition.Operation)) {
 			return nil, fmt.Errorf("failed creating action: `attribute`, `operation` and `value` attributes must be present for each `condition` object")
+		}
+
+		isValidOperation := slices.Contains(entities.AppropriateOperations, string(condition.Operation))
+		if !isValidOperation {
+			return nil, fmt.Errorf("failed creating action: `condition[].operation` field should be one of: %v", entities.AppropriateOperationsInfo)
 		}
 
 		formattedCondition.Attribute = condition.Attribute

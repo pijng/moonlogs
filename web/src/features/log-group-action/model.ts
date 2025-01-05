@@ -22,6 +22,13 @@ export const createLogGroupAction = (action: Store<Action>, logGroup: Store<Log[
         attrValue = log[condition.attribute as "kind" | "level"];
       }
 
+      switch (condition.operation) {
+        case "EXISTS":
+          return !!attrValue;
+        case "EMPTY":
+          return !attrValue;
+      }
+
       const result: boolean = eval(`"${attrValue}" ${condition.operation} "${condition.value}"`);
 
       return result;

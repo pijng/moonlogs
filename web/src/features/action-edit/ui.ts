@@ -3,7 +3,7 @@ import { h, list, remap, spec } from "forest";
 import { $editError, events, actionForm, deleteActionClicked } from "./model";
 import { combine, createEvent, createStore, sample } from "effector";
 import { intersection, trigger, i18n } from "@/shared/lib";
-import { ActionToCreate, Condition } from "@/shared/api";
+import { ActionToCreate, Condition, nonCmpOperations, operations } from "@/shared/api";
 import { schemaModel } from "@/entities/schema";
 
 export const EditActionForm = () => {
@@ -130,7 +130,9 @@ export const EditActionForm = () => {
           spec({
             classList: ["grid", "gap-3", "place-items-stretch"],
             style: {
-              gridTemplateColumns: "14fr 1fr 14fr 1fr",
+              gridTemplateColumns: conditionField.map((f) => {
+                return nonCmpOperations.includes(f.operation) ? "14fr 1fr 1fr" : "14fr 1fr 14fr 1fr";
+              }),
             },
           });
 
@@ -139,6 +141,7 @@ export const EditActionForm = () => {
 
             Select({
               text: i18n("actions.form.conditions.fields.attribute.label"),
+              hint: i18n("actions.form.conditions.fields.attribute.hint"),
               value: remap(conditionField, "attribute"),
               options: $attributeList,
               optionSelected: attributeChanged,
@@ -151,8 +154,9 @@ export const EditActionForm = () => {
 
             Select({
               text: i18n("actions.form.conditions.fields.operation.label"),
+              hint: i18n("actions.form.conditions.fields.operation.hint"),
               value: remap(conditionField, "operation"),
-              options: createStore<Condition["operation"][]>(["==", "!=", "<", "<=", ">", ">="]),
+              options: createStore<Condition["operation"][]>(operations),
               optionSelected: operationChanged,
               withBlank: createStore(false),
             });
@@ -164,6 +168,7 @@ export const EditActionForm = () => {
             required: true,
             value: remap(conditionField, "value"),
             inputChanged: valueChanged,
+            visible: conditionField.map((f) => !nonCmpOperations.includes(f.operation)),
             errorText: actionForm.fields.conditions.$errorText,
             hint: i18n("actions.form.conditions.fields.value.hint"),
           });

@@ -22,6 +22,8 @@ export {
   editAction,
   createAction,
   deleteAction,
+  operations,
+  nonCmpOperations,
 } from "./actions";
 export { type Log, type Level, type LogsGroup, getLogs, getLogGroup } from "./logs";
 export {
