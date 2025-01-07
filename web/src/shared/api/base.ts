@@ -15,6 +15,7 @@ export type BaseResponse = {
 };
 
 const BASE_URL = process.env.NODE_ENV === "development" ? "//127.0.0.1:4200" : "";
+const abortControllers = new Map<string, AbortController>();
 
 export const baseRequest = async ({
   token,
@@ -30,12 +31,18 @@ export const baseRequest = async ({
   headers?: HeadersInit;
 }) => {
   try {
+    abortControllers.get(url)?.abort();
+    const controller = new AbortController();
+    const { signal } = controller;
+    abortControllers.set(url, controller);
+
     const response = await fetch(`${BASE_URL}${url}`, {
       method,
       credentials: "include",
       referrerPolicy: "origin",
       body,
       headers: { ...headers, "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      signal,
     });
 
     const responseText = await response.clone().text();
@@ -57,6 +64,8 @@ export const baseRequest = async ({
     return jsonResponse;
   } catch (error) {
     console.log(error);
+  } finally {
+    abortControllers.delete(url);
   }
 };
 
