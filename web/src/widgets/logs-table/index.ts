@@ -3,7 +3,7 @@ import { Event, Store, createEffect, createEvent, sample } from "effector";
 import { Log } from "@/shared/api";
 import { $shouldCopyToClipboard, isObjectPresent } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
-import { DiffText, KBD, LevelBadge, triggerTooltip } from "@/shared/ui";
+import { ChangesTable, KBD, LevelBadge, triggerTooltip } from "@/shared/ui";
 
 export const LogsTable = ({
   logs,
@@ -118,45 +118,7 @@ export const LogsTable = ({
                   handler: { click: textClicked },
                 });
 
-                h("div", () => {
-                  spec({ visible: log.map((l) => isObjectPresent(l.changes)) });
-
-                  const $changesList = log.map((l) => {
-                    const changesValues = l.changes || {};
-                    const changesContainer: { name: string; old_value: any; new_value: any }[] = [];
-
-                    for (const [name, changes] of Object.entries(changesValues)) {
-                      changesContainer.push({ name: name, old_value: changes.old_value, new_value: changes.new_value });
-                    }
-
-                    return changesContainer;
-                  });
-
-                  list($changesList, ({ store: changes }) => {
-                    h("div", () => {
-                      spec({ classList: ["mt-3"] });
-
-                      h("div", {
-                        classList: ["whitespace-pre-wrap", "break-words"],
-                        text: changes.map((c) => `{${c.name}}`),
-                      });
-
-                      DiffText({
-                        oldText: remap(changes, "old_value"),
-                        newText: remap(changes, "new_value"),
-                      });
-                    });
-                  });
-                });
-
-                h("div", () => {
-                  spec({
-                    visible: log.map((l) => Boolean(l.old_value) || Boolean(l.new_value)),
-                    classList: ["mt-3"],
-                  });
-
-                  DiffText({ oldText: log.map((l) => l.old_value), newText: log.map((l) => l.new_value) });
-                });
+                ChangesTable(log);
 
                 const $netFieldsPresent = log.map((l) => isObjectPresent(l.request) || isObjectPresent(l.response));
 

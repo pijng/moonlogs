@@ -7,7 +7,7 @@ import { linkRouter, onAppMount } from "atomic-router-forest";
 import { createEvent, sample } from "effector";
 import { h, spec } from "forest";
 import { Pages } from "./pages";
-import { loadThemeFromStorageFx } from "@/shared/lib";
+import { loadClipboardFromStorageFx, loadThemeFromStorageFx } from "@/shared/lib";
 
 export const Application = () => {
   h("body", () => {
@@ -57,7 +57,7 @@ sample({
 sample({
   clock: appMounted,
   // TODO: move loadLocale to shared/lib/i18n
-  target: [loadThemeFromStorageFx, userModel.effects.loadLocaleFromStorageFx],
+  target: [loadThemeFromStorageFx, loadClipboardFromStorageFx, userModel.effects.loadLocaleFromStorageFx],
 });
 
 sample({
