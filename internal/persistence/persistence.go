@@ -3,7 +3,6 @@ package persistence
 import (
 	"database/sql"
 	"fmt"
-	"moonlogs/internal/config"
 	"moonlogs/internal/storage"
 	"moonlogs/internal/storage/mongodb_adapter"
 	"moonlogs/internal/storage/sqlite_adapter"
@@ -26,20 +25,20 @@ type Databases struct {
 	MongoInstance       *mongo.Client
 }
 
-func InitDB(cfg *config.Config) (*Databases, error) {
+func InitDB(DBAdapter string, DBPath string) (*Databases, error) {
 	var databases Databases
 	var err error
 
-	switch cfg.DBAdapter {
+	switch DBAdapter {
 	case MONGODB_ADAPTER:
-		mongoInstance, err := initMongoDB(cfg.DBPath)
+		mongoInstance, err := initMongoDB(DBPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
 		}
 
 		databases = Databases{MongoInstance: mongoInstance}
 	default:
-		sqliteWriteInstance, sqliteReadInstance, err := initSqliteDB(cfg.DBPath)
+		sqliteWriteInstance, sqliteReadInstance, err := initSqliteDB(DBPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to connect to Sqlite: %w", err)
 		}

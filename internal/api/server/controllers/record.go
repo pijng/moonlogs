@@ -9,7 +9,6 @@ import (
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/api/server/session"
 	"moonlogs/internal/api/server/timerange"
-	"moonlogs/internal/config"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/usecases"
@@ -41,12 +40,6 @@ func (c *RecordController) CreateRecord(w http.ResponseWriter, r *http.Request) 
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newRecord)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
-		return
-	}
-
-	if config.Get().AsyncRecordCreation {
-		go c.createRecordAsync(newRecord)
-		response.Return(w, true, http.StatusOK, nil, AsyncProcessingMessage, response.Meta{})
 		return
 	}
 
