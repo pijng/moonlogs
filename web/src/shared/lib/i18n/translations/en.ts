@@ -9,6 +9,7 @@ export const en: Translation = {
     tags: "Tags",
     language: "Language",
     theme: "Theme",
+    clipboard_mode: "Clipboard mode",
   },
   log_groups: {
     label: "Log groups",

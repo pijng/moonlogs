@@ -4,6 +4,7 @@ export { trigger } from "./trigger";
 export { hashCode } from "./hash";
 export { isObjectPresent } from "./presence";
 export { themeChanged, $currentTheme, loadThemeFromStorageFx } from "./theming";
+export { clipboardModeChanged, $clipboardMode, $shouldCopyToClipboard } from "./clipboard";
 export { objectToQueryString, queryStringToObject } from "./parsing/query";
 export { intersection } from "./intersection";
 export { i18n, $preferredLanguage, setLanguage } from "./i18n";
