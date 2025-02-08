@@ -1,7 +1,7 @@
 import { h, list, remap, spec } from "forest";
 import { Event, Store, createEffect, createEvent, sample } from "effector";
 import { Log } from "@/shared/api";
-import { isObjectPresent } from "@/shared/lib";
+import { $shouldCopyToClipboard, isObjectPresent } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
 import { DiffText, KBD, LevelBadge, triggerTooltip } from "@/shared/ui";
 
@@ -98,9 +98,10 @@ export const LogsTable = ({
                 });
 
                 sample({
-                  source: $formattedText,
+                  source: [$formattedText, $shouldCopyToClipboard] as const,
                   clock: textClicked,
-                  filter: () => !Boolean(window.getSelection()?.toString()),
+                  filter: ([, shouldCopy]) => !Boolean(window.getSelection()?.toString()) && shouldCopy,
+                  fn: ([text]) => text,
                   target: copyTextFx,
                 });
 

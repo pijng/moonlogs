@@ -1,6 +1,6 @@
 import { tagModel } from "@/entities/tag";
 import { userModel } from "@/entities/user";
-import { $currentTheme, themeChanged } from "@/shared/lib";
+import { $currentTheme, themeChanged, $clipboardMode, clipboardModeChanged } from "@/shared/lib";
 import { i18n } from "@/shared/lib/i18n";
 import { Select } from "@/shared/ui";
 import { combine, createStore } from "effector";
@@ -71,7 +71,7 @@ export const UserProfile = () => {
       });
 
       h("div", () => {
-        spec({ classList: ["py-3", "max-w-5"] });
+        spec({ classList: ["py-3", "max-w-xs"] });
 
         h("p", { text: i18n("profile.language") });
 
@@ -84,7 +84,7 @@ export const UserProfile = () => {
       });
 
       h("div", () => {
-        spec({ classList: ["py-3", "max-w-5"] });
+        spec({ classList: ["py-3", "max-w-xs"] });
 
         h("p", { text: i18n("profile.theme") });
 
@@ -92,6 +92,19 @@ export const UserProfile = () => {
           value: $currentTheme,
           options: createStore(["dark", "light"]),
           optionSelected: themeChanged,
+          withBlank: createStore(false),
+        });
+      });
+
+      h("div", () => {
+        spec({ classList: ["py-3", "max-w-xs"] });
+
+        h("p", { text: i18n("profile.clipboard_mode") });
+
+        Select({
+          value: $clipboardMode,
+          options: createStore(["copy", "no-copy"]),
+          optionSelected: clipboardModeChanged,
           withBlank: createStore(false),
         });
       });

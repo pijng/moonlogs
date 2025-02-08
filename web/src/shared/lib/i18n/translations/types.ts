@@ -25,6 +25,7 @@ export type Translation = {
     tags: string;
     language: string;
     theme: string;
+    clipboard_mode: string;
   };
   log_groups: {
     label: string;

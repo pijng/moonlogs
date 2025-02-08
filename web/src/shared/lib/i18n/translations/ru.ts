@@ -9,6 +9,7 @@ export const ru: Translation = {
     tags: "Теги",
     language: "Язык",
     theme: "Тема",
+    clipboard_mode: "Режим буфера обмена",
   },
   log_groups: {
     label: "Группы логов",

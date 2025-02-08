@@ -3,6 +3,7 @@ import { Change, diffWords } from "diff";
 import { Store, createEffect, createEvent, restore, sample } from "effector";
 import { h, list, node, remap, spec } from "forest";
 import { triggerTooltip } from "../general-tooltip";
+import { $shouldCopyToClipboard } from "@/shared/lib";
 
 type ComparePayload = { oldText: string | undefined; newText: string | undefined };
 
@@ -46,9 +47,10 @@ export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText
       });
 
       sample({
-        source: $before.map((parts) => parts.map((p) => p.value).join("")),
+        source: [$before.map((parts) => parts.map((p) => p.value).join("")), $shouldCopyToClipboard] as const,
         clock: beforeClicked,
-        filter: () => !Boolean(window.getSelection()?.toString()),
+        filter: ([, shouldCopy]) => !Boolean(window.getSelection()?.toString()) && shouldCopy,
+        fn: ([text]) => text,
         target: copyTextFx,
       });
 
@@ -58,7 +60,7 @@ export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText
           classList: {
             "whitespace-pre-wrap": true,
             "break-words": true,
-            "cursor-pointer": true,
+            "cursor-pointer": $shouldCopyToClipboard,
             "bg-red-200": before.map((p) => Boolean(p.removed)),
             "dark:bg-red-800": before.map((p) => Boolean(p.removed)),
           },
@@ -85,7 +87,7 @@ export const DiffText = ({ oldText, newText }: { oldText: Store<string>; newText
           classList: {
             "whitespace-pre-wrap": true,
             "break-words": true,
-            "cursor-pointer": true,
+            "cursor-pointer": $shouldCopyToClipboard,
             "bg-green-200": after.map((p) => Boolean(p.added)),
             "dark:bg-green-800": after.map((p) => Boolean(p.added)),
           },
