@@ -21,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	databases, err := persistence.InitDB(cfg)
+	databases, err := persistence.InitDB(cfg.DBAdapter, cfg.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +36,12 @@ func main() {
 
 	runCleanupTasks(context.Background(), usecaseInstances)
 
-	err = server.ListenAndServe(cfg, usecaseInstances)
+	err = server.ListenAndServe(
+		usecaseInstances,
+		server.WithPort(cfg.Port),
+		server.WithReadTimeout(cfg.ReadTimeout),
+		server.WithWriteTimeout(cfg.WriteTimeout),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

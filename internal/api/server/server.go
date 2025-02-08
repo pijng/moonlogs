@@ -6,7 +6,6 @@ import (
 	"log"
 	"moonlogs/internal/api/server/router"
 	"moonlogs/internal/api/server/session"
-	"moonlogs/internal/config"
 	"moonlogs/internal/usecases"
 	"net/http"
 	"os"
@@ -17,8 +16,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func ListenAndServe(cfg *config.Config, uc *usecases.UseCases) error {
-	server := createServer(cfg, uc)
+func ListenAndServe(uc *usecases.UseCases, opts ...SrvOpt) error {
+	server := createServer(uc, opts...)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -39,19 +38,42 @@ func ListenAndServe(cfg *config.Config, uc *usecases.UseCases) error {
 	}
 }
 
-func createServer(cfg *config.Config, uc *usecases.UseCases) *http.Server {
+type SrvOpt func(*http.Server)
+
+func WithPort(port int) SrvOpt {
+	return func(s *http.Server) {
+		s.Addr = fmt.Sprintf(":%v", port)
+	}
+}
+
+func WithReadTimeout(readTimeout time.Duration) SrvOpt {
+	return func(s *http.Server) {
+		s.ReadTimeout = readTimeout
+	}
+}
+
+func WithWriteTimeout(writeTimeout time.Duration) SrvOpt {
+	return func(s *http.Server) {
+		s.WriteTimeout = writeTimeout
+	}
+}
+
+func createServer(uc *usecases.UseCases, opts ...SrvOpt) *http.Server {
 	r := mux.NewRouter()
 
 	r.Use(corsMiddleware)
 
 	registerRouter(r, uc)
 
-	return &http.Server{
-		Addr:         fmt.Sprintf(":%v", cfg.Port),
-		Handler:      r,
-		ReadTimeout:  cfg.ReadTimeout,
-		WriteTimeout: cfg.WriteTimeout,
+	server := &http.Server{
+		Handler: r,
 	}
+
+	for _, opt := range opts {
+		opt(server)
+	}
+
+	return server
 }
 
 func registerRouter(r *mux.Router, uc *usecases.UseCases) {
