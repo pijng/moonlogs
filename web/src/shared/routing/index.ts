@@ -24,6 +24,9 @@ import {
   actionCreateRoute,
   actionEditRoute,
   actionsRoute,
+  alertingRulesRoute,
+  alertingRuleCreateRoute,
+  alertingRuleEditRoute,
 } from "./routes";
 export * from "./routes";
 export * from "./middlewares";
@@ -50,6 +53,9 @@ const ROUTES = [
   { path: "/tags", route: tagsRoute },
   { path: "/tags/create", route: tagCreateRoute },
   { path: "/tags/:id/edit", route: tagEditRoute },
+  { path: "/alerting_rules", route: alertingRulesRoute },
+  { path: "/alerting_rules/create", route: alertingRuleCreateRoute },
+  { path: "/alerting_rules/:id/edit", route: alertingRuleEditRoute },
   { path: "/actions", route: actionsRoute },
   { path: "/actions/create", route: actionCreateRoute },
   { path: "/actions/:id/edit", route: actionEditRoute },

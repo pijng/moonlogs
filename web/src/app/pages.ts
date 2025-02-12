@@ -1,6 +1,9 @@
 import { ActionCreatePage } from "@/pages/action-create";
 import { ActionEditPage } from "@/pages/action-edit";
 import { ActionsListPage } from "@/pages/actions-list";
+import { AlertingRuleCreatePage } from "@/pages/alerting-rule-create";
+import { AlertingRuleEditPage } from "@/pages/alerting-rule-edit";
+import { AlertingRulesListPage } from "@/pages/alerting-rule-list";
 import { ApiTokenCreatePage } from "@/pages/api-token-create";
 import { ApiTokenEditPage } from "@/pages/api-token-edit";
 import { ApiTokensListPage } from "@/pages/api-tokens-list";
@@ -56,6 +59,9 @@ export const Pages = () => {
       ActionsListPage();
       ActionCreatePage();
       ActionEditPage();
+      AlertingRulesListPage();
+      AlertingRuleCreatePage();
+      AlertingRuleEditPage();
     },
     layoutVisible: $layoutVisible,
   });

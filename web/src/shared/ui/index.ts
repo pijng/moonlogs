@@ -26,6 +26,7 @@ export {
   LayersIcon,
   LockOpenIcon,
   GridPlusIcon,
+  ChartLineUpIcon,
 } from "./icons";
 export { Input } from "./input";
 export { Layout, layoutClicked } from "./layout";
@@ -39,6 +40,7 @@ export { ErrorHint } from "./error-hint";
 export { UsersTable } from "./users-table";
 export { ApiTokensTable } from "./api-tokens-table";
 export { TagsTable } from "./tags-table";
+export { AlertingRulesTable } from "./alerting-rules-table";
 export { sidebarClosed } from "./sidebar";
 export { Popover } from "./popover";
 export { Label } from "./label";

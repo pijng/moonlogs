@@ -143,6 +143,83 @@ export type Translation = {
       delete: string;
     };
   };
+  alerting_rules: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      alert: string;
+      name: {
+        label: string;
+        hint: string;
+      };
+      description: {
+        label: string;
+        hint: string;
+      };
+      enabled: {
+        label: string;
+        hint: string;
+      };
+      severity: {
+        label: string;
+        hint: string;
+      };
+      interval: {
+        label: string;
+        hint: string;
+      };
+      condition: {
+        label: string;
+        hint: string;
+      };
+      threshold: {
+        label: string;
+        hint: string;
+      };
+      filters: {
+        label: string;
+        hint: string;
+        level: {
+          label: string;
+          hint: string;
+        };
+        schema_name: {
+          label: string;
+          hint: string;
+        };
+        schema_fields: {
+          label: string;
+          hint: string;
+        };
+        schema_kinds: {
+          label: string;
+          hint: string;
+        };
+      };
+      aggregation: {
+        label: string;
+        hint: string;
+        type: {
+          label: string;
+          hint: string;
+        };
+        group_by: {
+          label: string;
+          hint: string;
+        };
+        time_window: {
+          label: string;
+          hint: string;
+        };
+      };
+    };
+    alerts: {
+      delete: string;
+    };
+  };
   actions: {
     label: string;
     form: {
@@ -243,6 +320,14 @@ export type Translation = {
     tags: {
       name: string;
       view_order: string;
+      actions: string;
+    };
+    alerting_rules: {
+      name: string;
+      enabled: string;
+      severity: string;
+      interval: string;
+      threshold: string;
       actions: string;
     };
     actions: {

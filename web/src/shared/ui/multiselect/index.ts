@@ -2,12 +2,12 @@ import { Event, Store, combine, createEvent, createStore, sample } from "effecto
 import { DOMElement, h, list, node, remap, spec } from "forest";
 import { condition } from "patronum";
 
-interface SelectItem {
-  id: any;
+interface SelectItem<T extends string | number> {
+  id: T;
   name: string;
 }
 
-export const Multiselect = ({
+export const Multiselect = <T extends string | number>({
   text,
   options,
   selectedOptions,
@@ -16,8 +16,8 @@ export const Multiselect = ({
   optionUnchecked,
 }: {
   text: Store<string> | string;
-  options: Store<SelectItem[]>;
-  selectedOptions?: Store<number[]>;
+  options: Store<SelectItem<T>[]>;
+  selectedOptions?: Store<T[]>;
   hint: Store<string>;
   optionChecked: Event<any>;
   optionUnchecked: Event<any>;
@@ -41,7 +41,7 @@ export const Multiselect = ({
     target: $localVisible,
   });
 
-  const localSelectedOptions = selectedOptions || createStore<number[]>([]);
+  const localSelectedOptions = selectedOptions || createStore<T[]>([]);
 
   h("div", () => {
     spec({

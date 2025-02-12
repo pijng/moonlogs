@@ -73,7 +73,7 @@ export const ru: Translation = {
     filters: {
       query: {
         label: "Фильтры",
-        kind: "Вид",
+        kind: "Типы",
       },
       time: {
         label: "Время",
@@ -254,6 +254,14 @@ export const ru: Translation = {
       disabled: "Отключен",
       actions: "Действия",
     },
+    alerting_rules: {
+      name: "Название",
+      enabled: "Активен",
+      severity: "Важность",
+      interval: "Интервал",
+      threshold: "Порог",
+      actions: "Действия",
+    },
   },
   pagination: {
     first_page: "1",
@@ -275,5 +283,82 @@ export const ru: Translation = {
     forbidden: "У вас нет доступа к этому ресурсу",
     to_home: "Перейти на главную страницу",
     empty_search_result: "По вашему запросу логи не найдены. Пожалуйста, cкорректируйте фильтры или попробуйте еще раз позже",
+  },
+  alerting_rules: {
+    label: "Правила алертинга",
+    form: {
+      actions: {
+        create: "Создать правило алертинга",
+        edit: "Изменить правило алертинга",
+      },
+      alert: "Условия алерта",
+      name: {
+        label: "Название",
+        hint: "",
+      },
+      description: {
+        label: "Описание",
+        hint: "",
+      },
+      enabled: {
+        label: "Активен",
+        hint: "",
+      },
+      severity: {
+        label: "Важность",
+        hint: "",
+      },
+      interval: {
+        label: "Интервал",
+        hint: "",
+      },
+      condition: {
+        label: "Условие",
+        hint: "",
+      },
+      threshold: {
+        label: "Порог",
+        hint: "",
+      },
+      filters: {
+        label: "Фильтры",
+        hint: "",
+        level: {
+          label: "Уровень",
+          hint: "",
+        },
+        schema_name: {
+          label: "Схема",
+          hint: "",
+        },
+        schema_fields: {
+          label: "Поля схемы",
+          hint: "",
+        },
+        schema_kinds: {
+          label: "Типы схемы",
+          hint: "",
+        },
+      },
+      aggregation: {
+        label: "Агрегация",
+        hint: "",
+        type: {
+          label: "Тип",
+          hint: "",
+        },
+        group_by: {
+          label: "Группировать по",
+          hint: "",
+        },
+        time_window: {
+          label: "Временное окно",
+          hint: "",
+        },
+      },
+    },
+    alerts: {
+      delete: "Вы уверены, что хотите удалить это правило алертинга?",
+    },
   },
 };

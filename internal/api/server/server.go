@@ -93,6 +93,7 @@ func registerRouter(r *mux.Router, uc *usecases.UseCases) {
 	router.RegisterApiTokenRouter(cfg)
 	router.RegisterTagRouter(cfg)
 	router.RegisterActionRouter(cfg)
+	router.RegisterAlertingRuleRouter(cfg)
 	router.RegisterSessionRouter(cfg)
 
 	router.RegisterWebRouter(r)

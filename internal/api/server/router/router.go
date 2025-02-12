@@ -83,6 +83,19 @@ func RegisterTagRouter(cfg *SubRouterConfig) {
 	tagRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(tagController.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
+func RegisterAlertingRuleRouter(cfg *SubRouterConfig) {
+	ruleRouter := cfg.R.PathPrefix("/api/alerting_rules").Subrouter()
+	ruleRouter.Use(cfg.MW.SessionMiddleware)
+
+	ruleController := controllers.NewAlertingRuleController(cfg.UC.AlertingRuleUseCase)
+
+	ruleRouter.HandleFunc("", cfg.MW.RoleMiddleware(ruleController.GetAllRules, entities.AdminRole)).Methods(http.MethodGet)
+	ruleRouter.HandleFunc("", cfg.MW.RoleMiddleware(ruleController.CreateRule, entities.AdminRole)).Methods(http.MethodPost)
+	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.GetRuleByID, entities.AdminRole)).Methods(http.MethodGet)
+	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.UpdateRuleByID, entities.AdminRole)).Methods(http.MethodPut)
+	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.DeleteRuleByID, entities.AdminRole)).Methods(http.MethodDelete)
+}
+
 func RegisterActionRouter(cfg *SubRouterConfig) {
 	actionRouter := cfg.R.PathPrefix("/api/actions").Subrouter()
 	actionRouter.Use(cfg.MW.SessionMiddleware)

@@ -239,6 +239,14 @@ export const en: Translation = {
       actions: "Actions",
       view_order: "View order",
     },
+    alerting_rules: {
+      name: "Name",
+      enabled: "Enabled",
+      severity: "Severity",
+      interval: "Interval",
+      threshold: "Threshold",
+      actions: "Actions",
+    },
     api_tokens: {
       name: "Name",
       token: "Token",
@@ -275,5 +283,82 @@ export const en: Translation = {
     forbidden: "You do not have permission to access this resource",
     to_home: "Go to Home page",
     empty_search_result: "No logs were found matching your search. Please adjust the filters or try again later",
+  },
+  alerting_rules: {
+    label: "Alerting rules",
+    form: {
+      actions: {
+        create: "Create Alerting Rule",
+        edit: "Edit Alerting Rule",
+      },
+      alert: "Alert conditions",
+      name: {
+        label: "Name",
+        hint: "",
+      },
+      description: {
+        label: "Description",
+        hint: "",
+      },
+      enabled: {
+        label: "Enabled",
+        hint: "",
+      },
+      severity: {
+        label: "Severity",
+        hint: "",
+      },
+      interval: {
+        label: "Interval",
+        hint: "",
+      },
+      condition: {
+        label: "Condition",
+        hint: "",
+      },
+      threshold: {
+        label: "Threshold",
+        hint: "",
+      },
+      filters: {
+        label: "Filters",
+        hint: "",
+        level: {
+          label: "Level",
+          hint: "",
+        },
+        schema_name: {
+          label: "Schema",
+          hint: "",
+        },
+        schema_fields: {
+          label: "Schema fields",
+          hint: "",
+        },
+        schema_kinds: {
+          label: "Schema kinds",
+          hint: "",
+        },
+      },
+      aggregation: {
+        label: "Aggregation",
+        hint: "",
+        type: {
+          label: "Type",
+          hint: "",
+        },
+        group_by: {
+          label: "Group by",
+          hint: "",
+        },
+        time_window: {
+          label: "Time window",
+          hint: "",
+        },
+      },
+    },
+    alerts: {
+      delete: "Are you sure you want to delete this Alerting Rule?",
+    },
   },
 };

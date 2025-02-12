@@ -13,6 +13,18 @@ export {
 } from "./schemas";
 export { type Tag, type TagToCreate, type TagToUpdate, getTags, getTag, editTag, createTag, deleteTag } from "./tags";
 export {
+  type AlertingRule,
+  type AlertingCondition,
+  type AlertingSeverity,
+  type AlertingRuleToCreate,
+  type AlertingRuleToUpdate,
+  getRules,
+  getRule,
+  editRule,
+  createRule,
+  deleteRule,
+} from "./alerting-rule";
+export {
   type Action,
   type ActionToCreate,
   type ActionToUpdate,

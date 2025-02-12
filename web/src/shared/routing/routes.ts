@@ -23,3 +23,6 @@ export const tagEditRoute = createRoute<{ id: number }>();
 export const actionsRoute = createRoute();
 export const actionCreateRoute = createRoute();
 export const actionEditRoute = createRoute<{ id: number }>();
+export const alertingRulesRoute = createRoute();
+export const alertingRuleCreateRoute = createRoute();
+export const alertingRuleEditRoute = createRoute<{ id: number }>();
