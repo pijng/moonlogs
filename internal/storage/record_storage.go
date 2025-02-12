@@ -15,4 +15,5 @@ type RecordStorage interface {
 	GetRecordByID(ctx context.Context, id int) (*entities.Record, error)
 	GetRecordsByGroupHash(ctx context.Context, schemaName string, groupHash string) ([]*entities.Record, error)
 	GetRecordsByQuery(ctx context.Context, record entities.Record, from *time.Time, to *time.Time, limit int, offset int) ([]*entities.Record, int, error)
+	AggregateRecords(ctx context.Context, filter entities.RecordFilter, aggregation entities.RecordAggregation) ([]*entities.AggregationGroup, error)
 }

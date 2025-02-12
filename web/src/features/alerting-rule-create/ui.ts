@@ -181,7 +181,9 @@ export const NewAlertingRuleForm = () => {
         hint: i18n("alerting_rules.form.aggregation.group_by.hint"),
         selectedOptions: ruleForm.fields.aggregation_group_by.$value,
         options: ruleForm.fields.filter_schema_fields.$value.map((fields) => {
-          return fields.map((f) => ({ name: f, id: f }));
+          const defFields = [{ name: "schema_name", id: "schema_name" }];
+          const schemasFields = fields.map((f) => ({ name: f, id: f }));
+          return defFields.concat(schemasFields);
         }),
         optionChecked: events.aggregationGroupByChecked,
         optionUnchecked: events.aggregationGroupByUnchecked,

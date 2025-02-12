@@ -16,6 +16,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const defaultSchemaGroupField = "schema_name"
+
 type RecordStorage struct {
 	db         *mongo.Database
 	collection *mongo.Collection
@@ -146,6 +148,93 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	}
 
 	return records, int(totalCount), nil
+}
+
+func (s *RecordStorage) AggregateRecords(ctx context.Context, recordsFilter entities.RecordFilter, aggregation entities.RecordAggregation) ([]*entities.AggregationGroup, error) {
+	filter := bson.M{}
+
+	if len(recordsFilter.SchemaIDs) > 0 {
+		filter["schema_id"] = bson.M{
+			"$in": recordsFilter.SchemaIDs,
+		}
+	}
+
+	if len(recordsFilter.SchemaKinds) > 0 {
+		filter["kind"] = bson.M{
+			"$in": recordsFilter.SchemaKinds,
+		}
+	}
+
+	if len(recordsFilter.Level) > 0 {
+		filter["level"] = recordsFilter.Level
+	}
+
+	filter["created_at"] = bson.M{"$gte": qrx.From(&recordsFilter.From), "$lte": qrx.To(&recordsFilter.To)}
+
+	if len(recordsFilter.SchemaFields) > 0 {
+		for _, field := range recordsFilter.SchemaFields {
+			key := "query." + field
+			filter[key] = bson.M{"$exists": true}
+		}
+	}
+
+	idGroups := bson.M{}
+	for _, field := range aggregation.GroupBy {
+		var val string
+
+		// special case for default schema_name grouping
+		if field == defaultSchemaGroupField {
+			val = field
+		} else {
+			val = "query." + field
+		}
+
+		idGroups[field] = "$" + val
+	}
+
+	pipeline := mongo.Pipeline{
+		{
+			{Key: "$match", Value: filter},
+		},
+		{
+			{
+				Key: "$group",
+				Value: bson.M{
+					"_id":   idGroups,
+					"count": bson.M{"$sum": 1},
+				},
+			},
+		},
+	}
+
+	cursor, err := s.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, fmt.Errorf("failed aggregating records: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, fmt.Errorf("failed decoding aggregated records: %w", err)
+	}
+
+	aggregationGroups := make([]*entities.AggregationGroup, 0)
+	for _, result := range results {
+		keys := make(entities.JSONMap[any])
+		if id, ok := result["_id"].(bson.M); ok {
+			for key, value := range id {
+				if strVal, isString := value.(string); isString {
+					keys[key] = strVal
+				} else {
+					keys[key] = fmt.Sprintf("%v", value)
+				}
+			}
+		}
+
+		aggregationGroups = append(aggregationGroups, &entities.AggregationGroup{Keys: keys, Count: result["count"].(int32)})
+	}
+
+	return aggregationGroups, nil
 }
 
 func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int) ([]*entities.Record, error) {

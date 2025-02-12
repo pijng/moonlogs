@@ -31,6 +31,6 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	_, err = w.Write(data)
 	if err != nil {
-		log.Printf("Write failed: %v", err)
+		log.Printf("Write failed: %v\n", err)
 	}
 }

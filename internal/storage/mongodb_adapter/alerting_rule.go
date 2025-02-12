@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const collectionName = "alerting_rules"
+const collectionAlertingRule = "alerting_rules"
 
 type AlertingRuleStorage struct {
 	db         *mongo.Database
@@ -22,12 +22,12 @@ type AlertingRuleStorage struct {
 func NewAlertingRuleStorage(db *mongo.Database) *AlertingRuleStorage {
 	return &AlertingRuleStorage{
 		db:         db,
-		collection: db.Collection(collectionName),
+		collection: db.Collection(collectionAlertingRule),
 	}
 }
 
 func (s *AlertingRuleStorage) CreateRule(ctx context.Context, rule entities.AlertingRule) (*entities.AlertingRule, error) {
-	nextValue, err := getNextSequenceValue(ctx, s.db, collectionName)
+	nextValue, err := getNextSequenceValue(ctx, s.db, collectionAlertingRule)
 	if err != nil {
 		return nil, fmt.Errorf("getting next sequence value: %w", err)
 	}

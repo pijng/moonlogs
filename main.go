@@ -7,6 +7,7 @@ import (
 	"moonlogs/internal/api/server"
 	"moonlogs/internal/config"
 	"moonlogs/internal/persistence"
+	"moonlogs/internal/services"
 	"moonlogs/internal/tasks"
 	"moonlogs/internal/usecases"
 	"time"
@@ -34,7 +35,16 @@ func main() {
 	storageInstances := persistence.InitStorages(cfg.DBAdapter, databases)
 	usecaseInstances := usecases.InitUsecases(storageInstances)
 
-	runCleanupTasks(context.Background(), usecaseInstances)
+	bgCtx := context.Background()
+
+	alertingRulesService := services.NewAlertingRulesService(bgCtx,
+		usecaseInstances.AlertingRuleUseCase,
+		usecaseInstances.RecordUseCase,
+		usecaseInstances.IncidentUseCase,
+	)
+
+	runCleanupTasks(bgCtx, usecaseInstances)
+	runSchedTasks(bgCtx, alertingRulesService)
 
 	err = server.ListenAndServe(
 		usecaseInstances,
@@ -49,4 +59,9 @@ func main() {
 
 func runCleanupTasks(ctx context.Context, uc *usecases.UseCases) {
 	go tasks.RunRecordsCleanupTask(ctx, 1*time.Hour, uc)
+	go tasks.RunIncidentsCleanupTask(ctx, 1*time.Second, uc)
+}
+
+func runSchedTasks(ctx context.Context, aruc *services.AlertingRulesService) {
+	go tasks.RunAlertingRulesSchedTask(ctx, aruc)
 }

@@ -67,6 +67,7 @@ export const ruleForm = createForm<AlertingRuleToCreate>({
     },
     aggregation_group_by: {
       init: [],
+      rules: [rules.required()],
     },
     aggregation_time_window: {
       init: "5m",
@@ -140,7 +141,11 @@ sample({
 sample({
   source: ruleForm.fields.aggregation_group_by.$value,
   clock: aggregationGroupByChecked,
-  fn: (groups, groupBy) => [...groups, groupBy],
+  fn: (groups, groupBy) => {
+    console.log(groups);
+    console.log([...groups, groupBy]);
+    return [...groups, groupBy];
+  },
   target: ruleForm.fields.aggregation_group_by.onChange,
 });
 

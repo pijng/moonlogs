@@ -95,3 +95,7 @@ func (uc *RecordUseCase) GetRecordsByQuery(ctx context.Context, record entities.
 func (uc *RecordUseCase) GetRecordsByGroupHash(ctx context.Context, schemaName string, groupHash string) ([]*entities.Record, error) {
 	return uc.recordStorage.GetRecordsByGroupHash(ctx, schemaName, groupHash)
 }
+
+func (uc *RecordUseCase) AggregateRecords(ctx context.Context, filter entities.RecordFilter, aggregation entities.RecordAggregation) ([]*entities.AggregationGroup, error) {
+	return uc.recordStorage.AggregateRecords(ctx, filter, aggregation)
+}

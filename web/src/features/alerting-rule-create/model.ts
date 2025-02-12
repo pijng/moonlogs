@@ -63,6 +63,7 @@ export const ruleForm = createForm<AlertingRuleToCreate>({
     },
     aggregation_group_by: {
       init: [],
+      rules: [rules.required()],
     },
     aggregation_time_window: {
       init: "5m",
@@ -107,7 +108,7 @@ sample({
 sample({
   source: ruleForm.fields.filter_schema_fields.$value,
   clock: schemaFieldChecked,
-  fn: (fields, field) => [...field, field],
+  fn: (fields, field) => [...fields, field],
   target: ruleForm.fields.filter_schema_fields.onChange,
 });
 

@@ -30,6 +30,28 @@ type Duration struct {
 	time.Duration
 }
 
+func (d Duration) Value() (driver.Value, error) {
+	return d.Duration.Nanoseconds(), nil
+}
+
+func (d *Duration) Scan(value interface{}) error {
+	if value == nil {
+		d.Duration = 0
+		return nil
+	}
+
+	switch v := value.(type) {
+	case int64:
+		d.Duration = time.Duration(v)
+		return nil
+	case float64:
+		d.Duration = time.Duration(v)
+		return nil
+	default:
+		return fmt.Errorf("cannot scan type %T into Duration", value)
+	}
+}
+
 func (d *Duration) UnmarshalJSON(b []byte) (err error) {
 	if b[0] == '"' {
 		sd := string(b[1 : len(b)-1])
@@ -62,6 +84,7 @@ type StringArray []string
 
 func (sa *StringArray) Scan(value interface{}) error {
 	if value == nil {
+		*sa = make(StringArray, 0)
 		return nil
 	}
 

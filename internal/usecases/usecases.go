@@ -10,6 +10,7 @@ type UseCases struct {
 	TagUseCase          *TagUseCase
 	UserUseCase         *UserUseCase
 	AlertingRuleUseCase *AlertingRuleUseCase
+	IncidentUseCase     *IncidentUseCase
 }
 
 func InitUsecases(storages persistence.Storages) *UseCases {
@@ -21,5 +22,6 @@ func InitUsecases(storages persistence.Storages) *UseCases {
 		TagUseCase:          NewTagUseCase(storages.TagStorage),
 		UserUseCase:         NewUserUseCase(storages.UserStorage),
 		AlertingRuleUseCase: NewAlertingRuleUseCase(storages.AlertingRuleStorage),
+		IncidentUseCase:     NewIncidentUseCase(storages.IncidentStorage),
 	}
 }

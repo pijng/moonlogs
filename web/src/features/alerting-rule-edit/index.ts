@@ -1,1 +1,1 @@
-export { NewAlertingRuleForm } from "./ui";
+export { EditAlertingRuleForm } from "./ui";

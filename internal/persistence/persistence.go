@@ -57,6 +57,7 @@ type Storages struct {
 	TagStorage          storage.TagStorage
 	UserStorage         storage.UserStorage
 	AlertingRuleStorage storage.AlertingRuleStorage
+	IncidentStorage     storage.IncidentStorage
 }
 
 func InitStorages(storageType string, databases *Databases) Storages {
@@ -72,6 +73,7 @@ func InitStorages(storageType string, databases *Databases) Storages {
 			TagStorage:          mongodb_adapter.NewTagStorage(mongoDB),
 			UserStorage:         mongodb_adapter.NewUserStorage(mongoDB),
 			AlertingRuleStorage: mongodb_adapter.NewAlertingRuleStorage(mongoDB),
+			IncidentStorage:     mongodb_adapter.NewIncidentStorage(mongoDB),
 		}
 	default:
 		return Storages{
@@ -82,6 +84,7 @@ func InitStorages(storageType string, databases *Databases) Storages {
 			TagStorage:          sqlite_adapter.NewTagStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
 			UserStorage:         sqlite_adapter.NewUserStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
 			AlertingRuleStorage: sqlite_adapter.NewAlertingRuleStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			IncidentStorage:     sqlite_adapter.NewIncidentStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
 		}
 	}
 }
