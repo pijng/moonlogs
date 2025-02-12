@@ -16,6 +16,7 @@ export {
   type AlertingRule,
   type AlertingCondition,
   type AlertingSeverity,
+  type AggregationType,
   type AlertingRuleToCreate,
   type AlertingRuleToUpdate,
   getRules,

@@ -3,9 +3,8 @@ import { h, spec } from "forest";
 import { $creationError, events, ruleForm } from "./model";
 import { i18n } from "@/shared/lib";
 import { createStore } from "effector";
-import { AlertingCondition, AlertingSeverity, Level } from "@/shared/api";
+import { AggregationType, AlertingCondition, AlertingSeverity, Level } from "@/shared/api";
 import { schemaModel } from "@/entities/schema";
-import { AggregationType } from "@/shared/api/alerting-rule";
 
 export const NewAlertingRuleForm = () => {
   h("form", () => {

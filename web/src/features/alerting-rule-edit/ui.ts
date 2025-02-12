@@ -5,7 +5,7 @@ import { i18n } from "@/shared/lib";
 import { createStore } from "effector";
 import { AlertingCondition, AlertingSeverity, Level } from "@/shared/api";
 import { schemaModel } from "@/entities/schema";
-import { AggregationType } from "@/shared/api/alerting-rule";
+import { AggregationType } from "@/shared/api";
 
 export const EditAlertingRuleForm = () => {
   h("form", () => {
