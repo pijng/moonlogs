@@ -19,6 +19,7 @@ export const $currentNotificationProfile = createStore<NotificationProfile>({
   name: "",
   description: "",
   enabled: true,
+  silence_for: "1m",
   rule_ids: [],
   url: "",
   method: "POST",

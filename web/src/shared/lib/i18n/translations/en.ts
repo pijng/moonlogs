@@ -291,134 +291,139 @@ export const en: Translation = {
     empty_search_result: "No logs were found matching your search. Please adjust the filters or try again later",
   },
   alerting_rules: {
-    label: "Alerting rules",
+    label: "Alerting Rules",
     form: {
       actions: {
         create: "Create Alerting Rule",
         edit: "Edit Alerting Rule",
       },
-      alert: "Alert conditions",
+      alert: "Alert Conditions",
       name: {
         label: "Name",
-        hint: "",
+        hint: "A unique name for the alert",
       },
       description: {
         label: "Description",
-        hint: "",
+        hint: "A short description of the purpose of this alert",
       },
       enabled: {
         label: "Enabled",
-        hint: "",
+        hint: "Enable or disable the alert",
       },
       severity: {
         label: "Severity",
-        hint: "",
+        hint: "Defines the priority level of the alert",
       },
       interval: {
         label: "Interval",
-        hint: "",
+        hint: "The frequency at which alert conditions are checked. Specified in duration format, e.g., '30s' (30 seconds), '5m' (5 minutes), '1h' (1 hour)",
       },
       condition: {
         label: "Condition",
-        hint: "",
+        hint: "A logical expression that determines when the alert should trigger",
       },
       threshold: {
         label: "Threshold",
-        hint: "",
+        hint: "A value against which actual alert metrics are compared",
       },
       filters: {
         label: "Filters",
-        hint: "",
+        hint: "Additional parameters to refine alert conditions",
         level: {
           label: "Level",
-          hint: "",
+          hint: "Filter by log level",
         },
         schema_name: {
-          label: "Schema",
-          hint: "",
+          label: "Schemas",
+          hint: "Filter by log schemas. Leave empty to analyze all schemas",
         },
         schema_fields: {
-          label: "Schema fields",
-          hint: "",
+          label: "Schema Fields",
+          hint: "Filter by schema fields. Checks only for the presence of a specific field, regardless of its value",
         },
         schema_kinds: {
-          label: "Schema kinds",
-          hint: "",
+          label: "Schema Types",
+          hint: "Filter by schema types. Checks only for the presence of specific types in schemas. Leave empty to analyze all log schema types",
         },
       },
       aggregation: {
         label: "Aggregation",
-        hint: "",
+        hint: "Settings for grouping and counting events",
         type: {
           label: "Type",
-          hint: "",
+          hint: "Type of data aggregation",
         },
         group_by: {
-          label: "Group by",
-          hint: "",
+          label: "Group By",
+          hint: "Specify the fields by which events will be grouped",
         },
         time_window: {
-          label: "Time window",
-          hint: "",
+          label: "Time Window",
+          hint: "Specify the time period for data aggregation. Specified in duration format, e.g., '30s' (30 seconds), '5m' (5 minutes), '1h' (1 hour)",
         },
       },
     },
     alerts: {
-      delete: "Are you sure you want to delete this Alerting Rule?",
+      delete: "Are you sure you want to delete this alerting rule?",
     },
   },
   notification_profiles: {
-    label: "Alertmanager",
+    label: "Alert Manager",
     form: {
       actions: {
-        create: "Create notification profile",
-        edit: "Edit notification profile",
+        create: "Create Notification Profile",
+        edit: "Edit Notification Profile",
       },
       name: {
         label: "Name",
-        hint: "",
+        hint: "A unique name for the notification profile",
       },
       description: {
         label: "Description",
-        hint: "",
+        hint: "A short description to clarify the purpose of this profile",
       },
       rule_name: {
-        label: "Alerting Rule",
-        hint: "",
+        label: "Alerting Rules",
+        hint: "Select the alerting rules associated with this profile",
       },
       enabled: {
         label: "Enabled",
-        hint: "",
+        hint: "Enable or disable the notification profile",
+      },
+      silence_for: {
+        label: "Silence For",
+        hint: "The period during which notifications from this profile will not be sent after it has already triggered (e.g., '5m', '1h')",
       },
       url: {
-        label: "URL",
-        hint: "",
+        label: "Route",
+        hint: "The URL where notifications will be sent",
       },
       method: {
         label: "Method",
-        hint: "",
+        hint: "HTTP request method",
       },
       headers: {
         label: "Headers",
-        hint: "",
+        hint: "Additional headers that will be included in the HTTP request",
         fields: {
           key: {
             label: "Key",
-            hint: "",
+            hint: "Header name (e.g., 'Authorization')",
           },
           value: {
             label: "Value",
-            hint: "",
+            hint: "Header value (e.g., 'Bearer token')",
           },
         },
       },
       payload: {
-        label: "Тело запроса",
-        hint: "",
+        label: "Request Body",
+        hint: "The format of the request body that will be sent in the notification",
+        variables: "You can use the following variables in the request body",
       },
     },
     alerts: {
-      delete: "Are you sure you want to delete this Notification Profile?",
+      delete: "Are you sure you want to delete this notification profile?",
     },
   },
 };

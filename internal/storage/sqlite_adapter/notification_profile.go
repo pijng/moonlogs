@@ -29,12 +29,12 @@ func (s *NotificationProfileStorage) CreateNotificationProfile(ctx context.Conte
 	}
 
 	query := `INSERT INTO notification_profiles
-		(name, description, rule_ids, enabled,
+		(name, description, rule_ids, enabled, silence_for,
 		url, method, headers, payload
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
 
 	result, err := tx.ExecContext(ctx, query,
-		profile.Name, profile.Description, profile.RuleIDs, profile.Enabled,
+		profile.Name, profile.Description, profile.RuleIDs, profile.Enabled, profile.SilenceFor,
 		profile.URL, profile.Method, profile.Headers, profile.Payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed inserting notification profile: %w", err)
@@ -59,7 +59,8 @@ func (s *NotificationProfileStorage) CreateNotificationProfile(ctx context.Conte
 }
 
 func (s *NotificationProfileStorage) GetNotificationProfileByID(ctx context.Context, id int) (*entities.NotificationProfile, error) {
-	query := "SELECT * FROM notification_profiles WHERE id=? LIMIT 1;"
+	query := `SELECT id, name, description, rule_ids, enabled, silence_for,
+		url, method, headers, payload FROM notification_profiles WHERE id=? LIMIT 1;`
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -69,7 +70,7 @@ func (s *NotificationProfileStorage) GetNotificationProfileByID(ctx context.Cont
 	row := stmt.QueryRowContext(ctx, id)
 
 	var np entities.NotificationProfile
-	err = row.Scan(&np.ID, &np.Name, &np.Description, &np.RuleIDs, &np.Enabled, &np.URL, &np.Method, &np.Headers, &np.Payload)
+	err = row.Scan(&np.ID, &np.Name, &np.Description, &np.RuleIDs, &np.Enabled, &np.SilenceFor, &np.URL, &np.Method, &np.Headers, &np.Payload)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -109,9 +110,9 @@ func (s *NotificationProfileStorage) UpdateNotificationProfileByID(ctx context.C
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
 
-	query := "UPDATE notification_profiles SET name=?, description=?, rule_ids=?, enabled=?, url=?, method=?, headers=?, payload=? WHERE id=?;"
+	query := "UPDATE notification_profiles SET name=?, description=?, rule_ids=?, enabled=?, silence_for=?, url=?, method=?, headers=?, payload=? WHERE id=?;"
 
-	_, err = tx.ExecContext(ctx, query, profile.Name, profile.Description, profile.RuleIDs, profile.Enabled, profile.URL, profile.Method, profile.Headers, profile.Payload, id)
+	_, err = tx.ExecContext(ctx, query, profile.Name, profile.Description, profile.RuleIDs, profile.Enabled, profile.SilenceFor, profile.URL, profile.Method, profile.Headers, profile.Payload, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating notification profile: %w", err)
 	}
@@ -125,7 +126,8 @@ func (s *NotificationProfileStorage) UpdateNotificationProfileByID(ctx context.C
 }
 
 func (s *NotificationProfileStorage) GetAllNotificationProfiles(ctx context.Context) ([]*entities.NotificationProfile, error) {
-	query := "SELECT * FROM notification_profiles ORDER BY id DESC;"
+	query := `SELECT id, name, description, rule_ids, enabled, silence_for,
+		url, method, headers, payload FROM notification_profiles FROM notification_profiles ORDER BY id DESC;`
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -144,7 +146,7 @@ func (s *NotificationProfileStorage) GetAllNotificationProfiles(ctx context.Cont
 		var np entities.NotificationProfile
 
 		err = rows.Scan(
-			&np.ID, &np.Name, &np.Description, &np.RuleIDs, &np.Enabled, &np.URL, &np.Method, &np.Headers, &np.Payload)
+			&np.ID, &np.Name, &np.Description, &np.RuleIDs, &np.Enabled, &np.SilenceFor, &np.URL, &np.Method, &np.Headers, &np.Payload)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning notification profile: %w", err)
 		}

@@ -1,9 +1,9 @@
-import { Button, ErrorHint, Input, Label, Multiselect, PlusIcon, Select, TextArea, TrashIcon } from "@/shared/ui";
+import { Button, ErrorHint, Input, Label, Multiselect, PlusIcon, Select, Text, TextArea, TrashIcon } from "@/shared/ui";
 import { h, list, remap, spec } from "forest";
 import { $creationError, events, notificationProfileForm } from "./model";
 import { i18n, trigger } from "@/shared/lib";
 import { NotificationProfileToCreate } from "@/shared/api";
-import { createEvent, createStore, sample } from "effector";
+import { combine, createEvent, createStore, sample } from "effector";
 import { alertingRuleModel } from "@/entities/alerting-rule";
 
 export const NewNotificationProfileForm = () => {
@@ -45,6 +45,15 @@ export const NewNotificationProfileForm = () => {
       value: notificationProfileForm.fields.enabled.$value,
       inputChanged: notificationProfileForm.fields.enabled.changed,
       errorText: notificationProfileForm.fields.enabled.$errorText,
+    });
+
+    Input({
+      type: "text",
+      label: i18n("notification_profiles.form.silence_for.label"),
+      hint: i18n("notification_profiles.form.silence_for.label"),
+      value: notificationProfileForm.fields.silence_for.$value,
+      inputChanged: notificationProfileForm.fields.silence_for.changed,
+      errorText: notificationProfileForm.fields.silence_for.$errorText,
     });
 
     Input({
@@ -148,6 +157,19 @@ export const NewNotificationProfileForm = () => {
           });
         });
       });
+    });
+
+    h("div", () => {
+      spec({ classList: ["mt-6"] });
+
+      const varsText = ["{{.RuleName}}", "{{.Count}}", "{{.Keys}}"].join(", ");
+      const $label = combine(
+        i18n("notification_profiles.form.payload.variables"),
+        varsText,
+        (label, attrs) => `${label}: ${attrs}`,
+      );
+
+      Text({ text: $label });
     });
 
     TextArea({

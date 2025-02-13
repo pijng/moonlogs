@@ -13,6 +13,7 @@ export type NotificationProfile = {
   rule_ids: number[];
   description: string;
   enabled: boolean;
+  silence_for: string;
   url: string;
   method: NotificationMethod;
   headers: NotificationHeader[];
@@ -24,6 +25,7 @@ export type NotificationProfileToCreate = {
   description: string;
   rule_ids: number[];
   enabled: boolean;
+  silence_for: string;
   url: string;
   method: NotificationMethod;
   headers: NotificationHeader[];
@@ -36,6 +38,7 @@ export type NotificationProfileToUpdate = {
   rule_ids: number[];
   description: string;
   enabled: boolean;
+  silence_for: string;
   url: string;
   method: NotificationMethod;
   headers: NotificationHeader[];

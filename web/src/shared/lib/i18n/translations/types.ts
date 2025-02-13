@@ -243,6 +243,10 @@ export type Translation = {
         label: string;
         hint: string;
       };
+      silence_for: {
+        label: string;
+        hint: string;
+      };
       url: {
         label: string;
         hint: string;
@@ -268,6 +272,7 @@ export type Translation = {
       payload: {
         label: string;
         hint: string;
+        variables: string;
       };
     };
     alerts: {

@@ -84,6 +84,7 @@ func (s *NotificationProfileStorage) UpdateNotificationProfileByID(ctx context.C
 		"description": profile.Description,
 		"rule_ids":    profile.RuleIDs,
 		"enabled":     profile.Enabled,
+		"silence_for": profile.SilenceFor,
 		"url":         profile.URL,
 		"method":      profile.Method,
 		"headers":     profile.Headers,

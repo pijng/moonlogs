@@ -37,6 +37,10 @@ export const notificationProfileForm = createForm<Omit<NotificationProfileToUpda
       init: true,
       rules: [rules.required()],
     },
+    silence_for: {
+      init: "1m",
+      rules: [rules.required()],
+    },
     url: {
       init: "",
       rules: [rules.required()],

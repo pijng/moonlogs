@@ -43,8 +43,13 @@ func main() {
 		usecaseInstances.IncidentUseCase,
 	)
 
+	alertManagerService := services.NewAlertManagerService(bgCtx,
+		usecaseInstances.NotificationProfileUseCase,
+		usecaseInstances.IncidentUseCase,
+	)
+
 	runCleanupTasks(bgCtx, usecaseInstances)
-	runSchedTasks(bgCtx, alertingRulesService)
+	runSchedTasks(bgCtx, alertingRulesService, alertManagerService)
 
 	err = server.ListenAndServe(
 		usecaseInstances,
@@ -62,6 +67,7 @@ func runCleanupTasks(ctx context.Context, uc *usecases.UseCases) {
 	go tasks.RunIncidentsCleanupTask(ctx, 1*time.Second, uc)
 }
 
-func runSchedTasks(ctx context.Context, aruc *services.AlertingRulesService) {
-	go tasks.RunAlertingRulesSchedTask(ctx, aruc)
+func runSchedTasks(ctx context.Context, ars *services.AlertingRulesService, ams *services.AlertManagerService) {
+	go tasks.RunAlertingRulesSchedTask(ctx, ars)
+	go tasks.RunAlertManagerSchedTask(ctx, ams)
 }

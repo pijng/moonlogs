@@ -17,7 +17,7 @@ export const $currentRule = createStore<AlertingRule>({
   description: "",
   enabled: false,
   severity: "Error",
-  interval: "",
+  interval: "1m",
   threshold: 0,
   condition: ">",
   filter_level: "Error",

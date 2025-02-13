@@ -1,8 +1,10 @@
 package usecases
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"html/template"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/storage"
 )
@@ -32,6 +34,10 @@ func (nc *NotificationProfileUseCase) CreateNotificationProfile(ctx context.Cont
 		return nil, fmt.Errorf("failed creating notification profile: `url` attribute is required")
 	}
 
+	if err := validatePayload(profile.Payload); err != nil {
+		return nil, fmt.Errorf("failed creating notification profile: %w", err)
+	}
+
 	return nc.notificationProfileStorage.CreateNotificationProfile(ctx, profile)
 }
 
@@ -48,5 +54,50 @@ func (nc *NotificationProfileUseCase) GetNotificationProfileByID(ctx context.Con
 }
 
 func (nc *NotificationProfileUseCase) UpdateNotificationProfileByID(ctx context.Context, id int, profile entities.NotificationProfile) (*entities.NotificationProfile, error) {
+	if profile.Name == "" {
+		return nil, fmt.Errorf("failed updating notification profile: `name` attribute is required")
+	}
+
+	if profile.Description == "" {
+		return nil, fmt.Errorf("failed updating notification profile: `description` attribute is required")
+	}
+
+	if profile.Method == "" {
+		return nil, fmt.Errorf("failed updating notification profile: `method` attribute is required")
+	}
+
+	if profile.URL == "" {
+		return nil, fmt.Errorf("failed updating notification profile: `url` attribute is required")
+	}
+
+	if err := validatePayload(profile.Payload); err != nil {
+		return nil, fmt.Errorf("failed updating notification profile: %w", err)
+	}
+
 	return nc.notificationProfileStorage.UpdateNotificationProfileByID(ctx, id, profile)
+}
+
+func validatePayload(payload string) error {
+	tmpl, err := template.New("notification_profile").Parse(payload)
+	if err != nil {
+		return fmt.Errorf("parsing template: %w", err)
+	}
+
+	data := struct {
+		RuleName string
+		Keys     entities.JSONMap[any]
+		Count    int
+	}{
+		RuleName: "",
+		Keys:     make(entities.JSONMap[any]),
+		Count:    0,
+	}
+
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, data)
+	if err != nil {
+		return fmt.Errorf("executing template: %w", err)
+	}
+
+	return nil
 }

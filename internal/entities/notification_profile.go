@@ -15,11 +15,13 @@ type NotificationProfile struct {
 	Description string    `json:"description" sql:"description" bson:"description"`
 	RuleIDs     RuleIDs   `json:"rule_ids" sql:"rule_ids" bson:"rule_ids"`
 	Enabled     BoolAsInt `json:"enabled" sql:"enabled" bson:"enabled"`
+	SilenceFor  Duration  `json:"silence_for" sql:"silence_for" bson:"silence_for"`
 	URL         string    `json:"url" sql:"url" bson:"url"`
 	Method      string    `json:"method" sql:"method" bson:"method"`
 	Headers     Headers   `json:"headers" sql:"headers" bson:"headers"`
 	Payload     string    `json:"payload" sql:"payload" bson:"payload"`
 }
+
 type RuleIDs []int
 
 func (s *RuleIDs) Scan(value interface{}) error {
