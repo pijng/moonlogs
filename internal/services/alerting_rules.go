@@ -105,10 +105,11 @@ func (cl *Collector) trigger() error {
 		}
 
 		payload := entities.Incident{
-			RuleID: cl.rule.ID,
-			Keys:   group.Keys,
-			Count:  int(group.Count),
-			TTL:    entities.RecordTime{Time: time.Now().Add(cl.rule.Interval.Duration)},
+			RuleName: cl.rule.Name,
+			RuleID:   cl.rule.ID,
+			Keys:     group.Keys,
+			Count:    int(group.Count),
+			TTL:      entities.RecordTime{Time: time.Now().Add(cl.rule.Interval.Duration)},
 		}
 
 		_, err := cl.incidentUseCase.CreateIncident(cl.ctx, payload)
