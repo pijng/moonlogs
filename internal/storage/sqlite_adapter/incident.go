@@ -29,12 +29,12 @@ func (s *IncidentStorage) CreateIncident(ctx context.Context, incident entities.
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
 	}
 
-	query := "INSERT INTO incidents (rule_id, keys, count, ttl) VALUES (?,?,?,?) RETURNING id, rule_id, keys, count, ttl;"
+	query := "INSERT INTO incidents (rule_name, rule_id, keys, count, ttl) VALUES (?,?,?,?,?) RETURNING id, rule_name, rule_id, keys, count, ttl;"
 
-	row := tx.QueryRowContext(ctx, query, incident.RuleID, incident.Keys, incident.Count, incident.TTL)
+	row := tx.QueryRowContext(ctx, query, incident.RuleName, incident.RuleID, incident.Keys, incident.Count, incident.TTL)
 
 	var inc entities.Incident
-	err = row.Scan(&inc.ID, &inc.RuleID, &inc.Keys, &inc.Count, &inc.TTL)
+	err = row.Scan(&inc.ID, &inc.RuleName, &inc.RuleID, &inc.Keys, &inc.Count, &inc.TTL)
 	if err != nil {
 		return nil, fmt.Errorf("failed scanning incident: %w", err)
 	}
@@ -48,7 +48,7 @@ func (s *IncidentStorage) CreateIncident(ctx context.Context, incident entities.
 }
 
 func (s *IncidentStorage) GetAllIncidents(ctx context.Context) ([]*entities.Incident, error) {
-	query := "SELECT id, rule_id, keys, count, ttl FROM incidents ORDER BY id DESC;"
+	query := "SELECT id, rule_name, rule_id, keys, count, ttl FROM incidents ORDER BY id DESC;"
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -66,7 +66,7 @@ func (s *IncidentStorage) GetAllIncidents(ctx context.Context) ([]*entities.Inci
 	for rows.Next() {
 		var dest entities.Incident
 
-		err := rows.Scan(&dest.ID, &dest.RuleID, &dest.Keys, &dest.Count, &dest.TTL)
+		err := rows.Scan(&dest.ID, &dest.RuleName, &dest.RuleID, &dest.Keys, &dest.Count, &dest.TTL)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning incident: %w", err)
 		}
@@ -79,7 +79,7 @@ func (s *IncidentStorage) GetAllIncidents(ctx context.Context) ([]*entities.Inci
 
 func (s *IncidentStorage) GetIncidentsByKeys(ctx context.Context, keys entities.JSONMap[any]) ([]*entities.Incident, error) {
 	var queryBuilder strings.Builder
-	queryBuilder.WriteString("SELECT id, rule_id, keys, count, ttl FROM incidents ")
+	queryBuilder.WriteString("SELECT id, rule_name, rule_id, keys, count, ttl FROM incidents ")
 
 	if len(keys) > 0 {
 		queryBuilder.WriteString(" WHERE ")
@@ -105,7 +105,7 @@ func (s *IncidentStorage) GetIncidentsByKeys(ctx context.Context, keys entities.
 	for rows.Next() {
 		var dest entities.Incident
 
-		err := rows.Scan(&dest.ID, &dest.RuleID, &dest.Keys, &dest.Count, &dest.TTL)
+		err := rows.Scan(&dest.ID, &dest.RuleName, &dest.RuleID, &dest.Keys, &dest.Count, &dest.TTL)
 		if err != nil {
 			return nil, fmt.Errorf("failed scanning incident: %w", err)
 		}

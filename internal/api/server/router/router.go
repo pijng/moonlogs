@@ -96,6 +96,16 @@ func RegisterAlertingRuleRouter(cfg *SubRouterConfig) {
 	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.DeleteRuleByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
+func RegisterIncidentsRouter(cfg *SubRouterConfig) {
+	incidentRouter := cfg.R.PathPrefix("/api/incidents").Subrouter()
+	incidentRouter.Use(cfg.MW.SessionMiddleware)
+
+	incidentController := controllers.NewIncidentController(cfg.UC.IncidentUseCase)
+
+	incidentRouter.HandleFunc("", cfg.MW.RoleMiddleware(incidentController.GetAllIncidents, entities.AdminRole, entities.TokenRole)).Methods(http.MethodGet)
+	incidentRouter.HandleFunc("/search", cfg.MW.RoleMiddleware(incidentController.GetIncidentsByKeys, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
+}
+
 func RegisterActionRouter(cfg *SubRouterConfig) {
 	actionRouter := cfg.R.PathPrefix("/api/actions").Subrouter()
 	actionRouter.Use(cfg.MW.SessionMiddleware)

@@ -56,7 +56,7 @@ func (s *IncidentStorage) CreateIncident(ctx context.Context, incident entities.
 
 func (s *IncidentStorage) GetAllIncidents(ctx context.Context) ([]*entities.Incident, error) {
 	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
+	findOptions.SetSort(bson.D{{Key: "ttl", Value: -1}})
 
 	cursor, err := s.collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *IncidentStorage) GetIncidentsByKeys(ctx context.Context, keys entities.
 	filter := bson.M{}
 
 	if len(keys) != 0 {
-		filter = qrx.QueryObject(filter, keys)
+		filter = qrx.KeysObject(filter, keys)
 	}
 
 	cursor, err := s.collection.Find(ctx, filter, findOptions)

@@ -456,9 +456,17 @@ func Placeholders(n int) string {
 }
 
 func QueryObject(filter bson.M, query map[string]interface{}) map[string]interface{} {
+	return entriesObject(filter, query, "query")
+}
+
+func KeysObject(filter bson.M, keys map[string]interface{}) map[string]interface{} {
+	return entriesObject(filter, keys, "keys")
+}
+
+func entriesObject(filter bson.M, query map[string]interface{}, field string) map[string]interface{} {
 	for key, value := range query {
-		dotKey := fmt.Sprintf("query.%s", key)
-		vStr := value.(string)
+		dotKey := fmt.Sprintf("%s.%s", field, key)
+		vStr := fmt.Sprintf("%v", value)
 
 		filter[dotKey] = vStr
 	}
