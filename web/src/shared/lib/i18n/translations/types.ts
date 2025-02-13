@@ -143,6 +143,142 @@ export type Translation = {
       delete: string;
     };
   };
+  alerting_rules: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      alert: string;
+      name: {
+        label: string;
+        hint: string;
+      };
+      description: {
+        label: string;
+        hint: string;
+      };
+      enabled: {
+        label: string;
+        hint: string;
+      };
+      severity: {
+        label: string;
+        hint: string;
+      };
+      interval: {
+        label: string;
+        hint: string;
+      };
+      condition: {
+        label: string;
+        hint: string;
+      };
+      threshold: {
+        label: string;
+        hint: string;
+      };
+      filters: {
+        label: string;
+        hint: string;
+        level: {
+          label: string;
+          hint: string;
+        };
+        schema_name: {
+          label: string;
+          hint: string;
+        };
+        schema_fields: {
+          label: string;
+          hint: string;
+        };
+        schema_kinds: {
+          label: string;
+          hint: string;
+        };
+      };
+      aggregation: {
+        label: string;
+        hint: string;
+        type: {
+          label: string;
+          hint: string;
+        };
+        group_by: {
+          label: string;
+          hint: string;
+        };
+        time_window: {
+          label: string;
+          hint: string;
+        };
+      };
+    };
+    alerts: {
+      delete: string;
+    };
+  };
+  notification_profiles: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      name: {
+        label: string;
+        hint: string;
+      };
+      description: {
+        label: string;
+        hint: string;
+      };
+      rule_name: {
+        label: string;
+        hint: string;
+      };
+      enabled: {
+        label: string;
+        hint: string;
+      };
+      silence_for: {
+        label: string;
+        hint: string;
+      };
+      url: {
+        label: string;
+        hint: string;
+      };
+      method: {
+        label: string;
+        hint: string;
+      };
+      headers: {
+        label: string;
+        hint: string;
+        fields: {
+          key: {
+            label: string;
+            hint: string;
+          };
+          value: {
+            label: string;
+            hint: string;
+          };
+        };
+      };
+      payload: {
+        label: string;
+        hint: string;
+        variables: string;
+      };
+    };
+    alerts: {
+      delete: string;
+    };
+  };
   actions: {
     label: string;
     form: {
@@ -245,6 +381,14 @@ export type Translation = {
       view_order: string;
       actions: string;
     };
+    alerting_rules: {
+      name: string;
+      enabled: string;
+      severity: string;
+      interval: string;
+      threshold: string;
+      actions: string;
+    };
     actions: {
       name: string;
       pattern: string;
@@ -258,6 +402,12 @@ export type Translation = {
       name: string;
       token: string;
       revoked: string;
+      actions: string;
+    };
+    notification_profiles: {
+      name: string;
+      description: string;
+      enabled: string;
       actions: string;
     };
   };

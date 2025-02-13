@@ -1,9 +1,30 @@
 import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
-import { GridPlusIcon, LayersIcon, LockOpenIcon, LogoIcon, PermissionGate, TagIcon, UserIcon, UsersIcon } from "@/shared/ui";
+import {
+  ChartLineUpIcon,
+  GridPlusIcon,
+  LayersIcon,
+  LockOpenIcon,
+  LogoIcon,
+  PermissionGate,
+  TagIcon,
+  UserIcon,
+  UsersIcon,
+  BullhornIcon,
+} from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
-import { Link, actionsRoute, apiTokensRoute, homeRoute, membersRoute, profileRoute, tagsRoute } from "@/shared/routing";
+import {
+  Link,
+  actionsRoute,
+  alertingRulesRoute,
+  notificationProfileRoute,
+  apiTokensRoute,
+  homeRoute,
+  membersRoute,
+  profileRoute,
+  tagsRoute,
+} from "@/shared/routing";
 
 export const sidebarClosed = createEvent();
 const sidebarTriggered = createEvent<MouseEvent>();
@@ -160,6 +181,14 @@ export const Sidebar = () => {
 
           PermissionGate("Admin", () => {
             SidebarItem({ text: i18n("actions.label"), route: actionsRoute, icon: GridPlusIcon });
+          });
+
+          PermissionGate("Admin", () => {
+            SidebarItem({ text: i18n("alerting_rules.label"), route: alertingRulesRoute, icon: ChartLineUpIcon });
+          });
+
+          PermissionGate("Admin", () => {
+            SidebarItem({ text: i18n("notification_profiles.label"), route: notificationProfileRoute, icon: BullhornIcon });
           });
 
           PermissionGate("Admin", () => {

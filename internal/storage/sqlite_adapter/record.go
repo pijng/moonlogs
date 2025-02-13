@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+const defaultSchemaGroupField = "schema_name"
+
 type RecordStorage struct {
 	readDB  *sql.DB
 	writeDB *sql.DB
@@ -154,6 +156,99 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	}
 
 	return lr, totalCount, nil
+}
+
+func (s *RecordStorage) AggregateRecords(ctx context.Context, recordsFilter entities.RecordFilter, aggregation entities.RecordAggregation) ([]*entities.AggregationGroup, error) {
+	query := `SELECT`
+
+	groupByClauses := []string{}
+	selectFields := []string{}
+	for _, field := range aggregation.GroupBy {
+		if field == defaultSchemaGroupField {
+			selectFields = append(selectFields, fmt.Sprintf(`%s AS "%s"`, field, field))
+			groupByClauses = append(groupByClauses, field)
+		} else {
+			selectFields = append(selectFields, fmt.Sprintf(`json_extract(query, '$.%s') AS "%s"`, field, field))
+			groupByClauses = append(groupByClauses, fmt.Sprintf(`json_extract(query, '$.%s')`, field))
+		}
+	}
+
+	query += " " + strings.Join(selectFields, ", ") + ", COUNT(*) AS count FROM records"
+
+	whereClauses := []string{}
+	args := []interface{}{}
+
+	if len(recordsFilter.SchemaIDs) > 0 {
+		whereClauses = append(whereClauses, fmt.Sprintf("schema_id IN (%s)", qrx.Placeholders(len(recordsFilter.SchemaIDs))))
+		for _, id := range recordsFilter.SchemaIDs {
+			args = append(args, id)
+		}
+	}
+
+	if len(recordsFilter.SchemaKinds) > 0 {
+		whereClauses = append(whereClauses, fmt.Sprintf("kind IN (%s)", qrx.Placeholders(len(recordsFilter.SchemaKinds))))
+		for _, kind := range recordsFilter.SchemaKinds {
+			args = append(args, kind)
+		}
+	}
+
+	if len(recordsFilter.Level) > 0 {
+		whereClauses = append(whereClauses, "level = ?")
+		args = append(args, recordsFilter.Level)
+	}
+
+	whereClauses = append(whereClauses, fmt.Sprintf("created_at BETWEEN %s", qrx.Between(&recordsFilter.From, &recordsFilter.To)))
+	args = append(args, recordsFilter.From, recordsFilter.To)
+
+	if len(recordsFilter.SchemaFields) > 0 {
+		for _, field := range recordsFilter.SchemaFields {
+			whereClauses = append(whereClauses, fmt.Sprintf("json_extract(query, '$.%s') IS NOT NULL", field))
+		}
+	}
+
+	if len(whereClauses) > 0 {
+		query += " WHERE " + strings.Join(whereClauses, " AND ")
+	}
+
+	if len(groupByClauses) > 0 {
+		query += " GROUP BY " + strings.Join(groupByClauses, ", ")
+	}
+
+	rows, err := s.readDB.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed aggregating records: %w", err)
+	}
+	defer rows.Close()
+
+	var aggregationGroups []*entities.AggregationGroup
+	for rows.Next() {
+		keys := make(entities.JSONMap[any])
+		values := make([]interface{}, len(aggregation.GroupBy)+1)
+		valuePtrs := make([]interface{}, len(values))
+
+		for i := range values {
+			valuePtrs[i] = &values[i]
+		}
+
+		if err := rows.Scan(valuePtrs...); err != nil {
+			return nil, fmt.Errorf("failed decoding aggregated records: %w", err)
+		}
+
+		for i, field := range aggregation.GroupBy {
+			if strVal, ok := values[i].(string); ok {
+				keys[field] = strVal
+			} else {
+				keys[field] = fmt.Sprintf("%v", values[i])
+			}
+		}
+
+		aggregationGroups = append(aggregationGroups, &entities.AggregationGroup{
+			Keys:  keys,
+			Count: int32(values[len(values)-1].(int64)),
+		})
+	}
+
+	return aggregationGroups, nil
 }
 
 func (s *RecordStorage) GetAllRecords(ctx context.Context, limit int, offset int) ([]*entities.Record, error) {

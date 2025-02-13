@@ -1,6 +1,9 @@
 import { ActionCreatePage } from "@/pages/action-create";
 import { ActionEditPage } from "@/pages/action-edit";
 import { ActionsListPage } from "@/pages/actions-list";
+import { AlertingRuleCreatePage } from "@/pages/alerting-rule-create";
+import { AlertingRuleEditPage } from "@/pages/alerting-rule-edit";
+import { AlertingRulesListPage } from "@/pages/alerting-rule-list";
 import { ApiTokenCreatePage } from "@/pages/api-token-create";
 import { ApiTokenEditPage } from "@/pages/api-token-edit";
 import { ApiTokensListPage } from "@/pages/api-tokens-list";
@@ -23,6 +26,9 @@ import { UsersListPage } from "@/pages/users-list";
 import { forbiddenRoute, loginRoute, notFoundRoute, registerAdminRoute } from "@/shared/routing";
 import { Layout } from "@/shared/ui";
 import { combine } from "effector";
+import { NotificationProfileCreatePage } from "@/pages/notification-profile-create";
+import { NotificationProfleEditPage } from "@/pages/notification-profile-edit";
+import { NotificationProfileListPage } from "@/pages/notification-profile-list";
 
 export const Pages = () => {
   const $layoutVisible = combine(
@@ -56,6 +62,12 @@ export const Pages = () => {
       ActionsListPage();
       ActionCreatePage();
       ActionEditPage();
+      AlertingRulesListPage();
+      AlertingRuleCreatePage();
+      AlertingRuleEditPage();
+      NotificationProfileListPage();
+      NotificationProfileCreatePage();
+      NotificationProfleEditPage();
     },
     layoutVisible: $layoutVisible,
   });

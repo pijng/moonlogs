@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -90,7 +91,7 @@ write_timeout: %s
 		return fmt.Errorf("error writing default config file: %w", err)
 	}
 
-	fmt.Println("default config file created:", filePath)
+	log.Println("default config file created:", filePath)
 
 	return nil
 }

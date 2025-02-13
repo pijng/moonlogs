@@ -83,6 +83,42 @@ func RegisterTagRouter(cfg *SubRouterConfig) {
 	tagRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(tagController.DeleteTagByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
+func RegisterAlertingRuleRouter(cfg *SubRouterConfig) {
+	ruleRouter := cfg.R.PathPrefix("/api/alerting_rules").Subrouter()
+	ruleRouter.Use(cfg.MW.SessionMiddleware)
+
+	ruleController := controllers.NewAlertingRuleController(cfg.UC.AlertingRuleUseCase)
+
+	ruleRouter.HandleFunc("", cfg.MW.RoleMiddleware(ruleController.GetAllRules, entities.AdminRole)).Methods(http.MethodGet)
+	ruleRouter.HandleFunc("", cfg.MW.RoleMiddleware(ruleController.CreateRule, entities.AdminRole)).Methods(http.MethodPost)
+	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.GetRuleByID, entities.AdminRole)).Methods(http.MethodGet)
+	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.UpdateRuleByID, entities.AdminRole)).Methods(http.MethodPut)
+	ruleRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(ruleController.DeleteRuleByID, entities.AdminRole)).Methods(http.MethodDelete)
+}
+
+func RegisterIncidentsRouter(cfg *SubRouterConfig) {
+	incidentRouter := cfg.R.PathPrefix("/api/incidents").Subrouter()
+	incidentRouter.Use(cfg.MW.SessionMiddleware)
+
+	incidentController := controllers.NewIncidentController(cfg.UC.IncidentUseCase)
+
+	incidentRouter.HandleFunc("", cfg.MW.RoleMiddleware(incidentController.GetAllIncidents, entities.AdminRole, entities.TokenRole)).Methods(http.MethodGet)
+	incidentRouter.HandleFunc("/search", cfg.MW.RoleMiddleware(incidentController.GetIncidentsByKeys, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
+}
+
+func RegisterNotificationProfileRouter(cfg *SubRouterConfig) {
+	profileRouter := cfg.R.PathPrefix("/api/notification_profiles").Subrouter()
+	profileRouter.Use(cfg.MW.SessionMiddleware)
+
+	profileController := controllers.NewNotificationProfileController(cfg.UC.NotificationProfileUseCase)
+
+	profileRouter.HandleFunc("", cfg.MW.RoleMiddleware(profileController.GetAllNotificationProfiles, entities.AdminRole)).Methods(http.MethodGet)
+	profileRouter.HandleFunc("", cfg.MW.RoleMiddleware(profileController.CreateNotificationProfile, entities.AdminRole)).Methods(http.MethodPost)
+	profileRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(profileController.GetNotificationProfileByID, entities.AdminRole)).Methods(http.MethodGet)
+	profileRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(profileController.UpdateNotificationProfileByID, entities.AdminRole)).Methods(http.MethodPut)
+	profileRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(profileController.DeleteNotificationProfileByID, entities.AdminRole)).Methods(http.MethodDelete)
+}
+
 func RegisterActionRouter(cfg *SubRouterConfig) {
 	actionRouter := cfg.R.PathPrefix("/api/actions").Subrouter()
 	actionRouter.Use(cfg.MW.SessionMiddleware)

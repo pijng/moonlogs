@@ -24,19 +24,19 @@ func SetupMongoContainer(ctx context.Context) (testcontainers.Container, *mongo.
 		Started:          true,
 	})
 	if err != nil {
-		log.Printf("Error creating MongoDB container: %v", err)
+		log.Printf("Error creating MongoDB container: %v\n", err)
 		return nil, nil, err
 	}
 
 	host, err := mongoC.Host(ctx)
 	if err != nil {
-		log.Printf("Error getting host for MongoDB container: %v", err)
+		log.Printf("Error getting host for MongoDB container: %v\n", err)
 		return nil, nil, err
 	}
 
 	port, err := mongoC.MappedPort(ctx, "27017")
 	if err != nil {
-		log.Printf("Error getting mapped port for MongoDB container: %v", err)
+		log.Printf("Error getting mapped port for MongoDB container: %v\n", err)
 		return nil, nil, err
 	}
 
@@ -44,17 +44,17 @@ func SetupMongoContainer(ctx context.Context) (testcontainers.Container, *mongo.
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
-		log.Printf("Error connecting to MongoDB: %v", err)
+		log.Printf("Error connecting to MongoDB: %v\n", err)
 		return nil, nil, err
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Printf("Error pinging MongoDB: %v", err)
+		log.Printf("Error pinging MongoDB: %v\n", err)
 		return nil, nil, err
 	}
 
-	log.Printf("Successfully set up MongoDB container at %s", mongoURI)
+	log.Printf("Successfully set up MongoDB container at %s\n", mongoURI)
 	return mongoC, client, nil
 }
 

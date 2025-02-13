@@ -239,6 +239,14 @@ export const en: Translation = {
       actions: "Actions",
       view_order: "View order",
     },
+    alerting_rules: {
+      name: "Name",
+      enabled: "Enabled",
+      severity: "Severity",
+      interval: "Interval",
+      threshold: "Threshold",
+      actions: "Actions",
+    },
     api_tokens: {
       name: "Name",
       token: "Token",
@@ -252,6 +260,12 @@ export const en: Translation = {
       conditions: "Conditions",
       schema_name: "Schema name",
       disabled: "Disabled",
+      actions: "Actions",
+    },
+    notification_profiles: {
+      name: "Name",
+      description: "Description",
+      enabled: "Enabled",
       actions: "Actions",
     },
   },
@@ -275,5 +289,141 @@ export const en: Translation = {
     forbidden: "You do not have permission to access this resource",
     to_home: "Go to Home page",
     empty_search_result: "No logs were found matching your search. Please adjust the filters or try again later",
+  },
+  alerting_rules: {
+    label: "Alerting Rules",
+    form: {
+      actions: {
+        create: "Create Alerting Rule",
+        edit: "Edit Alerting Rule",
+      },
+      alert: "Alert Conditions",
+      name: {
+        label: "Name",
+        hint: "A unique name for the alert",
+      },
+      description: {
+        label: "Description",
+        hint: "A short description of the purpose of this alert",
+      },
+      enabled: {
+        label: "Enabled",
+        hint: "Enable or disable the alert",
+      },
+      severity: {
+        label: "Severity",
+        hint: "Defines the priority level of the alert",
+      },
+      interval: {
+        label: "Interval",
+        hint: "The frequency at which alert conditions are checked. Specified in duration format, e.g., '30s' (30 seconds), '5m' (5 minutes), '1h' (1 hour)",
+      },
+      condition: {
+        label: "Condition",
+        hint: "A logical expression that determines when the alert should trigger",
+      },
+      threshold: {
+        label: "Threshold",
+        hint: "A value against which actual alert metrics are compared",
+      },
+      filters: {
+        label: "Filters",
+        hint: "Additional parameters to refine alert conditions",
+        level: {
+          label: "Level",
+          hint: "Filter by log level",
+        },
+        schema_name: {
+          label: "Schemas",
+          hint: "Filter by log schemas. Leave empty to analyze all schemas",
+        },
+        schema_fields: {
+          label: "Schema Fields",
+          hint: "Filter by schema fields. Checks only for the presence of a specific field, regardless of its value",
+        },
+        schema_kinds: {
+          label: "Schema Types",
+          hint: "Filter by schema types. Checks only for the presence of specific types in schemas. Leave empty to analyze all log schema types",
+        },
+      },
+      aggregation: {
+        label: "Aggregation",
+        hint: "Settings for grouping and counting events",
+        type: {
+          label: "Type",
+          hint: "Type of data aggregation",
+        },
+        group_by: {
+          label: "Group By",
+          hint: "Specify the fields by which events will be grouped",
+        },
+        time_window: {
+          label: "Time Window",
+          hint: "Specify the time period for data aggregation. Specified in duration format, e.g., '30s' (30 seconds), '5m' (5 minutes), '1h' (1 hour)",
+        },
+      },
+    },
+    alerts: {
+      delete: "Are you sure you want to delete this alerting rule?",
+    },
+  },
+  notification_profiles: {
+    label: "Alert Manager",
+    form: {
+      actions: {
+        create: "Create Notification Profile",
+        edit: "Edit Notification Profile",
+      },
+      name: {
+        label: "Name",
+        hint: "A unique name for the notification profile",
+      },
+      description: {
+        label: "Description",
+        hint: "A short description to clarify the purpose of this profile",
+      },
+      rule_name: {
+        label: "Alerting Rules",
+        hint: "Select the alerting rules associated with this profile",
+      },
+      enabled: {
+        label: "Enabled",
+        hint: "Enable or disable the notification profile",
+      },
+      silence_for: {
+        label: "Silence For",
+        hint: "The period during which notifications from this profile will not be sent after it has already triggered (e.g., '5m', '1h')",
+      },
+      url: {
+        label: "Route",
+        hint: "The URL where notifications will be sent",
+      },
+      method: {
+        label: "Method",
+        hint: "HTTP request method",
+      },
+      headers: {
+        label: "Headers",
+        hint: "Additional headers that will be included in the HTTP request",
+        fields: {
+          key: {
+            label: "Key",
+            hint: "Header name (e.g., 'Authorization')",
+          },
+          value: {
+            label: "Value",
+            hint: "Header value (e.g., 'Bearer token')",
+          },
+        },
+      },
+      payload: {
+        label: "Request Body",
+        hint: "The format of the request body that will be sent in the notification",
+        variables: "You can use the following variables in the request body",
+      },
+    },
+    alerts: {
+      delete: "Are you sure you want to delete this notification profile?",
+    },
   },
 };

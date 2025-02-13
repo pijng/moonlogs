@@ -1,26 +1,29 @@
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, list, node, remap, spec } from "forest";
 import { condition } from "patronum";
+import { ErrorHint } from "../error-hint";
 
-interface SelectItem {
-  id: any;
+interface SelectItem<T extends string | number> {
+  id: T;
   name: string;
 }
 
-export const Multiselect = ({
+export const Multiselect = <T extends string | number>({
   text,
   options,
   selectedOptions,
   hint,
   optionChecked,
   optionUnchecked,
+  errorText,
 }: {
   text: Store<string> | string;
-  options: Store<SelectItem[]>;
-  selectedOptions?: Store<number[]>;
+  options: Store<SelectItem<T>[]>;
+  selectedOptions?: Store<T[]>;
   hint: Store<string>;
   optionChecked: Event<any>;
   optionUnchecked: Event<any>;
+  errorText?: Store<string>;
 }) => {
   const dropdownTriggered = createEvent<MouseEvent>();
   const $localVisible = createStore(false);
@@ -41,7 +44,7 @@ export const Multiselect = ({
     target: $localVisible,
   });
 
-  const localSelectedOptions = selectedOptions || createStore<number[]>([]);
+  const localSelectedOptions = selectedOptions || createStore<T[]>([]);
 
   h("div", () => {
     spec({
@@ -220,6 +223,8 @@ export const Multiselect = ({
         });
       });
     });
+
+    ErrorHint(errorText, errorText?.map(Boolean));
 
     node((node) => {
       document.addEventListener("click", (event) => {

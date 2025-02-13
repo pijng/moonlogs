@@ -1,22 +1,20 @@
 import { Tooltip } from "@/shared/ui";
-import { Store, createEvent, createStore, is, sample } from "effector";
+import { createEvent, createStore, sample } from "effector";
 
-export const triggerTooltip = createEvent<{ text: Store<string> | string; timeout?: Store<number> | number }>();
+export const triggerTooltip = createEvent<{ text: string; timeout?: number }>();
 
 const $text = createStore<string>("");
 const $timeout = createStore<number>(1000);
 
 sample({
   source: triggerTooltip,
-  //                                       BRUH
-  fn: ({ text }) => (is.store(text) ? text.getState() : text),
+  fn: ({ text }) => text,
   target: $text,
 });
 
 sample({
   source: triggerTooltip,
-  //                                                BRUH
-  fn: ({ timeout }) => (is.store(timeout) ? timeout.getState() : timeout),
+  fn: ({ timeout }) => timeout || 1000,
   target: $timeout,
 });
 

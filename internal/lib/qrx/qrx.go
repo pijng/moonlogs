@@ -430,23 +430,43 @@ func In[T any](values []T) (string, []any) {
 }
 
 func QueryMap(query map[string]interface{}) string {
-	if len(query) == 0 {
+	return entriesMap(query, "query")
+}
+
+func KeysMap(query map[string]interface{}) string {
+	return entriesMap(query, "keys")
+}
+
+func entriesMap(entries map[string]interface{}, field string) string {
+	if len(entries) == 0 {
 		return "1=1"
 	}
 
 	var placeholders []string
 
-	for key, value := range query {
-		placeholders = append(placeholders, fmt.Sprintf("CAST(json_extract(query, '$.%s') AS TEXT) = '%s'", key, value))
+	for key, value := range entries {
+		placeholders = append(placeholders, fmt.Sprintf("CAST(json_extract(%s, '$.%s') AS TEXT) = '%s'", field, key, value))
 	}
 
 	return strings.Join(placeholders, " AND ")
 }
 
+func Placeholders(n int) string {
+	return strings.TrimRight(strings.Repeat("?,", n), ",")
+}
+
 func QueryObject(filter bson.M, query map[string]interface{}) map[string]interface{} {
+	return entriesObject(filter, query, "query")
+}
+
+func KeysObject(filter bson.M, keys map[string]interface{}) map[string]interface{} {
+	return entriesObject(filter, keys, "keys")
+}
+
+func entriesObject(filter bson.M, query map[string]interface{}, field string) map[string]interface{} {
 	for key, value := range query {
-		dotKey := fmt.Sprintf("query.%s", key)
-		vStr := value.(string)
+		dotKey := fmt.Sprintf("%s.%s", field, key)
+		vStr := fmt.Sprintf("%v", value)
 
 		filter[dotKey] = vStr
 	}

@@ -50,12 +50,15 @@ func InitDB(DBAdapter string, DBPath string) (*Databases, error) {
 }
 
 type Storages struct {
-	ActionStorage   storage.ActionStorage
-	ApiTokenStorage storage.ApiTokenStorage
-	RecordStorage   storage.RecordStorage
-	SchemaStorage   storage.SchemaStorage
-	TagStorage      storage.TagStorage
-	UserStorage     storage.UserStorage
+	ActionStorage              storage.ActionStorage
+	ApiTokenStorage            storage.ApiTokenStorage
+	RecordStorage              storage.RecordStorage
+	SchemaStorage              storage.SchemaStorage
+	TagStorage                 storage.TagStorage
+	UserStorage                storage.UserStorage
+	AlertingRuleStorage        storage.AlertingRuleStorage
+	IncidentStorage            storage.IncidentStorage
+	NotificationProfileStorage storage.NotificationProfileStorage
 }
 
 func InitStorages(storageType string, databases *Databases) Storages {
@@ -64,21 +67,27 @@ func InitStorages(storageType string, databases *Databases) Storages {
 		mongoDB := databases.MongoInstance.Database(MONGODB_DATABASE_NAME)
 
 		return Storages{
-			ActionStorage:   mongodb_adapter.NewActionStorage(mongoDB),
-			ApiTokenStorage: mongodb_adapter.NewApiTokenStorage(mongoDB),
-			RecordStorage:   mongodb_adapter.NewRecordStorage(mongoDB),
-			SchemaStorage:   mongodb_adapter.NewSchemaStorage(mongoDB),
-			TagStorage:      mongodb_adapter.NewTagStorage(mongoDB),
-			UserStorage:     mongodb_adapter.NewUserStorage(mongoDB),
+			ActionStorage:              mongodb_adapter.NewActionStorage(mongoDB),
+			ApiTokenStorage:            mongodb_adapter.NewApiTokenStorage(mongoDB),
+			RecordStorage:              mongodb_adapter.NewRecordStorage(mongoDB),
+			SchemaStorage:              mongodb_adapter.NewSchemaStorage(mongoDB),
+			TagStorage:                 mongodb_adapter.NewTagStorage(mongoDB),
+			UserStorage:                mongodb_adapter.NewUserStorage(mongoDB),
+			AlertingRuleStorage:        mongodb_adapter.NewAlertingRuleStorage(mongoDB),
+			IncidentStorage:            mongodb_adapter.NewIncidentStorage(mongoDB),
+			NotificationProfileStorage: mongodb_adapter.NewNotificationProfileStorage(mongoDB),
 		}
 	default:
 		return Storages{
-			ActionStorage:   sqlite_adapter.NewActionStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
-			ApiTokenStorage: sqlite_adapter.NewApiTokenStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
-			RecordStorage:   sqlite_adapter.NewRecordStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
-			SchemaStorage:   sqlite_adapter.NewSchemaStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
-			TagStorage:      sqlite_adapter.NewTagStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
-			UserStorage:     sqlite_adapter.NewUserStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			ActionStorage:              sqlite_adapter.NewActionStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			ApiTokenStorage:            sqlite_adapter.NewApiTokenStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			RecordStorage:              sqlite_adapter.NewRecordStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			SchemaStorage:              sqlite_adapter.NewSchemaStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			TagStorage:                 sqlite_adapter.NewTagStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			UserStorage:                sqlite_adapter.NewUserStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			AlertingRuleStorage:        sqlite_adapter.NewAlertingRuleStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			IncidentStorage:            sqlite_adapter.NewIncidentStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
+			NotificationProfileStorage: sqlite_adapter.NewNotificationProfileStorage(databases.SqliteReadInstance, databases.SqliteWriteInstance),
 		}
 	}
 }
