@@ -1,5 +1,5 @@
 import { alertingRulesRoute } from "@/shared/routing";
-import { AlertingRuleToCreate, AlertingRuleToUpdate, createRule, deleteRule, editRule } from "@/shared/api";
+import { AlertingRuleToUpdate, deleteRule, editRule } from "@/shared/api";
 import { i18n, rules } from "@/shared/lib";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
@@ -18,7 +18,7 @@ const aggregationTimeWindowChanged = createEvent<string>();
 
 export const deleteRuleClicked = createEvent<number>();
 
-export const ruleForm = createForm<AlertingRuleToCreate>({
+export const ruleForm = createForm<Omit<AlertingRuleToUpdate, "id">>({
   fields: {
     name: {
       init: "",
@@ -89,12 +89,6 @@ export const events = {
   aggregationTimeWindowChanged,
   deleteRuleClicked,
 };
-
-export const $creationError = createStore("");
-
-export const createRuleFx = createEffect((rule: AlertingRuleToCreate) => {
-  return createRule(rule);
-});
 
 sample({
   source: ruleForm.fields.filter_schema_ids.$value,
@@ -194,7 +188,7 @@ export const deleteRuleFx = createEffect((id: number) => {
 });
 
 const alertDeleteFx = attach({
-  source: i18n("actions.alerts.delete"),
+  source: i18n("alerting_rules.alerts.delete"),
   effect(alertText, id: number) {
     const confirmed = confirm(alertText);
 

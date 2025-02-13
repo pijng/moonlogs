@@ -106,6 +106,19 @@ func RegisterIncidentsRouter(cfg *SubRouterConfig) {
 	incidentRouter.HandleFunc("/search", cfg.MW.RoleMiddleware(incidentController.GetIncidentsByKeys, entities.AdminRole, entities.TokenRole)).Methods(http.MethodPost)
 }
 
+func RegisterNotificationProfileRouter(cfg *SubRouterConfig) {
+	profileRouter := cfg.R.PathPrefix("/api/notification_profiles").Subrouter()
+	profileRouter.Use(cfg.MW.SessionMiddleware)
+
+	profileController := controllers.NewNotificationProfileController(cfg.UC.NotificationProfileUseCase)
+
+	profileRouter.HandleFunc("", cfg.MW.RoleMiddleware(profileController.GetAllNotificationProfiles, entities.AdminRole)).Methods(http.MethodGet)
+	profileRouter.HandleFunc("", cfg.MW.RoleMiddleware(profileController.CreateNotificationProfile, entities.AdminRole)).Methods(http.MethodPost)
+	profileRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(profileController.GetNotificationProfileByID, entities.AdminRole)).Methods(http.MethodGet)
+	profileRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(profileController.UpdateNotificationProfileByID, entities.AdminRole)).Methods(http.MethodPut)
+	profileRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(profileController.DeleteNotificationProfileByID, entities.AdminRole)).Methods(http.MethodDelete)
+}
+
 func RegisterActionRouter(cfg *SubRouterConfig) {
 	actionRouter := cfg.R.PathPrefix("/api/actions").Subrouter()
 	actionRouter.Use(cfg.MW.SessionMiddleware)

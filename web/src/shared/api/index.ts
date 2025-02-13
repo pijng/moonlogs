@@ -26,6 +26,18 @@ export {
   deleteRule,
 } from "./alerting-rule";
 export {
+  type NotificationMethod,
+  type NotificationHeader,
+  type NotificationProfile,
+  type NotificationProfileToCreate,
+  type NotificationProfileToUpdate,
+  getNotificationProfiles,
+  getNotificationProfile,
+  editNotificationProfile,
+  createNotificationProfile,
+  deleteNotificationProfile,
+} from "./notification-profile";
+export {
   type Action,
   type ActionToCreate,
   type ActionToUpdate,

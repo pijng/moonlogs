@@ -26,3 +26,6 @@ export const actionEditRoute = createRoute<{ id: number }>();
 export const alertingRulesRoute = createRoute();
 export const alertingRuleCreateRoute = createRoute();
 export const alertingRuleEditRoute = createRoute<{ id: number }>();
+export const notificationProfileRoute = createRoute();
+export const notificationProfileCreateRoute = createRoute();
+export const notificationProfileEditRoute = createRoute<{ id: number }>();

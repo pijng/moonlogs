@@ -220,6 +220,60 @@ export type Translation = {
       delete: string;
     };
   };
+  notification_profiles: {
+    label: string;
+    form: {
+      actions: {
+        create: string;
+        edit: string;
+      };
+      name: {
+        label: string;
+        hint: string;
+      };
+      description: {
+        label: string;
+        hint: string;
+      };
+      rule_name: {
+        label: string;
+        hint: string;
+      };
+      enabled: {
+        label: string;
+        hint: string;
+      };
+      url: {
+        label: string;
+        hint: string;
+      };
+      method: {
+        label: string;
+        hint: string;
+      };
+      headers: {
+        label: string;
+        hint: string;
+        fields: {
+          key: {
+            label: string;
+            hint: string;
+          };
+          value: {
+            label: string;
+            hint: string;
+          };
+        };
+      };
+      payload: {
+        label: string;
+        hint: string;
+      };
+    };
+    alerts: {
+      delete: string;
+    };
+  };
   actions: {
     label: string;
     form: {
@@ -343,6 +397,12 @@ export type Translation = {
       name: string;
       token: string;
       revoked: string;
+      actions: string;
+    };
+    notification_profiles: {
+      name: string;
+      description: string;
+      enabled: string;
       actions: string;
     };
   };

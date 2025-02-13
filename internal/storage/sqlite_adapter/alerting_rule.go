@@ -74,7 +74,10 @@ func (s *AlertingRuleStorage) CreateRule(ctx context.Context, rule entities.Aler
 }
 
 func (s *AlertingRuleStorage) GetRuleByID(ctx context.Context, id int) (*entities.AlertingRule, error) {
-	query := "SELECT * FROM alerting_rules WHERE id=? LIMIT 1;"
+	query := `SELECT id, name, description, enabled, severity,
+		interval, threshold, condition, filter_level, filter_schema_ids,
+		filter_schema_fields, filter_schema_kinds, aggregation_type,
+		aggregation_group_by, aggregation_time_window FROM alerting_rules WHERE id=? LIMIT 1;`
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
@@ -106,7 +109,7 @@ func (s *AlertingRuleStorage) GetRuleByID(ctx context.Context, id int) (*entitie
 			err = storage.ErrNotFound
 		}
 
-		return nil, fmt.Errorf("failed scanning tag: %w", err)
+		return nil, fmt.Errorf("failed scanning alerting rule: %w", err)
 	}
 
 	return &ar, nil
@@ -122,7 +125,7 @@ func (s *AlertingRuleStorage) DeleteRuleByID(ctx context.Context, id int) error 
 
 	_, err = tx.ExecContext(ctx, query, id)
 	if err != nil {
-		return fmt.Errorf("failed deleting tag: %w", err)
+		return fmt.Errorf("failed deleting alerting rule: %w", err)
 	}
 
 	err = tx.Commit()
@@ -170,7 +173,10 @@ func (s *AlertingRuleStorage) UpdateRuleByID(ctx context.Context, id int, rule e
 }
 
 func (s *AlertingRuleStorage) GetAllRules(ctx context.Context) ([]*entities.AlertingRule, error) {
-	query := "SELECT * FROM alerting_rules ORDER BY id DESC;"
+	query := `SELECT id, name, description, enabled, severity,
+		interval, threshold, condition, filter_level, filter_schema_ids,
+		filter_schema_fields, filter_schema_kinds, aggregation_type,
+		aggregation_group_by, aggregation_time_window FROM alerting_rules ORDER BY id DESC;`
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)

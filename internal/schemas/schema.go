@@ -68,4 +68,15 @@ CREATE TABLE IF NOT EXISTS incidents (
 	count INTEGER NOT NULL,
 	ttl INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS notification_profiles (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT NOT NULL,
+	description TEXT NOT NULL,
+  rule_ids TEXT,
+	enabled INTEGER DEFAULT 1,
+	url TEXT,
+  method TEXT,
+  headers TEXT,
+  payload text
+);
 `

@@ -27,6 +27,9 @@ import {
   alertingRulesRoute,
   alertingRuleCreateRoute,
   alertingRuleEditRoute,
+  notificationProfileRoute,
+  notificationProfileCreateRoute,
+  notificationProfileEditRoute,
 } from "./routes";
 export * from "./routes";
 export * from "./middlewares";
@@ -56,6 +59,9 @@ const ROUTES = [
   { path: "/alerting_rules", route: alertingRulesRoute },
   { path: "/alerting_rules/create", route: alertingRuleCreateRoute },
   { path: "/alerting_rules/:id/edit", route: alertingRuleEditRoute },
+  { path: "/notification_profiles", route: notificationProfileRoute },
+  { path: "/notification_profiles/create", route: notificationProfileCreateRoute },
+  { path: "/notification_profiles/:id/edit", route: notificationProfileEditRoute },
   { path: "/actions", route: actionsRoute },
   { path: "/actions/create", route: actionCreateRoute },
   { path: "/actions/:id/edit", route: actionEditRoute },

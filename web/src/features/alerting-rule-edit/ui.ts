@@ -1,6 +1,6 @@
 import { Button, ErrorHint, Input, Multiselect, Select, Subheader } from "@/shared/ui";
 import { h, spec } from "forest";
-import { $creationError, events, ruleForm } from "./model";
+import { $editError, events, ruleForm } from "./model";
 import { i18n } from "@/shared/lib";
 import { createStore } from "effector";
 import { AlertingCondition, AlertingSeverity, Level } from "@/shared/api";
@@ -220,6 +220,6 @@ export const EditAlertingRuleForm = () => {
       });
     });
 
-    ErrorHint($creationError, $creationError.map(Boolean));
+    ErrorHint($editError, $editError.map(Boolean));
   });
 };

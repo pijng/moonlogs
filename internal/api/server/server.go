@@ -95,6 +95,7 @@ func registerRouter(r *mux.Router, uc *usecases.UseCases) {
 	router.RegisterActionRouter(cfg)
 	router.RegisterAlertingRuleRouter(cfg)
 	router.RegisterIncidentsRouter(cfg)
+	router.RegisterNotificationProfileRouter(cfg)
 	router.RegisterSessionRouter(cfg)
 
 	router.RegisterWebRouter(r)

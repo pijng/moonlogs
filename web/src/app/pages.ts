@@ -26,6 +26,9 @@ import { UsersListPage } from "@/pages/users-list";
 import { forbiddenRoute, loginRoute, notFoundRoute, registerAdminRoute } from "@/shared/routing";
 import { Layout } from "@/shared/ui";
 import { combine } from "effector";
+import { NotificationProfileCreatePage } from "@/pages/notification-profile-create";
+import { NotificationProfleEditPage } from "@/pages/notification-profile-edit";
+import { NotificationProfileListPage } from "@/pages/notification-profile-list";
 
 export const Pages = () => {
   const $layoutVisible = combine(
@@ -62,6 +65,9 @@ export const Pages = () => {
       AlertingRulesListPage();
       AlertingRuleCreatePage();
       AlertingRuleEditPage();
+      NotificationProfileListPage();
+      NotificationProfileCreatePage();
+      NotificationProfleEditPage();
     },
     layoutVisible: $layoutVisible,
   });

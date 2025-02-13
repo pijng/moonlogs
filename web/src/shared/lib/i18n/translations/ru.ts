@@ -262,6 +262,12 @@ export const ru: Translation = {
       threshold: "Порог",
       actions: "Действия",
     },
+    notification_profiles: {
+      name: "Название",
+      description: "Описание",
+      enabled: "Активен",
+      actions: "Действия",
+    },
   },
   pagination: {
     first_page: "1",
@@ -359,6 +365,60 @@ export const ru: Translation = {
     },
     alerts: {
       delete: "Вы уверены, что хотите удалить это правило алертинга?",
+    },
+  },
+  notification_profiles: {
+    label: "Алерт-менеджер",
+    form: {
+      actions: {
+        create: "Создать профиль уведомлений",
+        edit: "Изменить профиль уведомлений",
+      },
+      name: {
+        label: "Название",
+        hint: "",
+      },
+      description: {
+        label: "Описание",
+        hint: "",
+      },
+      rule_name: {
+        label: "Правило алертинга",
+        hint: "",
+      },
+      enabled: {
+        label: "Активен",
+        hint: "",
+      },
+      url: {
+        label: "Роут",
+        hint: "",
+      },
+      method: {
+        label: "Метод",
+        hint: "",
+      },
+      headers: {
+        label: "Заголовки",
+        hint: "",
+        fields: {
+          key: {
+            label: "Ключ",
+            hint: "",
+          },
+          value: {
+            label: "Значение",
+            hint: "",
+          },
+        },
+      },
+      payload: {
+        label: "Тело запроса",
+        hint: "",
+      },
+    },
+    alerts: {
+      delete: "Вы уверены, что хотите удалить этот профиль уведомлений?",
     },
   },
 };

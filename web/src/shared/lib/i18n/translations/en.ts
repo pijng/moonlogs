@@ -262,6 +262,12 @@ export const en: Translation = {
       disabled: "Disabled",
       actions: "Actions",
     },
+    notification_profiles: {
+      name: "Name",
+      description: "Description",
+      enabled: "Enabled",
+      actions: "Actions",
+    },
   },
   pagination: {
     first_page: "1",
@@ -359,6 +365,60 @@ export const en: Translation = {
     },
     alerts: {
       delete: "Are you sure you want to delete this Alerting Rule?",
+    },
+  },
+  notification_profiles: {
+    label: "Alertmanager",
+    form: {
+      actions: {
+        create: "Create notification profile",
+        edit: "Edit notification profile",
+      },
+      name: {
+        label: "Name",
+        hint: "",
+      },
+      description: {
+        label: "Description",
+        hint: "",
+      },
+      rule_name: {
+        label: "Alerting Rule",
+        hint: "",
+      },
+      enabled: {
+        label: "Enabled",
+        hint: "",
+      },
+      url: {
+        label: "URL",
+        hint: "",
+      },
+      method: {
+        label: "Method",
+        hint: "",
+      },
+      headers: {
+        label: "Headers",
+        hint: "",
+        fields: {
+          key: {
+            label: "Key",
+            hint: "",
+          },
+          value: {
+            label: "Value",
+            hint: "",
+          },
+        },
+      },
+      payload: {
+        label: "Тело запроса",
+        hint: "",
+      },
+    },
+    alerts: {
+      delete: "Are you sure you want to delete this Notification Profile?",
     },
   },
 };

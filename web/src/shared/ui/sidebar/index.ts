@@ -11,12 +11,14 @@ import {
   TagIcon,
   UserIcon,
   UsersIcon,
+  BullhornIcon,
 } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import {
   Link,
   actionsRoute,
   alertingRulesRoute,
+  notificationProfileRoute,
   apiTokensRoute,
   homeRoute,
   membersRoute,
@@ -183,6 +185,10 @@ export const Sidebar = () => {
 
           PermissionGate("Admin", () => {
             SidebarItem({ text: i18n("alerting_rules.label"), route: alertingRulesRoute, icon: ChartLineUpIcon });
+          });
+
+          PermissionGate("Admin", () => {
+            SidebarItem({ text: i18n("notification_profiles.label"), route: notificationProfileRoute, icon: BullhornIcon });
           });
 
           PermissionGate("Admin", () => {
