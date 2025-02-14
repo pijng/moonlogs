@@ -30,7 +30,7 @@ export const ruleForm = createForm<Omit<AlertingRuleToUpdate, "id">>({
     },
     enabled: {
       init: true,
-      rules: [rules.required()],
+      rules: [],
     },
     severity: {
       init: "Error",

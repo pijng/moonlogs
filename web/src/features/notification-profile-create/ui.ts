@@ -50,7 +50,7 @@ export const NewNotificationProfileForm = () => {
     Input({
       type: "text",
       label: i18n("notification_profiles.form.silence_for.label"),
-      hint: i18n("notification_profiles.form.silence_for.label"),
+      hint: i18n("notification_profiles.form.silence_for.hint"),
       value: notificationProfileForm.fields.silence_for.$value,
       inputChanged: notificationProfileForm.fields.silence_for.changed,
       errorText: notificationProfileForm.fields.silence_for.$errorText,
