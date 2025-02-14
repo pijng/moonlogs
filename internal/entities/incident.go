@@ -19,20 +19,22 @@ type Incident struct {
 	TTL      RecordTime   `json:"ttl" sql:"ttl" bson:"ttl"`
 }
 
-func (i *Incident) Message(payload string) (string, error) {
+func (i *Incident) Message(payload string, timeWindow Duration) (string, error) {
 	tmpl, err := template.New("incident").Parse(payload)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template for rule:'%v': %w", i.RuleName, err)
 	}
 
 	data := struct {
-		RuleName string
-		Keys     string
-		Count    int
+		RuleName   string
+		Keys       string
+		Count      int
+		TimeWindow Duration
 	}{
-		RuleName: i.RuleName,
-		Keys:     mapToString(i.Keys),
-		Count:    i.Count,
+		RuleName:   i.RuleName,
+		Keys:       mapToString(i.Keys),
+		Count:      i.Count,
+		TimeWindow: timeWindow,
 	}
 
 	var buf bytes.Buffer

@@ -5,6 +5,7 @@ import { i18n, trigger } from "@/shared/lib";
 import { NotificationProfileToCreate } from "@/shared/api";
 import { combine, createEvent, createStore, sample } from "effector";
 import { alertingRuleModel } from "@/entities/alerting-rule";
+import { notificationProfileModel } from "@/entities/notification-profile";
 
 export const EditNotificationProfileForm = () => {
   h("form", () => {
@@ -162,7 +163,7 @@ export const EditNotificationProfileForm = () => {
     h("div", () => {
       spec({ classList: ["mt-6"] });
 
-      const varsText = ["{{.RuleName}}", "{{.Count}}", "{{.Keys}}"].join(", ");
+      const varsText = notificationProfileModel.templatingVars.join(", ");
       const $label = combine(
         i18n("notification_profiles.form.payload.variables"),
         varsText,

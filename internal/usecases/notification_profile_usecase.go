@@ -84,13 +84,15 @@ func validatePayload(payload string) error {
 	}
 
 	data := struct {
-		RuleName string
-		Keys     entities.JSONMap[any]
-		Count    int
+		RuleName   string
+		Keys       entities.JSONMap[any]
+		Count      int
+		TimeWindow entities.Duration
 	}{
-		RuleName: "",
-		Keys:     make(entities.JSONMap[any]),
-		Count:    0,
+		RuleName:   "",
+		Keys:       make(entities.JSONMap[any]),
+		Count:      0,
+		TimeWindow: entities.Duration{},
 	}
 
 	var buf bytes.Buffer
