@@ -26,7 +26,7 @@ export const ruleForm = createForm<AlertingRuleToCreate>({
     },
     enabled: {
       init: true,
-      rules: [rules.required()],
+      rules: [],
     },
     severity: {
       init: "Error",

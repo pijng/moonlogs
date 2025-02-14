@@ -26,7 +26,7 @@ export const notificationProfileForm = createForm<NotificationProfileToCreate>({
     },
     enabled: {
       init: true,
-      rules: [rules.required()],
+      rules: [],
     },
     silence_for: {
       init: "1m",
