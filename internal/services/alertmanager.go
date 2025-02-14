@@ -32,6 +32,7 @@ type AlertManagerService struct {
 	incidentMeta               map[incidentHash]profileIncidents
 	notificationProfileUseCase *usecases.NotificationProfileUseCase
 	incidentUseCase            *usecases.IncidentUseCase
+	alertingRulesUseCase       *usecases.AlertingRuleUseCase
 }
 
 type incidentMeta struct {
@@ -43,11 +44,12 @@ type incidentHash string
 
 type profileIncidents map[profileID]incidentMeta
 
-func NewAlertManagerService(ctx context.Context, nuc *usecases.NotificationProfileUseCase, iuc *usecases.IncidentUseCase) *AlertManagerService {
+func NewAlertManagerService(ctx context.Context, nuc *usecases.NotificationProfileUseCase, iuc *usecases.IncidentUseCase, aruc *usecases.AlertingRuleUseCase) *AlertManagerService {
 	return &AlertManagerService{
 		ctx:                        ctx,
 		incidentUseCase:            iuc,
 		notificationProfileUseCase: nuc,
+		alertingRulesUseCase:       aruc,
 		incidentMeta:               make(map[incidentHash]profileIncidents),
 	}
 }
@@ -65,7 +67,17 @@ func (ams *AlertManagerService) Sched() error {
 		return fmt.Errorf("getting notification profiles: %w", err)
 	}
 
+	rules, err := ams.alertingRulesUseCase.GetAllRules(ams.ctx)
+	if err != nil {
+		return fmt.Errorf("getting alerting rules: %w", err)
+	}
+
 	for _, incident := range incidents {
+		rule, ok := detectRule(rules, incident.RuleID)
+		if !ok {
+			continue
+		}
+
 		hash, err := incident.Hash()
 		if err != nil {
 			log.Printf("calculating hash for incident with ID: %v failed: %v", incident.ID, err)
@@ -86,7 +98,7 @@ func (ams *AlertManagerService) Sched() error {
 				ams.removeIncidentInfo(incidentHash(hash), profileID(profile.ID))
 			}
 
-			notifier, err := buildNotifier(incident, profile, httpClientConfig{
+			notifier, err := buildNotifier(incident, profile, rule, httpClientConfig{
 				timeout:             httpTimeout,
 				maxIdleConns:        maxIdleConns,
 				maxConnsPerHost:     maxConnsPerHost,
@@ -116,11 +128,12 @@ func (ams *AlertManagerService) Sched() error {
 type notifier struct {
 	incident      *entities.Incident
 	profile       *entities.NotificationProfile
+	rule          *entities.AlertingRule
 	parsedPayload string
 	httpClient    *http.Client
 }
 
-func buildNotifier(incident *entities.Incident, profile *entities.NotificationProfile, cfg httpClientConfig) (*notifier, error) {
+func buildNotifier(incident *entities.Incident, profile *entities.NotificationProfile, rule *entities.AlertingRule, cfg httpClientConfig) (*notifier, error) {
 	transport := &http.Transport{
 		MaxIdleConns:        cfg.maxIdleConns,
 		MaxConnsPerHost:     cfg.maxConnsPerHost,
@@ -132,7 +145,7 @@ func buildNotifier(incident *entities.Incident, profile *entities.NotificationPr
 		Transport: transport,
 	}
 
-	parsedPayload, err := incident.Message(profile.Payload)
+	parsedPayload, err := incident.Message(profile.Payload, rule.AggregationTimeWindow)
 	if err != nil {
 		return nil, fmt.Errorf("building message: %w", err)
 	}
@@ -140,6 +153,7 @@ func buildNotifier(incident *entities.Incident, profile *entities.NotificationPr
 	return &notifier{
 		incident:      incident,
 		profile:       profile,
+		rule:          rule,
 		httpClient:    client,
 		parsedPayload: parsedPayload,
 	}, nil
@@ -183,6 +197,16 @@ func (n *notifier) notify() error {
 	}
 
 	return nil
+}
+
+func detectRule(rules []*entities.AlertingRule, ruleID int) (*entities.AlertingRule, bool) {
+	for _, rule := range rules {
+		if rule.ID == ruleID {
+			return rule, true
+		}
+	}
+
+	return nil, false
 }
 
 func (ams *AlertManagerService) incidentInfo(incidentHash incidentHash, npID profileID) (incidentMeta, bool) {

@@ -46,6 +46,7 @@ func main() {
 	alertManagerService := services.NewAlertManagerService(bgCtx,
 		usecaseInstances.NotificationProfileUseCase,
 		usecaseInstances.IncidentUseCase,
+		usecaseInstances.AlertingRuleUseCase,
 	)
 
 	runCleanupTasks(bgCtx, usecaseInstances)
