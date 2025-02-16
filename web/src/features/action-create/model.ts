@@ -1,6 +1,6 @@
 import { actionsRoute } from "@/shared/routing";
 import { ActionToCreate, Condition, createAction } from "@/shared/api";
-import { rules } from "@/shared/lib";
+import { bindFieldList, manageSubmit, rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
@@ -44,19 +44,7 @@ export const actionForm = createForm<ActionToCreate>({
   validateOn: ["submit"],
 });
 
-sample({
-  source: actionForm.fields.schema_ids.$value,
-  clock: schemaChecked,
-  fn: (schemas, newSchemaID) => [...schemas, newSchemaID],
-  target: actionForm.fields.schema_ids.onChange,
-});
-
-sample({
-  source: actionForm.fields.schema_ids.$value,
-  clock: schemaUnchecked,
-  fn: (schemas, newSchemaID) => schemas.filter((s) => s !== newSchemaID),
-  target: actionForm.fields.schema_ids.onChange,
-});
+bindFieldList({ field: actionForm.fields.schema_ids, added: schemaChecked, removed: schemaUnchecked });
 
 sample({
   clock: methodSelected,
@@ -124,20 +112,4 @@ export const createActionFx = createEffect((action: ActionToCreate) => {
   return createAction(action);
 });
 
-sample({
-  source: actionForm.formValidated,
-  target: createActionFx,
-});
-
-sample({
-  source: createActionFx.doneData,
-  filter: (actionResponse) => actionResponse.success && Boolean(actionResponse.data.id),
-  target: [actionForm.reset, $creationError.reinit, actionsRoute.open],
-});
-
-sample({
-  source: createActionFx.doneData,
-  filter: (actionResponse) => !actionResponse.success,
-  fn: (actionResponse) => actionResponse.error,
-  target: $creationError,
-});
+manageSubmit({ form: actionForm, actionFx: createActionFx, error: $creationError, route: actionsRoute });

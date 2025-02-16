@@ -1,7 +1,7 @@
 import { tagModel } from "@/entities/tag";
 import { tagsRoute } from "@/shared/routing";
 import { TagToUpdate, deleteTag, editTag } from "@/shared/api";
-import { rules, i18n } from "@/shared/lib";
+import { rules, i18n, manageSubmit } from "@/shared/lib";
 import { redirect } from "atomic-router";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
@@ -31,26 +31,12 @@ sample({
   target: tagForm.setForm,
 });
 
-sample({
-  source: tagModel.$currentTag,
-  clock: tagForm.formValidated,
-  fn: (currentTag, tagToEdit) => {
-    return { ...tagToEdit, id: currentTag.id };
-  },
-  target: editTagFx,
-});
-
-sample({
-  source: editTagFx.doneData,
-  filter: (tagResponse) => tagResponse.success && Boolean(tagResponse.data.id),
-  target: [tagForm.reset, tagsRoute.open],
-});
-
-sample({
-  source: editTagFx.doneData,
-  filter: (tagResponse) => !tagResponse.success,
-  fn: (tagResponse) => tagResponse.error,
-  target: $editError,
+manageSubmit({
+  form: tagForm,
+  actionFx: editTagFx,
+  error: $editError,
+  currentModel: tagModel.$currentTag,
+  route: tagsRoute,
 });
 
 const deleteTagFx = createEffect((id: number) => {

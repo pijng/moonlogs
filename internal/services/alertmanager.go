@@ -78,6 +78,10 @@ func (ams *AlertManagerService) Sched() error {
 			continue
 		}
 
+		if !rule.Enabled {
+			continue
+		}
+
 		hash, err := incident.Hash()
 		if err != nil {
 			log.Printf("calculating hash for incident with ID: %v failed: %v", incident.ID, err)

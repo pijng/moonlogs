@@ -1,7 +1,7 @@
 import { membersRoute } from "@/shared/routing";
 import { UserToCreate, createUser } from "@/shared/api";
-import { rules } from "@/shared/lib";
-import { createEffect, createEvent, createStore, sample } from "effector";
+import { bindFieldList, manageSubmit, rules } from "@/shared/lib";
+import { createEffect, createEvent, createStore } from "effector";
 import { createForm } from "effector-forms";
 
 const tagChecked = createEvent<number>();
@@ -43,36 +43,13 @@ export const createUserFx = createEffect((user: UserToCreate) => {
   return createUser(user);
 });
 
-sample({
-  source: memberForm.formValidated,
-  target: createUserFx,
-});
+bindFieldList({ field: memberForm.fields.tag_ids, added: tagChecked, removed: tagUnchecked });
 
-sample({
-  source: createUserFx.doneData,
-  filter: (userResponse) => userResponse.success && Boolean(userResponse.data.id),
-  target: [membersRoute.open, memberForm.reset],
-});
-
-sample({
-  source: createUserFx.doneData,
-  filter: (userResponse) => !userResponse.success,
-  fn: (userResponse) => userResponse.error,
-  target: $creationError,
-});
-
-sample({
-  source: memberForm.fields.tag_ids.$value,
-  clock: tagChecked,
-  fn: (tags, newTagID) => [...tags, newTagID],
-  target: memberForm.fields.tag_ids.onChange,
-});
-
-sample({
-  source: memberForm.fields.tag_ids.$value,
-  clock: tagUnchecked,
-  fn: (tags, newTagID) => tags.filter((t) => t !== newTagID),
-  target: memberForm.fields.tag_ids.onChange,
+manageSubmit({
+  form: memberForm,
+  actionFx: createUserFx,
+  error: $creationError,
+  route: membersRoute,
 });
 
 export const events = {

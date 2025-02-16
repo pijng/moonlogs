@@ -1,6 +1,6 @@
 import { alertingRulesRoute } from "@/shared/routing";
 import { AlertingRuleToUpdate, deleteRule, editRule } from "@/shared/api";
-import { i18n, rules } from "@/shared/lib";
+import { bindFieldList, i18n, manageSubmit, rules } from "@/shared/lib";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 import { alertingRuleModel } from "@/entities/alerting-rule";
@@ -50,7 +50,7 @@ export const ruleForm = createForm<Omit<AlertingRuleToUpdate, "id">>({
     },
     filter_level: {
       init: "Error",
-      rules: [rules.required()],
+      rules: [],
     },
     filter_schema_ids: {
       init: [],
@@ -90,64 +90,13 @@ export const events = {
   deleteRuleClicked,
 };
 
-sample({
-  source: ruleForm.fields.filter_schema_ids.$value,
-  clock: schemaChecked,
-  fn: (schemas, schemaID) => [...schemas, schemaID],
-  target: ruleForm.fields.filter_schema_ids.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_ids.$value,
-  clock: schemaUnchecked,
-  fn: (schemas, schemaID) => schemas.filter((s) => s !== schemaID),
-  target: ruleForm.fields.filter_schema_ids.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_fields.$value,
-  clock: schemaFieldChecked,
-  fn: (fields, field) => [...fields, field],
-  target: ruleForm.fields.filter_schema_fields.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_fields.$value,
-  clock: schemaFieldUnchecked,
-  fn: (fields, field) => fields.filter((f) => f !== field),
-  target: ruleForm.fields.filter_schema_fields.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_kinds.$value,
-  clock: schemaKindChecked,
-  fn: (kinds, kind) => [...kinds, kind],
-  target: ruleForm.fields.filter_schema_kinds.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_kinds.$value,
-  clock: schemaKindUnchecked,
-  fn: (kinds, kind) => kinds.filter((k) => k !== kind),
-  target: ruleForm.fields.filter_schema_kinds.onChange,
-});
-
-sample({
-  source: ruleForm.fields.aggregation_group_by.$value,
-  clock: aggregationGroupByChecked,
-  fn: (groups, groupBy) => {
-    console.log(groups);
-    console.log([...groups, groupBy]);
-    return [...groups, groupBy];
-  },
-  target: ruleForm.fields.aggregation_group_by.onChange,
-});
-
-sample({
-  source: ruleForm.fields.aggregation_group_by.$value,
-  clock: aggregationGroupByUnchecked,
-  fn: (groups, groupBy) => groups.filter((g) => g !== groupBy),
-  target: ruleForm.fields.aggregation_group_by.onChange,
+bindFieldList({ field: ruleForm.fields.filter_schema_ids, added: schemaChecked, removed: schemaUnchecked });
+bindFieldList({ field: ruleForm.fields.filter_schema_fields, added: schemaFieldChecked, removed: schemaFieldUnchecked });
+bindFieldList({ field: ruleForm.fields.filter_schema_kinds, added: schemaKindChecked, removed: schemaKindUnchecked });
+bindFieldList({
+  field: ruleForm.fields.aggregation_group_by,
+  added: aggregationGroupByChecked,
+  removed: aggregationGroupByUnchecked,
 });
 
 export const $editError = createStore("");
@@ -161,26 +110,12 @@ sample({
   target: [ruleForm.setForm],
 });
 
-sample({
-  source: alertingRuleModel.$currentRule,
-  clock: ruleForm.formValidated,
-  fn: (currentRule, ruleToEdit) => {
-    return { ...ruleToEdit, id: currentRule.id };
-  },
-  target: editRuleFx,
-});
-
-sample({
-  source: editRuleFx.doneData,
-  filter: (ruleResponse) => ruleResponse.success && Boolean(ruleResponse.data.id),
-  target: [ruleForm.reset, $editError.reinit, alertingRulesRoute.open],
-});
-
-sample({
-  source: editRuleFx.doneData,
-  filter: (ruleResponse) => !ruleResponse.success,
-  fn: (ruleResponse) => ruleResponse.error,
-  target: $editError,
+manageSubmit({
+  form: ruleForm,
+  currentModel: alertingRuleModel.$currentRule,
+  actionFx: editRuleFx,
+  error: $editError,
+  route: alertingRulesRoute,
 });
 
 export const deleteRuleFx = createEffect((id: number) => {

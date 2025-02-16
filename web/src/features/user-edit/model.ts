@@ -2,7 +2,7 @@ import { userModel } from "@/entities/user";
 import { membersRoute } from "@/shared/routing";
 import { UserToUpdate, editUser } from "@/shared/api";
 import { deleteUser } from "@/shared/api";
-import { rules, i18n } from "@/shared/lib";
+import { rules, i18n, bindFieldList } from "@/shared/lib";
 import { redirect } from "atomic-router";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
@@ -43,6 +43,8 @@ export const memberForm = createForm<Omit<UserToUpdate, "id">>({
   },
   validateOn: ["submit"],
 });
+
+bindFieldList({ field: memberForm.fields.tag_ids, added: tagChecked, removed: tagUnchecked });
 
 export const $editError = createStore("");
 
@@ -107,20 +109,6 @@ sample({
 redirect({
   clock: deleteUserFx.done,
   route: membersRoute,
-});
-
-sample({
-  source: memberForm.fields.tag_ids.$value,
-  clock: tagChecked,
-  fn: (tags, newTagID) => [...tags, newTagID],
-  target: memberForm.fields.tag_ids.onChange,
-});
-
-sample({
-  source: memberForm.fields.tag_ids.$value,
-  clock: tagUnchecked,
-  fn: (tags, newTagID) => tags.filter((t) => t !== newTagID),
-  target: memberForm.fields.tag_ids.onChange,
 });
 
 export const events = {

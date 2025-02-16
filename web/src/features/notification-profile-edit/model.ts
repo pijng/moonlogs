@@ -5,7 +5,7 @@ import {
   NotificationHeader,
   NotificationProfileToUpdate,
 } from "@/shared/api";
-import { i18n, rules } from "@/shared/lib";
+import { bindFieldList, i18n, manageSubmit, rules } from "@/shared/lib";
 import { notificationProfileRoute } from "@/shared/routing";
 import { redirect } from "atomic-router";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
@@ -106,19 +106,7 @@ sample({
   target: notificationProfileForm.fields.headers.onChange,
 });
 
-sample({
-  source: notificationProfileForm.fields.rule_ids.$value,
-  clock: ruleChecked,
-  fn: (schemas, newSchemaID) => [...schemas, newSchemaID],
-  target: notificationProfileForm.fields.rule_ids.onChange,
-});
-
-sample({
-  source: notificationProfileForm.fields.rule_ids.$value,
-  clock: ruleUnchecked,
-  fn: (schemas, newSchemaID) => schemas.filter((s) => s !== newSchemaID),
-  target: notificationProfileForm.fields.rule_ids.onChange,
-});
+bindFieldList({ field: notificationProfileForm.fields.rule_ids, added: ruleChecked, removed: ruleUnchecked });
 
 export const $editError = createStore("");
 
@@ -131,26 +119,12 @@ sample({
   target: [notificationProfileForm.setForm],
 });
 
-sample({
-  source: notificationProfileModel.$currentNotificationProfile,
-  clock: notificationProfileForm.formValidated,
-  fn: (currentProfile, profileToEdit) => {
-    return { ...profileToEdit, id: currentProfile.id };
-  },
-  target: editNotificationProfileFx,
-});
-
-sample({
-  source: editNotificationProfileFx.doneData,
-  filter: (notificationProfileResponse) => notificationProfileResponse.success && Boolean(notificationProfileResponse.data.id),
-  target: [notificationProfileForm.reset, $editError.reinit, notificationProfileRoute.open],
-});
-
-sample({
-  source: editNotificationProfileFx.doneData,
-  filter: (notificationProfileResponse) => !notificationProfileResponse.success,
-  fn: (notificationProfileResponse) => notificationProfileResponse.error,
-  target: $editError,
+manageSubmit({
+  form: notificationProfileForm,
+  actionFx: editNotificationProfileFx,
+  error: $editError,
+  currentModel: notificationProfileModel.$currentNotificationProfile,
+  route: notificationProfileRoute,
 });
 
 export const deleteNotificationProfileFx = createEffect((id: number) => {

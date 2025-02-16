@@ -1,7 +1,7 @@
 import { alertingRulesRoute } from "@/shared/routing";
 import { AlertingRuleToCreate, createRule } from "@/shared/api";
-import { rules } from "@/shared/lib";
-import { createEffect, createEvent, createStore, sample } from "effector";
+import { bindFieldList, manageSubmit, rules } from "@/shared/lib";
+import { createEffect, createEvent, createStore } from "effector";
 import { createForm } from "effector-forms";
 
 const schemaChecked = createEvent<number>();
@@ -91,76 +91,13 @@ export const createRuleFx = createEffect((rule: AlertingRuleToCreate) => {
   return createRule(rule);
 });
 
-sample({
-  source: ruleForm.fields.filter_schema_ids.$value,
-  clock: schemaChecked,
-  fn: (schemas, schemaID) => [...schemas, schemaID],
-  target: ruleForm.fields.filter_schema_ids.onChange,
+bindFieldList({ field: ruleForm.fields.filter_schema_ids, added: schemaChecked, removed: schemaUnchecked });
+bindFieldList({ field: ruleForm.fields.filter_schema_fields, added: schemaFieldChecked, removed: schemaFieldUnchecked });
+bindFieldList({ field: ruleForm.fields.filter_schema_kinds, added: schemaKindChecked, removed: schemaKindUnchecked });
+bindFieldList({
+  field: ruleForm.fields.aggregation_group_by,
+  added: aggregationGroupByChecked,
+  removed: aggregationGroupByUnchecked,
 });
 
-sample({
-  source: ruleForm.fields.filter_schema_ids.$value,
-  clock: schemaUnchecked,
-  fn: (schemas, schemaID) => schemas.filter((s) => s !== schemaID),
-  target: ruleForm.fields.filter_schema_ids.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_fields.$value,
-  clock: schemaFieldChecked,
-  fn: (fields, field) => [...fields, field],
-  target: ruleForm.fields.filter_schema_fields.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_fields.$value,
-  clock: schemaFieldUnchecked,
-  fn: (fields, field) => fields.filter((f) => f !== field),
-  target: ruleForm.fields.filter_schema_fields.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_kinds.$value,
-  clock: schemaKindChecked,
-  fn: (kinds, kind) => [...kinds, kind],
-  target: ruleForm.fields.filter_schema_kinds.onChange,
-});
-
-sample({
-  source: ruleForm.fields.filter_schema_kinds.$value,
-  clock: schemaKindUnchecked,
-  fn: (kinds, kind) => kinds.filter((k) => k !== kind),
-  target: ruleForm.fields.filter_schema_kinds.onChange,
-});
-
-sample({
-  source: ruleForm.fields.aggregation_group_by.$value,
-  clock: aggregationGroupByChecked,
-  fn: (groups, groupBy) => [...groups, groupBy],
-  target: ruleForm.fields.aggregation_group_by.onChange,
-});
-
-sample({
-  source: ruleForm.fields.aggregation_group_by.$value,
-  clock: aggregationGroupByUnchecked,
-  fn: (groups, groupBy) => groups.filter((g) => g !== groupBy),
-  target: ruleForm.fields.aggregation_group_by.onChange,
-});
-
-sample({
-  source: ruleForm.formValidated,
-  target: createRuleFx,
-});
-
-sample({
-  source: createRuleFx.doneData,
-  filter: (ruleResponse) => ruleResponse.success && Boolean(ruleResponse.data.id),
-  target: [ruleForm.reset, $creationError.reinit, alertingRulesRoute.open],
-});
-
-sample({
-  source: createRuleFx.doneData,
-  filter: (ruleResponse) => !ruleResponse.success,
-  fn: (ruleResponse) => ruleResponse.error,
-  target: $creationError,
-});
+manageSubmit({ form: ruleForm, actionFx: createRuleFx, error: $creationError, route: alertingRulesRoute });

@@ -1,6 +1,6 @@
 import { notificationProfileRoute } from "@/shared/routing";
 import { createNotificationProfile, NotificationHeader, NotificationProfileToCreate } from "@/shared/api";
-import { rules } from "@/shared/lib";
+import { bindFieldList, manageSubmit, rules } from "@/shared/lib";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 
@@ -96,19 +96,7 @@ sample({
   target: notificationProfileForm.fields.headers.onChange,
 });
 
-sample({
-  source: notificationProfileForm.fields.rule_ids.$value,
-  clock: ruleChecked,
-  fn: (schemas, newSchemaID) => [...schemas, newSchemaID],
-  target: notificationProfileForm.fields.rule_ids.onChange,
-});
-
-sample({
-  source: notificationProfileForm.fields.rule_ids.$value,
-  clock: ruleUnchecked,
-  fn: (schemas, newSchemaID) => schemas.filter((s) => s !== newSchemaID),
-  target: notificationProfileForm.fields.rule_ids.onChange,
-});
+bindFieldList({ field: notificationProfileForm.fields.rule_ids, added: ruleChecked, removed: ruleUnchecked });
 
 export const $creationError = createStore("");
 
@@ -116,20 +104,9 @@ export const createNotificationProfileFx = createEffect((profile: NotificationPr
   return createNotificationProfile(profile);
 });
 
-sample({
-  source: notificationProfileForm.formValidated,
-  target: createNotificationProfileFx,
-});
-
-sample({
-  source: createNotificationProfileFx.doneData,
-  filter: (notificationProfileResponse) => notificationProfileResponse.success && Boolean(notificationProfileResponse.data.id),
-  target: [notificationProfileForm.reset, $creationError.reinit, notificationProfileRoute.open],
-});
-
-sample({
-  source: createNotificationProfileFx.doneData,
-  filter: (notificationProfileResponse) => !notificationProfileResponse.success,
-  fn: (notificationProfileResponse) => notificationProfileResponse.error,
-  target: $creationError,
+manageSubmit({
+  form: notificationProfileForm,
+  actionFx: createNotificationProfileFx,
+  error: $creationError,
+  route: notificationProfileRoute,
 });
