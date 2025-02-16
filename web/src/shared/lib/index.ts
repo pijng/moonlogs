@@ -1,5 +1,5 @@
 export { DATEFORMAT_OPTIONS, TIMEZONE, setDateLanguage, $intl } from "./dates";
-export { rules } from "./forms";
+export { rules, bindFieldList, manageSubmit } from "./forms";
 export { trigger } from "./trigger";
 export { hashCode } from "./hash";
 export { isObjectPresent } from "./presence";

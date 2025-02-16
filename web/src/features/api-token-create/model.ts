@@ -20,13 +20,13 @@ export const createApiTokenFx = createEffect((apiToken: ApiTokenToCreate) => {
   return createApiToken(apiToken);
 });
 
+const resetToken = createEvent();
+export const $freshToken = createStore("").reset(resetToken);
+
 sample({
   source: apiTokenForm.formValidated,
   target: createApiTokenFx,
 });
-
-const resetToken = createEvent();
-export const $freshToken = createStore("").reset(resetToken);
 
 sample({
   source: createApiTokenFx.doneData,

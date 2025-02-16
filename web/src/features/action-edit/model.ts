@@ -1,6 +1,6 @@
 import { actionsRoute } from "@/shared/routing";
 import { ActionToCreate, ActionToUpdate, Condition, deleteAction, editAction } from "@/shared/api";
-import { rules, i18n } from "@/shared/lib";
+import { rules, i18n, bindFieldList, manageSubmit } from "@/shared/lib";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createForm } from "effector-forms";
 import { actionModel } from "@/entities/action";
@@ -46,19 +46,7 @@ export const actionForm = createForm<Omit<ActionToUpdate, "id">>({
   validateOn: ["submit"],
 });
 
-sample({
-  source: actionForm.fields.schema_ids.$value,
-  clock: schemaChecked,
-  fn: (schemas, newSchemaID) => [...schemas, newSchemaID],
-  target: actionForm.fields.schema_ids.onChange,
-});
-
-sample({
-  source: actionForm.fields.schema_ids.$value,
-  clock: schemaUnchecked,
-  fn: (schemas, newSchemaID) => schemas.filter((s) => s !== newSchemaID),
-  target: actionForm.fields.schema_ids.onChange,
-});
+bindFieldList({ field: actionForm.fields.schema_ids, added: schemaChecked, removed: schemaUnchecked });
 
 sample({
   clock: methodSelected,
@@ -131,26 +119,12 @@ sample({
   target: [actionForm.setForm],
 });
 
-sample({
-  source: actionModel.$currentAction,
-  clock: actionForm.formValidated,
-  fn: (currentAction, actionToEdit) => {
-    return { ...actionToEdit, id: currentAction.id };
-  },
-  target: editActionFx,
-});
-
-sample({
-  source: editActionFx.doneData,
-  filter: (actionResponse) => actionResponse.success && Boolean(actionResponse.data.id),
-  target: [actionForm.reset, actionsRoute.open],
-});
-
-sample({
-  source: editActionFx.doneData,
-  filter: (actionResponse) => !actionResponse.success,
-  fn: (actionResponse) => actionResponse.error,
-  target: $editError,
+manageSubmit({
+  form: actionForm,
+  currentModel: actionModel.$currentAction,
+  actionFx: editActionFx,
+  error: $editError,
+  route: actionsRoute,
 });
 
 export const deleteActionFx = createEffect((id: number) => {

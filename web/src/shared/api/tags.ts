@@ -3,7 +3,7 @@ import { BaseResponse, del, get, post, put } from "./base";
 export type Tag = {
   id: number;
   name: string;
-  view_order: number;
+  view_order: number | string;
 };
 
 export type TagToCreate = {

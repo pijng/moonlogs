@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"moonlogs/internal/lib/serialize"
+	"slices"
 	"strings"
 	"text/template"
 )
@@ -62,5 +63,6 @@ func mapToString(m JSONMap[any]) string {
 	for k, v := range m {
 		parts = append(parts, fmt.Sprintf("%s: %s", k, v))
 	}
+	slices.Sort(parts)
 	return strings.Join(parts, ", ")
 }
