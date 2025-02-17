@@ -2,7 +2,6 @@ import { RouteInstance, redirect } from "atomic-router";
 import { Store, createEvent, createStore, sample } from "effector";
 import { DOMElement, h, node, spec } from "forest";
 import {
-  ChartLineUpIcon,
   GridPlusIcon,
   LayersIcon,
   LockOpenIcon,
@@ -12,6 +11,7 @@ import {
   UserIcon,
   UsersIcon,
   BullhornIcon,
+  ExclamationMarkIcon,
 } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import {
@@ -184,7 +184,7 @@ export const Sidebar = () => {
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem({ text: i18n("alerting_rules.label"), route: alertingRulesRoute, icon: ChartLineUpIcon });
+            SidebarItem({ text: i18n("alerting_rules.label"), route: alertingRulesRoute, icon: ExclamationMarkIcon });
           });
 
           PermissionGate("Admin", () => {

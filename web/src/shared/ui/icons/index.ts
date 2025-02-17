@@ -20,3 +20,4 @@ export { LockOpenIcon } from "./lock-open";
 export { GridPlusIcon } from "./grid-plus";
 export { ChartLineUpIcon } from "./chart-line-up";
 export { BullhornIcon } from "./bullhorn";
+export { ExclamationMarkIcon } from "./exclamation-mark";

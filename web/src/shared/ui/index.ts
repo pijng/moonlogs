@@ -28,6 +28,7 @@ export {
   GridPlusIcon,
   ChartLineUpIcon,
   BullhornIcon,
+  ExclamationMarkIcon,
 } from "./icons";
 export { Input } from "./input";
 export { TextArea } from "./textarea";
