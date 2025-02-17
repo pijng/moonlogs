@@ -11,7 +11,7 @@ import {
   TagIcon,
   UserIcon,
   UsersIcon,
-  BullhornIcon,
+  ExclamationMarkIcon,
 } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import {
@@ -188,7 +188,11 @@ export const Sidebar = () => {
           });
 
           PermissionGate("Admin", () => {
-            SidebarItem({ text: i18n("notification_profiles.label"), route: notificationProfileRoute, icon: BullhornIcon });
+            SidebarItem({
+              text: i18n("notification_profiles.label"),
+              route: notificationProfileRoute,
+              icon: ExclamationMarkIcon,
+            });
           });
 
           PermissionGate("Admin", () => {
