@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS notification_profiles (
 	description TEXT NOT NULL,
   rule_ids TEXT,
 	enabled INTEGER DEFAULT 1,
+	silence_for INTEGER,
 	url TEXT,
   method TEXT,
   headers TEXT,

@@ -127,7 +127,7 @@ func (s *NotificationProfileStorage) UpdateNotificationProfileByID(ctx context.C
 
 func (s *NotificationProfileStorage) GetAllNotificationProfiles(ctx context.Context) ([]*entities.NotificationProfile, error) {
 	query := `SELECT id, name, description, rule_ids, enabled, silence_for,
-		url, method, headers, payload FROM notification_profiles FROM notification_profiles ORDER BY id DESC;`
+		url, method, headers, payload FROM notification_profiles ORDER BY id DESC;`
 	stmt, err := s.readDB.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed preparing statement: %w", err)
