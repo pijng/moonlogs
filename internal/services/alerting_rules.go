@@ -104,12 +104,16 @@ func (cl *Collector) trigger() error {
 			continue
 		}
 
+		schemaName, _ := group.Keys["schema_name"].(string)
+
 		payload := entities.Incident{
-			RuleName: cl.rule.Name,
-			RuleID:   cl.rule.ID,
-			Keys:     group.Keys,
-			Count:    int(group.Count),
-			TTL:      entities.RecordTime{Time: time.Now().Add(cl.rule.Interval.Duration)},
+			RuleName:   cl.rule.Name,
+			RuleID:     cl.rule.ID,
+			SchemaName: schemaName,
+			Severity:   cl.rule.Severity,
+			Keys:       group.Keys,
+			Count:      int(group.Count),
+			TTL:        entities.RecordTime{Time: time.Now().Add(cl.rule.Interval.Duration)},
 		}
 
 		_, err := cl.incidentUseCase.CreateIncident(cl.ctx, payload)

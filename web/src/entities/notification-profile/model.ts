@@ -1,7 +1,15 @@
 import { getNotificationProfile, getNotificationProfiles, NotificationProfile } from "@/shared/api";
 import { createEffect, createStore } from "effector";
 
-export const templatingVars: string[] = ["{{.RuleName}}", "{{.Count}}", "{{.Keys}}", "{{.TimeWindow}}"];
+export const templatingVars: string[] = [
+  "{{.RuleName}}",
+  "{{.Count}}",
+  "{{.SchemaName}}",
+  "{{.LogsPath}}",
+  "{{.Severity}}",
+  "{{.Keys}}",
+  "{{.TimeWindow}}",
+];
 
 const getNotificationProfilesFx = createEffect(() => {
   return getNotificationProfiles();
