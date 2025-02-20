@@ -1,0 +1,19 @@
+{
+  "name": "moonlogs",
+  "version": "v1.18.6",
+  "type": "module",
+  "scripts": {
+    "tsp:compile": "npx tsp compile ."
+  },
+  "peerDependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/openapi3": "latest"
+  },
+  "devDependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/openapi3": "latest"
+  },
+  "private": true
+}
