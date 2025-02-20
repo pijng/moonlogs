@@ -6,18 +6,21 @@ import (
 	"encoding/hex"
 	"fmt"
 	"moonlogs/internal/lib/serialize"
+	"net/url"
 	"slices"
 	"strings"
 	"text/template"
 )
 
 type Incident struct {
-	ID       int          `json:"id" sql:"id" bson:"id"`
-	RuleName string       `json:"rule_name" sql:"rule_name" bson:"rule_name"`
-	RuleID   int          `json:"rule_id" sql:"rule_id" bson:"rule_id"`
-	Keys     JSONMap[any] `json:"keys" sql:"keys" bson:"keys"`
-	Count    int          `json:"count" sql:"count" bson:"count"`
-	TTL      RecordTime   `json:"ttl" sql:"ttl" bson:"ttl"`
+	ID         int          `json:"id" sql:"id" bson:"id"`
+	RuleName   string       `json:"rule_name" sql:"rule_name" bson:"rule_name"`
+	RuleID     int          `json:"rule_id" sql:"rule_id" bson:"rule_id"`
+	SchemaName string       `json:"schema_name" sql:"schema_name" bson:"schema_name"`
+	Severity   Level        `json:"severity" sql:"severity" bson:"severity"`
+	Keys       JSONMap[any] `json:"keys" sql:"keys" bson:"keys"`
+	Count      int          `json:"count" sql:"count" bson:"count"`
+	TTL        RecordTime   `json:"ttl" sql:"ttl" bson:"ttl"`
 }
 
 func (i *Incident) Message(payload string, timeWindow Duration) (string, error) {
@@ -28,12 +31,18 @@ func (i *Incident) Message(payload string, timeWindow Duration) (string, error) 
 
 	data := struct {
 		RuleName   string
+		SchemaName string
+		Severity   Level
 		Keys       string
+		LogsPath   string
 		Count      int
 		TimeWindow Duration
 	}{
 		RuleName:   i.RuleName,
+		SchemaName: i.SchemaName,
+		Severity:   i.Severity,
 		Keys:       mapToString(i.Keys),
+		LogsPath:   i.LogsPath(),
 		Count:      i.Count,
 		TimeWindow: timeWindow,
 	}
@@ -56,6 +65,23 @@ func (i *Incident) Hash() (string, error) {
 	data := fmt.Sprintf("%s:%s", i.RuleName, string(keysJSON))
 	hash := md5.Sum([]byte(data))
 	return hex.EncodeToString(hash[:]), nil
+}
+
+func (i *Incident) LogsPath() string {
+	var buf strings.Builder
+	buf.WriteString("/logs/" + i.SchemaName + "?f=")
+
+	values := url.Values{}
+	for k, v := range i.Keys {
+		if k == "schema_name" {
+			continue
+		}
+		values.Set(k, fmt.Sprint(v))
+	}
+
+	buf.WriteString(values.Encode())
+
+	return buf.String()
 }
 
 func mapToString(m JSONMap[any]) string {

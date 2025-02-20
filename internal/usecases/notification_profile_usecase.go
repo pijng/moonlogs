@@ -86,11 +86,17 @@ func validatePayload(payload string) error {
 	data := struct {
 		RuleName   string
 		Keys       entities.JSONMap[any]
+		LogsPath   string
+		SchemaName string
+		Severity   entities.Level
 		Count      int
 		TimeWindow entities.Duration
 	}{
 		RuleName:   "",
 		Keys:       make(entities.JSONMap[any]),
+		LogsPath:   "",
+		SchemaName: "",
+		Severity:   entities.ErrorLevel,
 		Count:      0,
 		TimeWindow: entities.Duration{},
 	}
