@@ -91,6 +91,7 @@ export const ru: Translation = {
     save: "Сохранить",
     delete: "Удалить",
     edit: "Редактировать",
+    build_insight: "Построить инсайт",
     open: "Открыть",
     log_in: "Войти",
     register: "Зарегистрироваться",
@@ -217,6 +218,13 @@ export const ru: Translation = {
     },
     alerts: {
       delete: "Вы уверены, что хотите удалить этот API токен?",
+    },
+  },
+  insights: {
+    label: "Инсайты",
+    form: {
+      field_name: "Название поля",
+      field_value: "Значение поля",
     },
   },
   tables: {

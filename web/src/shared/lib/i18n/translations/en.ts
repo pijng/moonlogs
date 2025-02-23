@@ -91,6 +91,7 @@ export const en: Translation = {
     save: "Save",
     delete: "Delete",
     edit: "Edit",
+    build_insight: "Build insight",
     open: "Open",
     log_in: "Log in",
     register: "Register",
@@ -217,6 +218,13 @@ export const en: Translation = {
     },
     alerts: {
       delete: "Are you sure you want to delete this API token?",
+    },
+  },
+  insights: {
+    label: "Insights",
+    form: {
+      field_name: "Field name",
+      field_value: "Field value",
     },
   },
   tables: {

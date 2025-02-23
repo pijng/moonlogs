@@ -12,6 +12,7 @@ import {
   UsersIcon,
   BullhornIcon,
   ExclamationMarkIcon,
+  LightBulbIcon,
 } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
 import {
@@ -24,6 +25,7 @@ import {
   membersRoute,
   profileRoute,
   tagsRoute,
+  insightsRoute,
 } from "@/shared/routing";
 
 export const sidebarClosed = createEvent();
@@ -170,6 +172,8 @@ export const Sidebar = () => {
           SidebarItem({ text: i18n("profile.label"), route: profileRoute, icon: UserIcon });
 
           SidebarItem({ text: i18n("log_groups.label"), route: homeRoute, icon: LayersIcon });
+
+          SidebarItem({ text: i18n("insights.label"), route: insightsRoute, icon: LightBulbIcon });
 
           PermissionGate("Admin", () => {
             SidebarItem({ text: i18n("members.label"), route: membersRoute, icon: UsersIcon });

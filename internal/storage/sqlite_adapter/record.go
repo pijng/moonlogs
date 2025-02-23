@@ -85,7 +85,9 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 	if record.ID != 0 {
 		queryBuilder.WriteString("schema_id = ?")
 		queryParams = append(queryParams, record.SchemaID)
-	} else {
+	}
+
+	if record.SchemaName != "" {
 		queryBuilder.WriteString("schema_name = ?")
 		queryParams = append(queryParams, record.SchemaName)
 	}

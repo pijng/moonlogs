@@ -29,3 +29,4 @@ export const alertingRuleEditRoute = createRoute<{ id: number }>();
 export const notificationProfileRoute = createRoute();
 export const notificationProfileCreateRoute = createRoute();
 export const notificationProfileEditRoute = createRoute<{ id: number }>();
+export const insightsRoute = createRoute();

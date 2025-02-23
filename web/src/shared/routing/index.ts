@@ -30,6 +30,7 @@ import {
   notificationProfileRoute,
   notificationProfileCreateRoute,
   notificationProfileEditRoute,
+  insightsRoute,
 } from "./routes";
 export * from "./routes";
 export * from "./middlewares";
@@ -65,6 +66,7 @@ const ROUTES = [
   { path: "/actions", route: actionsRoute },
   { path: "/actions/create", route: actionCreateRoute },
   { path: "/actions/:id/edit", route: actionEditRoute },
+  { path: "/insights", route: insightsRoute },
 ];
 
 export const controls = createRouterControls();

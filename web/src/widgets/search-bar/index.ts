@@ -31,7 +31,7 @@ export const SearchBar = () => {
   h("div", () => {
     h("div", () => {
       spec({
-        classList: ["flex", "max-w-2xl", "w-full", "flex-row"],
+        classList: ["flex", "max-w-xl", "w-full", "flex-row"],
       });
 
       h("div", () => {

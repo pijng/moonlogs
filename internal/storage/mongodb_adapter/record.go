@@ -100,7 +100,8 @@ func (s *RecordStorage) GetRecordsByQuery(ctx context.Context, record entities.R
 
 	if record.ID != 0 {
 		filter["schema_id"] = record.SchemaID
-	} else {
+	}
+	if record.SchemaName != "" {
 		filter["schema_name"] = record.SchemaName
 	}
 
