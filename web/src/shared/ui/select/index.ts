@@ -26,9 +26,12 @@ export const Select = ({
   const $filteredOptions = combine(options, $searchQuery, (opts, query) => {
     const lowerQuery = query.toLocaleLowerCase();
     return opts.filter((opt) => {
-      const lowerOptTitle = opt.title?.toLocaleLowerCase();
-      const lowerOptName = opt.name?.toLocaleLowerCase();
-      const lowerOptId = opt.id?.toLocaleLowerCase();
+      const optTitle = !!opt.title ? opt.title.toString() : "";
+      const lowerOptTitle = optTitle.toLocaleLowerCase();
+      const optName = !!opt.name ? opt.name.toString() : "";
+      const lowerOptName = optName.toLocaleLowerCase();
+      const optId = !!opt.id ? opt.id.toString() : "";
+      const lowerOptId = optId.toLocaleLowerCase();
 
       return (
         (typeof opt === "string" && opt.toLocaleLowerCase().includes(lowerQuery)) ||
