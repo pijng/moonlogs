@@ -181,6 +181,7 @@ const InsightLogsTable = () => {
         h("tbody", () => {
           list($insightLogs, ({ store: log, key: $idx }) => {
             const $classes = createStore("");
+            $classes.watch(console.log);
             const touch = createEvent();
             sample({
               source: { schemas: $insightsSchemas, logs: $insightLogs, idx: $idx },
@@ -345,8 +346,4 @@ const logRowClasses = (schemas: InsightSchema[], logs: Log[], idx: number): stri
   const classes = colorClasses.concat(baseRowClasses);
 
   return classes.join(" ");
-
-  // const finalClasses = colors.map((colors) => baseRowClasses.concat(colors).join(" "));
-
-  // return [finalClasses];
 };

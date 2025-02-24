@@ -90,6 +90,12 @@ sample({
 export const $insightLogs = createStore<Log[]>([]);
 
 sample({
+  clock: getLogsFx.pending,
+  fn: () => [],
+  target: $insightLogs,
+});
+
+sample({
   source: $intl,
   clock: getLogsFx.doneData,
   fn: (intl, logsResponse) => {
