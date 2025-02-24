@@ -2,7 +2,7 @@ import { $shouldCopyToClipboard, i18n, isObjectPresent } from "@/shared/lib";
 import { Button, ChangesTable, Input, KBD, LegendIndicator, LevelBadge, Select, triggerTooltip } from "@/shared/ui";
 import { ClassListArray, h, list, node, remap, spec } from "forest";
 import { $fieldsOptions, $filterList, $insightLogs, $insightsSchemas, events, InsightSchema } from "./model";
-import { combine, createEffect, createEvent, createStore, restore, sample, Store } from "effector";
+import { createEffect, createEvent, createStore, sample } from "effector";
 import { logModel } from "@/entities/log";
 import { Log } from "@/shared/api";
 
@@ -179,18 +179,17 @@ const InsightLogsTable = () => {
         });
 
         h("tbody", () => {
-          list($insightLogs, ({ store: log, key: idx }) => {
+          list($insightLogs, ({ store: log, key: $idx }) => {
+            const $classes = createStore("");
+            const touch = createEvent();
+            sample({
+              source: { schemas: $insightsSchemas, logs: $insightLogs, idx: $idx },
+              clock: touch,
+              fn: ({ schemas, logs, idx }) => logRowClasses(schemas, logs, idx),
+              target: $classes,
+            });
+
             h("tr", () => {
-              const touch = createEvent();
-              const touchClasses = createEvent<string>();
-              const $classes = restore(touchClasses, "");
-
-              sample({
-                clock: touch,
-                source: logRowClasses($insightsSchemas, $insightLogs, idx),
-                target: touchClasses,
-              });
-
               spec({
                 classList: ["w-full", "text-gray-900", "dark:text-gray-100"],
               });
@@ -327,28 +326,27 @@ const baseRowClasses = [
   "align-top",
 ];
 
-const logRowClasses = (schemas: Store<InsightSchema[]>, logs: Store<Log[]>, idx: Store<number>): Store<string> => {
-  const logsMatrix = combine(logs, idx, (logs, idx) => {
-    const prevIdx = idx - 1;
-    const nextIdx = idx + 1;
-    const prev = prevIdx >= 0 ? logs.at(prevIdx) : null;
-    const curr = logs.at(idx);
-    const next = nextIdx < logs.length ? logs.at(nextIdx) : null;
+const logRowClasses = (schemas: InsightSchema[], logs: Log[], idx: number): string => {
+  const prevIdx = idx - 1;
+  const nextIdx = idx + 1;
+  const prev = prevIdx >= 0 ? logs.at(prevIdx) : null;
+  const curr = logs.at(idx);
+  const next = nextIdx < logs.length ? logs.at(nextIdx) : null;
 
-    return { prev, curr, next };
-  });
+  const prevSchema = schemas.find((s) => s.schemaId === prev?.schema_id);
+  const currSchema = schemas.find((s) => s.schemaId === curr?.schema_id);
+  const nextSchema = schemas.find((s) => s.schemaId === next?.schema_id);
 
-  const colors = combine(schemas, logsMatrix, (schemas, logs) => {
-    const prevSchema = schemas.find((s) => s.schemaId === logs.prev?.schema_id);
-    const currSchema = schemas.find((s) => s.schemaId === logs.curr?.schema_id);
-    const nextSchema = schemas.find((s) => s.schemaId === logs.next?.schema_id);
+  const color = currSchema?.schemaColor;
+  const btlr = !prevSchema || prevSchema.schemaId != currSchema?.schemaId ? "xl" : null;
+  const bblr = !nextSchema || nextSchema.schemaId != currSchema?.schemaId ? "xl" : null;
 
-    const color = currSchema?.schemaColor;
-    const btlr = !prevSchema || prevSchema.schemaId != currSchema?.schemaId ? "xl" : null;
-    const bblr = !nextSchema || nextSchema.schemaId != currSchema?.schemaId ? "xl" : null;
+  const colorClasses = [`before:border-${color}`, `before:rounded-tl-${btlr}`, `before:rounded-bl-${bblr}`];
+  const classes = colorClasses.concat(baseRowClasses);
 
-    return [`before:border-${color}`, `before:rounded-tl-${btlr}`, `before:rounded-bl-${bblr}`] as string[];
-  });
+  return classes.join(" ");
 
-  return colors.map((colors) => baseRowClasses.concat(colors).join(" "));
+  // const finalClasses = colors.map((colors) => baseRowClasses.concat(colors).join(" "));
+
+  // return [finalClasses];
 };
