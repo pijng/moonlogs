@@ -198,7 +198,6 @@ const InsightLogsTable = () => {
         h("tbody", () => {
           list($insightLogs, ({ store: log, key: $idx }) => {
             const $classes = createStore("");
-            $classes.watch(console.log);
             const touch = createEvent();
             sample({
               source: { schemas: $insightsSchemas, logs: $insightLogs, idx: $idx },
