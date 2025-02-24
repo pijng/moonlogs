@@ -24,3 +24,4 @@ go.work
 
 moonlogs
 dist/
+node_modules/

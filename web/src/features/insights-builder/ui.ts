@@ -339,11 +339,11 @@ const logRowClasses = (schemas: Store<InsightSchema[]>, logs: Store<Log[]>, idx:
   });
 
   const colors = combine(schemas, logsMatrix, (schemas, logs) => {
-    const prevSchema = !!logs.prev ? schemas.find((s) => s.schemaId === logs.prev?.schema_id) : null;
-    const currSchema = !!logs.curr ? schemas.find((s) => s.schemaId === logs.curr?.schema_id) : null;
-    const nextSchema = !!logs.next ? schemas.find((s) => s.schemaId === logs.next?.schema_id) : null;
+    const prevSchema = schemas.find((s) => s.schemaId === logs.prev?.schema_id);
+    const currSchema = schemas.find((s) => s.schemaId === logs.curr?.schema_id);
+    const nextSchema = schemas.find((s) => s.schemaId === logs.next?.schema_id);
 
-    const color = currSchema!.schemaColor;
+    const color = currSchema?.schemaColor;
     const btlr = !prevSchema || prevSchema.schemaId != currSchema?.schemaId ? "xl" : null;
     const bblr = !nextSchema || nextSchema.schemaId != currSchema?.schemaId ? "xl" : null;
 
