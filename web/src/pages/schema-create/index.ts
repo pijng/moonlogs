@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { schemaCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { NewSchemaForm } from "@/features/schema-create";
+import { NewSchemaForm } from "@/features/schema/schema-create";
 import { i18n } from "@/shared/lib/i18n";
 
 export const SchemaCreatePage = () => {
