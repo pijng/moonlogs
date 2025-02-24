@@ -5,7 +5,7 @@ import { notificationProfileEditRoute } from "@/shared/routing";
 
 import { i18n } from "@/shared/lib/i18n";
 import { Header } from "@/shared/ui";
-import { EditNotificationProfileForm } from "@/features/notification-profile-edit";
+import { EditNotificationProfileForm } from "@/features/notification-profile/notification-profile-edit";
 
 export const NotificationProfleEditPage = () => {
   h("div", () => {

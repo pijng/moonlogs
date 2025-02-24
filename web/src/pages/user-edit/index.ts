@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { memberEditRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { EditMemberForm } from "@/features/user-edit";
+import { EditMemberForm } from "@/features/user/user-edit";
 import { i18n } from "@/shared/lib/i18n";
 
 export const UserEditPage = () => {

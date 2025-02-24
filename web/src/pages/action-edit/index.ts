@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { actionEditRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { EditActionForm } from "@/features/action-edit";
+import { EditActionForm } from "@/features/actions/action-edit";
 import { i18n } from "@/shared/lib/i18n";
 
 export const ActionEditPage = () => {

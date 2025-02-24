@@ -4,7 +4,7 @@ import { h, spec } from "forest";
 import { notificationProfileCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
-import { NewNotificationProfileForm } from "@/features/notification-profile-create";
+import { NewNotificationProfileForm } from "@/features/notification-profile/notification-profile-create";
 
 export const NotificationProfileCreatePage = () => {
   h("div", () => {
