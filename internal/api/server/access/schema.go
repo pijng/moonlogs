@@ -8,6 +8,10 @@ import (
 )
 
 func IsSchemaForbiddenForUser(schemaUseCase *usecases.SchemaUseCase, schemaName string, r *http.Request) bool {
+	if schemaName == "" {
+		return false
+	}
+
 	user := session.GetUserFromContext(r)
 	if user == nil {
 		return false

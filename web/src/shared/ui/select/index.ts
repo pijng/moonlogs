@@ -1,8 +1,8 @@
 import { hashCode } from "@/shared/lib";
 import { Event, Store, combine, createEvent, createStore, sample } from "effector";
-import { h, list, node, spec } from "forest";
+import { DOMElement, h, list, node, spec } from "forest";
 import { i18n } from "@/shared/lib/i18n";
-import { Label, DownIcon } from "@/shared/ui";
+import { Label, DownIcon, Search } from "@/shared/ui";
 
 export const Select = ({
   value,
@@ -19,11 +19,32 @@ export const Select = ({
   optionSelected: Event<any>;
   withBlank?: Store<boolean>;
 }) => {
+  const $searchQuery = createStore("");
+  const queryChanged = createEvent<string>();
+  $searchQuery.on(queryChanged, (_, query) => query);
+
+  const $filteredOptions = combine(options, $searchQuery, (opts, query) => {
+    const lowerQuery = query.toLocaleLowerCase();
+    return opts.filter((opt) => {
+      const lowerOptTitle = opt.title?.toLocaleLowerCase();
+      const lowerOptName = opt.name?.toLocaleLowerCase();
+      const lowerOptId = opt.id?.toLocaleLowerCase();
+
+      return (
+        (typeof opt === "string" && opt.toLocaleLowerCase().includes(lowerQuery)) ||
+        lowerOptTitle?.includes(lowerQuery) ||
+        lowerOptName?.includes(lowerQuery) ||
+        lowerOptId?.toString().includes(lowerQuery)
+      );
+    });
+  });
+
   const $optionsHash = options.map((o) => hashCode(o.join("")));
 
   const dropdownTriggered = createEvent<MouseEvent>();
+  const $withSearch = options.map((opts) => opts.length > 8);
   const $localVisible = createStore(false);
-  const outsideClicked = createEvent<any>();
+  const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
   sample({
     source: $localVisible,
     clock: dropdownTriggered,
@@ -40,8 +61,8 @@ export const Select = ({
   sample({
     source: { visible: $localVisible, hash: $optionsHash },
     clock: outsideClicked,
-    filter: ({ visible, hash }, event) => {
-      return hash !== event.target.id && visible;
+    filter: ({ visible, hash }, { node, event }) => {
+      return !node.contains(event.target) && hash !== event.target.id && visible;
     },
     fn: () => false,
     target: $localVisible,
@@ -116,7 +137,7 @@ export const Select = ({
       spec({
         visible: $localVisible,
         classList: [
-          "max-h-56",
+          "max-h-96",
           "overflow-auto",
           "dark:scrollbar",
           "left-0",
@@ -138,6 +159,15 @@ export const Select = ({
           "dark:divide-gray-600",
           "shadow-2xl",
         ],
+      });
+
+      h("div", () => {
+        spec({
+          visible: $withSearch,
+          classList: ["bg-white", "dark:bg-squid-ink", "top-0", "sticky", "px-3"],
+        });
+
+        Search(queryChanged, $searchQuery);
       });
 
       h("ul", () => {
@@ -170,9 +200,14 @@ export const Select = ({
           handler: { on: { click: optionSelected.prepend(() => null) } },
         });
 
-        list(options, ({ store: option }) => {
+        list($filteredOptions, ({ store: option }) => {
           h("li", () => {
             const localOptionSelected = createEvent<any>();
+            sample({
+              clock: localOptionSelected,
+              fn: () => false,
+              target: $localVisible,
+            });
             sample({
               source: option,
               clock: localOptionSelected,
@@ -208,9 +243,9 @@ export const Select = ({
       });
     });
 
-    node(() => {
+    node((node) => {
       document.addEventListener("click", (event) => {
-        outsideClicked(event);
+        outsideClicked({ node, event });
       });
     });
   });

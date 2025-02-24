@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { apiTokenEditRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { EditApiTokenForm } from "@/features/api-token-edit";
+import { EditApiTokenForm } from "@/features/api-token/api-token-edit";
 import { i18n } from "@/shared/lib/i18n";
 
 export const ApiTokenEditPage = () => {

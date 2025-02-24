@@ -41,6 +41,7 @@ export const getLogs = ({
   level,
   from,
   to,
+  limit,
   page,
 }: {
   schema_name: string;
@@ -50,10 +51,11 @@ export const getLogs = ({
   level?: Level;
   from?: Date;
   to?: Date;
+  limit?: number;
   page?: number;
 }): Promise<LogsResponse> => {
   return post({
-    url: `/api/logs/search?from=${from ?? ""}&to=${to ?? ""}&tz=${TIMEZONE}&page=${page ?? 1}`,
+    url: `/api/logs/search?from=${from ?? ""}&to=${to ?? ""}&tz=${TIMEZONE}&page=${page ?? 1}&limit=${limit}`,
     body: JSON.stringify({ schema_name, text, query, kind, level }),
   });
 };

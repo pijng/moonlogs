@@ -6,6 +6,7 @@ export { FloatingInput } from "./floating-input";
 export { FilledFloatingInput } from "./filled-floating-input";
 export { Header } from "./header";
 export { Subheader } from "./subheader";
+export { LegendIndicator } from "./legend-indicator";
 export {
   DownIcon,
   FireIcon,
@@ -29,6 +30,7 @@ export {
   ChartLineUpIcon,
   BullhornIcon,
   ExclamationMarkIcon,
+  LightBulbIcon,
 } from "./icons";
 export { Input } from "./input";
 export { TextArea } from "./textarea";

@@ -348,12 +348,20 @@ export type Translation = {
       delete: string;
     };
   };
+  insights: {
+    label: string;
+    form: {
+      field_name: string;
+      field_value: string;
+    };
+  };
   buttons: {
     create: string;
     settings: string;
     save: string;
     delete: string;
     edit: string;
+    build_insight: string;
     open: string;
     log_in: string;
     register: string;

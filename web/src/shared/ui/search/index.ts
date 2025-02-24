@@ -13,7 +13,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
 
   h("div", () => {
     spec({
-      classList: ["bg-white", "dark:bg-eigengrau", "max-w-xl", "py-3"],
+      classList: ["py-3"],
     });
 
     h("label", {
@@ -76,7 +76,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
             "bg-gray-50",
             "focus:ring-blue-500",
             "focus:border-blue-500",
-            "dark:bg-squid-ink",
+            "dark:bg-raisin-black",
             "dark:border-slate-gray",
             "dark:placeholder-gray-400",
             "dark:text-white",
@@ -93,6 +93,7 @@ export const Search = (inputChanged: Event<string>, searchQuery: Store<string>) 
         variant: "light",
         size: "small",
         event: searchCleared,
+        prevent: true,
         visible: searchQuery.map((query) => query.length > 0),
       });
     });

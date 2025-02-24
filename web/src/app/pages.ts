@@ -29,6 +29,7 @@ import { combine } from "effector";
 import { NotificationProfileCreatePage } from "@/pages/notification-profile-create";
 import { NotificationProfleEditPage } from "@/pages/notification-profile-edit";
 import { NotificationProfileListPage } from "@/pages/notification-profile-list";
+import { InsightsPage } from "@/pages/insights";
 
 export const Pages = () => {
   const $layoutVisible = combine(
@@ -68,6 +69,7 @@ export const Pages = () => {
       NotificationProfileListPage();
       NotificationProfileCreatePage();
       NotificationProfleEditPage();
+      InsightsPage();
     },
     layoutVisible: $layoutVisible,
   });

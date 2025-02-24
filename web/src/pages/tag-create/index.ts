@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { tagCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { NewTagForm } from "@/features/tag-create";
+import { NewTagForm } from "@/features/tag/tag-create";
 import { i18n } from "@/shared/lib/i18n";
 
 export const TagCreatePage = () => {

@@ -11,7 +11,10 @@ export const SchemasList = () => {
       classList: ["pt-3"],
     });
 
-    Search(queryChanged, $searchQuery);
+    h("div", () => {
+      spec({ classList: ["max-w-xl"] });
+      Search(queryChanged, $searchQuery);
+    });
 
     list($sortedTags, ({ store: tag }) => {
       h("div", () => {

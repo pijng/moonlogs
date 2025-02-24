@@ -8,3 +8,4 @@ export * from "./profile";
 export * from "./action";
 export * from "./alerting-rule";
 export * from "./notification-profile";
+export * from "./insights";

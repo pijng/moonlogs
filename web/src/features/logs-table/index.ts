@@ -113,7 +113,11 @@ export const LogsTable = ({
                 });
 
                 h("div", {
-                  classList: ["whitespace-pre-wrap", "break-words", "cursor-pointer"],
+                  classList: {
+                    "whitespace-pre-wrap": true,
+                    "break-words": true,
+                    "cursor-pointer": $shouldCopyToClipboard,
+                  },
                   text: $formattedText,
                   handler: { click: textClicked },
                 });

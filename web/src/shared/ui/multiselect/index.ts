@@ -2,6 +2,7 @@ import { Event, Store, combine, createEvent, createStore, sample } from "effecto
 import { DOMElement, h, list, node, remap, spec } from "forest";
 import { condition } from "patronum";
 import { ErrorHint } from "../error-hint";
+import { Search } from "../search";
 
 interface SelectItem<T extends string | number> {
   id: T;
@@ -25,8 +26,23 @@ export const Multiselect = <T extends string | number>({
   optionUnchecked: Event<any>;
   errorText?: Store<string>;
 }) => {
+  const $searchQuery = createStore("");
+  const queryChanged = createEvent<string>();
+  $searchQuery.on(queryChanged, (_, query) => query);
+
+  const $filteredOptions = combine(options, $searchQuery, (opts, query) => {
+    const lowerQuery = query.toLocaleLowerCase();
+    return opts.filter((opt) => {
+      const lowerName = opt.name.toLocaleLowerCase();
+      const lowerId = opt.id.toString().toLocaleLowerCase();
+
+      return lowerName.includes(lowerQuery) || lowerId.includes(lowerQuery);
+    });
+  });
+
   const dropdownTriggered = createEvent<MouseEvent>();
   const $localVisible = createStore(false);
+  const $withSearch = options.map((opts) => opts.length > 8);
   const outsideClicked = createEvent<{ node: DOMElement; event: any }>();
 
   sample({
@@ -103,17 +119,16 @@ export const Multiselect = <T extends string | number>({
       spec({
         visible: $localVisible,
         classList: [
-          "max-h-56",
+          "max-h-96",
           "overflow-auto",
           "dark:scrollbar",
           "left-0",
           "absolute",
           "left-0",
           "top-18",
-          "w-fit",
+          "w-full",
           "border",
           "border-gray-200",
-          "dark:bg-raisin-black",
           "dark:border-shadow-gray",
           "z-50",
           "bg-white",
@@ -127,12 +142,18 @@ export const Multiselect = <T extends string | number>({
         ],
       });
 
+      h("div", () => {
+        spec({ visible: $withSearch, classList: ["bg-inherit", "top-0", "sticky", "px-3"] });
+
+        Search(queryChanged, $searchQuery);
+      });
+
       h("ul", () => {
         spec({
           classList: ["flex", "flex-col", "flex-wrap", "text-gray-700", "dark:text-gray-200"],
         });
 
-        list(options, ({ store: option }) => {
+        list($filteredOptions, ({ store: option }) => {
           h("li", () => {
             spec({
               classList: [

@@ -34,5 +34,5 @@ export const $groupedTaggedSchemas = $taggedSchemas.map((schemas) => {
 });
 
 export const $sortedTags = tagModel.$tags.map((tags) => {
-  return tags.sort((t1, t2) => t1.view_order - t2.view_order);
+  return tags.sort((t1, t2) => Number(t1.view_order) - Number(t2.view_order));
 });

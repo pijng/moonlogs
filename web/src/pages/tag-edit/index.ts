@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { tagEditRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { EditTagForm } from "@/features/tag-edit";
+import { EditTagForm } from "@/features/tag/tag-edit";
 import { i18n } from "@/shared/lib/i18n";
 
 export const TagEditPage = () => {

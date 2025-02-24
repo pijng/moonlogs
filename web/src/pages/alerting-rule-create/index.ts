@@ -4,7 +4,7 @@ import { h, spec } from "forest";
 import { alertingRuleCreateRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
 import { i18n } from "@/shared/lib/i18n";
-import { NewAlertingRuleForm } from "@/features/alerting-rule-create";
+import { NewAlertingRuleForm } from "@/features/alerting-rule/alerting-rule-create";
 
 export const AlertingRuleCreatePage = () => {
   h("div", () => {

@@ -3,7 +3,7 @@ import { h, spec } from "forest";
 
 import { schemaEditRoute } from "@/shared/routing";
 import { Header } from "@/shared/ui";
-import { EditSchemaForm } from "@/features/schema-edit";
+import { EditSchemaForm } from "@/features/schema/schema-edit";
 import { i18n } from "@/shared/lib/i18n";
 
 export const SchemaEditPage = () => {
