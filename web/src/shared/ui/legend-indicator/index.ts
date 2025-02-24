@@ -1,16 +1,15 @@
-import { createEvent, createStore, is, restore, sample, Store } from "effector";
+import { createEvent, createStore, sample, Store } from "effector";
 import { ClassListArray, h, node, spec } from "forest";
 
 const baseClasses = ["flex", "w-2.5", "h-2.5", "rounded-full", "me-1.5", "shrink-0"];
 
-const indicatorClass = (colors: Store<string> | string): Store<string> => {
-  const $rawClrs = is.unit(colors) ? colors : createStore(colors);
-  const $bgColors = $rawClrs.map((clr) => `bg-${clr}`);
+const indicatorClass = (color: string): string => {
+  const bgColor = [`bg-${color}`];
 
-  return $bgColors.map((colors) => baseClasses.concat(colors).join(" "));
+  return baseClasses.concat(bgColor).join(" ");
 };
 
-export const LegendIndicator = ({ text, color }: { text: string | Store<string>; color: Store<string> | string }) => {
+export const LegendIndicator = ({ text, color }: { text: string | Store<string>; color: Store<string> }) => {
   h("span", () => {
     spec({
       classList: [
@@ -30,18 +29,18 @@ export const LegendIndicator = ({ text, color }: { text: string | Store<string>;
       ],
     });
 
-    const touchClasses = createEvent<string>();
-    const $classes = restore(touchClasses, "");
+    const touch = createEvent();
+    const $classes = createStore("");
+
+    sample({
+      source: color,
+      clock: touch,
+      fn: (clr) => indicatorClass(clr),
+      target: $classes,
+    });
 
     h("span", {
       classList: [$classes] as ClassListArray,
-    });
-
-    const touch = createEvent();
-    sample({
-      clock: touch,
-      source: indicatorClass(color),
-      target: touchClasses,
     });
 
     spec({ text });

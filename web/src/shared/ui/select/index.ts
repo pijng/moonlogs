@@ -35,9 +35,9 @@ export const Select = ({
 
       return (
         (typeof opt === "string" && opt.toLocaleLowerCase().includes(lowerQuery)) ||
-        lowerOptTitle?.includes(lowerQuery) ||
-        lowerOptName?.includes(lowerQuery) ||
-        lowerOptId?.toString().includes(lowerQuery)
+        lowerOptTitle.includes(lowerQuery) ||
+        lowerOptName.includes(lowerQuery) ||
+        lowerOptId.toString().includes(lowerQuery)
       );
     });
   });
