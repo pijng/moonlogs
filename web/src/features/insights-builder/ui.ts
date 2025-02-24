@@ -1,7 +1,7 @@
 import { $shouldCopyToClipboard, i18n, isObjectPresent } from "@/shared/lib";
-import { Button, ChangesTable, Input, KBD, LegendIndicator, LevelBadge, Select, triggerTooltip } from "@/shared/ui";
+import { Button, ChangesTable, Input, KBD, LegendIndicator, LevelBadge, Select, Spinner, triggerTooltip } from "@/shared/ui";
 import { ClassListArray, h, list, node, remap, spec } from "forest";
-import { $fieldsOptions, $filterList, $insightLogs, $insightsSchemas, events, InsightSchema } from "./model";
+import { $fieldsOptions, $filterList, $insightLogs, $insightsSchemas, $isLoadingLogs, events, InsightSchema } from "./model";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { logModel } from "@/entities/log";
 import { Log } from "@/shared/api";
@@ -13,9 +13,26 @@ export const InsightsBuilder = () => {
     h("div", () => {
       spec({ visible: $insightLogs.map((logs) => logs.length > 0) });
 
-      InsightsSchemas();
+      h("div", () => {
+        spec({
+          visible: $isLoadingLogs.map((l) => !l),
+        });
 
-      InsightLogsTable();
+        InsightsSchemas();
+        InsightLogsTable();
+      });
+    });
+
+    h("div", () => {
+      spec({
+        classList: ["absolute", "top-1/2", "left-1/2"],
+      });
+
+      h("div", () => {
+        spec({ classList: ["relative", "right-1/2"] });
+
+        Spinner({ visible: $isLoadingLogs });
+      });
     });
   });
 };

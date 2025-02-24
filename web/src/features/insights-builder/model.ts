@@ -87,6 +87,8 @@ sample({
   target: getLogsFx,
 });
 
+export const $isLoadingLogs = getLogsFx.pending;
+
 export const $insightLogs = createStore<Log[]>([]);
 
 sample({
