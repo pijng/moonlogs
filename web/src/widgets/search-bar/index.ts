@@ -1,8 +1,8 @@
 import { logModel } from "@/entities/log";
 import { schemaModel } from "@/entities/schema";
-import { FilterDate } from "@/features/filter-date-logs";
-import { Filter } from "@/features/filter-logs";
-import { FilterLevel } from "@/features/filter-level-logs";
+import { FilterDate } from "@/features/filters/filter-date-logs";
+import { Filter } from "@/features/filters/filter-logs";
+import { FilterLevel } from "@/features/filters/filter-level-logs";
 import { logsRoute } from "@/shared/routing";
 import { i18n } from "@/shared/lib/i18n";
 import { Button, Search } from "@/shared/ui";
