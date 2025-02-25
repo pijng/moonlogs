@@ -52,6 +52,7 @@ export const $currentAccount = createStore<User>({
   tag_ids: [],
   token: "",
   is_revoked: false,
+  insights_enabled: false,
 });
 
 sample({

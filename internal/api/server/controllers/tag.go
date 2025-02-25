@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"moonlogs/internal/api/server/response"
 	"moonlogs/internal/entities"
 	"moonlogs/internal/lib/serialize"
 	"moonlogs/internal/services"
 	"moonlogs/internal/usecases"
-	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -33,12 +34,14 @@ func (tc *TagController) CreateTag(w http.ResponseWriter, r *http.Request) {
 	err := serialize.NewJSONDecoder(r.Body).Decode(&newTag)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 
 	tag, err := tc.tagUseCase.CreateTag(r.Context(), newTag)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 
@@ -51,6 +54,7 @@ func (tc *TagController) DeleteTagByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
+
 		return
 	}
 
@@ -59,6 +63,7 @@ func (tc *TagController) DeleteTagByID(w http.ResponseWriter, r *http.Request) {
 	err = tagService.DestroyTagByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 
@@ -71,12 +76,14 @@ func (tc *TagController) GetTagByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
+
 		return
 	}
 
 	tag, err := tc.tagUseCase.GetTagByID(r.Context(), id)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 
@@ -89,6 +96,7 @@ func (tc *TagController) UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, fmt.Errorf("`id` path parameter is invalid: %w", err), nil, response.Meta{})
+
 		return
 	}
 
@@ -97,17 +105,20 @@ func (tc *TagController) UpdateTagByID(w http.ResponseWriter, r *http.Request) {
 	err = serialize.NewJSONDecoder(r.Body).Decode(&tagToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 
 	tag, err := tc.tagUseCase.UpdateTagByID(r.Context(), id, tagToUpdate)
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 
 	if tag == nil {
 		response.Return(w, false, http.StatusNotFound, err, nil, response.Meta{})
+
 		return
 	}
 
@@ -118,6 +129,7 @@ func (tc *TagController) GetAllTags(w http.ResponseWriter, r *http.Request) {
 	tags, err := tc.tagUseCase.GetAllTags(r.Context())
 	if err != nil {
 		response.Return(w, false, http.StatusBadRequest, err, nil, response.Meta{})
+
 		return
 	}
 

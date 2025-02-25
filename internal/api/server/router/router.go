@@ -132,10 +132,19 @@ func RegisterActionRouter(cfg *SubRouterConfig) {
 	actionRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(actionController.DeleteActionByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterSessionRouter(cfg *SubRouterConfig, geminiToken string) {
+func RegisterInsightsRouter(cfg *SubRouterConfig) {
+	insightsRouter := cfg.R.PathPrefix("/api/insights").Subrouter()
+	insightsRouter.Use(cfg.MW.SessionMiddleware)
+
+	insightsController := controllers.NewInsightsController(cfg.UC.InsightsUseCase)
+
+	insightsRouter.HandleFunc("/generate_content", insightsController.GenerateKontent).Methods(http.MethodPost)
+}
+
+func RegisterSessionRouter(cfg *SubRouterConfig) {
 	sessionRouter := cfg.R.PathPrefix("/api/session").Subrouter()
 
-	sessionController := controllers.NewSessionController(cfg.UC.UserUseCase, geminiToken)
+	sessionController := controllers.NewSessionController(cfg.UC.UserUseCase, cfg.UC.InsightsUseCase)
 
 	sessionRouter.HandleFunc("", sessionController.Login).Methods(http.MethodPost)
 	sessionRouter.HandleFunc("", sessionController.GetSession).Methods(http.MethodGet)

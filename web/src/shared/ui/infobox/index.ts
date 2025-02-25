@@ -18,11 +18,20 @@ import { Spinner } from "@/shared/ui";
 //     </button>
 // </div>
 
-export const Infobox = ({ text, emoji }: { text: string | Store<string>; emoji: Store<string> | string }) => {
+export const Infobox = ({
+  text,
+  emoji,
+  visible,
+}: {
+  text: string | Store<string>;
+  emoji: Store<string> | string;
+  visible?: Store<boolean>;
+}) => {
   const $text = is.unit(text) ? text : createStore(text);
 
   h("div", () => {
     spec({
+      visible: visible,
       classList: [
         "flex",
         "items-center",

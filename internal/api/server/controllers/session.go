@@ -29,18 +29,18 @@ type Session struct {
 	ShouldCreateInitialAdmin bool          `json:"should_create_initial_admin"`
 	IsRevoked                bool          `json:"is_revoked"`
 	Tags                     entities.Tags `json:"tag_ids"`
-	GeminiToken              string        `json:"gemini_token"`
+	InsightsEnabled          bool          `json:"insights_enabled"`
 }
 
 type SessionController struct {
-	userUseCase *usecases.UserUseCase
-	geminiToken string
+	userUseCase     *usecases.UserUseCase
+	insightsUseCase *usecases.InsightsUseCase
 }
 
-func NewSessionController(userUseCase *usecases.UserUseCase, geminiToken string) *SessionController {
+func NewSessionController(userUseCase *usecases.UserUseCase, insightsUseCase *usecases.InsightsUseCase) *SessionController {
 	return &SessionController{
-		userUseCase: userUseCase,
-		geminiToken: geminiToken,
+		userUseCase:     userUseCase,
+		insightsUseCase: insightsUseCase,
 	}
 }
 
@@ -102,14 +102,14 @@ func (c *SessionController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionPayload := Session{
-		Token:       token,
-		ID:          user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
-		Role:        user.Role,
-		IsRevoked:   bool(user.IsRevoked),
-		Tags:        user.Tags,
-		GeminiToken: c.geminiToken,
+		Token:           token,
+		ID:              user.ID,
+		Name:            user.Name,
+		Email:           user.Email,
+		Role:            user.Role,
+		IsRevoked:       bool(user.IsRevoked),
+		Tags:            user.Tags,
+		InsightsEnabled: c.insightsUseCase.Enabled(),
 	}
 
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})
@@ -171,14 +171,14 @@ func (c *SessionController) GetSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionPayload := Session{
-		Token:       bearerToken,
-		ID:          user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
-		Role:        user.Role,
-		IsRevoked:   bool(user.IsRevoked),
-		Tags:        user.Tags,
-		GeminiToken: c.geminiToken,
+		Token:           bearerToken,
+		ID:              user.ID,
+		Name:            user.Name,
+		Email:           user.Email,
+		Role:            user.Role,
+		IsRevoked:       bool(user.IsRevoked),
+		Tags:            user.Tags,
+		InsightsEnabled: c.insightsUseCase.Enabled(),
 	}
 
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})

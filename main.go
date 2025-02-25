@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"log"
+	"moonlogs/internal/adapters/insights"
 	"moonlogs/internal/api/server"
 	"moonlogs/internal/config"
 	"moonlogs/internal/persistence"
@@ -32,8 +33,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var insightsAdapter usecases.InsightsAdapter
+	if cfg.GeminiToken != "" {
+		insightsAdapter = insights.NewGeminiInsightsAdapter(cfg.GeminiToken)
+	}
+
 	storageInstances := persistence.InitStorages(cfg.DBAdapter, databases)
-	usecaseInstances := usecases.InitUsecases(storageInstances)
+	usecaseInstances := usecases.InitUsecases(storageInstances, insightsAdapter)
 
 	bgCtx := context.Background()
 
@@ -54,7 +60,6 @@ func main() {
 
 	err = server.ListenAndServe(
 		usecaseInstances,
-		cfg.GeminiToken,
 		server.WithPort(cfg.Port),
 		server.WithReadTimeout(cfg.ReadTimeout),
 		server.WithWriteTimeout(cfg.WriteTimeout),

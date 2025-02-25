@@ -12,9 +12,10 @@ type UseCases struct {
 	AlertingRuleUseCase        *AlertingRuleUseCase
 	IncidentUseCase            *IncidentUseCase
 	NotificationProfileUseCase *NotificationProfileUseCase
+	InsightsUseCase            *InsightsUseCase
 }
 
-func InitUsecases(storages persistence.Storages) *UseCases {
+func InitUsecases(storages persistence.Storages, insightsAdapter InsightsAdapter) *UseCases {
 	return &UseCases{
 		ActionUseCase:              NewActionUseCase(storages.ActionStorage),
 		ApiTokenUseCase:            NewApiTokenUseCase(storages.ApiTokenStorage),
@@ -25,5 +26,6 @@ func InitUsecases(storages persistence.Storages) *UseCases {
 		AlertingRuleUseCase:        NewAlertingRuleUseCase(storages.AlertingRuleStorage),
 		IncidentUseCase:            NewIncidentUseCase(storages.IncidentStorage),
 		NotificationProfileUseCase: NewNotificationProfileUseCase(storages.NotificationProfileStorage),
+		InsightsUseCase:            NewInsightsUseCase(insightsAdapter),
 	}
 }

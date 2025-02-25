@@ -1,6 +1,6 @@
 import { schemaModel } from "@/entities/schema";
 import { userModel } from "@/entities/user";
-import { GeminiRequest, generateContent, getLogs, Log } from "@/shared/api";
+import { generateContent, getLogs, Log } from "@/shared/api";
 import { $intl, $preferredLanguage, isObjectPresent } from "@/shared/lib";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 
@@ -113,7 +113,7 @@ sample({
 });
 
 // TODO: Oof, this one is huge, refactor.
-const summarizeLogsAiFx = createEffect(({ token, lang, logs }: { token: string; lang: string; logs: Log[] }) => {
+const summarizeLogsAiFx = createEffect(({ lang, logs }: { lang: string; logs: Log[] }) => {
   const logsText = logs
     .map((log) => {
       let base = `[${log.created_at}] SCHEMA: "${log.schema_name}" LEVEL: "${log.level}" MSG: "${log.text}"`;
@@ -130,33 +130,16 @@ const summarizeLogsAiFx = createEffect(({ token, lang, logs }: { token: string; 
     })
     .join("\n");
 
-  const content: GeminiRequest = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Write short summary of these logs in '${lang}' language, try to highlight problems if there are any error level logs, use only new lines as markup:\n\n${logsText}`,
-          },
-        ],
-      },
-    ],
-  };
+  const prompt = `Write short summary of these logs in '${lang}' language, try to highlight problems if there are any error level logs, use only new lines as markup:\n\n${logsText}`;
 
-  return generateContent({ token, content });
+  return generateContent(prompt);
 });
 
 sample({
   source: { lang: $preferredLanguage, user: userModel.$currentAccount },
   clock: $insightLogs,
-  filter: ({ user }, logs) => logs.length > 0 && !!user.gemini_token,
-  fn: ({ lang, user }, logs) => {
-    return {
-      token: user.gemini_token!,
-      lang,
-      logs,
-    };
-  },
+  filter: ({ user }, logs) => logs.length > 0 && !!user.insights_enabled,
+  fn: ({ lang }, logs) => ({ lang, logs }),
   target: summarizeLogsAiFx,
 });
 
@@ -164,10 +147,8 @@ export const $aiSummary = createStore<string>("").reset(getLogsFx.pending);
 
 sample({
   source: summarizeLogsAiFx.doneData,
-  filter: (resp) => !!resp && resp.candidates.length > 0,
-  fn: (resp) => {
-    return resp!.candidates[0].content.parts[0].text;
-  },
+  filter: (resp) => !!resp && resp.data.length > 0,
+  fn: (resp) => resp.data,
   target: $aiSummary,
 });
 

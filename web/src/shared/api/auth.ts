@@ -11,7 +11,7 @@ export interface SessionResponse extends BaseResponse {
     role: UserRole;
     tag_ids: number[];
     is_revoked: boolean;
-    gemini_token: string;
+    insights_enabled: boolean;
   };
 }
 

@@ -25,6 +25,7 @@ import {
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { logModel } from "@/entities/log";
 import { Log } from "@/shared/api";
+import { userModel } from "@/entities/user";
 
 export const InsightsBuilder = () => {
   h("div", () => {
@@ -38,7 +39,7 @@ export const InsightsBuilder = () => {
           visible: $isLoadingLogs.map((l) => !l),
         });
 
-        Infobox({ text: $aiSummary, emoji: "✨" });
+        Infobox({ text: $aiSummary, emoji: "✨", visible: userModel.$currentAccount.map((u) => !!u.insights_enabled) });
 
         InsightsSchemas();
         InsightLogsTable();
