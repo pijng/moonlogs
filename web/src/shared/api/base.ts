@@ -114,3 +114,30 @@ export const del = attach({
     return baseRequest({ token, url, method: "DELETE", headers });
   }),
 });
+
+export const commonRequest = async <T>({
+  url,
+  method,
+  body,
+  headers,
+}: {
+  url: string;
+  method: FetchMethods;
+  body: unknown;
+  headers?: HeadersInit;
+}): Promise<T | null> => {
+  try {
+    const response = await fetch(url, {
+      method,
+      body: JSON.stringify(body),
+      headers: headers,
+    });
+    const responseText = await response.clone().text();
+    const jsonResponse = JSON.parse(responseText);
+    return jsonResponse;
+  } catch (error) {
+    console.log(error);
+  }
+
+  return null;
+};

@@ -11,7 +11,7 @@ export const Spinner = ({ visible }: { visible: Store<boolean> }) => {
     h("svg", () => {
       spec({
         attr: { "aria-hidden": true, xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 100 101" },
-        classList: ["w-16", "h-16", "text-gray-200", "animate-spin", "dark:text-gray-600", "fill-blue-600"],
+        classList: ["w-16", "h-16", "max-w-full", "text-gray-200", "animate-spin", "dark:text-gray-600", "fill-blue-600"],
       });
 
       h("path", {

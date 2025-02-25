@@ -132,10 +132,10 @@ func RegisterActionRouter(cfg *SubRouterConfig) {
 	actionRouter.HandleFunc("/{id}", cfg.MW.RoleMiddleware(actionController.DeleteActionByID, entities.AdminRole)).Methods(http.MethodDelete)
 }
 
-func RegisterSessionRouter(cfg *SubRouterConfig) {
+func RegisterSessionRouter(cfg *SubRouterConfig, geminiToken string) {
 	sessionRouter := cfg.R.PathPrefix("/api/session").Subrouter()
 
-	sessionController := controllers.NewSessionController(cfg.UC.UserUseCase)
+	sessionController := controllers.NewSessionController(cfg.UC.UserUseCase, geminiToken)
 
 	sessionRouter.HandleFunc("", sessionController.Login).Methods(http.MethodPost)
 	sessionRouter.HandleFunc("", sessionController.GetSession).Methods(http.MethodGet)
