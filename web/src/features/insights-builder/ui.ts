@@ -1,7 +1,27 @@
 import { $shouldCopyToClipboard, i18n, isObjectPresent } from "@/shared/lib";
-import { Button, ChangesTable, Input, KBD, LegendIndicator, LevelBadge, Select, Spinner, triggerTooltip } from "@/shared/ui";
+import {
+  Button,
+  ChangesTable,
+  Infobox,
+  Input,
+  KBD,
+  LegendIndicator,
+  LevelBadge,
+  Select,
+  Spinner,
+  triggerTooltip,
+} from "@/shared/ui";
 import { ClassListArray, h, list, node, remap, spec } from "forest";
-import { $fieldsOptions, $filterList, $insightLogs, $insightsSchemas, $isLoadingLogs, events, InsightSchema } from "./model";
+import {
+  $aiSummary,
+  $fieldsOptions,
+  $filterList,
+  $insightLogs,
+  $insightsSchemas,
+  $isLoadingLogs,
+  events,
+  InsightSchema,
+} from "./model";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { logModel } from "@/entities/log";
 import { Log } from "@/shared/api";
@@ -17,6 +37,8 @@ export const InsightsBuilder = () => {
         spec({
           visible: $isLoadingLogs.map((l) => !l),
         });
+
+        Infobox({ text: $aiSummary, emoji: "✨" });
 
         InsightsSchemas();
         InsightLogsTable();

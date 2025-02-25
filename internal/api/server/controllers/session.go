@@ -29,15 +29,18 @@ type Session struct {
 	ShouldCreateInitialAdmin bool          `json:"should_create_initial_admin"`
 	IsRevoked                bool          `json:"is_revoked"`
 	Tags                     entities.Tags `json:"tag_ids"`
+	GeminiToken              string        `json:"gemini_token"`
 }
 
 type SessionController struct {
 	userUseCase *usecases.UserUseCase
+	geminiToken string
 }
 
-func NewSessionController(userUseCase *usecases.UserUseCase) *SessionController {
+func NewSessionController(userUseCase *usecases.UserUseCase, geminiToken string) *SessionController {
 	return &SessionController{
 		userUseCase: userUseCase,
+		geminiToken: geminiToken,
 	}
 }
 
@@ -99,13 +102,14 @@ func (c *SessionController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionPayload := Session{
-		Token:     token,
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		IsRevoked: bool(user.IsRevoked),
-		Tags:      user.Tags,
+		Token:       token,
+		ID:          user.ID,
+		Name:        user.Name,
+		Email:       user.Email,
+		Role:        user.Role,
+		IsRevoked:   bool(user.IsRevoked),
+		Tags:        user.Tags,
+		GeminiToken: c.geminiToken,
 	}
 
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})
@@ -167,13 +171,14 @@ func (c *SessionController) GetSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionPayload := Session{
-		Token:     bearerToken,
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		IsRevoked: bool(user.IsRevoked),
-		Tags:      user.Tags,
+		Token:       bearerToken,
+		ID:          user.ID,
+		Name:        user.Name,
+		Email:       user.Email,
+		Role:        user.Role,
+		IsRevoked:   bool(user.IsRevoked),
+		Tags:        user.Tags,
+		GeminiToken: c.geminiToken,
 	}
 
 	response.Return(w, true, http.StatusOK, nil, sessionPayload, response.Meta{})

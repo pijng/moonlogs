@@ -16,8 +16,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func ListenAndServe(uc *usecases.UseCases, opts ...SrvOpt) error {
-	server := createServer(uc, opts...)
+func ListenAndServe(uc *usecases.UseCases, geminiToken string, opts ...SrvOpt) error {
+	server := createServer(uc, geminiToken, opts...)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -58,12 +58,12 @@ func WithWriteTimeout(writeTimeout time.Duration) SrvOpt {
 	}
 }
 
-func createServer(uc *usecases.UseCases, opts ...SrvOpt) *http.Server {
+func createServer(uc *usecases.UseCases, geminiToken string, opts ...SrvOpt) *http.Server {
 	r := mux.NewRouter()
 
 	r.Use(corsMiddleware)
 
-	registerRouter(r, uc)
+	registerRouter(r, uc, geminiToken)
 
 	server := &http.Server{
 		Handler: r,
@@ -76,7 +76,7 @@ func createServer(uc *usecases.UseCases, opts ...SrvOpt) *http.Server {
 	return server
 }
 
-func registerRouter(r *mux.Router, uc *usecases.UseCases) {
+func registerRouter(r *mux.Router, uc *usecases.UseCases, geminiToken string) {
 	session.RegisterSessionStore(uc.UserUseCase)
 	mw := router.InitMiddlewares(uc)
 
@@ -96,7 +96,7 @@ func registerRouter(r *mux.Router, uc *usecases.UseCases) {
 	router.RegisterAlertingRuleRouter(cfg)
 	router.RegisterIncidentsRouter(cfg)
 	router.RegisterNotificationProfileRouter(cfg)
-	router.RegisterSessionRouter(cfg)
+	router.RegisterSessionRouter(cfg, geminiToken)
 
 	router.RegisterWebRouter(r)
 }

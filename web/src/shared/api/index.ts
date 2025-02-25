@@ -74,3 +74,4 @@ export {
 } from "./api-tokens";
 export { registerAdmin } from "./register-admin";
 export { type SessionResponse, postSession, getSession } from "./auth";
+export { generateContent, type GeminiRequest } from "./gemini";

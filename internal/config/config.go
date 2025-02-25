@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	PORT                  = 4200
-	READ_TIMEOUT          = 1 * time.Second
-	WRITE_TIMEOUT         = 10 * time.Second
-	DB_PATH               = "/var/lib/moonlogs/database.sqlite"
-	CONFIG_PATH           = "/etc/moonlogs/config.yaml"
-	ASYNC_RECORD_CREATION = false
+	PORT          = 4200
+	READ_TIMEOUT  = 1 * time.Second
+	WRITE_TIMEOUT = 10 * time.Second
+	DB_PATH       = "/var/lib/moonlogs/database.sqlite"
+	CONFIG_PATH   = "/etc/moonlogs/config.yaml"
+	GEMINI_TOKEN  = ""
 
 	DB_SQLITE_ADAPTER = "sqlite"
 )
@@ -30,6 +30,7 @@ type Config struct {
 	DBAdapter    string        `yaml:"db_adapter"`
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
+	GeminiToken  string        `yaml:"gemini_token"`
 }
 
 func Load() (*Config, error) {
@@ -103,6 +104,7 @@ type args struct {
 	DBAdapter    string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+	GeminiToken  string
 }
 
 func processArgs() (args, error) {
@@ -115,6 +117,7 @@ func processArgs() (args, error) {
 	f.StringVar(&a.DBAdapter, "db-adapter", DB_SQLITE_ADAPTER, "db adapter to connect to – 'mongodb' or 'sqlite'")
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
+	f.StringVar(&a.GeminiToken, "gemini-token", GEMINI_TOKEN, "token to access Gemini API")
 
 	fu := f.Usage
 	f.Usage = func() {

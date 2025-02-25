@@ -10,6 +10,7 @@ export type User = {
   tag_ids: number[];
   token: string;
   is_revoked: boolean;
+  gemini_token?: string;
 };
 
 export type UserToCreate = {

@@ -61,3 +61,4 @@ export { Tooltip } from "./tooltip";
 export { GeneralTooltip, triggerTooltip } from "./general-tooltip";
 export { ChangesTable } from "./changes-table";
 export { type FilterItem, type KindItem } from "./types";
+export { Infobox } from "./infobox";

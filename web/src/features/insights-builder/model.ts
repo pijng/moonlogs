@@ -1,6 +1,7 @@
 import { schemaModel } from "@/entities/schema";
-import { getLogs, Log } from "@/shared/api";
-import { $intl } from "@/shared/lib";
+import { userModel } from "@/entities/user";
+import { GeminiRequest, generateContent, getLogs, Log } from "@/shared/api";
+import { $intl, $preferredLanguage, isObjectPresent } from "@/shared/lib";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 
 type InsightFilter = {
@@ -109,6 +110,64 @@ sample({
     return formattedLogs;
   },
   target: $insightLogs,
+});
+
+// TODO: Oof, this one is huge, refactor.
+const summarizeLogsAiFx = createEffect(({ token, lang, logs }: { token: string; lang: string; logs: Log[] }) => {
+  const logsText = logs
+    .map((log) => {
+      let base = `[${log.created_at}] SCHEMA: "${log.schema_name}" LEVEL: "${log.level}" MSG: "${log.text}"`;
+      if (isObjectPresent(log.changes)) {
+        const changesText = Object.entries(log.changes)
+          .map(([field, { old_value, new_value }]) => {
+            return `Field "${field}" was changed from "${old_value}" to "${new_value}"`;
+          })
+          .join(". ");
+
+        base += ` CHANGES_HISTORY: ${changesText}`;
+      }
+      return base;
+    })
+    .join("\n");
+
+  const content: GeminiRequest = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `Write short summary of these logs in '${lang}' language, try to highlight problems if there are any error level logs, use only new lines as markup:\n\n${logsText}`,
+          },
+        ],
+      },
+    ],
+  };
+
+  return generateContent({ token, content });
+});
+
+sample({
+  source: { lang: $preferredLanguage, user: userModel.$currentAccount },
+  clock: $insightLogs,
+  filter: ({ user }, logs) => logs.length > 0 && !!user.gemini_token,
+  fn: ({ lang, user }, logs) => {
+    return {
+      token: user.gemini_token!,
+      lang,
+      logs,
+    };
+  },
+  target: summarizeLogsAiFx,
+});
+
+export const $aiSummary = createStore<string>("");
+sample({
+  source: summarizeLogsAiFx.doneData,
+  filter: (resp) => !!resp && resp.candidates.length > 0,
+  fn: (resp) => {
+    return resp!.candidates[0].content.parts[0].text;
+  },
+  target: $aiSummary,
 });
 
 export type InsightSchema = {

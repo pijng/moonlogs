@@ -54,6 +54,7 @@ func main() {
 
 	err = server.ListenAndServe(
 		usecaseInstances,
+		cfg.GeminiToken,
 		server.WithPort(cfg.Port),
 		server.WithReadTimeout(cfg.ReadTimeout),
 		server.WithWriteTimeout(cfg.WriteTimeout),
