@@ -160,7 +160,8 @@ sample({
   target: summarizeLogsAiFx,
 });
 
-export const $aiSummary = createStore<string>("");
+export const $aiSummary = createStore<string>("").reset(getLogsFx.pending);
+
 sample({
   source: summarizeLogsAiFx.doneData,
   filter: (resp) => !!resp && resp.candidates.length > 0,
