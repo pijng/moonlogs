@@ -55,7 +55,7 @@ export const Infobox = ({ text, emoji }: { text: string | Store<string>; emoji: 
     h("div", () => {
       spec({
         visible: $text.map((t) => t.length > 0),
-        classList: ["whitespace-pre-wrap", "ms-3", "text-base", "font-normal"],
+        classList: ["whitespace-pre-wrap", "ms-3", "text-sm", "font-normal"],
         text: text,
       });
     });
