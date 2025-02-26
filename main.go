@@ -37,6 +37,9 @@ func main() {
 	if cfg.GeminiToken != "" {
 		insightsAdapter = insights.NewGeminiInsightsAdapter(cfg.GeminiToken)
 	}
+	if cfg.OpenRouterToken != "" && cfg.OpenRouterModel != "" {
+		insightsAdapter = insights.NewOpenRouterInsightsAdapter(cfg.OpenRouterToken, cfg.OpenRouterModel)
+	}
 
 	proxyCfg := usecases.ProxyCfg{
 		ProxyUser: cfg.ProxyUser,
