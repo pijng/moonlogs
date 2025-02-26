@@ -38,8 +38,15 @@ func main() {
 		insightsAdapter = insights.NewGeminiInsightsAdapter(cfg.GeminiToken)
 	}
 
+	proxyCfg := usecases.ProxyCfg{
+		ProxyUser: cfg.ProxyUser,
+		ProxyPass: cfg.ProxyPass,
+		ProxyHost: cfg.ProxyHost,
+		ProxyPort: cfg.ProxyPort,
+	}
+
 	storageInstances := persistence.InitStorages(cfg.DBAdapter, databases)
-	usecaseInstances := usecases.InitUsecases(storageInstances, insightsAdapter)
+	usecaseInstances := usecases.InitUsecases(storageInstances, insightsAdapter, proxyCfg)
 
 	bgCtx := context.Background()
 
