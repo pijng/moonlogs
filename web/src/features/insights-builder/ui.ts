@@ -35,11 +35,12 @@ export const InsightsBuilder = () => {
       spec({ visible: $insightLogs.map((logs) => logs.length > 0) });
 
       h("div", () => {
-        spec({
-          visible: $isLoadingLogs.map((l) => !l),
-        });
+        spec({ visible: $isLoadingLogs.map((l) => !l) });
 
-        Infobox({ text: $aiSummary, emoji: "✨", visible: userModel.$currentAccount.map((u) => !!u.insights_enabled) });
+        h("div", () => {
+          spec({ classList: ["mt-6"] });
+          Infobox({ text: $aiSummary, emoji: "✨", visible: userModel.$currentAccount.map((u) => !!u.insights_enabled) });
+        });
 
         InsightsSchemas();
         InsightLogsTable();
@@ -85,10 +86,10 @@ const InsightsFilters = () => {
       });
 
       h("div", () => {
-        spec({ classList: ["grid", "grid-cols-3", "items-center", "gap-3"] });
+        spec({ classList: ["grid", "grid-cols-2", "md:grid-cols-3", "items-center", "gap-x-3", "gap-y-3"] });
 
         h("div", () => {
-          spec({ classList: ["mb-6"] });
+          spec({ classList: [] });
 
           Select({
             text: i18n("insights.form.field_name"),
@@ -105,9 +106,11 @@ const InsightsFilters = () => {
           required: true,
           value: remap($filter, "fieldValue"),
           inputChanged: fieldValueChanged,
+          disableMargin: true,
         });
 
         h("div", () => {
+          spec({ classList: ["mt-auto"] });
           Button({
             text: i18n("buttons.build_insight"),
             event: events.buildInsight,
@@ -130,7 +133,7 @@ const InsightsSchemas = () => {
         "pt-3",
         "pb-3",
         "w-full",
-        "sticky",
+        "md:sticky",
         "left-1",
         "top-0",
         "z-10",

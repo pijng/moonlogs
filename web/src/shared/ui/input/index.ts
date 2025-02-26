@@ -15,6 +15,7 @@ export const Input = <T extends DOMProperty>({
   disabled,
   errorText,
   hint,
+  disableMargin,
 }: {
   value?: Store<T>;
   type: InputType;
@@ -26,12 +27,13 @@ export const Input = <T extends DOMProperty>({
   disabled?: Store<boolean>;
   errorText?: Store<string>;
   hint?: Store<string> | string;
+  disableMargin?: boolean;
 }) => {
   h("div", () => {
     spec({
       classList: {
         relative: true,
-        "mb-6": type !== "datetime-local",
+        "mb-6": type !== "datetime-local" && !disableMargin,
         flex: type === "checkbox",
         "items-center": type === "checkbox",
         "select-none": type === "checkbox",
