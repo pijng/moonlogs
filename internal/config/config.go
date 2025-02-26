@@ -18,6 +18,8 @@ const (
 	DB_PATH             = "/var/lib/moonlogs/database.sqlite"
 	CONFIG_PATH         = "/etc/moonlogs/config.yaml"
 	GEMINI_TOKEN        = ""
+	OPEN_ROUTER_TOKEN   = ""
+	OPEN_ROUTER_MODEL   = ""
 	INSIGHTS_PROXY_USER = ""
 	INSIGHTS_PROXY_PASS = ""
 	INSIGHTS_PROXY_HOST = ""
@@ -29,16 +31,18 @@ const (
 var config *Config
 
 type Config struct {
-	Port         int           `yaml:"port"`
-	DBPath       string        `yaml:"db_path"`
-	DBAdapter    string        `yaml:"db_adapter"`
-	ReadTimeout  time.Duration `yaml:"read_timeout"`
-	WriteTimeout time.Duration `yaml:"write_timeout"`
-	GeminiToken  string        `yaml:"gemini_token"`
-	ProxyUser    string        `yaml:"proxy_user"`
-	ProxyPass    string        `yaml:"proxy_pass"`
-	ProxyHost    string        `yaml:"proxy_host"`
-	ProxyPort    string        `yaml:"proxy_port"`
+	Port            int           `yaml:"port"`
+	DBPath          string        `yaml:"db_path"`
+	DBAdapter       string        `yaml:"db_adapter"`
+	ReadTimeout     time.Duration `yaml:"read_timeout"`
+	WriteTimeout    time.Duration `yaml:"write_timeout"`
+	GeminiToken     string        `yaml:"gemini_token"`
+	OpenRouterToken string        `yaml:"open_router_token"`
+	OpenRouterModel string        `yaml:"open_router_model"`
+	ProxyUser       string        `yaml:"insights_proxy_user"`
+	ProxyPass       string        `yaml:"insights_proxy_pass"`
+	ProxyHost       string        `yaml:"insights_proxy_host"`
+	ProxyPort       string        `yaml:"insights_proxy_port"`
 }
 
 func Load() (*Config, error) {
@@ -106,17 +110,19 @@ write_timeout: %s
 }
 
 type args struct {
-	Config       string
-	Port         int
-	DBPath       string
-	DBAdapter    string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	GeminiToken  string
-	ProxyUser    string
-	ProxyPass    string
-	ProxyHost    string
-	ProxyPort    string
+	Config          string
+	Port            int
+	DBPath          string
+	DBAdapter       string
+	ReadTimeout     time.Duration
+	WriteTimeout    time.Duration
+	GeminiToken     string
+	OpenRouterToken string
+	OpenRouterModel string
+	ProxyUser       string
+	ProxyPass       string
+	ProxyHost       string
+	ProxyPort       string
 }
 
 func processArgs() (args, error) {
@@ -130,6 +136,8 @@ func processArgs() (args, error) {
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 	f.StringVar(&a.GeminiToken, "gemini-token", GEMINI_TOKEN, "token to access Gemini API")
+	f.StringVar(&a.OpenRouterToken, "open-router-token", OPEN_ROUTER_TOKEN, "token to access OpenRouter API")
+	f.StringVar(&a.OpenRouterModel, "open-router-model", OPEN_ROUTER_MODEL, "model of OpenRouter API")
 	f.StringVar(&a.ProxyUser, "insights-proxy-user", INSIGHTS_PROXY_USER, "proxy user for insights API")
 	f.StringVar(&a.ProxyPass, "insights-proxy-pass", INSIGHTS_PROXY_PASS, "proxy pass for insights API")
 	f.StringVar(&a.ProxyHost, "insights-proxy-host", INSIGHTS_PROXY_HOST, "proxy host for insights API")

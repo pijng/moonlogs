@@ -12,7 +12,7 @@ import (
 
 // TODO: Consider if this should be customizable
 const geminiModel = "gemini-1.5-flash"
-const baseURI = "https://generativelanguage.googleapis.com/v1beta/models/"
+const geminiURI = "https://generativelanguage.googleapis.com/v1beta/models/"
 const action = "generateContent"
 const requestMethod = http.MethodPost
 const contentTypeKey = "Content-Type"
@@ -42,7 +42,7 @@ type GeminiCandidate struct {
 }
 
 func (g *GeminiInsightsAdapter) GenerateContent(ctx context.Context, prompt string, httpClient *http.Client) (string, error) {
-	req, err := g.buildRequest(ctx, baseURI, geminiModel, g.token, action, requestMethod, contentTypeKey, contentTypeValue, prompt)
+	req, err := g.buildRequest(ctx, geminiURI, geminiModel, g.token, action, requestMethod, contentTypeKey, contentTypeValue, prompt)
 	if err != nil {
 		return "", fmt.Errorf("preparing request: %w", err)
 	}
