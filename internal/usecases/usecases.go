@@ -2,6 +2,13 @@ package usecases
 
 import "moonlogs/internal/persistence"
 
+type ProxyCfg struct {
+	ProxyHost string
+	ProxyPort string
+	ProxyUser string
+	ProxyPass string
+}
+
 type UseCases struct {
 	ActionUseCase              *ActionUseCase
 	ApiTokenUseCase            *ApiTokenUseCase
@@ -15,7 +22,7 @@ type UseCases struct {
 	InsightsUseCase            *InsightsUseCase
 }
 
-func InitUsecases(storages persistence.Storages, insightsAdapter InsightsAdapter) *UseCases {
+func InitUsecases(storages persistence.Storages, insightsAdapter InsightsAdapter, proxyCfg ProxyCfg) *UseCases {
 	return &UseCases{
 		ActionUseCase:              NewActionUseCase(storages.ActionStorage),
 		ApiTokenUseCase:            NewApiTokenUseCase(storages.ApiTokenStorage),
@@ -26,6 +33,6 @@ func InitUsecases(storages persistence.Storages, insightsAdapter InsightsAdapter
 		AlertingRuleUseCase:        NewAlertingRuleUseCase(storages.AlertingRuleStorage),
 		IncidentUseCase:            NewIncidentUseCase(storages.IncidentStorage),
 		NotificationProfileUseCase: NewNotificationProfileUseCase(storages.NotificationProfileStorage),
-		InsightsUseCase:            NewInsightsUseCase(insightsAdapter),
+		InsightsUseCase:            NewInsightsUseCase(insightsAdapter, proxyCfg.ProxyUser, proxyCfg.ProxyPass, proxyCfg.ProxyHost, proxyCfg.ProxyPort),
 	}
 }

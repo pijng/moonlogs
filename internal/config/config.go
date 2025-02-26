@@ -12,12 +12,16 @@ import (
 )
 
 const (
-	PORT          = 4200
-	READ_TIMEOUT  = 1 * time.Second
-	WRITE_TIMEOUT = 10 * time.Second
-	DB_PATH       = "/var/lib/moonlogs/database.sqlite"
-	CONFIG_PATH   = "/etc/moonlogs/config.yaml"
-	GEMINI_TOKEN  = ""
+	PORT                = 4200
+	READ_TIMEOUT        = 1 * time.Second
+	WRITE_TIMEOUT       = 10 * time.Second
+	DB_PATH             = "/var/lib/moonlogs/database.sqlite"
+	CONFIG_PATH         = "/etc/moonlogs/config.yaml"
+	GEMINI_TOKEN        = ""
+	INSIGHTS_PROXY_USER = ""
+	INSIGHTS_PROXY_PASS = ""
+	INSIGHTS_PROXY_HOST = ""
+	INSIGHTS_PROXY_PORT = ""
 
 	DB_SQLITE_ADAPTER = "sqlite"
 )
@@ -31,6 +35,10 @@ type Config struct {
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
 	GeminiToken  string        `yaml:"gemini_token"`
+	ProxyUser    string        `yaml:"proxy_user"`
+	ProxyPass    string        `yaml:"proxy_pass"`
+	ProxyHost    string        `yaml:"proxy_host"`
+	ProxyPort    string        `yaml:"proxy_port"`
 }
 
 func Load() (*Config, error) {
@@ -105,6 +113,10 @@ type args struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 	GeminiToken  string
+	ProxyUser    string
+	ProxyPass    string
+	ProxyHost    string
+	ProxyPort    string
 }
 
 func processArgs() (args, error) {
@@ -118,6 +130,10 @@ func processArgs() (args, error) {
 	f.DurationVar(&a.WriteTimeout, "write-timeout", WRITE_TIMEOUT, "write timeout duration")
 	f.DurationVar(&a.ReadTimeout, "read-timeout", READ_TIMEOUT, "read timeout duration")
 	f.StringVar(&a.GeminiToken, "gemini-token", GEMINI_TOKEN, "token to access Gemini API")
+	f.StringVar(&a.ProxyUser, "insights-proxy-user", INSIGHTS_PROXY_USER, "proxy user for insights API")
+	f.StringVar(&a.ProxyPass, "insights-proxy-pass", INSIGHTS_PROXY_PASS, "proxy pass for insights API")
+	f.StringVar(&a.ProxyHost, "insights-proxy-host", INSIGHTS_PROXY_HOST, "proxy host for insights API")
+	f.StringVar(&a.ProxyPort, "insights-proxy-port", INSIGHTS_PROXY_PORT, "proxy port for insights API")
 
 	fu := f.Usage
 	f.Usage = func() {
