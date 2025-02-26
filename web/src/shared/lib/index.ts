@@ -8,3 +8,4 @@ export { clipboardModeChanged, $clipboardMode, $shouldCopyToClipboard, loadClipb
 export { objectToQueryString, queryStringToObject } from "./parsing/query";
 export { intersection } from "./intersection";
 export { i18n, $preferredLanguage, setLanguage } from "./i18n";
+export { bindLinkNavigation } from "./navigation";

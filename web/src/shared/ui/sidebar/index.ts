@@ -27,6 +27,7 @@ import {
   tagsRoute,
   insightsRoute,
 } from "@/shared/routing";
+import { bindLinkNavigation } from "@/shared/lib";
 
 export const sidebarClosed = createEvent();
 const sidebarTriggered = createEvent<MouseEvent>();
@@ -219,9 +220,15 @@ export const SidebarItem = ({
   route: RouteInstance<Record<string, any>>;
   icon: () => void;
 }) => {
+  const click = bindLinkNavigation({ route, link: Link });
+
   h("li", () => {
     Link(route, {
       text: text,
+      handler: {
+        config: { prevent: true, capture: true, stop: true },
+        on: { click },
+      },
       classList: {
         flex: true,
         "items-center": true,

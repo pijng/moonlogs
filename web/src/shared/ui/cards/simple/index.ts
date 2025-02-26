@@ -1,3 +1,4 @@
+import { bindLinkNavigation } from "@/shared/lib";
 import { Link } from "@/shared/routing";
 import { RouteInstance, RouteParams } from "atomic-router";
 import { Store } from "effector";
@@ -14,8 +15,14 @@ export const CardLink = <T extends RouteParams>({
   route: RouteInstance<T>;
   params: T;
 }) => {
+  const click = bindLinkNavigation({ params, route, link: Link });
+
   Link(route, {
     params: params,
+    handler: {
+      config: { prevent: true, capture: true, stop: true },
+      on: { click },
+    },
     classList: [
       "block",
       "max-w-xs",
