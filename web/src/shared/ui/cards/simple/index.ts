@@ -2,7 +2,7 @@ import { bindLinkNavigation } from "@/shared/lib";
 import { Link } from "@/shared/routing";
 import { RouteInstance, RouteParams } from "atomic-router";
 import { Store } from "effector";
-import { h } from "forest";
+import { h, node } from "forest";
 
 export const CardLink = <T extends RouteParams>({
   title,
@@ -15,7 +15,7 @@ export const CardLink = <T extends RouteParams>({
   route: RouteInstance<T>;
   params: T;
 }) => {
-  const click = bindLinkNavigation({ params, route, link: Link });
+  const { click, mounted } = bindLinkNavigation({ params, route });
 
   Link(route, {
     params: params,
@@ -46,6 +46,10 @@ export const CardLink = <T extends RouteParams>({
       h("p", {
         classList: ["font-normal", "line-clamp-3", "text-gray-700", "dark:text-gray-400"],
         text: description,
+      });
+
+      node((el) => {
+        mounted(el);
       });
     },
   });

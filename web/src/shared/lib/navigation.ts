@@ -1,24 +1,31 @@
 import { RouteInstance, RouteParams } from "atomic-router";
-import { createLink } from "atomic-router-forest";
-import { createEffect, createEvent, createStore, is, sample } from "effector";
+import { createEffect, createEvent, createStore, Event, is, sample } from "effector";
+import { DOMElement } from "forest";
 import { condition } from "patronum";
 
 export const bindLinkNavigation = <T extends RouteParams>({
   params,
   route,
-  link,
 }: {
   params?: T;
   route: RouteInstance<T>;
-  link: ReturnType<typeof createLink>;
-}) => {
+}): { click: Event<MouseEvent>; mounted: Event<DOMElement> } => {
   const $params = createStore<T>(params || ({} as T));
-  const $route = createStore(route);
+  const mounted = createEvent<DOMElement>();
   const click = createEvent<MouseEvent>();
   const navigate = createEvent<any>();
   const openNewTab = createEvent();
-  const openNewTabFx = createEffect((path: string) => {
-    window.open(path, "_blank");
+
+  const $href = createStore<string>("");
+  sample({
+    clock: mounted,
+    fn: (el) => {
+      if (el instanceof HTMLAnchorElement) {
+        return el.href;
+      }
+      return "";
+    },
+    target: $href,
   });
 
   condition({
@@ -38,16 +45,13 @@ export const bindLinkNavigation = <T extends RouteParams>({
     target: route.navigate,
   });
 
+  const openNewTabFx = createEffect((path: string) => {
+    window.open(path, "_blank");
+  });
+
   sample({
     clock: openNewTab,
-    source: [$params, $route, link.$routes] as const,
-    fn: ([params, route, routes]) => {
-      const rawPath = routes.find((r) => r.route === route)?.path || "";
-      const newParams = buildParams(params);
-      const path = rawPath.replace(/:([\w]+)/g, (_, key) => newParams[key] ?? `:${key}`);
-
-      return path;
-    },
+    source: $href,
     target: openNewTabFx,
   });
 
@@ -60,5 +64,5 @@ export const bindLinkNavigation = <T extends RouteParams>({
     return newParams as T;
   };
 
-  return click;
+  return { click, mounted };
 };

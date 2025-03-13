@@ -220,7 +220,7 @@ export const SidebarItem = ({
   route: RouteInstance<Record<string, any>>;
   icon: () => void;
 }) => {
-  const click = bindLinkNavigation({ route, link: Link });
+  const { click, mounted } = bindLinkNavigation({ route });
 
   h("li", () => {
     Link(route, {
@@ -247,6 +247,10 @@ export const SidebarItem = ({
           spec({ classList: ["me-1.5"] });
 
           icon();
+        });
+
+        node((el) => {
+          mounted(el);
         });
       },
     });
