@@ -130,7 +130,7 @@ const summarizeLogsAiFx = createEffect(({ lang, logs }: { lang: string; logs: Lo
     })
     .join("\n");
 
-  const prompt = `Write short summary of these logs in '${lang}' language, try to highlight problems if there are any error level logs, dont use markdown markup, only new lines:\n\n${logsText}`;
+  const prompt = `Alanyze given logs and write short summary about problems only, if any in '${lang}' language, dont use markdown markup, only new lines, logs are:\n\n${logsText}`;
 
   return generateContent(prompt);
 });
