@@ -1,4 +1,4 @@
-import { $shouldCopyToClipboard, i18n, isObjectPresent } from "@/shared/lib";
+import { $shouldCopyToClipboard, bindLinkNavigation, i18n, isObjectPresent } from "@/shared/lib";
 import {
   Button,
   ChangesTable,
@@ -26,6 +26,7 @@ import { createEffect, createEvent, createStore, sample } from "effector";
 import { logModel } from "@/entities/log";
 import { Log } from "@/shared/api";
 import { userModel } from "@/entities/user";
+import { Link, logsRoute } from "@/shared/routing";
 
 export const InsightsBuilder = () => {
   h("div", () => {
@@ -146,12 +147,35 @@ const InsightsSchemas = () => {
       spec({ classList: ["flex", "flex-wrap", "gap-3"] });
 
       list($insightsSchemas, ({ store: schema }) => {
-        h("div", () => {
-          spec({ classList: ["max-w-fit"] });
-          LegendIndicator({
-            text: remap(schema, "schemaTitle"),
-            color: remap(schema, "schemaColor"),
-          });
+        const params = {
+          schemaName: remap(schema, "schemaName"),
+        };
+        const query = $filterList.map((filters) => {
+          return { f: filters.map((f) => `${f.fieldName}=${f.fieldValue}`).join("&") };
+        });
+
+        const { click, mounted } = bindLinkNavigation({ params, route: logsRoute });
+
+        Link(logsRoute, {
+          params,
+          query,
+          handler: {
+            config: { prevent: true, capture: true, stop: true },
+            on: { click },
+          },
+          fn() {
+            h("div", () => {
+              spec({ classList: ["max-w-fit"] });
+              LegendIndicator({
+                text: remap(schema, "schemaTitle"),
+                color: remap(schema, "schemaColor"),
+              });
+            });
+
+            node((el) => {
+              mounted(el);
+            });
+          },
         });
       });
     });

@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"fmt"
+	"log"
 	"moonlogs/internal/shared"
 	"time"
 
@@ -29,7 +30,8 @@ func initMongoDB(dataSourceName string) (*mongo.Client, error) {
 
 	err = createIndexes(client)
 	if err != nil {
-		return nil, fmt.Errorf("create indexes: %w", err)
+		log.Printf("failed creating indexes: %v", err)
+		err = nil
 	}
 
 	return client, err
@@ -37,7 +39,14 @@ func initMongoDB(dataSourceName string) (*mongo.Client, error) {
 
 func createIndexes(client *mongo.Client) error {
 	collection := client.Database(MONGODB_DATABASE_NAME).Collection("records")
-	indexNames := []string{"schema_name", "id", "group_hash", "created_at", "kind", "level"}
+	indexNames := [][]string{
+		{"schema_name"},
+		{"id"},
+		{"schema_name", "group_hash"},
+		{"schema_name", "created_at"},
+		{"schema_name", "kind"},
+		{"schema_name", "level"},
+	}
 
 	return shared.CreateIndexes(collection, indexNames)
 }
