@@ -50,9 +50,9 @@ func (s *SchemaStorage) CreateSchema(ctx context.Context, schema entities.Schema
 		return nil, fmt.Errorf("failed querying inserted schema: %w", err)
 	}
 
-	indexNames := make([]string, 0)
+	indexNames := make([][]string, 0, len(schema.Fields))
 	for _, field := range schema.Fields {
-		indexNames = append(indexNames, fmt.Sprintf("query.%s", field.Name))
+		indexNames = append(indexNames, []string{schema.Name, fmt.Sprintf("query.%s", field.Name)})
 	}
 	_ = shared.CreateIndexes(s.db.Collection("records"), indexNames)
 
@@ -74,9 +74,9 @@ func (s *SchemaStorage) UpdateSchemaByID(ctx context.Context, id int, schema ent
 		return nil, fmt.Errorf("failed updating schema: %w", err)
 	}
 
-	indexNames := make([]string, 0)
+	indexNames := make([][]string, 0, len(schema.Fields))
 	for _, field := range schema.Fields {
-		indexNames = append(indexNames, fmt.Sprintf("query.%s", field.Name))
+		indexNames = append(indexNames, []string{schema.Name, fmt.Sprintf("query.%s", field.Name)})
 	}
 	_ = shared.CreateIndexes(s.db.Collection("records"), indexNames)
 
